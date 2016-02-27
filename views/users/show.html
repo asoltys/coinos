@@ -45,7 +45,7 @@
 
 
       <div class="col-lg-3 col-xs-6">
-        <div class="tippad" style="margin-top: 10px">
+        <div class="tippad">
           <h2><small>+</small><span class="tip"></span> <small>TIP</small></h2>
           <div class="btn-group">
             <button type="button" class="active btn btn-lg btn-default">0%</button>
@@ -58,26 +58,28 @@
 
       <div class="col-lg-3 col-xs-6">
         <div class="rates">
-          <h3 class="pull-right" style="margin-top: -2px">
-            <span class="label label-default symbol"></span> 
-            <span class="label label-success commission"></span>
-          </h3>
           <h2><small>@</small><span class="exchange"></span></h2>
+          <h3 class="label label-default symbol"></h3> 
+          <h3 class="label label-success commission"></h3>
         </div>
       </div>
     </div>
-    <div class="row">
-      <button id="slide" class="btn btn-primary"><i class="fa fa-lg fa-sort-up"></i></button>
+  </div>
+
+  <div class="row">
+    <button id="slide" class="btn btn-primary"><i class="fa fa-lg fa-sort-up"></i></button>
+  </div>
+
+  <div class="row">
+    <div id="payment">
+      <h2><small>Please send</small> <span id="total">0.0</span> <small class="unit"></small></h2>
+      <div id="qr"></div>
+      <h2><span id="address" class="label label-success"></span></h2>
     </div>
-    <div class="row">
-      <div id="payment" style="margin-top: -10px">
-        <h2><small>Please send</small> <span id="total">0.0</span> <small class="unit"></small></h2>
-        <div id="qr"></div>
-        <h2><span id="address" class="label label-success"></span></h2>
-      </div>
-    </div>
-    <div class="row">
-      <button type="button" id="received" class="btn btn-success">Payment Received.  Thank you!</button>
-      <audio id="success" src="/success.wav" hidden="true" enablejavascript="true"></audio>
-    </div>
+  </div>
+
+  <div class="row">
+    <button type="button" id="received" class="btn btn-success">Payment Received.  Thank you!</button>
+    <audio id="success" src="/success.wav" hidden="true" enablejavascript="true"></audio>
+  </div>
 </div>
