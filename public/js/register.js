@@ -7,11 +7,11 @@
     $('#username').focus();
     $('#username').blur(function() {
       $(this).parent().next('.alert').remove();
-      if (/^[a-z]+$/.test($(this).val()) && $(this).val().length > 2) {
+      if (/^[a-z]+$/.test($(this).val())) {
         return $(this).parent().removeClass('has-error');
       } else {
         $(this).parent().addClass('has-error');
-        return $(this).parent().after('<div class="alert alert-danger">Username must be lowecase and have at least 3 characters</div>');
+        return $(this).parent().after('<div class="alert alert-danger">Username must be lowercase</div>');
       }
     });
     $('#password').blur(function() {
