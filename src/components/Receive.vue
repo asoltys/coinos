@@ -5,7 +5,10 @@
       v-icon info
       span Copied to Clipboard
     template(v-if='generated')
-      v-alert(v-if='received' value='received' color='success') Received {{received}} satoshis
+      template(v-if='received')
+        v-alert(value='received' color='success') Received {{received}} satoshis
+        video(width='100%' ref='connect')
+          source(src="static/connect.mp4" type="video/mp4")
       v-layout(v-else)
         v-flex(xs12)
           v-card.pa-3.text-xs-center
@@ -99,10 +102,15 @@ export default {
       this.rate = rates.data.ask
     },
 
+    start () {                                      
+      this.$nextTick(() => {                        
+        this.$refs.connect.play()                      
+      })                                            
+    },    
+
     ...mapActions(['addInvoice']),
   },
   mounted () {
-    const vm = this
     const io = socketio(process.env.SOCKETIO)
 
     io.on('tx', data => {
@@ -111,8 +119,6 @@ export default {
           let address = bitcoin.address.fromOutputScript(o.script, bitcoin.networks.testnet)
           if (address === this.user.address) {
             this.received = o.value
-            var audio = new Audio('/static/success.wav')
-            audio.play()
           } 
         } catch(e) { }
       })
@@ -120,8 +126,7 @@ export default {
 
     io.on('invoices', data => {
       this.received = data.value
-      let audio = new Audio('/static/success.wav')
-      audio.play()
+      this.start()
     })
 
     new Clipboard('.btn')

@@ -1,21 +1,30 @@
 <template lang='pug'>
 div
-  h2 Wallet Balance {{user.balance}}
+  h2 Deposit
   v-layout
     v-flex.text-xs-center(xs12)
       v-card.pa-3.text-xs-center
         canvas#qr
-        pre {{user.address}}
+        code.primary--text.ma-1 {{user.address}}
         v-btn(:data-clipboard-text='user.address' @click.native="snackbar = true")
           v-icon.mr-1 content_copy
           span Copy
-      v-btn(v-if='user.balance > 0 && !user.channel' @click='openChannel')
-       v-icon.mr-1(color='yellow') mdi-flash
-       span Open Lightning Channel
-  v-card.mt-2(v-if='user.channel')
-    v-card-text
-      h2 Channel Balance {{user.channelbalance}}
-      span(style='word-wrap: break-word') {{user.channel}}
+      v-layout
+        v-flex(xs6)
+          v-text-field(label='Regular Balance' v-model='user.balance' disabled)
+          div.input-group__details
+            div.input-group__messages.input-group__hint Max: 
+            span(@click='max') {{user.balance}}
+        v-flex(xs6)
+          v-btn(v-if='user.balance > 0' @click='openChannel')
+            v-icon(color='yellow') mdi-flash
+            span Electrify
+      v-layout
+        v-flex(xs6)
+          v-text-field(label='Lightning Balance' disabled :value='user.channelbalance')
+        v-flex(xs6)
+          v-btn(@click='closeChannels' :disabled='!user.channelbalance')
+            span Close Channels
 </template>
 
 <script>
@@ -29,7 +38,8 @@ export default {
     return {
       playing: false,
       received: 0,
-    } 
+      funding_amt: 0,
+    }
   },
 
   computed: {
@@ -37,15 +47,18 @@ export default {
   }, 
 
   methods: {
-    ...mapActions(['openChannel', 'getUser']),
+    ...mapActions(['openChannel', 'closeChannels', 'getUser']),
+    max () {
+      this.funding_amt = this.user.balance
+    },
   },
 
   mounted () {
     const io = socketio(process.env.SOCKETIO)
     const vm = this
+    this.max()
 
     io.on('tx', data => {
-      console.log(data)
       vm.getUser() 
     })
 

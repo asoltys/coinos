@@ -63,12 +63,6 @@ export default new Vuex.Store({
       commit('SET_BALANCE', res.data.balance)
     },
 
-    async getChannelBalance ({ commit, state }) {
-      let res = await Vue.axios.get('/channelbalance', { params: { username: state.user.username } })
-
-      commit('SET_CHANNEL_BALANCE', res.data.balance)
-    },
-
     async openChannel ({ state, dispatch }) {
       await Vue.axios.post('/openchannel', { username: state.user.username })
       await dispatch('getUser')
@@ -77,7 +71,6 @@ export default new Vuex.Store({
     async sendPayment ({ commit, state, dispatch }, payreq) {
       let res = await Vue.axios.post('/sendPayment', { payreq })
       commit('SET_PAYMENT', res.data)
-      await dispatch('getChannelBalance')
     },
 
     async clearPayment ({ commit }) {

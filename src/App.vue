@@ -5,15 +5,8 @@
       v-toolbar-title(dark @click='$router.push("/")')
         img.logo(src='static/img/coinos_logo.png')
       v-spacer
-      v-speed-dial(direction='bottom' transition='slide-y-transition')
-        v-btn(slot='activator' icon @click='$router.push("/about")')
-          v-icon(color='yellow') mdi-flash
-        v-avatar
-          img.fx(src='static/img/bitcoin.png')
-        v-avatar
-          img.fx(src='static/img/litecoin.png')
-        v-avatar
-          img.fx(src='static/img/dogecoin.png')
+      v-btn(icon @click='$router.push("/about")')
+        v-icon(color='yellow') mdi-flash
       v-btn(icon @click='$router.push("/logout")')
         v-icon power_settings_new
     v-navigation-drawer.primary(v-if='user' v-model='drawer' enable-resize-watcher app clipped)
@@ -94,10 +87,6 @@ export default {
 
   async created () {
     this.authenticate(this.$route)
-  },
-
-  mounted () {
-    console.log(document.cookie)
   },
 }
 </script> 

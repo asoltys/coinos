@@ -4,5 +4,6 @@ query users ($username: String!) {
     balance,
     channel,
     address,
+    channelbalance,
   }
 }

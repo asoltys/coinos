@@ -80,7 +80,6 @@ export default {
 
     async send () {
       await this.sendPayment(this.payreq)
-      this.getChannelBalance()
     },
 
     paste () {
@@ -113,12 +112,11 @@ export default {
       } 
     },
 
-    ...mapActions(['getChannelBalance', 'sendPayment', 'clearPayment']),
+    ...mapActions(['sendPayment', 'clearPayment']),
   },
 
   mounted () {
     let vm = this
-    this.getChannelBalance()
     this.clearPayment()
 
     if (typeof cordova !== 'undefined') {
