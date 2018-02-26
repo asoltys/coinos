@@ -7,8 +7,8 @@
     template(v-if='generated')
       template(v-if='received')
         v-alert(value='received' color='success') Received {{received}} satoshis
-        video(width='100%' ref='connect')
-          source(src="static/connect.mp4" type="video/mp4")
+        video(v-show='!finished' width='100%' ref='connect' @ended='finish')
+          source(src="static/connect.ogv" type="video/ogg")
       v-layout(v-else)
         v-flex(xs12)
           v-card.pa-3.text-xs-center
@@ -69,6 +69,7 @@ export default {
       received: 0,
       generated: false,
       showcode: false,
+      finished: false,
     }
   },
   computed: {
@@ -103,10 +104,16 @@ export default {
     },
 
     start () {                                      
+      this.finished = false
       this.$nextTick(() => {                        
         this.$refs.connect.play()                      
       })                                            
     },    
+
+    finish () {
+      console.log('finished')
+      this.finished = true
+    },
 
     ...mapActions(['addInvoice']),
   },

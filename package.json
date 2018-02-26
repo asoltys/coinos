@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "dev": "node --max_old_space_size=2048 build/dev-server.js",
-    "build": "node build/build.js",
+    "build": "node build/build.js && mkdir -p ~/coinos.io/dist/static/css/static && cp -R ~/coinos.io/dist/static/fonts ~/coinos.io/dist/static/css/static",
     "build-mobile": "CORDOVA=true node build/build.js",
     "unit": "karma start test/unit/karma.conf.js --single-run",
     "e2e": "node test/e2e/runner.js",

@@ -5,7 +5,7 @@
   template(v-for='i in buttons.length / 3')
     v-layout(row)
       v-flex(v-for='j in 3' xs4)
-        v-btn(@click='update' :ref='id(buttons[j  + 3 * i - 4])') 
+        v-btn(@click='update(buttons[j + 3 * i - 4])' :ref='id(buttons[j  + 3 * i - 4])') 
           template(v-if='buttons[j + 3 * i - 4] !== "<"')
             | {{buttons[j + 3 * i - 4]}}
           v-icon(v-else) undo
@@ -36,11 +36,10 @@ export default {
       let event = { target: { innerHTML: id.toString() } }
       this.update(event)
     },
-    update (e) {
+    update (m) {
       let amount = parseFloat(this.amount)
-      let m = e.target.innerHTML
 
-      if (m.includes('undo')) {
+      if (m === '<') {
         amount = (Math.floor(100 * (parseFloat(amount) / 10)) / 100)
       } else if (amount < 1000) {
         if (m === '00') {

@@ -1,5 +1,6 @@
 module.exports = {
   NODE_ENV: '"production"',
-  GRAPHQL: '"/graphql"',
-  SOCKETIO: '"https://coinos.io/socketio"',
+  GRAPHQL: '"https://coinos.io/graphql"',
+  BASEURL: '"https://coinos.io/api"',
+  SOCKETIO: '"https://coinos.io"',
 }

@@ -58,8 +58,9 @@ export default {
     const vm = this
     this.max()
 
-    io.on('tx', data => {
-      vm.getUser() 
+    io.on('tx', async data => {
+      await vm.getUser() 
+      console.log(data, vm.user)
     })
 
     new Clipboard('.btn')
