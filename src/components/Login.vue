@@ -2,7 +2,7 @@
 v-layout
   v-flex(xs12 md4)
     v-alert(v-if='message' color='error' value='message') {{message}}
-    v-alert.white--text(icon='home' v-if='logout' value='logout') Logout succeeded
+    v-alert.black--text(color='yellow' icon='info' v-if='logout' value='logout') You've logged out 
     v-form(@submit='submit')
       v-text-field(label="Username" v-model='user.username' autofocus dark)
       v-text-field(label="Password" v-model='user.password' type='password')

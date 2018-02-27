@@ -9,12 +9,12 @@ div
         v-btn(:data-clipboard-text='user.address' @click.native="snackbar = true")
           v-icon.mr-1 content_copy
           span Copy
+        v-btn(@click='faucet')
+          v-icon.mr-1 mdi-water-pump
+          span Faucet
       v-layout
         v-flex(xs6)
           v-text-field(label='Regular Balance' v-model='user.balance' disabled)
-          div.input-group__details
-            div.input-group__messages.input-group__hint Max: 
-            span(@click='max') {{user.balance}}
         v-flex(xs6)
           v-btn(v-if='user.balance > 0' @click='openChannel')
             v-icon(color='yellow') mdi-flash
@@ -47,7 +47,7 @@ export default {
   }, 
 
   methods: {
-    ...mapActions(['openChannel', 'closeChannels', 'getUser']),
+    ...mapActions(['openChannel', 'closeChannels', 'getUser', 'faucet']),
     max () {
       this.funding_amt = this.user.balance
     },

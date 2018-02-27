@@ -157,4 +157,8 @@ export default {
     background #333
     word-wrap break-word
     padding 15px
+
+  [v-cloak]
+    display none
 </style>
+

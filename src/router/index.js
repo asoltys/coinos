@@ -7,6 +7,7 @@ import Register from '../components/Register'
 import Payments from '../components/Payments'
 import Send from '../components/Send'
 import Receive from '../components/Receive'
+import Withdraw from '../components/Withdraw'
 import Account from '../components/Account'
 import Settings from '../components/Settings'
 
@@ -18,6 +19,7 @@ const routes = [
   { path: '/payments', component: Payments },
   { path: '/send', component: Send },
   { path: '/receive', component: Receive },
+  { path: '/withdraw', component: Withdraw },
   { path: '/account', component: Account },
   { path: '/settings', component: Settings },
   { path: '/about', component: About },

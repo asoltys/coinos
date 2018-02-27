@@ -19,14 +19,13 @@
             v-list-tile-content {{i.content}}
     v-content
       v-container.pl-2(fluid)
-        transition(name='fade')
-          router-view
+        router-view
     v-footer(app)
       v-bottom-nav(absolute style="height: 60px; margin-bottom: 55px")
         v-btn(flat dark @click="$router.push('/receive')")
           span Receive
           v-icon mdi-arrow-left-bold-box
-        v-btn(flat dark @click="scan")
+        v-btn(flat dark @click="scan" v-if='native()')
           span Scan
           v-icon camera_alt
         v-btn(flat dark @click="$router.push('/send')")
@@ -46,9 +45,10 @@ export default {
     return {
       drawer: false,
       menu: [
-        { route: 'home', content: 'Home', icon: 'home' },
+        { route: 'home', content: 'Deposit', icon: 'assignment_returned' },
         { route: 'send', content: 'Send', icon: 'mdi-send' },
         { route: 'receive', content: 'Receive', icon: 'mdi-arrow-left-bold-box' },
+        { route: 'withdraw', content: 'Withdraw', icon: 'eject' },
         { route: 'payments', content: 'Payments', icon: 'assignment' },
         { route: 'account', content: 'Account', icon: 'person' },
         { route: 'settings', content: 'Settings', icon: 'settings' },
@@ -64,14 +64,41 @@ export default {
   },
 
   methods: {
+    native () {
+      return typeof cordova !== 'undefined'
+    },
+
     readCookie (n) {
       let a = `; ${document.cookie}`.match(`;\\s*${n}=([^;]+)`);
       return a ? a[1] : '';
     },
 
     scan () {
-      console.log(window.QRScanner)
-    }, 
+      if (typeof window.QRScanner !== 'undefined') {
+        window.QRScanner.prepare((err, status) => {
+          if (err) {
+            console.error(err)
+            return
+          } 
+
+          window.QRScanner.show((status) => {
+            document.querySelector('.application').style.display = 'none'
+            document.querySelector('#camcontrols').style.display = 'block'
+            window.QRScanner.scan((err, res) => {
+              if (err) { 
+                console.log(err) 
+              } else {
+                this.$store.commit('SET_SCAN', res)
+              }
+
+              document.querySelector('.application').style.display = 'block'
+              document.querySelector('#camcontrols').style.display = 'none'
+              window.QRScanner.hide()
+            })
+          })
+        })
+      } 
+    },
 
     toggleMenu () {
       this.drawer = !this.drawer

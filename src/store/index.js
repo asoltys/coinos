@@ -15,6 +15,7 @@ export default new Vuex.Store({
     balance: 0,
     payreq: '',
     payment: null,
+    scan: '',
   },
   actions: {
     async createUser ({ commit }, user) {
@@ -63,8 +64,18 @@ export default new Vuex.Store({
       commit('SET_BALANCE', res.data.balance)
     },
 
-    async openChannel ({ state, dispatch }) {
-      await Vue.axios.post('/openchannel', { username: state.user.username })
+    async faucet ({ dispatch }) {
+      await Vue.axios.post('/faucet')
+      await dispatch('getUser')
+    },
+
+    async openChannel ({ dispatch }) {
+      await Vue.axios.post('/openchannel')
+      await dispatch('getUser')
+    },
+
+    async closeChannels ({ dispatch }) {
+      await Vue.axios.post('/closechannels')
       await dispatch('getUser')
     },
 
@@ -90,6 +101,7 @@ export default new Vuex.Store({
     SET_CHANNEL_BALANCE (s, v) { Vue.set(s.user, 'channelbalance', v) },
     SET_PAYREQ (s, v) { s.payreq = v },
     SET_PAYMENT (s, v) { s.payment = v },
+    SET_SCAN (s, v) { s.scan = v },
   },
   getters: {
     user: s => {

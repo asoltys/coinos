@@ -10,8 +10,64 @@
     <link href="https://unpkg.com/vuetify/dist/vuetify.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bitcoinjs-lib/0.2.0-1/bitcoinjs-min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js"></script>
+    <script>
+      window.onload = function () {
+        if (typeof window.cordova !== 'undefined') {
+          document.getElementById("cancel").addEventListener("click", function(e) {
+            console.log('meow')
+            window.QRScanner.cancelScan(function(status){
+              console.log(status);
+            });
+          });
+        }
+      }
+      </script>
+    <style>
+      #camcontrols {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        top: 0px;
+        left: 0px;
+        display: none;
+      } 
+
+      #crosshair {
+        position: absolute;
+        display: block;
+        width: 200px;
+        height: 200px;
+        border: 10px dashed yellow;
+        top: 50%;
+        left: 50%;
+        margin: -100px 0 0 -100px;
+      } 
+
+      #controls {
+        position: absolute;
+        margin-left: auto;
+        left: 50%;
+        display: block;
+        width: 300px;
+        bottom: 10px;
+        background: yellow;
+        text-align: center;
+        color: black;
+        font-family: Roboto, sans-serif;
+        font-size: 32px;
+        border-radius: 15px;
+        z-index: 500;
+        margin: 0 0 0 -150px;
+      } 
+    </style>
   </head>
   <body>
     <div id="app"></div>
+    <div id="camcontrols">
+      <div id="crosshair"></div>
+      <div id="controls">
+        <div id="cancel">Stop</div>
+      </div>
+    </div>
   </body>
 </html>
