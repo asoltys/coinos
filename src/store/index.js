@@ -5,17 +5,25 @@ import getUserQuery from '../graphql/getUser.gql'
 import transactionsQuery from '../graphql/transactions.gql'
 import createUser from '../graphql/createUser.gql'
 import updateUser from '../graphql/updateUser.gql'
+import bip21 from 'bip21'
+import bolt11 from 'bolt11'
+import router from '../router'
+import bitcoin from 'bitcoinjs-lib'
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    user: null,
-    transactions: {},
+    address: '',
+    amount: 0,
     balance: 0,
-    payreq: '',
+    fees: 0,
     payment: null,
+    payobj: null,
+    payreq: '',
     scan: '',
+    transactions: {},
+    user: null,
   },
   actions: {
     async createUser ({ commit }, user) {
@@ -93,15 +101,46 @@ export default new Vuex.Store({
 
       commit('SET_PAYREQ', res.data.payment_request)
     },
+
+    async handleScan ({ commit }, text) {
+      try { 
+        let payobj = bolt11.decode(text)
+        commit('SET_PAYOBJ', payobj)
+        commit('SET_PAYREQ', text)
+        router.push('/send')
+      } catch (e) {
+        // DO NOTHING
+      }
+
+      try {
+        let url = bip21.decode(text)
+        commit('SET_ADDRESS', url.address)
+        commit('SET_AMOUNT', url.options.amount)
+        router.push('/send')
+      } catch (e) {
+        // DO NOTHING
+      } 
+
+      try {
+        bitcoin.address.fromBase58Check(text)
+        commit('SET_ADDRESS', text)
+        router.push('/send')
+      } catch (e) {
+        // DO NOTHING
+      } 
+    },
   },
   mutations: {
-    SET_USER (s, v) { Vue.set(s, 'user', v) },
-    SET_TRANSACTIONS (s, v) { s.transactions = v },
+    SET_ADDRESS (s, v) { s.address = v },
+    SET_AMOUNT (s, v) { s.amount = v },
     SET_BALANCE (s, v) { s.balance = v },
     SET_CHANNEL_BALANCE (s, v) { Vue.set(s.user, 'channelbalance', v) },
-    SET_PAYREQ (s, v) { s.payreq = v },
     SET_PAYMENT (s, v) { s.payment = v },
+    SET_PAYOBJ (s, v) { s.payobj = v },
+    SET_PAYREQ (s, v) { s.payreq = v },
     SET_SCAN (s, v) { s.scan = v },
+    SET_TRANSACTIONS (s, v) { s.transactions = v },
+    SET_USER (s, v) { Vue.set(s, 'user', v) },
   },
   getters: {
     user: s => {
@@ -119,9 +158,13 @@ export default new Vuex.Store({
 
       return s.user
     },
-    transactions: s => s.transactions,
+    address: s => s.address,
+    fees: s => s.fees,
     balance: s => s.balance,
-    payreq: s => s.payreq,
+    amount: s => s.amount,
     payment: s => s.payment,
+    payobj: s => s.payobj,
+    payreq: s => s.payreq,
+    transactions: s => s.transactions,
   },
 })

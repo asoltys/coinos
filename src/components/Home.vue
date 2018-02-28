@@ -9,8 +9,8 @@ div
         v-btn(:data-clipboard-text='user.address' @click.native="snackbar = true")
           v-icon.mr-1 content_copy
           span Copy
-        v-btn(@click='faucet')
-          v-icon.mr-1 mdi-water-pump
+        v-btn(@click='faucet' :disabled='user.balance > 200000 || user.channelbalance > 300000')
+          v-icon.mr-1(color='blue') mdi-water-pump
           span Faucet
       v-layout
         v-flex(xs6)
@@ -23,8 +23,9 @@ div
         v-flex(xs6)
           v-text-field(label='Lightning Balance' disabled :value='user.channelbalance')
         v-flex(xs6)
-          v-btn(@click='closeChannels' :disabled='!user.channelbalance')
-            span Close Channels
+          v-btn(v-if='user.channelbalance' @click='closeChannels')
+            v-icon(color='red') mdi-flash-off
+            span Dullify
 </template>
 
 <script>

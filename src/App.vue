@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
   computed: {
@@ -64,6 +64,14 @@ export default {
   },
 
   methods: {
+    ...mapActions(['handleScan']),
+
+    scantest () {
+      // this.handleScan('lntb15920n1pdfv5mqpp5ygalsdx3g0q24t8sgqv3lwcw8a64c4cejrnqftluljcg5v7x03qsdqqcqzysjgtcyyg03ukffsk29u77a2pgp9jw2f5xsj3q2wnteph62jwk5gj9gs6k8qc467s3d5h58d6gshhk9g7v8axyl4hg6eucv3vk7v2zxpcq8e4222')
+      // this.handleScan('3QzfswBjpeaRCpq98ui2ZUPQg3XfnPrMZJ')
+      this.handleScan('bitcoin:1BgGZ9tcN4rm9KBzDn7KprQz87SZ26SAMH?amount=20.3&label=Foobar')
+    },
+
     native () {
       return typeof cordova !== 'undefined'
     },
@@ -88,7 +96,7 @@ export default {
               if (err) { 
                 console.log(err) 
               } else {
-                this.$store.commit('SET_SCAN', res)
+                this.handleScan(res)
               }
 
               document.querySelector('.application').style.display = 'block'
