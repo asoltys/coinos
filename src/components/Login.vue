@@ -11,6 +11,8 @@ v-layout
 </template>
 
 <script>
+import { mapActions } from 'vuex'
+
 export default {
   props: ['logout'],
   data () {
@@ -23,13 +25,13 @@ export default {
     }
   },
   methods: {
+    ...mapActions(['login']),
+
     async submit (e) {
       let user = this.$data.user
       e.preventDefault()
       try {
-        let res = await this.axios.post('/login', user)
-        await this.$store.commit('SET_USER', res.data.user)
-        this.$router.push('/home')
+        this.login(this.user)
       } catch (e) {
         this.message = 'Login failed'
         console.log(e)

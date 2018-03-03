@@ -21,7 +21,7 @@ v-container
         v-icon mdi-flash
         span Send Another
   template(v-else)
-    v-text-field(label='To:' dark v-model='to')
+    v-text-field(label='To:' dark v-model='to' clearable multi-line rows='2')
     v-text-field(v-if='address' label='Amount:' dark v-model='amount')
     v-text-field(v-if='address' label='Fees:' dark v-model='fees')
     v-list.elevation-1(v-if='payobj')
@@ -34,7 +34,7 @@ v-container
       v-list-tile
         v-list-tile-title Date
         v-list-tile-sub-title {{payobj.timestampString | format}}
-    v-btn(v-if='payobj' color="green" dark @click='send')
+    v-btn(color="green" dark @click='send')
       v-icon.mr-1 send
       span Pay
 </template>
@@ -61,9 +61,14 @@ export default {
   computed: {
     ...mapGetters(['address', 'amount', 'fees', 'balance', 'user', 'payment', 'payreq', 'payobj']),
 
-    to () {
-      if (this.payreq) return this.payreq
-      if (this.address) return this.address
+    to: {
+      get () {
+        if (this.payreq) return this.payreq
+        if (this.address) return this.address
+      },
+      set (v) {
+        this.$store.dispatch('handleScan', v)
+      } 
     }, 
   }, 
 

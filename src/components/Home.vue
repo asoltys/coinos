@@ -30,7 +30,6 @@ div
 
 <script>
 import bitcoin from 'bitcoinjs-lib'
-import socketio from 'socket.io-client'
 import qr from 'qrcode'
 import { mapGetters, mapActions } from 'vuex'
 
@@ -44,7 +43,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['user']),
+    ...mapGetters(['user', 'token']),
   }, 
 
   methods: {
@@ -55,14 +54,7 @@ export default {
   },
 
   mounted () {
-    const io = socketio(process.env.SOCKETIO)
-    const vm = this
     this.max()
-
-    io.on('tx', async data => {
-      await vm.getUser() 
-      console.log(data, vm.user)
-    })
 
     new Clipboard('.btn')
     let canvas = document.getElementById('qr')

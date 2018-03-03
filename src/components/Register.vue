@@ -40,9 +40,6 @@ v-layout
 
         try {
           await this.createUser(this.user)
-          let res = await this.axios.post('/login', this.user)
-          await this.$store.commit('SET_USER', res.data.user)
-          this.$router.push('/home')
         } catch (e) {
           this.error = e.graphQLErrors[0].message
         }

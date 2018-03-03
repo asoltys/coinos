@@ -5,5 +5,5 @@ module.exports = merge(prodEnv, {
   NODE_ENV: '"development"',
   GRAPHQL: '"/graphql"',
   BASEURL: '"/api"',
-  SOCKETIO: '"localhost:3000"',
+  SOCKETIO: '',
 })

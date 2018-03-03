@@ -34,6 +34,7 @@
 </template>
 
 <script>
+import socketio from 'socket.io-client'
 import { mapGetters, mapActions } from 'vuex'
 
 export default {
@@ -74,11 +75,6 @@ export default {
 
     native () {
       return typeof cordova !== 'undefined'
-    },
-
-    readCookie (n) {
-      let a = `; ${document.cookie}`.match(`;\\s*${n}=([^;]+)`);
-      return a ? a[1] : '';
     },
 
     scan () {

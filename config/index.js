@@ -21,6 +21,8 @@ module.exports = {
     port: 8085,
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
+    proxyTable: {},
+    /*
     proxyTable: {
       '/api': {
         target: 'http://localhost:3000',
@@ -47,11 +49,16 @@ module.exports = {
       '/graphql': {
         target: 'http://localhost:3000',
         changeOrigin: true,
+      },
+      '/socketio': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
         pathRewrite: {
-          '^api': ''
+          '^/socketio': ''
         },
       },
     },
+    */
     // CSS Sourcemaps off by default because relative paths are "buggy"
     // with this option, according to the CSS-Loader README
     // (https://github.com/webpack/css-loader#sourcemaps)

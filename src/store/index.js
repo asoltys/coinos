@@ -1,4 +1,5 @@
 import apolloClient from '../apollo-client'
+import socketio from 'socket.io-client'
 import Vue from 'vue'
 import Vuex from 'vuex'
 import getUserQuery from '../graphql/getUser.gql'
@@ -9,8 +10,14 @@ import bip21 from 'bip21'
 import bolt11 from 'bolt11'
 import router from '../router'
 import bitcoin from 'bitcoinjs-lib'
-
 Vue.use(Vuex)
+
+const l = console.log
+
+function readCookie (n) {
+  let a = `; ${document.cookie}`.match(`;\\s*${n}=([^;]+)`)
+  return a ? a[1] : ''
+}
 
 export default new Vuex.Store({
   state: {
@@ -21,12 +28,44 @@ export default new Vuex.Store({
     payment: null,
     payobj: null,
     payreq: '',
+    received: 0,
     scan: '',
     transactions: {},
+    token: '',
     user: null,
+    socket: null,
   },
   actions: {
-    async createUser ({ commit }, user) {
+    async login ({ commit, state, dispatch }, user) {
+      let res = await Vue.axios.post('/login', user)
+      await commit('SET_USER', res.data.user)
+      dispatch('getUser')
+      commit('SET_TOKEN', readCookie('token'))
+      router.push('/home')
+
+      commit('SET_SOCKET', socketio())
+
+      state.socket.on('connection', data => l(data))
+      state.socket.on('success', data => l(data))
+
+      state.socket.on('tx', data => {
+        bitcoin.Transaction.fromHex(data).outs.map(o => {
+          try {
+            let address = bitcoin.address.fromOutputScript(o.script, bitcoin.networks.testnet)
+            if (address === state.user.address) {
+              commit('SET_RECEIVED', o.value)
+            } 
+          } catch(e) { /* */ }
+        })
+        dispatch('getUser')
+      })
+
+      state.socket.on('invoice', data => {
+        commit('SET_RECEIVED', data.value)
+      })
+    },
+
+    async createUser ({ commit, dispatch }, user) {
       delete user['passconfirm']
       await apolloClient.mutate({
         mutation: createUser,
@@ -34,6 +73,8 @@ export default new Vuex.Store({
           user: user,
         },
       })
+
+      dispatch('login', user)
     },
 
     async updateUser ({ commit }, user) {
@@ -103,6 +144,10 @@ export default new Vuex.Store({
     },
 
     async handleScan ({ commit }, text) {
+      commit('SET_ADDRESS', '')
+      commit('SET_PAYREQ', '')
+      commit('SET_PAYOBJ', null)
+
       try { 
         let payobj = bolt11.decode(text)
         commit('SET_PAYOBJ', payobj)
@@ -139,7 +184,10 @@ export default new Vuex.Store({
     SET_PAYOBJ (s, v) { s.payobj = v },
     SET_PAYREQ (s, v) { s.payreq = v },
     SET_SCAN (s, v) { s.scan = v },
+    SET_SOCKET (s, v) { s.socket = v },
+    SET_RECEIVED (s, v) { s.received = v },
     SET_TRANSACTIONS (s, v) { s.transactions = v },
+    SET_TOKEN (s, v) { s.token = v },
     SET_USER (s, v) { Vue.set(s, 'user', v) },
   },
   getters: {
@@ -165,6 +213,8 @@ export default new Vuex.Store({
     payment: s => s.payment,
     payobj: s => s.payobj,
     payreq: s => s.payreq,
+    received: s => s.received,
     transactions: s => s.transactions,
+    token: s => s.token,
   },
 })
