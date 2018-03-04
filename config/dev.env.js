@@ -5,5 +5,5 @@ module.exports = merge(prodEnv, {
   NODE_ENV: '"development"',
   GRAPHQL: '"/graphql"',
   BASEURL: '"/api"',
-  SOCKETIO: '',
+  SOCKETIO: '"http://coinosdev"',
 })

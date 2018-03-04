@@ -43,7 +43,7 @@ export default new Vuex.Store({
       commit('SET_TOKEN', readCookie('token'))
       router.push('/home')
 
-      commit('SET_SOCKET', socketio())
+      commit('SET_SOCKET', socketio(process.env.SOCKETIO))
 
       state.socket.on('connection', data => l(data))
       state.socket.on('success', data => l(data))
@@ -57,6 +57,7 @@ export default new Vuex.Store({
             } 
           } catch(e) { /* */ }
         })
+
         dispatch('getUser')
       })
 
@@ -115,26 +116,38 @@ export default new Vuex.Store({
 
     async faucet ({ dispatch }) {
       await Vue.axios.post('/faucet')
-      await dispatch('getUser')
+      dispatch('getUser')
     },
 
     async openChannel ({ dispatch }) {
       await Vue.axios.post('/openchannel')
-      await dispatch('getUser')
+      dispatch('getUser')
     },
 
     async closeChannels ({ dispatch }) {
       await Vue.axios.post('/closechannels')
-      await dispatch('getUser')
+      dispatch('getUser')
     },
 
-    async sendPayment ({ commit, state, dispatch }, payreq) {
-      let res = await Vue.axios.post('/sendPayment', { payreq })
-      commit('SET_PAYMENT', res.data)
+    async sendPayment ({ commit, dispatch, getters }) {
+      let { address, amount, payreq } = getters
+      if (payreq) {
+        let res = await Vue.axios.post('/sendPayment', payreq)
+        commit('SET_PAYMENT', res.data)
+      }
+      else if (address) {
+        let res = await Vue.axios.post('/sendCoins', { address, amount })
+        commit('SET_PAYMENT', res.data)
+      }
+
+      dispatch('getUser')
     },
 
     async clearPayment ({ commit }) {
+      commit('SET_PAYREQ', '')
+      commit('SET_ADDRESS', '')
       commit('SET_PAYMENT', null)
+      commit('SET_PAYOBJ', null)
     },
 
     async addInvoice ({ commit }, amount) {
@@ -143,10 +156,8 @@ export default new Vuex.Store({
       commit('SET_PAYREQ', res.data.payment_request)
     },
 
-    async handleScan ({ commit }, text) {
-      commit('SET_ADDRESS', '')
-      commit('SET_PAYREQ', '')
-      commit('SET_PAYOBJ', null)
+    async handleScan ({ commit, dispatch }, text) {
+      dispatch('clearPayment')
 
       try { 
         let payobj = bolt11.decode(text)
@@ -183,11 +194,11 @@ export default new Vuex.Store({
     SET_PAYMENT (s, v) { s.payment = v },
     SET_PAYOBJ (s, v) { s.payobj = v },
     SET_PAYREQ (s, v) { s.payreq = v },
+    SET_RECEIVED (s, v) { s.received = v },
     SET_SCAN (s, v) { s.scan = v },
     SET_SOCKET (s, v) { s.socket = v },
-    SET_RECEIVED (s, v) { s.received = v },
-    SET_TRANSACTIONS (s, v) { s.transactions = v },
     SET_TOKEN (s, v) { s.token = v },
+    SET_TRANSACTIONS (s, v) { s.transactions = v },
     SET_USER (s, v) { Vue.set(s, 'user', v) },
   },
   getters: {
@@ -207,14 +218,14 @@ export default new Vuex.Store({
       return s.user
     },
     address: s => s.address,
-    fees: s => s.fees,
-    balance: s => s.balance,
     amount: s => s.amount,
+    balance: s => s.balance,
+    fees: s => s.fees,
     payment: s => s.payment,
     payobj: s => s.payobj,
     payreq: s => s.payreq,
     received: s => s.received,
-    transactions: s => s.transactions,
     token: s => s.token,
+    transactions: s => s.transactions,
   },
 })

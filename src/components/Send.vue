@@ -10,14 +10,17 @@ v-container
   v-card(v-if='payment')
     v-alert.headline(value='true' color='success') Payment Sent!
     v-list
+      v-list-tile(v-if='payment.txid')
+        v-list-tile-title Transaction ID
+        v-list-tile-sub-title {{payment.txid}}
       v-list-tile
         v-list-tile-title Amount
-        v-list-tile-sub-title {{payment.payment_route.total_amt}}
+        v-list-tile-sub-title {{total}}
       v-list-tile
         v-list-tile-title Fees
-        v-list-tile-sub-title {{payment.payment_route.total_fees}}
+        v-list-tile-sub-title {{fees}}
     v-card-actions
-      v-btn(@click='clear') 
+      v-btn(@click='clearPayment') 
         v-icon mdi-flash
         span Send Another
   template(v-else)
@@ -34,7 +37,7 @@ v-container
       v-list-tile
         v-list-tile-title Date
         v-list-tile-sub-title {{payobj.timestampString | format}}
-    v-btn(color="green" dark @click='send')
+    v-btn(color="green" dark @click='sendPayment')
       v-icon.mr-1 send
       span Pay
 </template>
@@ -44,6 +47,8 @@ import Lightning from './Lightning'
 import { mapGetters, mapActions } from 'vuex'
 import date from 'date-fns'
 import socketio from 'socket.io-client'
+
+const l = console.log
 
 export default {
   components: { Lightning },
@@ -59,7 +64,30 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['address', 'amount', 'fees', 'balance', 'user', 'payment', 'payreq', 'payobj']),
+    ...mapGetters(['address', 'fees', 'balance', 'user', 'payment', 'payreq', 'payobj']),
+
+    total () {
+      let p = this.payment
+      if (p) {
+        if (p.payment_route) return p.payment_route.total_amt
+        return p.total
+      }
+      return 0
+    },
+
+    fees () {
+      let p = this.payment
+      if (p) {
+        if (p.payment_route) return p.payment_route.total_fees
+        return p.fees
+      }
+      return 0
+    },
+
+    amount: {
+      get: mapGetters(['amount']),
+      set (v) { this.$store.commit('SET_AMOUNT', v) },
+    },
 
     to: {
       get () {
@@ -73,15 +101,6 @@ export default {
   }, 
 
   methods: {
-    clear () {
-      this.$store.commit('SET_PAYREQ', '')
-      this.clearPayment()
-    },
-
-    async send () {
-      await this.sendPayment(this.payreq)
-    },
-
     ...mapActions(['sendPayment', 'clearPayment']),
   },
 

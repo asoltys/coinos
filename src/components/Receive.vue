@@ -1,13 +1,13 @@
 <template lang="pug">
   div
-    video(v-if='received && !finished' width='100%' ref='connect' @ended='finish')
-      source(src="static/connect.mp4" type="video/mp4")
     HCE(:accountNumber='total')
     v-snackbar(:bottom="true" v-model="snackbar" :timeout="1500")
       v-icon info
       span Copied to Clipboard
     template(v-if='generated')
       template(v-if='received')
+        video(v-if='!finished' width='100%' ref='connect' @ended='finish')
+          source(src="static/connect.mp4" type="video/mp4")
         v-alert(value='received' color='success') Received {{received}} satoshis
       v-layout(v-else)
         v-flex(xs12)
