@@ -9,6 +9,7 @@ module.exports = {
     'html',
   ],
   globals: {
+    'Clipboard': true,
     'cordova': true,
     'hce': true,
     'nfc': true

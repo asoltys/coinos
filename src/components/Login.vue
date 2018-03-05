@@ -14,21 +14,27 @@ v-layout
 import { mapActions } from 'vuex'
 
 export default {
-  props: ['logout'],
+  props: {
+    logout: {
+      type: Boolean,
+      default: false,
+    },
+  },
+
   data () {
     return {
       user: {
         username: 'bob',
-        password: 'pw'
+        password: 'pw',
       },
-      message: ''
+      message: '',
     }
   },
+
   methods: {
     ...mapActions(['login']),
 
     async submit (e) {
-      let user = this.$data.user
       e.preventDefault()
       try {
         this.login(this.user)
@@ -36,7 +42,7 @@ export default {
         this.message = 'Login failed'
         console.log(e)
       }
-    }
+    },
   },
 
   created () {

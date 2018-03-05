@@ -11,18 +11,25 @@ div
 
 <script>
 export default {
-  props: ['amount'],
+  props: {
+    amount: {
+      type: Number,
+      default: 0,
+    },
+  },
+
   data () {
     return {
-      percent: 0
+      percent: 0,
     }
   },
+
   computed: {
     tip () {
       let tip = (this.percent * this.amount * 0.01).toFixed(2)
       this.$emit('update', tip)
       return tip
-    }
-  }
+    },
+  },
 }
 </script>

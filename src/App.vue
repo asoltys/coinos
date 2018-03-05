@@ -34,14 +34,9 @@
 </template>
 
 <script>
-import socketio from 'socket.io-client'
 import { mapGetters, mapActions } from 'vuex'
 
 export default {
-  computed: {
-    ...mapGetters(['user']),
-  }, 
-
   data () {
     return {
       drawer: false,
@@ -53,10 +48,14 @@ export default {
         { route: 'payments', content: 'Payments', icon: 'assignment' },
         { route: 'account', content: 'Account', icon: 'person' },
         { route: 'settings', content: 'Settings', icon: 'settings' },
-        { route: 'logout', content: 'Logout', icon: 'power_settings_new' }
-      ]
+        { route: 'logout', content: 'Logout', icon: 'power_settings_new' },
+      ],
     }
   },
+
+  computed: {
+    ...mapGetters(['user']),
+  }, 
 
   watch: {
     $route (route) {
@@ -79,13 +78,13 @@ export default {
 
     scan () {
       if (typeof window.QRScanner !== 'undefined') {
-        window.QRScanner.prepare((err, status) => {
+        window.QRScanner.prepare((err) => {
           if (err) {
             console.error(err)
             return
           } 
 
-          window.QRScanner.show((status) => {
+          window.QRScanner.show(() => {
             document.querySelector('.application').style.display = 'none'
             document.querySelector('#camcontrols').style.display = 'block'
             window.QRScanner.scan((err, res) => {

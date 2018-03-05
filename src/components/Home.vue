@@ -29,7 +29,6 @@ div
 </template>
 
 <script>
-import bitcoin from 'bitcoinjs-lib'
 import qr from 'qrcode'
 import { mapGetters, mapActions } from 'vuex'
 
@@ -59,6 +58,6 @@ export default {
     new Clipboard('.btn')
     let canvas = document.getElementById('qr')
     qr.toCanvas(canvas, this.user.address, e => { if (e) console.log(e) })
-  } 
-} 
+  }, 
+}
 </script>

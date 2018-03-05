@@ -13,7 +13,7 @@ v-card
 import lightning from './Lightning'
 
 export default {
-  components: { lightning }
+  components: { lightning },
 } 
 </script>
 

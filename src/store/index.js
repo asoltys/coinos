@@ -67,7 +67,7 @@ export default new Vuex.Store({
       })
     },
 
-    async createUser ({ commit, dispatch }, user) {
+    async createUser ({ dispatch }, user) {
       delete user['passconfirm']
       await apolloClient.mutate({
         mutation: createUser,
@@ -79,6 +79,7 @@ export default new Vuex.Store({
       dispatch('login', user)
     },
 
+    /* eslint-disable-next-line */
     async updateUser ({ commit }, user) {
       await apolloClient.mutate({
         mutation: updateUser,

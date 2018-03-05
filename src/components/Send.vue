@@ -47,9 +47,6 @@ v-container
 import Lightning from './Lightning'
 import { mapGetters, mapActions } from 'vuex'
 import date from 'date-fns'
-import socketio from 'socket.io-client'
-
-const l = console.log
 
 export default {
   components: { Lightning },
@@ -61,7 +58,7 @@ export default {
 
     format (d) {
       return date.format(d, 'MMM D, YYYY HH:mm')
-    } 
+    },
   },
 
   computed: {
@@ -97,7 +94,7 @@ export default {
       },
       set (v) {
         this.$store.dispatch('handleScan', v.trim())
-      } 
+      },
     }, 
   }, 
 
@@ -106,7 +103,6 @@ export default {
   },
 
   mounted () {
-    let vm = this
     this.clearPayment()
 
     if (typeof cordova !== 'undefined') {

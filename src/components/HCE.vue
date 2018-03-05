@@ -1,10 +1,15 @@
 <template>
-  <span></span>
+  <span />
 </template>
 
 <script>
 export default {
-  props: ['accountNumber'],
+  props: {
+    accountNumber: {
+      type: String,
+      default: '',
+    },
+  },
 
   data () {
     return {
@@ -49,7 +54,7 @@ export default {
 
     onDeactivated (reason) {
       console.log('Deactivated ' + reason)
-    }
+    },
   },
 
   mounted () {
@@ -57,6 +62,6 @@ export default {
       window.hce.registerCommandCallback(this.onCommand)
       window.hce.registerDeactivatedCallback(this.onDeactivated)
     }
-  }
+  },
 }
 </script>

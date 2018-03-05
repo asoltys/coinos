@@ -42,9 +42,7 @@
 
 <script>
 import axios from 'axios'
-import bitcoin from 'bitcoinjs-lib'
 import qr from 'qrcode'
-import payreq from 'bolt11'
 import numpad from './NumPad'
 import tippad from './TipPad'
 import HCE from './HCE'
@@ -52,7 +50,6 @@ import Lightning from './Lightning'
 import { mapGetters, mapActions } from 'vuex'
 
 const f = parseFloat
-const l = console.log
 
 export default {
   components: { numpad, tippad, HCE, Lightning },
@@ -95,7 +92,7 @@ export default {
     received () {
       this.finished = false
       this.$nextTick(() => this.$refs.connect.play())
-    } 
+    },
   },
 
   methods: {
@@ -121,7 +118,7 @@ export default {
   mounted () {
     new Clipboard('.btn')
     this.loadWallet()
-  }
+  },
 }
 </script>
 
