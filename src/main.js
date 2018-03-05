@@ -12,9 +12,9 @@ Axios.defaults.baseURL = process.env.BASEURL
 Vue.use(VueAxios, Axios)
 Vue.use(Vuetify, {
   theme: {
-    primary: '#000',
+    primary: 'yellow',
     secondary: '#333',
-    accent: '#8c9eff',
+    accent: 'yellow',
     error: '#b71c1c',
   },
 })

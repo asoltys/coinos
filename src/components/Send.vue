@@ -24,7 +24,8 @@ v-container
         v-icon mdi-flash
         span Send Another
   template(v-else)
-    v-text-field(label='To:' dark v-model='to' clearable multi-line rows='2')
+    v-alert.headline(v-if='error' value='error' color='error') {{error}}
+    v-text-field(label='To:' dark v-model='to' clearable multi-line auto-grow rows='1' hide-details)
     v-text-field(v-if='address' label='Amount:' dark v-model='amount')
     v-text-field(v-if='address' label='Fees:' dark v-model='fees')
     v-list.elevation-1(v-if='payobj')
@@ -64,7 +65,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['address', 'fees', 'balance', 'user', 'payment', 'payreq', 'payobj']),
+    ...mapGetters(['address', 'error', 'fees', 'balance', 'user', 'payment', 'payreq', 'payobj']),
 
     total () {
       let p = this.payment
@@ -95,7 +96,7 @@ export default {
         if (this.address) return this.address
       },
       set (v) {
-        this.$store.dispatch('handleScan', v)
+        this.$store.dispatch('handleScan', v.trim())
       } 
     }, 
   }, 

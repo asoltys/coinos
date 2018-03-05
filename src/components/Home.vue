@@ -5,7 +5,7 @@ div
     v-flex.text-xs-center(xs12)
       v-card.pa-3.text-xs-center
         canvas#qr
-        code.primary--text.ma-1 {{user.address}}
+        code.black--text.ma-1 {{user.address}}
         v-btn(:data-clipboard-text='user.address' @click.native="snackbar = true")
           v-icon.mr-1 content_copy
           span Copy

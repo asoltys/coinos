@@ -1,6 +1,6 @@
 <template lang="pug">
   v-app(dark)
-    v-toolbar(app dark color="primary" clipped-left fixed)
+    v-toolbar(app dark color="black" clipped-left fixed)
       v-toolbar-side-icon(v-if='user' @click.stop='toggleMenu')
       v-toolbar-title(dark @click='$router.push("/")')
         img.logo(src='static/img/coinos_logo.png')
@@ -9,7 +9,7 @@
         v-icon(color='yellow') mdi-flash
       v-btn(icon @click='$router.push("/logout")')
         v-icon power_settings_new
-    v-navigation-drawer.primary(v-if='user' v-model='drawer' enable-resize-watcher app clipped)
+    v-navigation-drawer(color='black' v-if='user' v-model='drawer' enable-resize-watcher app clipped)
       v-list.secondary
         template(v-for='i in menu') 
           v-list-tile(:key='i.route' ripple @click='$router.push(i.route)')
@@ -123,6 +123,9 @@ export default {
 </script> 
 
 <style lang="stylus">
+.input-group--focused label
+  color white !important
+
 .toolbar__title
   cursor pointer
 

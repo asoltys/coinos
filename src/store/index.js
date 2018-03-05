@@ -24,6 +24,7 @@ export default new Vuex.Store({
     address: '',
     amount: 0,
     balance: 0,
+    error: '',
     fees: 0,
     payment: null,
     payobj: null,
@@ -132,8 +133,12 @@ export default new Vuex.Store({
     async sendPayment ({ commit, dispatch, getters }) {
       let { address, amount, payreq } = getters
       if (payreq) {
-        let res = await Vue.axios.post('/sendPayment', payreq)
-        commit('SET_PAYMENT', res.data)
+        try {
+          let res = await Vue.axios.post('/sendPayment', { payreq })
+          commit('SET_PAYMENT', res.data)
+        } catch (e) {
+          commit('SET_ERROR', e)
+        } 
       }
       else if (address) {
         let res = await Vue.axios.post('/sendCoins', { address, amount })
@@ -157,33 +162,27 @@ export default new Vuex.Store({
     },
 
     async handleScan ({ commit, dispatch }, text) {
-      dispatch('clearPayment')
+      await dispatch('clearPayment')
 
       try { 
         let payobj = bolt11.decode(text)
         commit('SET_PAYOBJ', payobj)
         commit('SET_PAYREQ', text)
         router.push('/send')
-      } catch (e) {
-        // DO NOTHING
-      }
+      } catch (e) { /**/ }
 
       try {
         let url = bip21.decode(text)
         commit('SET_ADDRESS', url.address)
         commit('SET_AMOUNT', url.options.amount)
         router.push('/send')
-      } catch (e) {
-        // DO NOTHING
-      } 
+      } catch (e) { /**/ } 
 
       try {
         bitcoin.address.fromBase58Check(text)
         commit('SET_ADDRESS', text)
         router.push('/send')
-      } catch (e) {
-        // DO NOTHING
-      } 
+      } catch (e) { /**/ }
     },
   },
   mutations: {
@@ -191,6 +190,7 @@ export default new Vuex.Store({
     SET_AMOUNT (s, v) { s.amount = v },
     SET_BALANCE (s, v) { s.balance = v },
     SET_CHANNEL_BALANCE (s, v) { Vue.set(s.user, 'channelbalance', v) },
+    SET_ERROR (s, v) { s.error = v },
     SET_PAYMENT (s, v) { s.payment = v },
     SET_PAYOBJ (s, v) { s.payobj = v },
     SET_PAYREQ (s, v) { s.payreq = v },
@@ -220,6 +220,7 @@ export default new Vuex.Store({
     address: s => s.address,
     amount: s => s.amount,
     balance: s => s.balance,
+    error: s => s.error,
     fees: s => s.fees,
     payment: s => s.payment,
     payobj: s => s.payobj,
