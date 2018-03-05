@@ -6,5 +6,5 @@ module.exports = merge(prodEnv, {
   GRAPHQL: '"/graphql"',
   BASEURL: '"/api"',
   SOCKETIO: '"http://coinosdev"',
-  PORT: 8501,
+  PORT: 8085,
 })

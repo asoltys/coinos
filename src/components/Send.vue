@@ -7,6 +7,7 @@ v-container
   v-chip.body-2(label)
     v-icon(left) mdi-flash
     | {{user.channelbalance}}
+  v-alert.headline(v-if='error' value='error' color='error') {{error}}
   v-card(v-if='payment')
     v-alert.headline(value='true' color='success') Payment Sent!
     v-list
@@ -21,13 +22,11 @@ v-container
         v-list-tile-sub-title {{fees}}
     v-card-actions
       v-btn(@click='clearPayment') 
-        v-icon mdi-flash
+        v-icon arrow_back
         span Send Another
   template(v-else)
-    v-alert.headline(v-if='error' value='error' color='error') {{error}}
-    v-text-field(label='To:' dark v-model='to' clearable multi-line auto-grow rows='1' hide-details)
-    v-text-field(v-if='address' label='Amount:' dark v-model='amount')
-    v-text-field(v-if='address' label='Fees:' dark v-model='fees')
+    v-text-field.mt-2(label='To:' dark v-model='to' clearable multi-line auto-grow rows='1' hide-details)
+    v-text-field.mt-4(v-if='address' label='Amount:' dark v-model='amount' autofocus)
     v-list.elevation-1(v-if='payobj')
       v-list-tile
         v-list-tile-title Amount
@@ -52,13 +51,8 @@ export default {
   components: { Lightning },
 
   filters: {
-    trim (w) {
-      return w.substring(0, 12)
-    },
-
-    format (d) {
-      return date.format(d, 'MMM D, YYYY HH:mm')
-    },
+    trim: w => w.substring(0, 12),
+    format: d => date.format(d, 'MMM D, YYYY HH:mm'),
   },
 
   computed: {
@@ -83,7 +77,7 @@ export default {
     },
 
     amount: {
-      get: mapGetters(['amount']),
+      get () { return this.$store.getters.amount },
       set (v) { this.$store.commit('SET_AMOUNT', v) },
     },
 
@@ -93,6 +87,7 @@ export default {
         if (this.address) return this.address
       },
       set (v) {
+        if (!v) v = ''
         this.$store.dispatch('handleScan', v.trim())
       },
     }, 

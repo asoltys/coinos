@@ -138,12 +138,16 @@ export default new Vuex.Store({
           let res = await Vue.axios.post('/sendPayment', { payreq })
           commit('SET_PAYMENT', res.data)
         } catch (e) {
-          commit('SET_ERROR', e)
+          commit('SET_ERROR', e.response.data)
         } 
       }
       else if (address) {
-        let res = await Vue.axios.post('/sendCoins', { address, amount })
-        commit('SET_PAYMENT', res.data)
+        try {
+          let res = await Vue.axios.post('/sendCoins', { address, amount })
+          commit('SET_PAYMENT', res.data)
+        } catch (e) {
+          commit('SET_ERROR', e.response.data)
+        } 
       }
 
       dispatch('getUser')
@@ -154,6 +158,8 @@ export default new Vuex.Store({
       commit('SET_ADDRESS', '')
       commit('SET_PAYMENT', null)
       commit('SET_PAYOBJ', null)
+      commit('SET_AMOUNT', null)
+      commit('SET_ERROR', null)
     },
 
     async addInvoice ({ commit }, amount) {
