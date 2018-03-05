@@ -1,6 +1,6 @@
 <template lang="pug">
   v-app(dark)
-    v-toolbar(app dark color="black" clipped-left fixed)
+    v-toolbar(absolute app dark color="black" clipped-left fixed)
       v-toolbar-side-icon(v-if='user' @click.stop='toggleMenu')
       v-toolbar-title(dark @click='$router.push("/")')
         img.logo(src='static/img/coinos_logo.png')
@@ -9,18 +9,19 @@
         v-icon(color='yellow') mdi-flash
       v-btn(icon @click='$router.push("/logout")')
         v-icon power_settings_new
-    v-navigation-drawer(color='black' v-if='user' v-model='drawer' enable-resize-watcher app clipped)
-      v-list.secondary
-        template(v-for='i in menu') 
-          v-list-tile(:key='i.route' ripple @click='$router.push(i.route)')
-            v-list-tile-action
-              v-btn(icon ripple)
-                v-icon {{i.icon}}
-            v-list-tile-content {{i.content}}
     v-content
-      v-container.pl-2(fluid)
-        router-view
-    v-footer(app)
+      v-container.pl-2
+        v-navigation-drawer(color='black' v-if='user' v-model='drawer' enable-resize-watcher app clipped absolute hide-overlay mobile-break-point='10000')
+          v-list.secondary
+            template(v-for='i in menu') 
+              v-list-tile(:key='i.route' ripple @click='$router.push(i.route)')
+                v-list-tile-action
+                  v-btn(icon ripple)
+                    v-icon {{i.icon}}
+                v-list-tile-content {{i.content}}
+        transition(name="fade" mode="out-in" appear)
+          router-view
+    v-footer(app absolute)
       v-bottom-nav(absolute style="height: 60px; margin-bottom: 55px")
         v-btn(flat dark @click="$router.push('/receive')")
           span Receive
@@ -144,4 +145,10 @@ img.logo
 img.fx
   width 30px
   height 30px
+
+.fade-enter-active
+  transition: opacity 0.3s
+
+.fade-enter
+  opacity: 0
 </style>
