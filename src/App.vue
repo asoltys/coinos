@@ -7,10 +7,10 @@
       v-spacer
       v-btn(icon @click='$router.push("/about")')
         v-icon(color='yellow') mdi-flash
-      v-btn(icon @click='$router.push("/logout")')
+      v-btn(v-if='user' icon @click='$router.push("/logout")')
         v-icon power_settings_new
     v-content
-      v-container.pl-2
+      v-container.pl-3
         v-navigation-drawer(color='black' v-if='user' v-model='drawer' enable-resize-watcher app clipped absolute hide-overlay mobile-break-point='10000')
           v-list.secondary
             template(v-for='i in menu') 
@@ -19,19 +19,28 @@
                   v-btn(icon ripple)
                     v-icon {{i.icon}}
                 v-list-tile-content {{i.content}}
+        v-alert(v-if='error' color='error' v-model='error' value='error' dismissible transition='scale-transition') {{error}}
         transition(name="fade" mode="out-in" appear)
           router-view
     v-footer(app absolute)
-      v-bottom-nav(absolute style="height: 60px; margin-bottom: 55px")
+      v-bottom-nav(v-if='user' absolute style="height: 60px; margin-bottom: 55px")
         v-btn(flat dark @click="$router.push('/receive')")
           span Receive
           v-icon mdi-arrow-left-bold-box
         v-btn(flat dark @click="scan" v-if='native()')
           span Scan
           v-icon camera_alt
+        v-btn(flat dark @click="$router.push('/home')")
+          span Home
+          v-icon home
         v-btn(flat dark @click="$router.push('/send')")
           span Send
           v-icon mdi-send
+      v-layout(v-else style="margin-bottom: 100px")
+        v-flex.text-xs-center(v-if='!native()')
+          v-btn(@click='download')
+            v-icon.mr-1(color='green') dashboard
+            span Download Android App
 </template>
 
 <script>
@@ -40,15 +49,13 @@ import { mapGetters, mapActions } from 'vuex'
 export default {
   data () {
     return {
+      applink: false,
       drawer: false,
       menu: [
-        { route: 'home', content: 'Deposit', icon: 'assignment_returned' },
+        { route: 'home', content: 'Home', icon: 'assignment_returned' },
         { route: 'send', content: 'Send', icon: 'mdi-send' },
         { route: 'receive', content: 'Receive', icon: 'mdi-arrow-left-bold-box' },
-        { route: 'withdraw', content: 'Withdraw', icon: 'eject' },
         { route: 'payments', content: 'Payments', icon: 'assignment' },
-        { route: 'account', content: 'Account', icon: 'person' },
-        { route: 'settings', content: 'Settings', icon: 'settings' },
         { route: 'logout', content: 'Logout', icon: 'power_settings_new' },
       ],
     }
@@ -56,16 +63,25 @@ export default {
 
   computed: {
     ...mapGetters(['user']),
+    error: {
+      get () { return this.$store.getters.error },
+      set (v) { this.$store.commit('SET_ERROR', v) },
+    },
   }, 
 
   watch: {
     $route (route) {
+      this.$store.commit('SET_ERROR', '')
       this.authenticate(route)
     },
   },
 
   methods: {
     ...mapActions(['handleScan']),
+
+    download () {
+      window.location = '/static/coinos.apk'
+    },
 
     scantest () {
       // this.handleScan('lntb15920n1pdfv5mqpp5ygalsdx3g0q24t8sgqv3lwcw8a64c4cejrnqftluljcg5v7x03qsdqqcqzysjgtcyyg03ukffsk29u77a2pgp9jw2f5xsj3q2wnteph62jwk5gj9gs6k8qc467s3d5h58d6gshhk9g7v8axyl4hg6eucv3vk7v2zxpcq8e4222')

@@ -1,8 +1,7 @@
 <template lang="pug">
 v-layout
   v-flex(xs12)
-    v-alert(v-if='message' color='error' value='message') {{message}}
-    v-alert.black--text(color='yellow' icon='info' v-if='logout' value='logout') You've logged out 
+    v-alert.black--text(color='yellow' icon='info' v-model='showlogout' value='showlogout' dismissible transition='scale-transition') You've logged out 
     v-form(@submit='submit')
       v-text-field(label="Username" v-model='user.username' autofocus dark)
       v-text-field(label="Password" v-model='user.password' type='password')
@@ -11,7 +10,7 @@ v-layout
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
   props: {
@@ -24,24 +23,22 @@ export default {
   data () {
     return {
       user: {
-        username: 'bob',
-        password: 'pw',
+        username: '',
+        password: '',
       },
-      message: '',
+      showlogout: false,
     }
   },
+
+  computed: mapGetters(['error']),
 
   methods: {
     ...mapActions(['login']),
 
-    async submit (e) {
+    submit (e) {
       e.preventDefault()
-      try {
-        this.login(this.user)
-      } catch (e) {
-        this.message = 'Login failed'
-        console.log(e)
-      }
+      this.login(this.user)
+      this.showlogout = false
     },
   },
 
@@ -49,6 +46,10 @@ export default {
     if (this.logout) {
       this.$store.commit('SET_USER', null)
     }
+  },
+
+  mounted () {
+    this.showlogout = this.logout
   },
 }
 </script>

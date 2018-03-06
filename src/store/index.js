@@ -38,8 +38,14 @@ export default new Vuex.Store({
   },
   actions: {
     async login ({ commit, state, dispatch }, user) {
-      let res = await Vue.axios.post('/login', user)
-      await commit('SET_USER', res.data.user)
+      try {
+        let res = await Vue.axios.post('/login', user)
+        await commit('SET_USER', res.data.user)
+      } catch (e) {
+        commit('SET_ERROR', 'Login failed')
+        return
+      }
+
       dispatch('getUser')
       commit('SET_TOKEN', readCookie('token'))
       router.push('/home')
@@ -67,16 +73,30 @@ export default new Vuex.Store({
       })
     },
 
-    async createUser ({ dispatch }, user) {
-      delete user['passconfirm']
-      await apolloClient.mutate({
-        mutation: createUser,
-        variables: {
-          user: user,
-        },
-      })
+    async createUser ({ commit, dispatch }, user) {
+      if (user.password !== user.passconfirm) {
+        commit('SET_ERROR', 'Passwords don\'t match')
+        return
+      }
 
-      dispatch('login', user)
+      delete user['passconfirm']
+
+      try {
+        await apolloClient.mutate({
+          mutation: createUser,
+          variables: {
+            user: user,
+          },
+        })
+
+        dispatch('login', user)
+      } catch (e) { 
+        if (e.graphQLErrors) {
+          commit('SET_ERROR', e.graphQLErrors.map(e => e.message).join('\n'))
+        } else {
+          commit('SET_ERROR', 'Registration failed') 
+        }
+      }
     },
 
     /* eslint-disable-next-line */
@@ -121,9 +141,11 @@ export default new Vuex.Store({
       dispatch('getUser')
     },
 
-    async openChannel ({ dispatch }) {
-      await Vue.axios.post('/openchannel')
-      dispatch('getUser')
+    async openChannel ({ commit, dispatch }) {
+      try {
+        await Vue.axios.post('/openchannel')
+        dispatch('getUser')
+      } catch (e) { commit('SET_ERROR', e.response.data) } 
     },
 
     async closeChannels ({ dispatch }) {

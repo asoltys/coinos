@@ -7,7 +7,6 @@ v-container
   v-chip.body-2(label)
     v-icon(left) mdi-flash
     | {{user.channelbalance}}
-  v-alert.headline(v-if='error' value='error' color='error') {{error}}
   v-card(v-if='payment')
     v-alert.headline(value='true' color='success') Payment Sent!
     v-list
@@ -25,7 +24,7 @@ v-container
         v-icon arrow_back
         span Send Another
   template(v-else)
-    v-text-field.mt-2(label='To:' dark v-model='to' clearable multi-line auto-grow rows='1' hide-details)
+    v-text-field.mt-2(label='To:' dark v-model='to' clearable multi-line auto-grow rows='1' hide-details autofocus)
     v-text-field.mt-4(v-if='address' label='Amount:' dark v-model='amount' autofocus)
     v-list.elevation-1(v-if='payobj')
       v-list-tile
@@ -56,7 +55,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['address', 'error', 'fees', 'balance', 'user', 'payment', 'payreq', 'payobj']),
+    ...mapGetters(['address', 'fees', 'balance', 'user', 'payment', 'payreq', 'payobj']),
 
     total () {
       let p = this.payment

@@ -11,6 +11,7 @@
         v-alert(value='received' color='success') Received {{received}} satoshis
       v-layout(v-else)
         v-flex(xs12)
+          h2.text-xs-center.yellow--text Requesting {{total}} Satoshis
           v-card.pa-3.text-xs-center
             div.code(v-if='showcode') {{payreq}}
             canvas#qr(v-show='!showcode')
@@ -20,7 +21,7 @@
             v-btn(:data-clipboard-text='payreq' @click.native="snackbar = true")
               v-icon content_copy
               span Copy
-      v-btn(@click='generated = false') 
+      v-btn(@click='generated = false; amount = 0') 
         v-icon.mr-1 arrow_back
         span Back
     template(v-else)
@@ -28,15 +29,15 @@
         v-flex(xs9)
           numpad(:currency='user.currency', :amount='amount', @update='a => amount = a')
         v-flex(xs3)
-          tippad(:amount='amount', @update='t => tip = t')
+          tippad(:amount='parseInt(amount)', @update='t => tip = t')
       div(v-if='valid')
         span.display-1 {{total}} 
         span.title satoshis
         v-layout
           v-flex.text-xs-center(xs12)
             v-btn(@click='generate') 
-              v-icon.mr-1 send
-              span Generate Invoice
+              v-icon.mr-1.yellow--text mdi-flash
+              span GO
       v-alert(v-else value='!valid') Can't request more than 0.04294967 BTC
 </template>
 
