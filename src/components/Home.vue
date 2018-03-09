@@ -6,7 +6,7 @@ div
       v-card.pa-3.text-xs-center
         canvas#qr
         code.black--text.ma-1 {{user.address}}
-        v-btn(:data-clipboard-text='user.address' @click.native="snackbar = true")
+        v-btn(:data-clipboard-text='user.address' @click.native="snack('Copied to Clipboard')")
           v-icon.mr-1 content_copy
           span Copy
         v-btn(@click='faucet' :disabled='user.balance > 200000 || user.channelbalance > 300000')
@@ -46,7 +46,7 @@ export default {
   }, 
 
   methods: {
-    ...mapActions(['openChannel', 'closeChannels', 'getUser', 'faucet']),
+    ...mapActions(['openChannel', 'closeChannels', 'getUser', 'faucet', 'snack']),
     max () {
       this.funding_amt = this.user.balance
     },

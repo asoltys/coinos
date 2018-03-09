@@ -9,6 +9,9 @@
         v-icon(color='yellow') mdi-flash
       v-btn(v-if='user' icon @click='$router.push("/logout")')
         v-icon power_settings_new
+    v-snackbar.yellow--text(v-model="snack" :timeout="1000" top)
+      v-icon info
+      span {{message}}
     v-content.pl-3.pr-3.mt-3
       v-navigation-drawer(color='black' v-if='user' v-model='drawer' enable-resize-watcher app clipped absolute hide-overlay mobile-break-point='10000')
         v-list.secondary
@@ -60,6 +63,14 @@ export default {
     error: {
       get () { return this.$store.getters.error },
       set (v) { this.$store.commit('SET_ERROR', v) },
+    },
+    message: {
+      get () { return this.$store.getters.snack },
+      set (v) { this.$store.commit('SET_SNACK', v) },
+    },
+    snack: {
+      get () { return this.message },
+      set (v) { if (!v) this.message = v },
     },
   }, 
 

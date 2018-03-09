@@ -32,10 +32,11 @@ export default new Vuex.Store({
     rate: 0,
     received: 0,
     scan: '',
-    transactions: {},
-    token: '',
-    user: null,
+    snack: '',
     socket: null,
+    token: '',
+    transactions: {},
+    user: null,
   },
   actions: {
     async login ({ commit, state, dispatch }, user) {
@@ -59,6 +60,7 @@ export default new Vuex.Store({
             let address = bitcoin.address.fromOutputScript(o.script, bitcoin.networks.testnet)
             if (address === state.user.address) {
               commit('SET_RECEIVED', o.value)
+              dispatch('snack', `Received ${o.value} satoshis`)
             } 
           } catch(e) { /* */ }
         })
@@ -69,6 +71,7 @@ export default new Vuex.Store({
       state.socket.on('invoice', data => {
         l('received', data)
         commit('SET_RECEIVED', data.value)
+        dispatch('snack', `Received ${data.value} satoshis`)
       })
     },
 
@@ -162,9 +165,7 @@ export default new Vuex.Store({
       let { address, amount, payreq } = getters
       if (payreq) {
         try {
-          l('sending payment')
           let res = await Vue.axios.post('/sendPayment', { payreq })
-          l('payment sent')
           commit('SET_PAYMENT', res.data)
         } catch (e) {
           commit('SET_ERROR', e.response.data)
@@ -220,6 +221,10 @@ export default new Vuex.Store({
         router.push('/send')
       } catch (e) { /**/ }
     },
+
+    async snack ({ commit }, msg) {
+      commit('SET_SNACK', msg)
+    }, 
   },
   mutations: {
     SET_ADDRESS (s, v) { s.address = v },
@@ -233,6 +238,7 @@ export default new Vuex.Store({
     SET_RATE (s, v) { s.rate = v },
     SET_RECEIVED (s, v) { s.received = v },
     SET_SCAN (s, v) { s.scan = v },
+    SET_SNACK (s, v) { s.snack = v },
     SET_SOCKET (s, v) { s.socket = v },
     SET_TOKEN (s, v) { s.token = v },
     SET_TRANSACTIONS (s, v) { s.transactions = v },
@@ -264,6 +270,7 @@ export default new Vuex.Store({
     payreq: s => s.payreq,
     rate: s => s.rate,
     received: s => s.received,
+    snack: s => s.snack,
     token: s => s.token,
     transactions: s => s.transactions,
   },

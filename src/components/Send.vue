@@ -15,7 +15,7 @@ div
         v-list-tile-sub-title {{payment.txid}}
       v-list-tile
         v-list-tile-title Amount
-        v-list-tile-sub-title {{amount}}
+        v-list-tile-sub-title {{total}}
       v-list-tile
         v-list-tile-title Fees
         v-list-tile-sub-title {{fees}}

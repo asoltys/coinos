@@ -1,9 +1,6 @@
 <template lang="pug">
   div
     HCE(:accountNumber='total')
-    v-snackbar(:bottom="true" v-model="snackbar" :timeout="1500")
-      v-icon info
-      span Copied to Clipboard
     template(v-if='generated')
       template(v-if='received')
         video(v-show='!finished' width='100%' ref='connect' @ended='finish')
@@ -18,7 +15,7 @@
             v-btn(@click.native="showcode = !showcode")
               v-icon code
               span {{code}}
-            v-btn(:data-clipboard-text='payreq' @click.native="snackbar = true")
+            v-btn(:data-clipboard-text='payreq' @click.native="snack('Copied to Clipboard')")
               v-icon content_copy
               span Copy
       v-btn(@click='generated = false; amount = 0') 
@@ -66,7 +63,6 @@ export default {
       tip: 0,
       address: '1234',
       timeout: null,
-      snackbar: false,
       generated: false,
       showcode: false,
       finished: false,
@@ -81,7 +77,7 @@ export default {
     }, 
 
     total () {
-      this.$store.commit('SET_RECEIVED', 0)
+      // this.$store.commit('SET_RECEIVED', 0)
       let total = (f(this.amount) + f(this.tip)) / this.rate
       return parseInt(total * 100000000)
     },
@@ -94,11 +90,13 @@ export default {
   watch: {
     received () {
       this.finished = false
-      this.$nextTick(() => this.$refs.connect.play())
+      this.$nextTick(() => this.$refs.connect ? this.$refs.connect.play() : '')
     },
   },
 
   methods: {
+    ...mapActions(['addInvoice', 'getRates', 'snack', 'clearPayment']),
+
     async generate () {
       this.$store.commit('SET_RECEIVED', 0)
       this.generated = true
@@ -110,10 +108,10 @@ export default {
     finish () {
       this.finished = true
     },
-
-    ...mapActions(['addInvoice', 'getRates']),
   },
+
   mounted () {
+    this.$store.commit('SET_RECEIVED', 0)
     new Clipboard('.btn')
     this.getRates()
   },
