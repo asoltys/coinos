@@ -29,6 +29,7 @@ export default new Vuex.Store({
     payment: null,
     payobj: null,
     payreq: '',
+    rate: 0,
     received: 0,
     scan: '',
     transactions: {},
@@ -52,9 +53,6 @@ export default new Vuex.Store({
 
       commit('SET_SOCKET', socketio(process.env.SOCKETIO))
 
-      state.socket.on('connection', data => l(data))
-      state.socket.on('success', data => l(data))
-
       state.socket.on('tx', data => {
         bitcoin.Transaction.fromHex(data).outs.map(o => {
           try {
@@ -69,6 +67,7 @@ export default new Vuex.Store({
       })
 
       state.socket.on('invoice', data => {
+        l('received', data)
         commit('SET_RECEIVED', data.value)
       })
     },
@@ -130,6 +129,11 @@ export default new Vuex.Store({
       commit('SET_TRANSACTIONS', res.data.transactions)
     },
 
+    async getRates ({ commit }) {
+      let res = await Vue.axios('/rates')
+      commit('SET_RATE', res.data.ask)
+    },
+
     async getBalance ({ commit }) {
       let res = await Vue.axios.get('/balance')
 
@@ -142,6 +146,7 @@ export default new Vuex.Store({
     },
 
     async openChannel ({ commit, dispatch }) {
+      dispatch('clearPayment')
       try {
         await Vue.axios.post('/openchannel')
         dispatch('getUser')
@@ -157,7 +162,9 @@ export default new Vuex.Store({
       let { address, amount, payreq } = getters
       if (payreq) {
         try {
+          l('sending payment')
           let res = await Vue.axios.post('/sendPayment', { payreq })
+          l('payment sent')
           commit('SET_PAYMENT', res.data)
         } catch (e) {
           commit('SET_ERROR', e.response.data)
@@ -223,6 +230,7 @@ export default new Vuex.Store({
     SET_PAYMENT (s, v) { s.payment = v },
     SET_PAYOBJ (s, v) { s.payobj = v },
     SET_PAYREQ (s, v) { s.payreq = v },
+    SET_RATE (s, v) { s.rate = v },
     SET_RECEIVED (s, v) { s.received = v },
     SET_SCAN (s, v) { s.scan = v },
     SET_SOCKET (s, v) { s.socket = v },
@@ -254,6 +262,7 @@ export default new Vuex.Store({
     payment: s => s.payment,
     payobj: s => s.payobj,
     payreq: s => s.payreq,
+    rate: s => s.rate,
     received: s => s.received,
     token: s => s.token,
     transactions: s => s.transactions,

@@ -1,5 +1,5 @@
 <template lang="pug">
-v-container
+div
   h3 Balances
   v-chip.body-2(label)
     v-icon(left) assignment
@@ -15,7 +15,7 @@ v-container
         v-list-tile-sub-title {{payment.txid}}
       v-list-tile
         v-list-tile-title Amount
-        v-list-tile-sub-title {{total}}
+        v-list-tile-sub-title {{amount}}
       v-list-tile
         v-list-tile-title Fees
         v-list-tile-sub-title {{fees}}
@@ -24,18 +24,21 @@ v-container
         v-icon arrow_back
         span Send Another
   template(v-else)
-    v-text-field.mt-2(label='To:' dark v-model='to' clearable multi-line auto-grow rows='1' hide-details autofocus)
+    v-text-field.mt-2(v-if='!payobj' label='To:' dark v-model='to' clearable multi-line auto-grow rows='1' hide-details autofocus)
     v-text-field.mt-4(v-if='address' label='Amount:' dark v-model='amount' autofocus)
-    v-list.elevation-1(v-if='payobj')
+    v-list.elevation-1.ma-2(v-if='payobj')
       v-list-tile
         v-list-tile-title Amount
         v-list-tile-sub-title {{payobj.satoshis}}
       v-list-tile
         v-list-tile-title Recipient
-        v-list-tile-sub-title {{payobj.payeeNodeKey | trim}}
+        v-list-tile-sub-title {{payobj.payeeNodeKey}}
       v-list-tile
         v-list-tile-title Date
         v-list-tile-sub-title {{payobj.timestampString | format}}
+    v-btn(v-if='payobj' @click='clearPayment')
+      v-icon arrow_back
+      span Back
     v-btn(color="green" dark @click='sendPayment')
       v-icon.mr-1 send
       span Pay

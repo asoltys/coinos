@@ -9,19 +9,18 @@
         v-icon(color='yellow') mdi-flash
       v-btn(v-if='user' icon @click='$router.push("/logout")')
         v-icon power_settings_new
-    v-content
-      v-container.pl-3
-        v-navigation-drawer(color='black' v-if='user' v-model='drawer' enable-resize-watcher app clipped absolute hide-overlay mobile-break-point='10000')
-          v-list.secondary
-            template(v-for='i in menu') 
-              v-list-tile(:key='i.route' ripple @click='$router.push(i.route)')
-                v-list-tile-action
-                  v-btn(icon ripple)
-                    v-icon {{i.icon}}
-                v-list-tile-content {{i.content}}
-        v-alert(v-if='error' color='error' v-model='error' value='error' dismissible transition='scale-transition') {{error}}
-        transition(name="fade" mode="out-in" appear)
-          router-view
+    v-content.pl-3.pr-3.mt-3
+      v-navigation-drawer(color='black' v-if='user' v-model='drawer' enable-resize-watcher app clipped absolute hide-overlay mobile-break-point='10000')
+        v-list.secondary
+          template(v-for='i in menu') 
+            v-list-tile(:key='i.route' ripple @click='$router.push(i.route)')
+              v-list-tile-action
+                v-btn(icon ripple)
+                  v-icon {{i.icon}}
+              v-list-tile-content {{i.content}}
+      v-alert(v-if='error' color='error' v-model='error' value='error' dismissible transition='scale-transition') {{error}}
+      transition(name="fade" mode="out-in" appear)
+        router-view
     v-footer(app absolute)
       v-bottom-nav(v-if='user' absolute style="height: 60px; margin-bottom: 55px")
         v-btn(flat dark @click="$router.push('/receive')")
@@ -36,11 +35,6 @@
         v-btn(flat dark @click="$router.push('/send')")
           span Send
           v-icon mdi-send
-      v-layout(v-else style="margin-bottom: 100px")
-        v-flex.text-xs-center(v-if='!native()')
-          v-btn(@click='download')
-            v-icon.mr-1(color='green') dashboard
-            span Download Android App
 </template>
 
 <script>
@@ -78,10 +72,6 @@ export default {
 
   methods: {
     ...mapActions(['handleScan']),
-
-    download () {
-      window.location = '/static/coinos.apk'
-    },
 
     scantest () {
       // this.handleScan('lntb15920n1pdfv5mqpp5ygalsdx3g0q24t8sgqv3lwcw8a64c4cejrnqftluljcg5v7x03qsdqqcqzysjgtcyyg03ukffsk29u77a2pgp9jw2f5xsj3q2wnteph62jwk5gj9gs6k8qc467s3d5h58d6gshhk9g7v8axyl4hg6eucv3vk7v2zxpcq8e4222')

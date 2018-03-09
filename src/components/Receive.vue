@@ -6,12 +6,12 @@
       span Copied to Clipboard
     template(v-if='generated')
       template(v-if='received')
-        video(v-if='!finished' width='100%' ref='connect' @ended='finish')
+        video(v-show='!finished' width='100%' ref='connect' @ended='finish')
           source(src="static/connect.mp4" type="video/mp4")
         v-alert(value='received' color='success') Received {{received}} satoshis
       v-layout(v-else)
         v-flex(xs12)
-          h2.text-xs-center.yellow--text Requesting {{total}} Satoshis
+          h2.text-xs-center Requesting {{total}} Satoshis
           v-card.pa-3.text-xs-center
             div.code(v-if='showcode') {{payreq}}
             canvas#qr(v-show='!showcode')
@@ -27,22 +27,25 @@
     template(v-else)
       v-layout(style="max-width: 340px")
         v-flex(xs9)
-          numpad(:currency='user.currency', :amount='amount', @update='a => amount = a')
+          numpad(:currency='user.currency', :amount='parseFloat(amount)', @update='a => amount = a')
         v-flex(xs3)
-          tippad(:amount='parseInt(amount)', @update='t => tip = t')
+          tippad(:amount='parseFloat(amount)', @update='t => tip = t')
       div(v-if='valid')
-        span.display-1 {{total}} 
-        span.title satoshis
+        v-layout
+          v-flex
+            span.display-1 {{total}} 
+            span.title sats
+          v-flex.text-xs-right
+            v-chip.grey.darken-4.subheading.white--text @ {{rate}} 
         v-layout
           v-flex.text-xs-center(xs12)
             v-btn(@click='generate') 
               v-icon.mr-1.yellow--text mdi-flash
               span GO
-      v-alert(v-else value='!valid') Can't request more than 0.04294967 BTC
+      v-alert(v-else value='!valid') Can't request more than 4294967 satoshis
 </template>
 
 <script>
-import axios from 'axios'
 import qr from 'qrcode'
 import numpad from './NumPad'
 import tippad from './TipPad'
@@ -61,7 +64,6 @@ export default {
       about: '',
       amount: 0,
       tip: 0,
-      rate: 0,
       address: '1234',
       timeout: null,
       snackbar: false,
@@ -72,7 +74,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['user', 'payreq', 'received']),
+    ...mapGetters(['user', 'payreq', 'rate', 'received']),
 
     code () {
       return this.showcode ? 'Show QR' : 'Show Code'
@@ -105,20 +107,15 @@ export default {
       qr.toCanvas(canvas, this.payreq, e => { if (e) console.log(e) })
     },
 
-    async loadWallet () {
-      let rates = await axios('/rates')
-      this.rate = rates.data.ask
-    },
-
     finish () {
       this.finished = true
     },
 
-    ...mapActions(['addInvoice']),
+    ...mapActions(['addInvoice', 'getRates']),
   },
   mounted () {
     new Clipboard('.btn')
-    this.loadWallet()
+    this.getRates()
   },
 }
 </script>
