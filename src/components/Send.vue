@@ -57,6 +57,13 @@ export default {
     format: d => date.format(d, 'MMM D, YYYY HH:mm'),
   },
 
+  props: {
+    clear: {
+      type: Boolean,
+      default: true,
+    },
+  },
+
   computed: {
     ...mapGetters(['address', 'fees', 'balance', 'user', 'payment', 'payreq', 'payobj']),
 
@@ -100,7 +107,7 @@ export default {
   },
 
   mounted () {
-    this.clearPayment()
+    if (this.clear) this.clearPayment()
 
     if (typeof cordova !== 'undefined') {
       console.log('listening for nfc')

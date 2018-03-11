@@ -17,7 +17,7 @@ const routes = [
   { path: '/login', component: Login, props: { logout: false } },
   { path: '/register', component: Register },
   { path: '/payments', component: Payments },
-  { path: '/send', component: Send },
+  { name: 'send', path: '/send', component: Send, props: true },
   { path: '/receive', component: Receive },
   { path: '/withdraw', component: Withdraw },
   { path: '/account', component: Account },

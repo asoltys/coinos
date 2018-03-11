@@ -9,18 +9,12 @@
         v-icon(color='yellow') mdi-flash
       v-btn(v-if='user' icon @click='$router.push("/logout")')
         v-icon power_settings_new
-    v-snackbar.yellow--text(v-model="snack" :timeout="1000" top)
+    v-snackbar.yellow--text(v-model="snack" :timeout="2000" top)
       v-icon info
       span {{message}}
     v-content.pl-3.pr-3.mt-3
       v-navigation-drawer(color='black' v-if='user' v-model='drawer' enable-resize-watcher app clipped absolute hide-overlay mobile-break-point='10000')
         v-list.secondary
-          v-list-tile(@click='$router.push("/settings")')
-            v-list-tile-action
-              v-btn(icon)
-                v-icon person
-            v-list-tile-content {{user.username}}
-          v-divider
           template(v-for='i in menu') 
             v-list-tile(:key='i.route' ripple @click='$router.push(i.route)')
               v-list-tile-action
@@ -30,12 +24,12 @@
       v-alert(v-if='error' color='error' v-model='error' value='error' dismissible transition='scale-transition') {{error}}
       transition(name="fade" mode="out-in" appear)
         router-view
-    v-footer(app absolute)
-      v-bottom-nav(v-if='user' absolute style="height: 60px; margin-bottom: 55px")
+    v-footer(app)
+      v-bottom-nav(v-if='user' absolute style="height: 56px; margin-bottom: 56px")
         v-btn(flat dark @click="$router.push('/receive')")
           span Receive
           v-icon mdi-arrow-left-bold-box
-        v-btn(flat dark @click="scan" v-if='native()')
+        v-btn(flat dark @click="scan" v-if="native()")
           span Scan
           v-icon camera_alt
         v-btn(flat dark @click="$router.push('/home')")
@@ -92,12 +86,12 @@ export default {
 
     scantest () {
       // this.handleScan('lntb15920n1pdfv5mqpp5ygalsdx3g0q24t8sgqv3lwcw8a64c4cejrnqftluljcg5v7x03qsdqqcqzysjgtcyyg03ukffsk29u77a2pgp9jw2f5xsj3q2wnteph62jwk5gj9gs6k8qc467s3d5h58d6gshhk9g7v8axyl4hg6eucv3vk7v2zxpcq8e4222')
-      // this.handleScan('3QzfswBjpeaRCpq98ui2ZUPQg3XfnPrMZJ')
-      this.handleScan('bitcoin:1BgGZ9tcN4rm9KBzDn7KprQz87SZ26SAMH?amount=20.3&label=Foobar')
+      // this.handleScan('2Mtibx7fn88YYY8agCKUECvQL1Wys8P7juo')
+      this.handleScan('bitcoin:2Mtibx7fn88YYY8agCKUECvQL1Wys8P7juo?amount=0.005&label=Foobar')
     },
 
     native () {
-      return typeof cordova !== 'undefined'
+      return typeof window.cordova !== 'undefined'
     },
 
     scan () {

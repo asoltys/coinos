@@ -203,20 +203,20 @@ export default new Vuex.Store({
         let payobj = bolt11.decode(text)
         commit('SET_PAYOBJ', payobj)
         commit('SET_PAYREQ', text)
-        router.push('/send')
+        router.push({ name: 'send', params: { clear: false } })
       } catch (e) { /**/ }
 
       try {
         let url = bip21.decode(text)
         commit('SET_ADDRESS', url.address)
-        commit('SET_AMOUNT', url.options.amount)
-        router.push('/send')
+        commit('SET_AMOUNT', url.options.amount * 100000000)
+        router.push({ name: 'send', params: { clear: false } })
       } catch (e) { /**/ } 
 
       try {
         bitcoin.address.fromBase58Check(text)
         commit('SET_ADDRESS', text)
-        router.push('/send')
+        router.push({ name: 'send', params: { clear: false } })
       } catch (e) { /**/ }
     },
 

@@ -45,7 +45,7 @@ export default {
     },
 
     native () {
-      return typeof cordova !== 'undefined'
+      return typeof window.cordova !== 'undefined'
     },
 
     submit (e) {
