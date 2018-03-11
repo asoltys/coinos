@@ -64,7 +64,7 @@ export default {
       let p = this.payment
       if (p) {
         if (p.payment_route) return p.payment_route.total_amt
-        return p.total
+        return p.amount
       }
       return 0
     },

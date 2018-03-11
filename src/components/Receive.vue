@@ -5,7 +5,7 @@
       template(v-if='received')
         video(v-show='!finished' width='100%' ref='connect' @ended='finish')
           source(src="static/connect.mp4" type="video/mp4")
-        v-alert(value='received' color='success') Received {{received}} satoshis
+        v-alert(value='received' color='success') Received {{received}} Satoshis
       v-layout(v-else)
         v-flex(xs12)
           h2.text-xs-center Requesting {{total}} Satoshis
@@ -22,18 +22,21 @@
         v-icon.mr-1 arrow_back
         span Back
     template(v-else)
-      v-layout(style="max-width: 340px")
+      v-layout(style="max-width: 380px")
         v-flex(xs9)
-          numpad(:currency='user.currency', :amount='parseFloat(amount)', @update='a => amount = a')
+          numpad(:currency='currency' :amount='parseFloat(amount)' @update='a => amount = a')
         v-flex(xs3)
-          tippad(:amount='parseFloat(amount)', @update='t => tip = t')
+          tippad(:amount='parseFloat(amount)' @update='t => tip = t')
       div(v-if='valid')
         v-layout
           v-flex
             span.display-1 {{total}} 
             span.title sats
           v-flex.text-xs-right
-            v-chip.grey.darken-4.subheading.white--text @ {{rate}} 
+            v-btn.darken-4.subheading.grey.white--text(@click='toggle' style='width: 120px') 
+              v-avatar 
+                span(v-html='symbol(currency)')
+              span {{conversion}} 
         v-layout
           v-flex.text-xs-center(xs12)
             v-btn(@click='generate') 
@@ -55,6 +58,9 @@ const f = parseFloat
 export default {
   components: { numpad, tippad, HCE, Lightning },
 
+  filters: {
+  },
+
   data () {
     return {
       message: '',
@@ -66,6 +72,7 @@ export default {
       generated: false,
       showcode: false,
       finished: false,
+      fiat: true,
     }
   },
 
@@ -85,6 +92,16 @@ export default {
     valid () {
       return this.total < 4294967
     },
+
+    currency () {
+      if (this.fiat) return this.user.currency
+      return 'sats'
+    },
+
+    conversion () {
+      if (this.fiat) return this.rate
+      return parseFloat(1 / this.rate).toFixed(6)
+    },
   },
 
   watch: {
@@ -96,6 +113,15 @@ export default {
 
   methods: {
     ...mapActions(['addInvoice', 'getRates', 'snack', 'clearPayment']),
+
+    symbol (v) {
+      if (v === 'sats') return '$'
+      return '&#x20BF'
+    },
+
+    toggle () {
+      this.fiat = !this.fiat 
+    },
 
     async generate () {
       this.$store.commit('SET_RECEIVED', 0)

@@ -1967,7 +1967,6 @@ export default {
 <style lang="stylus">
   canvas
     position relative
-    margin-left 15px
     height 250px
     width 300px
 </style>

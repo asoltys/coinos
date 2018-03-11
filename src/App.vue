@@ -15,6 +15,12 @@
     v-content.pl-3.pr-3.mt-3
       v-navigation-drawer(color='black' v-if='user' v-model='drawer' enable-resize-watcher app clipped absolute hide-overlay mobile-break-point='10000')
         v-list.secondary
+          v-list-tile(@click='$router.push("/settings")')
+            v-list-tile-action
+              v-btn(icon)
+                v-icon person
+            v-list-tile-content {{user.username}}
+          v-divider
           template(v-for='i in menu') 
             v-list-tile(:key='i.route' ripple @click='$router.push(i.route)')
               v-list-tile-action

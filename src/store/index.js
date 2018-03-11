@@ -12,8 +12,6 @@ import router from '../router'
 import bitcoin from 'bitcoinjs-lib'
 Vue.use(Vuex)
 
-const l = console.log
-
 function readCookie (n) {
   let a = `; ${document.cookie}`.match(`;\\s*${n}=([^;]+)`)
   return a ? a[1] : ''
@@ -69,8 +67,8 @@ export default new Vuex.Store({
       })
 
       state.socket.on('invoice', data => {
-        l('received', data)
         commit('SET_RECEIVED', data.value)
+        dispatch('getUser')
         dispatch('snack', `Received ${data.value} satoshis`)
       })
     },
