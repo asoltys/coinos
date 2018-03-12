@@ -1209,7 +1209,7 @@ body-parser@1.18.2:
 
 "bolt11@https://github.com/asoltys/bolt11#wip":
   version "1.0.0"
-  resolved "https://github.com/asoltys/bolt11#21a1120248ba5229ef38bcd3d71b5a2641ff5b39"
+  resolved "https://github.com/asoltys/bolt11#25c63158f3496cb727c1e8f615426ab0d69af044"
   dependencies:
     bech32 "^1.1.2"
     bitcoinjs-lib "^3.3.1"

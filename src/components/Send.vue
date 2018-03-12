@@ -39,7 +39,8 @@ div
     v-btn(v-if='payobj' @click='clearPayment')
       v-icon arrow_back
       span Back
-    v-btn(color="green" dark @click='sendPayment')
+    v-progress-linear(v-if='loading' indeterminate)
+    v-btn(v-else color="green" dark @click='sendPayment')
       v-icon.mr-1 send
       span Pay
 </template>
@@ -65,7 +66,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['address', 'fees', 'balance', 'user', 'payment', 'payreq', 'payobj']),
+    ...mapGetters(['address', 'fees', 'balance', 'loading', 'user', 'payment', 'payreq', 'payobj']),
 
     total () {
       let p = this.payment

@@ -24,6 +24,7 @@ export default new Vuex.Store({
     balance: 0,
     error: '',
     fees: 0,
+    loading: false,
     payment: null,
     payobj: null,
     payreq: '',
@@ -160,6 +161,8 @@ export default new Vuex.Store({
     },
 
     async sendPayment ({ commit, dispatch, getters }) {
+      commit('SET_LOADING', true)
+
       let { address, amount, payreq } = getters
       if (payreq) {
         try {
@@ -178,6 +181,7 @@ export default new Vuex.Store({
         } 
       }
 
+      commit('SET_LOADING', false)
       dispatch('getUser')
     },
 
@@ -200,6 +204,7 @@ export default new Vuex.Store({
       await dispatch('clearPayment')
 
       try { 
+        if (text.slice(0, 10) === 'lightning:') text = text.slice(10)
         let payobj = bolt11.decode(text)
         commit('SET_PAYOBJ', payobj)
         commit('SET_PAYREQ', text)
@@ -230,6 +235,7 @@ export default new Vuex.Store({
     SET_BALANCE (s, v) { s.balance = v },
     SET_CHANNEL_BALANCE (s, v) { Vue.set(s.user, 'channelbalance', v) },
     SET_ERROR (s, v) { s.error = v },
+    SET_LOADING (s, v) { s.loading = v },
     SET_PAYMENT (s, v) { s.payment = v },
     SET_PAYOBJ (s, v) { s.payobj = v },
     SET_PAYREQ (s, v) { s.payreq = v },
@@ -263,6 +269,7 @@ export default new Vuex.Store({
     balance: s => s.balance,
     error: s => s.error,
     fees: s => s.fees,
+    loading: s => s.loading,
     payment: s => s.payment,
     payobj: s => s.payobj,
     payreq: s => s.payreq,
