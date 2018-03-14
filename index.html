@@ -20,7 +20,7 @@
           });
         }
       }
-      </script>
+    </script>
     <style>
       #camcontrols {
         position: absolute;
@@ -59,6 +59,34 @@
         margin: 0 0 0 -150px;
       } 
 
+      #wrapper::before {
+        position: absolute; display: block; top: 0px; left: 200px; height: 100%; width: 200px; background: red; z-index: 8;
+      } 
+
+      #mask {
+        position: relative;
+        height: 0px;
+        width: 0px;
+      } 
+
+      #filler {
+        position: absolute;
+        height: 9999px;
+        width: 8000px;
+        background: rgba(20, 20, 20, 1);
+        z-index: 80;
+        left: -8000px;
+      } 
+
+      #rightfiller {
+        position: absolute;
+        height: 9999px;
+        width: 8000px;
+        background: rgba(20, 20, 20, 1);
+        z-index: 80;
+        right: -8360px;
+      } 
+
       body {
         background: #222;
       }
@@ -66,7 +94,11 @@
   </head>
   <body>
     <div style="width: 100%">
-      <div style="max-width: 420px; margin: auto">
+      <div id="wrapper" style="max-width: 360px; margin: auto; box-shadow: 0 0 0 9999px rgba(20, 20, 20, 1);">
+        <div id="mask">
+          <div id="filler"></div>
+          <div id="rightfiller"></div>
+        </div>
         <div id="app"></div>
       </div>
     </div>
