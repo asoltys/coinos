@@ -50,14 +50,14 @@ export default {
   data () {
     return {
       presets: {
-        'Last Month': {
-          from: subMonths(Date.now(), 1),
-          to: Date.now(),
-        }, 
         'Last Week': {
           from: subWeeks(Date.now(), 1),
           to: Date.now(),
         },
+        'Last Month': {
+          from: subMonths(Date.now(), 1),
+          to: Date.now(),
+        }, 
         'Last Year': {
           from: subYears(Date.now(), 1),
           to: Date.now(),
@@ -114,6 +114,7 @@ export default {
 
     decoded () {
       if (!this.transactions.length) return []
+      this.$emit('mask')
       return this.transactions
         .map(i => bolt11.decode(i.payreq))
         .filter(p => p.complete)

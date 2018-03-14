@@ -1,7 +1,8 @@
 <template lang="pug">
   div
     HCE(:accountNumber='total')
-    template(v-if='generated')
+    v-progress-linear(v-if='loading' indeterminate)
+    template(v-else-if='generated')
       template(v-if='received')
         video(v-show='!finished' width='100%' ref='connect' @ended='finish')
           source(src="static/connect.mp4" type="video/mp4")
@@ -11,7 +12,7 @@
           h2.text-xs-center Requesting {{total}} Satoshis
           v-card.pa-3.text-xs-center
             div.code(v-if='showcode') {{payreq}}
-            canvas#qr(v-show='!showcode')
+            canvas#qr(v-show='!showcode' width='100' height='100')
             v-btn(@click.native="showcode = !showcode")
               v-icon code
               span {{code}}
@@ -68,7 +69,6 @@ export default {
       amount: 0,
       tip: 0,
       address: '1234',
-      timeout: null,
       generated: false,
       showcode: false,
       finished: false,
@@ -77,7 +77,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['user', 'payreq', 'rate', 'received']),
+    ...mapGetters(['loading', 'user', 'payreq', 'rate', 'received']),
 
     code () {
       return this.showcode ? 'Show QR' : 'Show Code'
@@ -123,12 +123,23 @@ export default {
       this.fiat = !this.fiat 
     },
 
-    async generate () {
-      this.$store.commit('SET_RECEIVED', 0)
+    timeout (ms) {
+      return new Promise(resolve => setTimeout(resolve, ms))
+    },
+
+    generate () {
+      this.$store.commit('SET_LOADING', true)
       this.generated = true
-      await this.addInvoice(this.total)
-      let canvas = document.getElementById('qr')
-      qr.toCanvas(canvas, this.payreq, e => { if (e) console.log(e) })
+      this.$store.commit('SET_RECEIVED', 0)
+      this.$nextTick(async () => {
+        await this.addInvoice(this.total)
+        await this.timeout(200)
+        this.$store.commit('SET_LOADING', false)
+        this.$nextTick(() => {
+          let canvas = document.getElementById('qr')
+          qr.toCanvas(canvas, this.payreq, e => { if (e) console.log(e) })
+        })
+      })
     },
 
     finish () {
@@ -136,10 +147,13 @@ export default {
     },
   },
 
-  mounted () {
+  async mounted () {
+    this.$store.commit('SET_LOADING', true)
     this.$store.commit('SET_RECEIVED', 0)
     new Clipboard('.btn')
-    this.getRates()
+    await this.getRates()
+    await this.timeout(50)
+    this.$nextTick(() => this.$store.commit('SET_LOADING', false))
   },
 }
 </script>

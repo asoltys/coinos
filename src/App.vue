@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-app(dark)
+  v-app(dark @mask='setMasks')
     v-toolbar(absolute app dark color="black" clipped-left fixed)
       v-toolbar-side-icon(v-if='user' @click.stop='toggleMenu')
       v-toolbar-title(dark @click='$router.push("/")')
@@ -96,8 +96,19 @@ export default {
     },
 
     setMasks () {
-      document.getElementById('filler').style.height = window.innerHeight
-      document.getElementById('rightfiller').style.height = window.innerHeight
+      console.log('masking')
+      let body = document.body, html = document.documentElement
+      let height = Math.max(
+        body.scrollHeight, 
+        body.offsetHeight, 
+        html.clientHeight, 
+        html.scrollHeight, 
+        html.offsetHeight)
+
+      console.log(height)
+
+      document.getElementById('filler').style.height = height
+      document.getElementById('rightfiller').style.height = height
     },
 
     scantest () {
