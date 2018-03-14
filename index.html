@@ -10,16 +10,6 @@
     <link href="https://unpkg.com/vuetify/dist/vuetify.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js"></script>
     <script>
-      window.onload = function () {
-        if (typeof window.cordova !== 'undefined') {
-          document.getElementById("cancel").addEventListener("click", function(e) {
-            console.log('meow')
-            window.QRScanner.cancelScan(function(status){
-              console.log(status);
-            });
-          });
-        }
-      }
     </script>
     <style>
       #camcontrols {

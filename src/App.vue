@@ -84,6 +84,22 @@ export default {
   methods: {
     ...mapActions(['handleScan']),
 
+    addEvent (object, type, callback) {
+      if (object == null || typeof(object) == 'undefined') return
+      if (object.addEventListener) {
+        object.addEventListener(type, callback, false)
+      } else if (object.attachEvent) {
+        object.attachEvent('on' + type, callback)
+      } else {
+        object['on' + type] = callback
+      }
+    },
+
+    setMasks () {
+      document.getElementById('filler').style.height = window.innerHeight
+      document.getElementById('rightfiller').style.height = window.innerHeight
+    },
+
     scantest () {
       // this.handleScan('lntb15920n1pdfv5mqpp5ygalsdx3g0q24t8sgqv3lwcw8a64c4cejrnqftluljcg5v7x03qsdqqcqzysjgtcyyg03ukffsk29u77a2pgp9jw2f5xsj3q2wnteph62jwk5gj9gs6k8qc467s3d5h58d6gshhk9g7v8axyl4hg6eucv3vk7v2zxpcq8e4222')
       // this.handleScan('2Mtibx7fn88YYY8agCKUECvQL1Wys8P7juo')
@@ -135,12 +151,19 @@ export default {
 
   async created () {
     this.authenticate(this.$route)
-  },
 
-  async mounted () {
-    document.getElementById('filler').style.height = window.innerHeight
-    document.getElementById('rightfiller').style.height = window.innerHeight
-  } 
+    this.addEvent(window, 'load', function () {
+      this.setMasks()
+
+      if (typeof window.cordova !== 'undefined') {
+        document.getElementById('cancel').addEventListener('click', () => {
+          window.QRScanner.cancelScan(status => { console.log(status) })
+        })
+      }
+    })
+
+    this.addEvent(window, 'resize', this.setMasks)
+  },
 }
 </script> 
 
