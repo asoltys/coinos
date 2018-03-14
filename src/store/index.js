@@ -110,12 +110,9 @@ export default new Vuex.Store({
       })
     },
 
-    async getUser ({ commit, state }) {
+    async getUser ({ commit }) {
       let res = await apolloClient.query({
         query: getUserQuery,
-        variables: {
-          username: state.user.username,
-        },
         fetchPolicy: 'network-only',
       })
 
@@ -128,7 +125,7 @@ export default new Vuex.Store({
         fetchPolicy: 'network-only',
       })
 
-      commit('SET_TRANSACTIONS', res.data.transactions)
+      commit('SET_TRANSACTIONS', res.data.invoices)
     },
 
     async getRates ({ commit }) {

@@ -83,7 +83,7 @@ export default {
 
 
 <style lang="stylus">
-  .numpad .btn {
-    min-width: 78px;
-  }
+  .numpad .btn
+    min-width 74px
+    margin 5 10px 5 0px
 </style>

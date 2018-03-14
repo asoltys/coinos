@@ -152,15 +152,13 @@ export default {
   async created () {
     this.authenticate(this.$route)
 
-    this.addEvent(window, 'load', function () {
-      this.setMasks()
+    this.setMasks()
 
-      if (typeof window.cordova !== 'undefined') {
-        document.getElementById('cancel').addEventListener('click', () => {
-          window.QRScanner.cancelScan(status => { console.log(status) })
-        })
-      }
-    })
+    if (typeof window.cordova !== 'undefined') {
+      document.getElementById('cancel').addEventListener('click', () => {
+        window.QRScanner.cancelScan(status => { console.log(status) })
+      })
+    }
 
     this.addEvent(window, 'resize', this.setMasks)
   },

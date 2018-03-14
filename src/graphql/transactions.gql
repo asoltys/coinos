@@ -1,8 +1,6 @@
-query transactions {
-  transactions {
-    hash,
-    date,
+query invoices {
+  invoices {
     rate,
-    amount,
+    payreq,
   }
 }

@@ -1,5 +1,5 @@
 <template lang="pug">
-div
+.tippad
   span.display-1 {{tip}}
   v-layout
     v-flex
@@ -33,3 +33,10 @@ export default {
   },
 }
 </script>
+
+<style lang="stylus" scoped>
+  .tippad .btn
+    min-width 74px
+    margin 5px 5px 5px 0
+</style>
+

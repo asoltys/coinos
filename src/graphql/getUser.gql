@@ -1,5 +1,5 @@
-query users ($username: String!) {
-  users(where: { username: $username }) {
+query users {
+  users {
     username,
     balance,
     channel,
