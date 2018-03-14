@@ -13,7 +13,7 @@
       v-icon info
       span {{message}}
     v-content.pl-3.pr-3.mt-3
-      v-navigation-drawer(color='black' v-if='user' v-model='drawer' enable-resize-watcher app clipped absolute hide-overlay mobile-break-point='10000')
+      v-navigation-drawer(color='black' v-if='user' v-model='drawer' enable-resize-watcher app clipped absolute hide-overlay mobile-break-point='10000' width='200')
         v-list.secondary
           template(v-for='i in menu') 
             v-list-tile(:key='i.route' ripple @click='$router.push(i.route)')
@@ -29,7 +29,7 @@
         v-btn(flat dark @click="$router.push('/receive')")
           span Receive
           v-icon mdi-arrow-left-bold-box
-        v-btn(flat dark @click="scan" v-if="native()")
+        v-btn(flat dark @click="scan" v-if='native()')
           span Scan
           v-icon camera_alt
         v-btn(flat dark @click="$router.push('/home')")
@@ -136,6 +136,11 @@ export default {
   async created () {
     this.authenticate(this.$route)
   },
+
+  async mounted () {
+    document.getElementById('filler').style.height = window.innerHeight
+    document.getElementById('rightfiller').style.height = window.innerHeight
+  } 
 }
 </script> 
 
@@ -168,4 +173,7 @@ img.fx
 
 .fade-enter
   opacity: 0
+
+.bottom-nav .btn
+  width 88px
 </style>
