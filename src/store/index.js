@@ -3,7 +3,7 @@ import socketio from 'socket.io-client'
 import Vue from 'vue'
 import Vuex from 'vuex'
 import getUserQuery from '../graphql/getUser.gql'
-import transactionsQuery from '../graphql/transactions.gql'
+import paymentsQuery from '../graphql/getPayments.gql'
 import createUser from '../graphql/createUser.gql'
 import updateUser from '../graphql/updateUser.gql'
 import bip21 from 'bip21'
@@ -34,11 +34,11 @@ export default new Vuex.Store({
     snack: '',
     socket: null,
     token: '',
-    transactions: {},
+    payments: [],
     user: null,
   },
   actions: {
-    async login ({ commit, state, dispatch }, user) {
+    async login ({ commit, dispatch }, user) {
       try {
         let res = await Vue.axios.post('/login', user)
         await commit('SET_USER', res.data.user)
@@ -48,30 +48,35 @@ export default new Vuex.Store({
       }
 
       dispatch('getUser')
+      dispatch('setupSockets')
       commit('SET_TOKEN', readCookie('token'))
       router.push('/home')
+    },
 
-      commit('SET_SOCKET', socketio(process.env.SOCKETIO))
+    async setupSockets ({ commit, state, dispatch }) {
+      if (!state.socket || state.socket.connected) {
+        commit('SET_SOCKET', socketio(process.env.SOCKETIO))
 
-      state.socket.on('tx', data => {
-        bitcoin.Transaction.fromHex(data).outs.map(o => {
-          try {
-            let address = bitcoin.address.fromOutputScript(o.script, bitcoin.networks.testnet)
-            if (address === state.user.address) {
-              commit('SET_RECEIVED', o.value)
-              dispatch('snack', `Received ${o.value} satoshis`)
-            } 
-          } catch(e) { /* */ }
+        state.socket.on('tx', data => {
+          bitcoin.Transaction.fromHex(data).outs.map(o => {
+            try {
+              let address = bitcoin.address.fromOutputScript(o.script, bitcoin.networks.testnet)
+              if (address === state.user.address) {
+                commit('SET_RECEIVED', o.value)
+                dispatch('snack', `Received ${o.value} satoshis`)
+              } 
+            } catch(e) { /* */ }
+          })
+
+          dispatch('getUser')
         })
 
-        dispatch('getUser')
-      })
-
-      state.socket.on('invoice', data => {
-        commit('SET_RECEIVED', data.value)
-        dispatch('getUser')
-        dispatch('snack', `Received ${data.value} satoshis`)
-      })
+        state.socket.on('invoice', data => {
+          commit('SET_RECEIVED', data.value)
+          dispatch('getUser')
+          dispatch('snack', `Received ${data.value} satoshis`)
+        })
+      }
     },
 
     async createUser ({ commit, dispatch }, user) {
@@ -119,13 +124,13 @@ export default new Vuex.Store({
       commit('SET_USER', res.data.users[0])
     },
 
-    async getTransactions ({ commit }) {
+    async getPayments ({ commit }) {
       let res = await apolloClient.query({
-        query: transactionsQuery,
+        query: paymentsQuery,
         fetchPolicy: 'network-only',
       })
 
-      commit('SET_TRANSACTIONS', res.data.invoices)
+      commit('SET_PAYMENTS', res.data.payments)
     },
 
     async getRates ({ commit }) {
@@ -242,7 +247,7 @@ export default new Vuex.Store({
     SET_SNACK (s, v) { s.snack = v },
     SET_SOCKET (s, v) { s.socket = v },
     SET_TOKEN (s, v) { s.token = v },
-    SET_TRANSACTIONS (s, v) { s.transactions = v },
+    SET_PAYMENTS (s, v) { s.payments = v },
     SET_USER (s, v) { Vue.set(s, 'user', v) },
   },
   getters: {
@@ -274,6 +279,6 @@ export default new Vuex.Store({
     received: s => s.received,
     snack: s => s.snack,
     token: s => s.token,
-    transactions: s => s.transactions,
+    payments: s => s.payments,
   },
 })

@@ -9,8 +9,8 @@
           v-btn(@click='choosefrom = !choosefrom; chooseto = false' :color='choosefrom ? "green" : ""' small)
             v-icon.mr-1 event
             span {{from | short}}
-        v-flex(xs2)
-          div.pt-2.pl-3.title -
+        v-flex.ml-3.text-xs-center(xs2)
+          div.pt-2.subheading to
         v-flex(xs4)
           v-btn(@click='chooseto = !chooseto; choosefrom = false' :color='chooseto ? "green" : ""' small)
             v-icon.mr-1 event
@@ -19,29 +19,26 @@
         v-flex(xs12)
           v-select(:items='Object.keys(presets)' v-model='preset')
     v-list(three-line subheader)
-      template(v-for='(tx, i) in decoded')
-        v-list-tile(background='blue' :key='tx.date' @click='5')
+      template(v-for='(payment, i) in filteredPayments')
+        v-list-tile(background='blue' :key='payment.date' @click='5')
           v-list-tile-content
-            v-list-tile-title {{tx.paymentRequest | trim}}
-            v-list-tile-sub-title {{tx.satoshis}} sats
-            v-list-tile-sub-title $26.02 CAD
+            v-list-tile-title {{payment.hash | trim}}
+            v-list-tile-sub-title(:class='color(payment)') {{payment.amount | abs}} sats
+            v-list-tile-sub-title(:class='color(payment)') {{payment.fiat | abs}} CAD
           v-list-tile-action
-            v-list-tile-action-text {{tx.timestampString | format}}
+            v-list-tile-action-text {{payment.createdAt | format}}
+            v-list-tile-sub-title balance: {{payment.balance}}
             v-layout
-              v-icon(v-if='tx.paymentRequest.includes(50)') mdi-comment-outline
-              v-icon(v-else color='blue lighten-3') mdi-comment 
-              v-icon(v-if='tx.paymentRequest.includes("mw")') mdi-karate
-              v-icon(v-else color='yellow') mdi-flash
-            v-list-tile-sub-title balance: 49725
+              v-icon mdi-comment-outline
 </template>
 
 <script>
 import { format, parse, isBefore, isSameDay, isWithinRange, subWeeks, subMonths, subYears } from 'date-fns'
 import { mapGetters } from 'vuex'
-import bolt11 from 'bolt11'
 
 export default {
   filters: {
+    abs: v => Math.abs(v),
     format: d => format(d, 'YYYY-MM-DD HH:mm'),
     short: d => format(d, 'MMM D, \'YY'),
     trim: s => s.substr(0, 18),
@@ -80,7 +77,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['transactions']),
+    ...mapGetters(['payments']),
 
     preset: {
       get () { 
@@ -112,15 +109,21 @@ export default {
       set (v) { this.to = parse(v) },
     },
 
-    decoded () {
-      if (!this.transactions.length) return []
-      this.$emit('mask')
-      return this.transactions
-        .map(i => bolt11.decode(i.payreq))
-        .filter(p => p.complete)
-        .filter(p => isWithinRange(parse(p.timestampString), this.from, this.to))
+    filteredPayments () {
+      if (!this.payments.length) return []
+      this.$nextTick(() => this.$emit('mask'))
+      let balance = 0
+      return this.payments
+        .filter(p => isWithinRange(parse(p.createdAt), this.from, this.to))
+        .map(p => { 
+          let o = JSON.parse(JSON.stringify(p))
+          o.fiat = (p.amount * p.rate / 100000000).toFixed(2)
+          balance += parseFloat(p.amount)
+          o.balance = balance
+          return o 
+        })
         .sort((a, b) => { 
-          if (isBefore(parse(a.timestampString), parse(b.timestampString))) {
+          if (isBefore(parse(a.createdAt), parse(b.createdAt))) {
             return 1
           }
           return -1
@@ -128,8 +131,12 @@ export default {
     },
   },
 
+  methods: {
+    color (p) { return p.amount < 0 ? 'red--text' : 'green--text' }
+  },
+
   mounted () {
-    this.$store.dispatch('getTransactions')
+    this.$store.dispatch('getPayments')
   },
 }
 </script>

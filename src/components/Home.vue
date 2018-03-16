@@ -1,6 +1,5 @@
 <template lang='pug'>
 div
-  h2 Deposit
   v-layout
     v-flex.text-xs-center(xs12)
       v-card.pa-3.text-xs-center
@@ -13,19 +12,19 @@ div
           v-icon.mr-1(color='blue') mdi-water-pump
           span Faucet
       v-layout
-        v-flex(xs6)
+        v-flex(xs5)
           v-text-field(label='Regular Balance' v-model='user.balance' disabled)
-        v-flex(xs6)
+        v-flex(xs7)
           v-btn(v-if='user.balance > 0' @click='openChannel')
             v-icon(color='yellow') mdi-flash
-            span Electrify
+            span Open Channel
       v-layout
-        v-flex(xs6)
+        v-flex(xs5)
           v-text-field(label='Lightning Balance' disabled :value='user.channelbalance')
-        v-flex(xs6)
+        v-flex(xs7)
           v-btn(v-if='user.channelbalance' @click='closeChannels')
             v-icon(color='red') mdi-flash-off
-            span Dullify
+            span Close Channel
 </template>
 
 <script>

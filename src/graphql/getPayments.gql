@@ -1,0 +1,10 @@
+query payments {
+  payments {
+    hash,
+    address,
+    currency,
+    amount,
+    rate,
+    createdAt,
+  }
+}

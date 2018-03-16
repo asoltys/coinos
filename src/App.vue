@@ -29,9 +29,12 @@
         v-btn(flat dark @click="$router.push('/receive')")
           span Receive
           v-icon mdi-arrow-left-bold-box
-        v-btn(flat dark @click="scan" v-if='native()')
+        v-btn(v-if='native()' flat dark @click="scan")
           span Scan
           v-icon camera_alt
+        v-btn(v-else flat dark @click="$router.push('/payments')")
+          span Payments
+          v-icon assignment 
         v-btn(flat dark @click="$router.push('/home')")
           span Home
           v-icon home
@@ -82,7 +85,7 @@ export default {
   },
 
   methods: {
-    ...mapActions(['handleScan']),
+    ...mapActions(['handleScan', 'setupSockets']),
 
     addEvent (object, type, callback) {
       if (object == null || typeof(object) == 'undefined') return
@@ -156,7 +159,9 @@ export default {
       const publicpaths = ['/login', '/about', '/register']
       if (!publicpaths.includes(route.path) && !this.user) {
         this.$router.push('/login')
-      }
+      } else {
+        this.setupSockets()
+      } 
     },
   },
 
