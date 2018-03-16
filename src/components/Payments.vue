@@ -132,7 +132,7 @@ export default {
   },
 
   methods: {
-    color (p) { return p.amount < 0 ? 'red--text' : 'green--text' }
+    color (p) { return p.amount < 0 ? 'red--text' : 'green--text' },
   },
 
   mounted () {
