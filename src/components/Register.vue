@@ -2,9 +2,9 @@
 v-layout
   v-flex(xs12)
     v-form(@submit='submit')
-      v-text-field(label='Username' v-model='user.username' autofocus)
-      v-text-field(label='Passphrase' v-model='user.password' type='password')
-      v-text-field(label='Confirm' v-model='user.passconfirm' type='password')
+      v-text-field(label='Username' v-model='form.username' autofocus)
+      v-text-field(label='Passphrase' v-model='form.password' type='password')
+      v-text-field(label='Confirm' v-model='form.passconfirm' type='password')
       v-btn(type='submit') Register
 </template>
 
@@ -14,7 +14,7 @@ import { mapActions } from 'vuex'
 export default {
   data () {
     return {
-      user: {
+      form: {
         username: '',
         password: '',
         passconfirm: '',
@@ -30,7 +30,7 @@ export default {
   methods: {
     submit (e) {
       e.preventDefault()
-      this.createUser(this.user)
+      this.createUser(this.form)
     },
 
     ...mapActions(['createUser']),

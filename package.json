@@ -9,7 +9,7 @@
     "lint": "eslint --ext .js,.vue src",
     "build": "node build/build.js && mkdir -p ~/coinos.io/dist/static/css/static && cp -R ~/coinos.io/dist/static/fonts ~/coinos.io/dist/static/css/static && rm -f ~/coinos.io/cordova/platforms/android/build/outputs/apk/*.apk"
   },
-  "devDependencies": {
+  "dependencies": {
     "apollo-cache-inmemory": "^1.1.9",
     "apollo-client": "^2.2.5",
     "apollo-link-http": "^1.5.2",
@@ -90,6 +90,5 @@
     "> 1%",
     "last 2 versions",
     "not ie <= 8"
-  ],
-  "dependencies": {}
+  ]
 }

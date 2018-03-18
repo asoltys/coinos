@@ -1,5 +1,6 @@
 <template lang='pug'>
 div
+  v-btn(@click='setupSockets') Setup
   v-layout
     v-flex.text-xs-center(xs12)
       v-card.pa-3.text-xs-center
@@ -13,14 +14,14 @@ div
           span Faucet
       v-layout
         v-flex(xs5)
-          v-text-field(label='Regular Balance' v-model='user.balance' disabled)
+          v-text-field(label='Bit Balance' v-model='user.balance' disabled)
         v-flex(xs7)
           v-btn(v-if='user.balance > 0' @click='openChannel')
             v-icon(color='yellow') mdi-flash
             span Open Channel
       v-layout
         v-flex(xs5)
-          v-text-field(label='Lightning Balance' disabled :value='user.channelbalance')
+          v-text-field(label='Lit Balance' disabled :value='user.channelbalance')
         v-flex(xs7)
           v-btn(v-if='user.channelbalance' @click='closeChannels')
             v-icon(color='red') mdi-flash-off
@@ -45,7 +46,7 @@ export default {
   }, 
 
   methods: {
-    ...mapActions(['openChannel', 'closeChannels', 'getUser', 'faucet', 'snack']),
+    ...mapActions(['openChannel', 'closeChannels', 'getUser', 'faucet', 'snack', 'setupSockets']),
     max () {
       this.funding_amt = this.user.balance
     },

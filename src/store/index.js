@@ -4,8 +4,6 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import getUserQuery from '../graphql/getUser.gql'
 import paymentsQuery from '../graphql/getPayments.gql'
-import createUser from '../graphql/createUser.gql'
-import updateUser from '../graphql/updateUser.gql'
 import bip21 from 'bip21'
 import bolt11 from 'bolt11'
 import router from '../router'
@@ -53,66 +51,56 @@ export default new Vuex.Store({
       router.push('/home')
     },
 
+    async logout({ commit, state }) {
+      commit('SET_USER', null)
+      state.socket.disconnect()
+    }, 
+
     async setupSockets ({ commit, state, dispatch }) {
-      if (!state.socket || state.socket.connected) {
-        commit('SET_SOCKET', socketio(process.env.SOCKETIO))
+      let s = socketio(process.env.SOCKETIO)
+      commit('SET_SOCKET', s)
 
-        state.socket.on('tx', data => {
-          bitcoin.Transaction.fromHex(data).outs.map(o => {
-            try {
-              let address = bitcoin.address.fromOutputScript(o.script, bitcoin.networks.testnet)
-              if (address === state.user.address) {
-                commit('SET_RECEIVED', o.value)
-                dispatch('snack', `Received ${o.value} satoshis`)
-              } 
-            } catch(e) { /* */ }
-          })
-
-          dispatch('getUser')
+      s.on('tx', data => {
+        bitcoin.Transaction.fromHex(data).outs.map(o => {
+          try {
+            let address = bitcoin.address.fromOutputScript(o.script, bitcoin.networks.testnet)
+            if (address === state.user.address) {
+              commit('SET_RECEIVED', o.value)
+              dispatch('snack', `Received ${o.value} satoshis`)
+            } 
+          } catch(e) { /* */ }
         })
 
-        state.socket.on('invoice', data => {
-          commit('SET_RECEIVED', data.value)
-          dispatch('getUser')
-          dispatch('snack', `Received ${data.value} satoshis`)
-        })
-      }
+        dispatch('getUser')
+      })
+
+      s.on('invoice', data => {
+        commit('SET_RECEIVED', data.value)
+        dispatch('getUser')
+        dispatch('snack', `Received ${data.value} satoshis`)
+      })
     },
 
-    async createUser ({ commit, dispatch }, user) {
-      if (user.password !== user.passconfirm) {
+    async createUser ({ commit, dispatch }, form) {
+      if (form.password !== form.passconfirm) {
         commit('SET_ERROR', 'Passwords don\'t match')
         return
       }
 
-      delete user['passconfirm']
+      /* eslint-disable-next-line */
+      let { passconfirm, ...user } = form
 
       try {
-        await apolloClient.mutate({
-          mutation: createUser,
-          variables: {
-            user: user,
-          },
-        })
-
+        await Vue.axios.post('/register', user)
         dispatch('login', user)
       } catch (e) { 
-        if (e.graphQLErrors) {
-          commit('SET_ERROR', e.graphQLErrors.map(e => e.message).join('\n'))
-        } else {
-          commit('SET_ERROR', 'Registration failed') 
-        }
+        commit('SET_ERROR', e.response.data)
       }
     },
 
     /* eslint-disable-next-line */
     async updateUser ({ commit }, user) {
-      await apolloClient.mutate({
-        mutation: updateUser,
-        variables: {
-          user: user,
-        },
-      })
+      await Vue.axios.post('/user', user)
     },
 
     async getUser ({ commit }) {
@@ -278,6 +266,7 @@ export default new Vuex.Store({
     rate: s => s.rate,
     received: s => s.received,
     snack: s => s.snack,
+    socket: s => s.socket,
     token: s => s.token,
     payments: s => s.payments,
   },

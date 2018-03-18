@@ -31,13 +31,6 @@ export default {
     }
   },
 
-  computed: {
-    precision () {
-      if (this.currency === 'sats') return 0
-      return 2
-    },
-  },
-
   methods: {
     id (n) {
       let prefix = 'button-'
@@ -61,12 +54,12 @@ export default {
 
       if (m === '<') {
         amount = (Math.floor(100 * (parseFloat(amount) / 10)) / 100)
-      } else if (amount < 1000 && this.precision) {
+      } else if (amount < 1000) {
         amount = 10 * amount + parseFloat(m) / 100
       }
 
       if (m === 'C') amount = 0
-      amount = amount.toFixed(this.precision)
+      amount = amount.toFixed(2)
       this.$emit('update', amount)
     },
   },
@@ -81,8 +74,7 @@ export default {
 }
 </script>
 
-
-<style lang="stylus">
+<style lang="stylus" scoped>
   .numpad .btn
     min-width 74px
     margin 5 10px 5 0px

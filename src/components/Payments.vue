@@ -114,7 +114,6 @@ export default {
       this.$nextTick(() => this.$emit('mask'))
       let balance = 0
       return this.payments
-        .filter(p => isWithinRange(parse(p.createdAt), this.from, this.to))
         .map(p => { 
           let o = JSON.parse(JSON.stringify(p))
           o.fiat = (p.amount * p.rate / 100000000).toFixed(2)
@@ -122,6 +121,7 @@ export default {
           o.balance = balance
           return o 
         })
+        .filter(p => isWithinRange(parse(p.createdAt), this.from, this.to))
         .sort((a, b) => { 
           if (isBefore(parse(a.createdAt), parse(b.createdAt))) {
             return 1
@@ -132,7 +132,7 @@ export default {
   },
 
   methods: {
-    color (p) { return p.amount < 0 ? 'red--text' : 'green--text' },
+    color (p) { return p.amount < 0 ? 'sent' : 'received' },
   },
 
   mounted () {
@@ -140,3 +140,11 @@ export default {
   },
 }
 </script>
+
+<style lang="stylus" scoped>
+  .sent
+    color rgb(255, 185, 85) !important
+
+  .received
+   color rgb(180, 255, 0) !important
+</style>

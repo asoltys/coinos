@@ -85,7 +85,7 @@ export default {
   },
 
   methods: {
-    ...mapActions(['handleScan', 'setupSockets']),
+    ...mapActions(['handleScan']),
 
     addEvent (object, type, callback) {
       if (object == null || typeof(object) == 'undefined') return
@@ -99,7 +99,6 @@ export default {
     },
 
     setMasks () {
-      console.log('masking')
       let body = document.body, html = document.documentElement
       let height = Math.max(
         body.scrollHeight, 
@@ -107,8 +106,6 @@ export default {
         html.clientHeight, 
         html.scrollHeight, 
         html.offsetHeight)
-
-      console.log(height)
 
       document.getElementById('filler').style.height = height
       document.getElementById('rightfiller').style.height = height
@@ -133,7 +130,7 @@ export default {
           } 
 
           window.QRScanner.show(() => {
-            document.querySelector('.application').style.display = 'none'
+            document.querySelector('#wrapper').style.display = 'none'
             document.querySelector('#camcontrols').style.display = 'block'
             window.QRScanner.scan((err, res) => {
               if (err) { 
@@ -142,7 +139,7 @@ export default {
                 this.handleScan(res)
               }
 
-              document.querySelector('.application').style.display = 'block'
+              document.querySelector('#wrapper').style.display = 'block'
               document.querySelector('#camcontrols').style.display = 'none'
               window.QRScanner.hide()
             })
@@ -159,15 +156,12 @@ export default {
       const publicpaths = ['/login', '/about', '/register']
       if (!publicpaths.includes(route.path) && !this.user) {
         this.$router.push('/login')
-      } else {
-        this.setupSockets()
-      } 
+      }
     },
   },
 
   async created () {
     this.authenticate(this.$route)
-
     this.setMasks()
 
     if (typeof window.cordova !== 'undefined') {

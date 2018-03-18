@@ -11,7 +11,7 @@ div
   div.text-xs-center.mt-5(v-if='!native()')
     v-btn(@click='download')
       v-icon.mr-1(color='green') android
-      span Download Android App
+      span Android App
 </template>
 
 <script>
@@ -41,7 +41,7 @@ export default {
     ...mapActions(['login']),
 
     download () {
-      window.location = '/static/coinos.apk'
+      window.location = 'https://play.google.com/store/apps/details?id=io.cordova.coinos'
     },
 
     native () {
@@ -57,7 +57,7 @@ export default {
 
   created () {
     if (this.logout) {
-      this.$store.commit('SET_USER', null)
+      this.$store.dispatch('logout')
     }
   },
 
