@@ -41,7 +41,8 @@
         v-layout
           v-flex.text-xs-center(xs12)
             v-btn(@click='generate') 
-              v-icon.mr-1.yellow--text mdi-flash
+              v-avatar.mr-1
+                img(src='static/img/sausage.svg')
               span GO
       v-alert(v-else value='!valid') Can't request more than 4294967 satoshis
 </template>

@@ -17,7 +17,8 @@ div
           v-text-field(label='Bit Balance' v-model='user.balance' disabled)
         v-flex(xs7)
           v-btn(v-if='user.balance > 0' @click='openChannel')
-            v-icon(color='yellow') mdi-flash
+            v-avatar
+              img(src='static/img/sausage.svg')
             span Open Channel
       v-layout
         v-flex(xs5)

@@ -1,12 +1,13 @@
 <template lang="pug">
-  v-app(dark @mask='setMasks')
-    v-toolbar(absolute app dark color="black" clipped-left fixed)
+  v-app(@mask='setMasks')
+    v-toolbar(absolute app color="white" clipped-left fixed)
       v-toolbar-side-icon(v-if='user' @click.stop='toggleMenu')
-      v-toolbar-title(dark @click='$router.push("/")')
-        img.logo(src='static/img/coinos_logo.png')
+      v-toolbar-title(@click='$router.push("/")')
+        | Bestie
       v-spacer
       v-btn(icon @click='$router.push("/about")')
-        v-icon(color='yellow') mdi-flash
+        v-avatar
+          img.logo(src='static/img/sausage.svg')
       v-btn(v-if='user' icon @click='$router.push("/logout")')
         v-icon power_settings_new
     v-snackbar.yellow--text(v-model="snack" :timeout="2000" top)
@@ -26,19 +27,19 @@
         router-view
     v-footer(app)
       v-bottom-nav(v-if='user' absolute style="height: 56px; margin-bottom: 56px")
-        v-btn(flat dark @click="$router.push('/receive')")
+        v-btn(flat @click="$router.push('/receive')")
           span Receive
           v-icon mdi-arrow-left-bold-box
-        v-btn(v-if='native()' flat dark @click="scan")
+        v-btn(v-if='native()' flat @click="scan")
           span Scan
           v-icon camera_alt
-        v-btn(v-else flat dark @click="$router.push('/payments')")
+        v-btn(v-else flat @click="$router.push('/payments')")
           span Payments
           v-icon assignment 
-        v-btn(flat dark @click="$router.push('/home')")
+        v-btn(flat @click="$router.push('/home')")
           span Home
           v-icon home
-        v-btn(flat dark @click="$router.push('/send')")
+        v-btn(flat @click="$router.push('/send')")
           span Send
           v-icon mdi-send
 </template>
@@ -171,7 +172,7 @@ export default {
 
 <style lang="stylus">
 .input-group--focused label
-  color white !important
+  color black !important
 
 .toolbar__title
   cursor pointer
