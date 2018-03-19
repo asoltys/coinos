@@ -2,7 +2,7 @@
 div
   v-layout
     v-flex(xs12)
-      v-alert.black--text(color='yellow' icon='info' v-model='showlogout' value='showlogout' dismissible transition='scale-transition') You've logged out 
+      v-alert.black--text(color='white' icon='info' v-model='showlogout' value='showlogout' dismissible transition='scale-transition') You've logged out 
       v-form(@submit='submit')
         v-text-field(label="Username" v-model='user.username' autofocus)
         v-text-field(label="Password" v-model='user.password' type='password')

@@ -165,7 +165,6 @@ export default {
   async created () {
     this.authenticate(this.$route)
     this.setMasks()
-
     this.addEvent(window, 'resize', this.setMasks)
   },
 }

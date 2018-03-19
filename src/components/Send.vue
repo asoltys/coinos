@@ -24,8 +24,8 @@ div
         v-icon arrow_back
         span Send Another
   template(v-else)
-    v-text-field.mt-2(v-if='!payobj' label='To:' dark v-model='to' clearable multi-line auto-grow rows='1' hide-details autofocus)
-    v-text-field.mt-4(v-if='address' label='Amount:' dark v-model='amount' autofocus)
+    v-text-field.mt-2(v-if='!payobj' label='To:' v-model='to' clearable multi-line auto-grow rows='1' hide-details autofocus)
+    v-text-field.mt-4(v-if='address' label='Amount:' v-model='amount' autofocus)
     v-list.elevation-1.ma-2(v-if='payobj')
       v-list-tile
         v-list-tile-title Amount
