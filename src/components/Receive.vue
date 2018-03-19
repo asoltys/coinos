@@ -4,8 +4,8 @@
     v-progress-linear(v-if='loading' indeterminate)
     template(v-else-if='generated')
       template(v-if='received')
-        video(v-if='!finished' width='100%' ref='connect' @ended='finish' autoplay='' poster='static/img/fff.png')
-          source(src="static/connect.mp4" type="video/mp4")
+        video(v-show='!finished' width='100%' ref='connect' @ended='finish')
+          source(src="static/sausage.mp4" type="video/mp4")
         v-alert(value='received' color='success') Received {{received}} Satoshis
       v-layout(v-else)
         v-flex(xs12)
@@ -173,7 +173,7 @@ export default {
     margin auto
     width 260px
     height 260px
-    background #333
+    background #ccc
     word-wrap break-word
     padding 15px
 

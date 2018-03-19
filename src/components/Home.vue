@@ -1,6 +1,5 @@
 <template lang='pug'>
 div
-  v-btn(@click='setupSockets') Setup
   v-layout
     v-flex.text-xs-center(xs12)
       v-card.pa-3.text-xs-center
@@ -17,15 +16,14 @@ div
           v-text-field(label='Bit Balance' v-model='user.balance' disabled)
         v-flex(xs7)
           v-btn(v-if='user.balance > 0' @click='openChannel')
-            v-avatar
-              img(src='static/img/sausage.svg')
+            v-icon mdi-flash
             span Open Channel
       v-layout
         v-flex(xs5)
           v-text-field(label='Lit Balance' disabled :value='user.channelbalance')
         v-flex(xs7)
           v-btn(v-if='user.channelbalance' @click='closeChannels')
-            v-icon(color='red') mdi-flash-off
+            v-icon mdi-flash-off
             span Close Channel
 </template>
 

@@ -143,8 +143,8 @@ export default {
 
 <style lang="stylus" scoped>
   .sent
-    color rgb(255, 185, 85) !important
+    color rgb(135, 65, 45) !important
 
   .received
-   color rgb(180, 255, 0) !important
+   color rgb(60, 125, 0) !important
 </style>

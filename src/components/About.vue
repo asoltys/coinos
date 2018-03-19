@@ -16,9 +16,3 @@ export default {
   components: { lightning },
 } 
 </script>
-
-<style lang="stylus">
-a
-  color white
-  font-weight bold
-</style>

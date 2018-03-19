@@ -3,14 +3,15 @@
     v-toolbar(absolute app color="white" clipped-left fixed)
       v-toolbar-side-icon(v-if='user' @click.stop='toggleMenu')
       v-toolbar-title(@click='$router.push("/")')
-        | Bestie
+        img(src='static/img/bestie.svg' width='50' height='50' style='margin-right: -10px')
+        span(style='margin-top: 15px; float: right') estie
       v-spacer
       v-btn(icon @click='$router.push("/about")')
         v-avatar
           img.logo(src='static/img/sausage.svg')
       v-btn(v-if='user' icon @click='$router.push("/logout")')
         v-icon power_settings_new
-    v-snackbar.yellow--text(v-model="snack" :timeout="2000" top)
+    v-snackbar(v-model="snack" :timeout="2000" top)
       v-icon info
       span {{message}}
     v-content.pl-3.pr-3.mt-3
