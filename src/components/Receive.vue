@@ -4,7 +4,7 @@
     v-progress-linear(v-if='loading' indeterminate)
     template(v-else-if='generated')
       template(v-if='received')
-        video(v-show='!finished' width='100%' ref='connect' @ended='finish')
+        video(v-if='!finished' width='100%' ref='connect' @ended='finish' autoplay='' poster='static/img/fff.png')
           source(src="static/connect.mp4" type="video/mp4")
         v-alert(value='received' color='success') Received {{received}} Satoshis
       v-layout(v-else)
@@ -106,8 +106,10 @@ export default {
 
   watch: {
     received () {
-      this.finished = false
-      this.$nextTick(() => this.$refs.connect ? this.$refs.connect.play() : '')
+      this.$nextTick(() => {
+        this.$refs.connect ? this.$refs.connect.play() : ''
+        this.finished = false
+      })
     },
   },
 

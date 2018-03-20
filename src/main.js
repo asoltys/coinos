@@ -19,15 +19,21 @@ Vue.use(Vuetify, {
   },
 })
 
-if (process.env.NODE_ENV === 'production') {
-  document.addEventListener('deviceready', function () {
-    Vue.prototype.$cordova = cordova
-  }, false)
-
+if (navigator.userAgent.match(/Android/)) {
   var tag = document.createElement('script')
   tag.type = 'text/javascript'
   document.body.appendChild(tag)
   tag.src = 'cordova.js'
+
+  document.addEventListener('deviceready', function () {
+    Vue.prototype.$cordova = cordova
+    document.getElementById('cancel').addEventListener('click', () => {
+      window.QRScanner.cancelScan(status => { console.log(status) })
+      document.querySelector('#wrapper').style.display = 'block'
+      document.querySelector('#camcontrols').style.display = 'none'
+      window.QRScanner.hide()
+    })
+  }, false)
 }
 
 /* eslint-disable no-new */

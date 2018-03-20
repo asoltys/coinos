@@ -164,12 +164,6 @@ export default {
     this.authenticate(this.$route)
     this.setMasks()
 
-    if (typeof window.cordova !== 'undefined') {
-      document.getElementById('cancel').addEventListener('click', () => {
-        window.QRScanner.cancelScan(status => { console.log(status) })
-      })
-    }
-
     this.addEvent(window, 'resize', this.setMasks)
   },
 }
