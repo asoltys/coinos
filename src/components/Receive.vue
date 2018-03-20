@@ -4,7 +4,7 @@
     v-progress-linear(v-if='loading' indeterminate)
     template(v-else-if='generated')
       template(v-if='received')
-        video(v-if='!finished' width='100%' ref='connect' @ended='finish' autoplay='' poster='static/img/fff.png' controls)
+        video(v-if='!finished' width='100%' ref='connect' @ended='finish' poster='static/img/fff.png' controls)
           source(src="static/sausage.mp4" type="video/mp4")
         v-alert(value='received' color='success') Received {{received}} Satoshis
       v-layout(v-else)
