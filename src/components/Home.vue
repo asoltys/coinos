@@ -1,6 +1,5 @@
 <template lang='pug'>
 div
-  v-btn(@click='setupSockets') Setup
   v-layout
     v-flex.text-xs-center(xs12)
       v-card.pa-3.text-xs-center
@@ -9,9 +8,6 @@ div
         v-btn(:data-clipboard-text='user.address' @click.native="snack('Copied to Clipboard')")
           v-icon.mr-1 content_copy
           span Copy
-        v-btn(@click='faucet' :disabled='user.balance > 200000 || user.channelbalance > 300000')
-          v-icon.mr-1(color='blue') mdi-water-pump
-          span Faucet
       v-layout
         v-flex(xs5)
           v-text-field(label='Bit Balance' v-model='user.balance' disabled)

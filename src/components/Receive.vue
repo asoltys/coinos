@@ -118,7 +118,7 @@ export default {
 
     symbol (v) {
       if (v === 'sats') return '$'
-      return '&#x20BF'
+      return 'B'
     },
 
     toggle () {
