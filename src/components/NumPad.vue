@@ -1,6 +1,6 @@
 <template lang="pug">
 .numpad
-  span.display-1 {{amount}}
+  span.display-1 {{amount.toFixed(2)}}
   span.title.ml-1 {{currency}}
   template(v-for='i in buttons.length / 3')
     v-layout(row :key='i')

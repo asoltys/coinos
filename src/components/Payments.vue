@@ -67,9 +67,6 @@ export default {
       choosefrom: false,
       chooseto: false,
       currency: 'CAD',
-      subtotal: 0,
-      total: 0,
-      tips: 0,
       quick: 'Last Week',
       from: subWeeks(Date.now(), 1),
       to: Date.now(),
@@ -121,7 +118,10 @@ export default {
           o.balance = balance
           return o 
         })
-        .filter(p => isWithinRange(parse(p.createdAt), this.from, this.to))
+        .filter(p => {
+          isWithinRange(parse(p.createdAt), this.from, this.to) &&
+          (p.amount < 0 || p.received)
+        })
         .sort((a, b) => { 
           if (isBefore(parse(a.createdAt), parse(b.createdAt))) {
             return 1
