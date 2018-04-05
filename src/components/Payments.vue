@@ -23,8 +23,11 @@
         v-list-tile(background='blue' :key='payment.date' @click='5')
           v-list-tile-content
             v-list-tile-title {{payment.hash | trim}}
-            v-list-tile-sub-title(:class='color(payment)') {{payment.amount | abs}} sats
-            v-list-tile-sub-title(:class='color(payment)') {{payment.fiat | abs}} CAD
+            v-list-tile-sub-title(:class='color(payment)') 
+              span {{payment.amount | abs}} sats
+            v-list-tile-sub-title(:class='color(payment)') 
+              span {{payment.fiat | abs}} CAD
+              small(v-if='payment.tip')  (+{{payment.tip}} tip)
           v-list-tile-action
             v-list-tile-action-text {{payment.createdAt | format}}
             v-list-tile-sub-title balance: {{payment.balance}}
@@ -69,7 +72,7 @@ export default {
       currency: 'CAD',
       quick: 'Last Week',
       from: subWeeks(Date.now(), 1),
-      to: Date.now(),
+      to: parse(Date.now()),
     }
   },
 
@@ -115,11 +118,13 @@ export default {
           let o = JSON.parse(JSON.stringify(p))
           o.fiat = (p.amount * p.rate / 100000000).toFixed(2)
           balance += parseFloat(p.amount)
+          o.tip = parseFloat(p.tip).toFixed(2)
+          if (isNaN(o.tip) || o.tip <= 0) o.tip = null
           o.balance = balance
           return o 
         })
         .filter(p => {
-          isWithinRange(parse(p.createdAt), this.from, this.to) &&
+          return isWithinRange(parse(p.createdAt), this.from, this.to) &&
           (p.amount < 0 || p.received)
         })
         .sort((a, b) => { 
