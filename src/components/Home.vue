@@ -10,18 +10,17 @@ div
           span Copy
       v-layout
         v-flex(xs5)
-          v-text-field(label='Bit Balance' v-model='user.balance' disabled)
-        v-flex(xs7)
-          v-btn(v-if='user.balance > 0' @click='openChannel')
-            v-icon(color='yellow') mdi-flash
-            span Open Channel
-      v-layout
+          v-chip(color='grey darken-3' label).white--text.subheading
+            v-avatar
+              img(src='static/img/bitcoin2.png')
+            span {{user.balance}}
+        v-flex.mt-2.ml-1(xs2)
+          v-icon(:disabled='!user.channelbalance' @click='closeChannels') mdi-arrow-left-bold-box
+          v-icon(:disabled='user.balance <= 0' @click='openChannel') mdi-arrow-right-bold-box
         v-flex(xs5)
-          v-text-field(label='Lit Balance' disabled :value='user.channelbalance')
-        v-flex(xs7)
-          v-btn(v-if='user.channelbalance' @click='closeChannels')
-            v-icon(color='red') mdi-flash-off
-            span Close Channel
+          v-chip(color='grey darken-3' label).white--text.subheading.fullwidth
+            v-icon(left color='yellow') mdi-flash
+            span {{user.channelbalance}}
 </template>
 
 <script>
@@ -57,3 +56,8 @@ export default {
   }, 
 }
 </script>
+
+<style lang="stylus" scoped>
+  .chip
+    width 100%
+</style>

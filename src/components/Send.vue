@@ -1,12 +1,15 @@
 <template lang="pug">
 div
-  h3 Balances
-  v-chip.body-2(label)
-    v-icon(left) assignment
-    | {{user.balance}}
-  v-chip.body-2(label)
-    v-icon(left) mdi-flash
-    | {{user.channelbalance}}
+  v-layout
+    v-flex(xs6)
+      v-chip(color='grey darken-3' label).white--text.subheading
+        v-avatar
+          img(src='static/img/bitcoin2.png')
+        span {{user.balance}}
+    v-flex(xs6)
+      v-chip(color='grey darken-3' label).white--text.subheading.fullwidth
+        v-icon(left color='yellow') mdi-flash
+        span {{user.channelbalance}}
   v-card(v-if='payment')
     v-alert.headline(value='true' color='success') Payment Sent!
     v-list
@@ -122,4 +125,8 @@ export default {
 <style lang="stylus">
   .icon
     width 40px !important
+
+  .chip
+    width 95%
+    padding 5px
 </style>
