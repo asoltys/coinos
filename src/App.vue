@@ -99,16 +99,18 @@ export default {
     },
 
     setMasks () {
-      let body = document.body, html = document.documentElement
-      let height = Math.max(
-        body.scrollHeight, 
-        body.offsetHeight, 
-        html.clientHeight, 
-        html.scrollHeight, 
-        html.offsetHeight)
+      this.$nextTick(() => {
+        let body = document.body, html = document.documentElement
+        let height = Math.max(
+          body.scrollHeight, 
+          body.offsetHeight, 
+          html.clientHeight, 
+          html.scrollHeight, 
+          html.offsetHeight)
 
-      document.getElementById('filler').style.height = height
-      document.getElementById('rightfiller').style.height = height
+        document.getElementById('filler').style.height = height
+        document.getElementById('rightfiller').style.height = height
+      })
     },
 
     scantest () {

@@ -26,7 +26,7 @@
             v-list-tile-sub-title(:class='color(payment)') 
               span {{payment.amount | abs}} sats
             v-list-tile-sub-title(:class='color(payment)') 
-              span {{payment.fiat | abs}} CAD
+              span {{payment.fiat | abs | twodec}} CAD
               small(v-if='payment.tip')  (+{{payment.tip}} tip)
           v-list-tile-action
             v-list-tile-action-text {{payment.createdAt | format}}
@@ -45,6 +45,7 @@ export default {
     format: d => format(d, 'YYYY-MM-DD HH:mm'),
     short: d => format(d, 'MMM D, \'YY'),
     trim: s => s.substr(0, 18),
+    twodec: n => n.toFixed(2),
   },
 
   data () {
