@@ -4,6 +4,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import getUserQuery from '../graphql/getUser.gql'
 import paymentsQuery from '../graphql/getPayments.gql'
+import bech32 from 'bech32'
 import bip21 from 'bip21'
 import bolt11 from 'bolt11'
 import router from '../router'
@@ -63,7 +64,11 @@ export default new Vuex.Store({
       s.on('tx', data => {
         bitcoin.Transaction.fromHex(data).outs.map(o => {
           try {
-            let address = bitcoin.address.fromOutputScript(o.script, bitcoin.networks.testnet)
+            let network = bitcoin.networks.bitcoin
+            if (process.env.NODE_ENV !== 'production') {
+              network = bitcoin.networks.testnet
+            } 
+            let address = bitcoin.address.fromOutputScript(o.script, network)
             if (address === state.user.address) {
               commit('SET_RECEIVED', o.value)
               dispatch('snack', `Received ${o.value} satoshis`)
@@ -184,8 +189,8 @@ export default new Vuex.Store({
       commit('SET_ERROR', null)
     },
 
-    async addInvoice ({ commit }, amount) {
-      let res = await Vue.axios.post('/addInvoice', { amount })
+    async addInvoice ({ commit }, { amount, tip }) {
+      let res = await Vue.axios.post('/addInvoice', { amount, tip })
 
       commit('SET_PAYREQ', res.data.payment_request)
     },
@@ -210,6 +215,12 @@ export default new Vuex.Store({
 
       try {
         bitcoin.address.fromBase58Check(text)
+        commit('SET_ADDRESS', text)
+        router.push({ name: 'send', params: { clear: false } })
+      } catch (e) { /**/ }
+
+      try {
+        bech32.decode(text)
         commit('SET_ADDRESS', text)
         router.push({ name: 'send', params: { clear: false } })
       } catch (e) { /**/ }

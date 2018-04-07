@@ -11,12 +11,12 @@
         v-flex(xs12)
           h2.text-xs-center Requesting {{total}} Satoshis
           v-card.pa-3.text-xs-center
-            div.code(v-if='showcode') {{payreq}}
+            div.code(v-if='showcode') {{copytext}}
             canvas#qr(v-show='!showcode' width='100' height='100')
             v-btn(@click.native="showcode = !showcode")
               v-icon code
               span {{code}}
-            v-btn(:data-clipboard-text='payreq' @click.native="snack('Copied to Clipboard')")
+            v-btn(:data-clipboard-text='copytext' @click.native="snack('Copied to Clipboard')")
               v-icon content_copy
               span Copy
       v-btn(@click='generated = false; amount = 0') 
@@ -39,11 +39,15 @@
                 span(v-html='symbol(currency)')
               span {{conversion}} 
         v-layout
-          v-flex.text-xs-center(xs12)
-            v-btn(@click='generate') 
+          v-flex.text-xs-center(xs6)
+            v-btn(@click='bitcoin' :disabled='total <= 0') 
               v-avatar.mr-1
-                img(src='static/img/sausage.svg')
-              span GO
+                img(src='static/img/bitcoingray.png')
+              span Bitcoin
+          v-flex.text-xs-center(xs6)
+            v-btn(@click='lightning' :disabled='total <= 0') 
+              v-icon(color='black') mdi-flash
+              span Lightning
       v-alert(v-else value='!valid') Can't request more than 4294967 satoshis
 </template>
 
@@ -69,16 +73,20 @@ export default {
       about: '',
       amount: 0,
       tip: 0,
-      address: '1234',
       generated: false,
       showcode: false,
       finished: false,
       fiat: true,
+      bitreq: '',
     }
   },
 
   computed: {
     ...mapGetters(['loading', 'user', 'payreq', 'rate', 'received']),
+
+    copytext () {
+      return this.bitreq || this.payreq
+    },
 
     code () {
       return this.showcode ? 'Show QR' : 'Show Code'
@@ -119,7 +127,7 @@ export default {
 
     symbol (v) {
       if (v === 'sats') return '$'
-      return '&#x20BF'
+      return 'B'
     },
 
     toggle () {
@@ -130,12 +138,28 @@ export default {
       return new Promise(resolve => setTimeout(resolve, ms))
     },
 
-    generate () {
+    bitcoin () {
       this.$store.commit('SET_LOADING', true)
       this.generated = true
       this.$store.commit('SET_RECEIVED', 0)
       this.$nextTick(async () => {
-        await this.addInvoice(this.total)
+        await this.timeout(200)
+        this.$store.commit('SET_LOADING', false)
+        this.$nextTick(() => {
+          let canvas = document.getElementById('qr')
+          this.bitreq = `bitcoin:${this.user.address}?amount=${this.total / 100000000}`
+          qr.toCanvas(canvas, this.bitreq, e => { if (e) console.log(e) })
+        })
+      })
+    },
+
+    lightning () {
+      this.bitreq = null
+      this.$store.commit('SET_LOADING', true)
+      this.generated = true
+      this.$store.commit('SET_RECEIVED', 0)
+      this.$nextTick(async () => {
+        await this.addInvoice({ amount: this.total, tip: this.tip })
         await this.timeout(200)
         this.$store.commit('SET_LOADING', false)
         this.$nextTick(() => {
