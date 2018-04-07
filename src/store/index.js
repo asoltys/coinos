@@ -64,7 +64,7 @@ export default new Vuex.Store({
       s.on('tx', data => {
         bitcoin.Transaction.fromHex(data).outs.map(o => {
           try {
-            let address = bitcoin.address.fromOutputScript(o.script, bitcoin.networks.testnet)
+            let address = bitcoin.address.fromOutputScript(o.script)
             if (address === state.user.address) {
               commit('SET_RECEIVED', o.value)
               dispatch('snack', `Received ${o.value} satoshis`)
