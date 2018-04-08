@@ -181,6 +181,7 @@ export default new Vuex.Store({
     },
 
     async clearPayment ({ commit }) {
+      commit('SET_LOADING', false)
       commit('SET_PAYREQ', '')
       commit('SET_ADDRESS', '')
       commit('SET_PAYMENT', null)
