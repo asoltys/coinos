@@ -2,13 +2,13 @@
 div
   v-layout
     v-flex(xs6)
-      v-chip(color='grey darken-3' label).white--text.subheading
+      v-chip(label).subheading
         v-avatar
-          img(src='static/img/bitcoin2.png')
+          img(src='static/img/bitcoingray.png')
         span {{user.balance}}
     v-flex(xs6)
-      v-chip(color='grey darken-3' label).white--text.subheading.fullwidth
-        v-icon(left color='yellow') mdi-flash
+      v-chip(label).subheading.fullwidth
+        v-icon(left color='black') mdi-flash
         span {{user.channelbalance}}
   v-card(v-if='payment')
     v-alert.headline(value='true' color='success') Payment Sent!
