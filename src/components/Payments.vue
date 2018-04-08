@@ -18,6 +18,13 @@
       v-layout
         v-flex(xs12)
           v-select(:items='Object.keys(presets)' v-model='preset')
+    v-layout
+      v-flex(xs4)
+        v-text-field(label='Total sats' v-model='total' readonly)
+      v-flex(xs4)
+        v-text-field(label='Total CAD' v-model='fiattotal' readonly)
+      v-flex(xs4)
+        v-text-field(label='Total Tips' v-model='tips' readonly)
     v-list(three-line subheader)
       template(v-for='(payment, i) in filteredPayments')
         v-list-tile(background='blue' :key='payment.date' @click='5')
@@ -27,12 +34,11 @@
               span {{payment.amount | abs}} sats
             v-list-tile-sub-title(:class='color(payment)') 
               span {{payment.fiat | abs | twodec}} CAD
-              small(v-if='payment.tip')  (+{{payment.tip}} tip)
+              small(v-if='payment.tip')  (+{{payment.tip}})
           v-list-tile-action
             v-list-tile-action-text {{payment.createdAt | format}}
             v-list-tile-sub-title balance: {{payment.balance}}
             v-layout
-              v-icon mdi-comment-outline
 </template>
 
 <script>
@@ -118,22 +124,45 @@ export default {
         .map(p => { 
           let o = JSON.parse(JSON.stringify(p))
           o.fiat = (p.amount * p.rate / 100000000).toFixed(2)
-          balance += parseFloat(p.amount)
           o.tip = parseFloat(p.tip).toFixed(2)
           if (isNaN(o.tip) || o.tip <= 0) o.tip = null
-          o.balance = balance
           return o 
+        })
+        .sort((a, b) => { 
+          if (isBefore(parse(a.createdAt), parse(b.createdAt))) {
+            return -1
+          }
+          return 1
+        })
+        .map(p => { 
+          console.log(p)
+          console.log(balance)
+          console.log(p.amount)
+          balance += parseFloat(p.amount)
+          p.balance = balance
+          console.log(p.balance)
+          return p
         })
         .filter(p => {
           return isWithinRange(parse(p.createdAt), this.from, this.to) &&
           (p.amount < 0 || p.received)
         })
-        .sort((a, b) => { 
-          if (isBefore(parse(a.createdAt), parse(b.createdAt))) {
-            return 1
-          }
-          return -1
-        })
+        .reverse()
+    },
+
+    fiattotal () {
+      return this.filteredPayments.reduce((a, b) => a + parseFloat(b.fiat), 0)
+    },
+
+    total () {
+      return this.filteredPayments.reduce((a, b) => a + parseFloat(b.amount), 0)
+    },
+
+    tips () {
+      return this.filteredPayments.reduce((a, b) => {
+        if (!parseFloat(b.tip)) return a
+        return a + parseFloat(b.tip)
+      }, 0).toFixed(2)
     },
   },
 
@@ -153,4 +182,7 @@ export default {
 
   .received
    color rgb(180, 255, 0) !important
+
+  .fullwidth
+    width 100%
 </style>
