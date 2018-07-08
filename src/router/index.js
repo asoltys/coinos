@@ -10,6 +10,7 @@ import Receive from '../components/Receive'
 import Withdraw from '../components/Withdraw'
 import Account from '../components/Account'
 import Settings from '../components/Settings'
+import Network from '../components/Network'
 
 const routes = [
   { path: '/', component: Login, props: { logout: false } },
@@ -22,6 +23,7 @@ const routes = [
   { path: '/withdraw', component: Withdraw },
   { path: '/account', component: Account },
   { path: '/settings', component: Settings },
+  { path: '/network', component: Network},
   { path: '/about', component: About },
   { path: '/logout', component: Login, props: { logout: true } },
 ]
@@ -29,8 +31,7 @@ const routes = [
 Vue.use(VueRouter)
 
 export default new VueRouter({
-  mode: 'hash',
-  // mode: 'history',
+  mode: 'history',
   routes: routes,
   scrollBehavior: function (to, from, savedPosition) {
     if (savedPosition) {

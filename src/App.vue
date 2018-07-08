@@ -56,6 +56,7 @@ export default {
         { route: 'send', content: 'Send', icon: 'mdi-send' },
         { route: 'receive', content: 'Receive', icon: 'mdi-arrow-left-bold-box' },
         { route: 'payments', content: 'Payments', icon: 'assignment' },
+        { route: 'network', content: 'Network', icon: 'settings_input_antenna' },
         { route: 'logout', content: 'Logout', icon: 'power_settings_new' },
       ],
     }
@@ -85,7 +86,7 @@ export default {
   },
 
   methods: {
-    ...mapActions(['handleScan']),
+    ...mapActions(['init', 'handleScan']),
 
     addEvent (object, type, callback) {
       if (object == null || typeof(object) == 'undefined') return
@@ -163,6 +164,7 @@ export default {
   },
 
   async created () {
+    await this.init()
     this.authenticate(this.$route)
     this.setMasks()
 

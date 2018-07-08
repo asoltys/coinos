@@ -16,17 +16,23 @@ function readCookie (n) {
   return a ? a[1] : ''
 }
 
+function deleteCookie (n) {
+  document.cookie = n + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;'
+}
+
 export default new Vuex.Store({
   state: {
     address: '',
     amount: 0,
     balance: 0,
+    channels: [],
     error: '',
     fees: 0,
     loading: false,
     payment: null,
     payobj: null,
     payreq: '',
+    peers: [],
     rate: 0,
     received: 0,
     scan: '',
@@ -34,9 +40,24 @@ export default new Vuex.Store({
     socket: null,
     token: '',
     payments: [],
-    user: null,
+    user: {
+      address: null,
+      balance: null,
+      channelbalance: null,
+    },
   },
   actions: {
+    async init ({ commit, dispatch, state }) {
+      let token = readCookie('token')
+      if (token) {
+        if (!state.user.balance) {
+          await dispatch('getUser')
+        } 
+        await dispatch('setupSockets')
+        commit('SET_TOKEN', token)
+      }
+    },
+
     async login ({ commit, dispatch }, user) {
       try {
         let res = await Vue.axios.post('/login', user)
@@ -46,13 +67,12 @@ export default new Vuex.Store({
         return
       }
 
-      dispatch('getUser')
-      dispatch('setupSockets')
-      commit('SET_TOKEN', readCookie('token'))
+      dispatch('init')
       router.push('/home')
     },
 
     async logout({ commit, state }) {
+      deleteCookie('token')
       commit('SET_USER', null)
       state.socket.disconnect()
     }, 
@@ -135,6 +155,18 @@ export default new Vuex.Store({
       let res = await Vue.axios.get('/balance')
 
       commit('SET_BALANCE', res.data.balance)
+    },
+
+    async getChannels({ commit }) {
+      let res = await Vue.axios.get('/channels')
+
+      commit('SET_CHANNELS', res.data.channels)
+    },
+
+    async getPeers({ commit }) {
+      let res = await Vue.axios.get('/peers')
+
+      commit('SET_PEERS', res.data.peers)
     },
 
     async faucet ({ dispatch }) {
@@ -236,11 +268,13 @@ export default new Vuex.Store({
     SET_AMOUNT (s, v) { s.amount = v },
     SET_BALANCE (s, v) { s.balance = v },
     SET_CHANNEL_BALANCE (s, v) { Vue.set(s.user, 'channelbalance', v) },
+    SET_CHANNELS (s, v) { s.channels = v },
     SET_ERROR (s, v) { s.error = v },
     SET_LOADING (s, v) { s.loading = v },
     SET_PAYMENT (s, v) { s.payment = v },
     SET_PAYOBJ (s, v) { s.payobj = v },
     SET_PAYREQ (s, v) { s.payreq = v },
+    SET_PEERS (s, v) { s.peers = v },
     SET_RATE (s, v) { s.rate = v },
     SET_RECEIVED (s, v) { s.received = v },
     SET_SCAN (s, v) { s.scan = v },
@@ -251,35 +285,23 @@ export default new Vuex.Store({
     SET_USER (s, v) { Vue.set(s, 'user', v) },
   },
   getters: {
-    user: s => {
-      if (!s.user || !s.user.address) {
-        return null
-      } 
-
-      /*
-      let mnemonic = bip39.generateMnemonic()
-      let seed = bip39.mnemonicToSeed(mnemonic)
-      let key = bitcoin.HDNode.fromSeedBuffer(seed, bitcoin.networks.testnet).deriveHardened(44).deriveHardened(0)
-      let child = key.derive(0).derive(0)
-      s.user.address = child.getAddress().toString()
-      */
-
-      return s.user
-    },
     address: s => s.address,
     amount: s => s.amount,
     balance: s => s.balance,
+    channels: s => s.channels,
     error: s => s.error,
     fees: s => s.fees,
     loading: s => s.loading,
     payment: s => s.payment,
+    payments: s => s.payments,
     payobj: s => s.payobj,
     payreq: s => s.payreq,
+    peers: s => s.peers,
     rate: s => s.rate,
     received: s => s.received,
     snack: s => s.snack,
     socket: s => s.socket,
     token: s => s.token,
-    payments: s => s.payments,
+    user: s => s.user,
   },
 })

@@ -135,12 +135,8 @@ export default {
           return 1
         })
         .map(p => { 
-          console.log(p)
-          console.log(balance)
-          console.log(p.amount)
           balance += parseFloat(p.amount)
           p.balance = balance
-          console.log(p.balance)
           return p
         })
         .filter(p => {

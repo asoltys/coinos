@@ -37,11 +37,18 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['user', 'token']),
+    ...mapGetters(['user']),
   }, 
 
+  watch: {
+    user () {
+      let canvas = document.getElementById('qr')
+      qr.toCanvas(canvas, this.user.address, e => { if (e) console.log(e) })
+    },
+  },
+
   methods: {
-    ...mapActions(['openChannel', 'closeChannels', 'getUser', 'faucet', 'snack', 'setupSockets']),
+    ...mapActions(['openChannel', 'closeChannels', 'faucet', 'snack', 'setupSockets']),
     max () {
       this.funding_amt = this.user.balance
     },
@@ -51,8 +58,6 @@ export default {
     this.max()
 
     new Clipboard('.btn')
-    let canvas = document.getElementById('qr')
-    qr.toCanvas(canvas, this.user.address, e => { if (e) console.log(e) })
   }, 
 }
 </script>
