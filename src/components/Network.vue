@@ -7,18 +7,18 @@ div
       v-list-tile(:key='p.id' @click='')
         v-list-tile-content
           v-list-tile-title {{p.pub_key}}
-  h2 Channels
-  v-list(two-line)
-    template(v-for='(c, i) in channels')
-      v-list-tile(:key='c.id' @click='')
-        v-list-tile-content
-          v-list-tile-action-text local
-          v-list-tile-sub-title {{c.local_balance}}
-        v-list-tile-action
-          v-list-tile-title &nbsp;
-          v-list-tile-action-text remote
-          v-list-tile-sub-title {{c.local_balance}}
-          v-layout
+          h2 Channels
+          v-list(two-line)
+            template(v-for='(c, i) in channels')
+              v-list-tile(:key='c.id' @click='')
+                v-list-tile-content
+                  v-list-tile-action-text local
+                  v-list-tile-sub-title {{c.local_balance}}
+                v-list-tile-action
+                  v-list-tile-title &nbsp;
+                  v-list-tile-action-text remote
+                  v-list-tile-sub-title {{c.remote_balance}}
+                  v-layout
 </template>
 
 <script>

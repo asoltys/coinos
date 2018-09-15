@@ -42,13 +42,18 @@ export default {
 
   watch: {
     user () {
-      let canvas = document.getElementById('qr')
-      qr.toCanvas(canvas, this.user.address, e => { if (e) console.log(e) })
+      this.drawQR()
     },
   },
 
   methods: {
     ...mapActions(['openChannel', 'closeChannels', 'faucet', 'snack', 'setupSockets']),
+
+    drawQR () {
+      let canvas = document.getElementById('qr')
+      qr.toCanvas(canvas, this.user.address, e => { if (e) console.log(e) })
+    },
+
     max () {
       this.funding_amt = this.user.balance
     },
@@ -58,6 +63,7 @@ export default {
     this.max()
 
     new Clipboard('.btn')
+    this.drawQR()
   }, 
 }
 </script>

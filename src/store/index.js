@@ -52,7 +52,11 @@ export default new Vuex.Store({
       if (token) {
         if (!state.user.balance) {
           await dispatch('getUser')
+        } else if (router.currentRoute === '/login') {
+          console.log('going home')
+          router.push('/home')
         } 
+
         await dispatch('setupSockets')
         commit('SET_TOKEN', token)
       }
@@ -269,7 +273,10 @@ export default new Vuex.Store({
     SET_BALANCE (s, v) { s.balance = v },
     SET_CHANNEL_BALANCE (s, v) { Vue.set(s.user, 'channelbalance', v) },
     SET_CHANNELS (s, v) { s.channels = v },
-    SET_ERROR (s, v) { s.error = v },
+    SET_ERROR (s, v) { 
+      s.error = v 
+      if (v.toString().includes('502 Bad')) s.error = 'Problem connecting to server'
+    },
     SET_LOADING (s, v) { s.loading = v },
     SET_PAYMENT (s, v) { s.payment = v },
     SET_PAYOBJ (s, v) { s.payobj = v },
