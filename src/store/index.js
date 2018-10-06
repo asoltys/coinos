@@ -53,7 +53,6 @@ export default new Vuex.Store({
         if (!state.user.balance) {
           await dispatch('getUser')
         } else if (router.currentRoute === '/login') {
-          console.log('going home')
           router.push('/home')
         } 
 
@@ -275,7 +274,7 @@ export default new Vuex.Store({
     SET_CHANNELS (s, v) { s.channels = v },
     SET_ERROR (s, v) { 
       s.error = v 
-      if (v.toString().includes('502 Bad')) s.error = 'Problem connecting to server'
+      if (v && v.toString().includes('502 Bad')) s.error = 'Problem connecting to server'
     },
     SET_LOADING (s, v) { s.loading = v },
     SET_PAYMENT (s, v) { s.payment = v },
