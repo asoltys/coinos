@@ -126,7 +126,7 @@ export default {
   .icon
     width 40px !important
 
-  .chip
+  .v-chip
     width 95%
     padding 5px
 </style>

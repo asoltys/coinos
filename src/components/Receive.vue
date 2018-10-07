@@ -16,17 +16,17 @@
             v-btn(@click.native="showcode = !showcode")
               v-icon code
               span {{code}}
-            v-btn(:data-clipboard-text='copytext' @click.native="snack('Copied to Clipboard')")
+            v-btn(@click.native="copy")
               v-icon content_copy
               span Copy
       v-btn(@click='generated = false; amount = 0') 
         v-icon.mr-1 arrow_back
         span Back
     template(v-else)
-      v-layout(style="max-width: 380px")
-        v-flex(xs9)
+      v-layout
+        v-flex(xs9 sm6)
           numpad(:currency='currency' :amount='parseFloat(amount)' @update='a => amount = a')
-        v-flex(xs3)
+        v-flex(xs3 sm6)
           tippad(:amount='parseFloat(amount)' @update='t => tip = t')
       div(v-if='valid')
         v-layout
@@ -125,6 +125,23 @@ export default {
   methods: {
     ...mapActions(['addInvoice', 'getRates', 'snack', 'clearPayment']),
 
+    copy () {
+      var textArea = document.createElement('textarea')
+      textArea.style.position = 'fixed'
+      textArea.value = this.copytext
+
+      document.body.appendChild(textArea)
+
+      textArea.focus()
+      textArea.select()
+
+      document.execCommand('copy')
+      document.body.removeChild(textArea)
+
+      this.snack('Copied to Clipboard')
+    },
+
+
     symbol (v) {
       if (v === 'sats') return '$'
       return 'B'
@@ -147,6 +164,7 @@ export default {
         this.$store.commit('SET_LOADING', false)
         this.$nextTick(() => {
           let canvas = document.getElementById('qr')
+          if (!canvas) return
           this.bitreq = `bitcoin:${this.user.address}?amount=${this.total / 100000000}`
           qr.toCanvas(canvas, this.bitreq, e => { if (e) console.log(e) })
         })
@@ -164,6 +182,7 @@ export default {
         this.$store.commit('SET_LOADING', false)
         this.$nextTick(() => {
           let canvas = document.getElementById('qr')
+          if (!canvas) return
           qr.toCanvas(canvas, this.payreq, e => { if (e) console.log(e) })
         })
       })

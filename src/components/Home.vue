@@ -1,26 +1,55 @@
 <template lang='pug'>
-div
-  v-layout
-    v-flex.text-xs-center(xs12)
-      v-card.pa-3.text-xs-center
-        canvas#qr
-        code.black--text.ma-1 {{user.address}}
-        v-btn(:data-clipboard-text='user.address' @click.native="snack('Copied to Clipboard')")
-          v-icon.mr-1 content_copy
-          span Copy
-      v-layout
-        v-flex(xs5)
+v-layout(wrap)
+  v-flex(sm8 xs12)
+    v-card
+      v-container
+        v-layout(wrap)
+          v-flex.text-xs-center(sm6 xs12)
+            canvas#qr
+          v-flex(sm6 xs12).text-xs-center
+            code.black--text.ma-1 {{user.address}}
+            v-btn(@click="copy")
+              v-icon.mr-1 content_copy
+              span Copy
+  v-flex(sm4).hidden-xs-only
+    v-container.no-padding.ml-2
+      v-layout(wrap)
+        v-flex(xs12)
           v-chip(color='grey darken-3' label).white--text.subheading
             v-avatar
               img(src='static/img/bitcoin2.png')
             span {{user.balance}}
-        v-flex.mt-2.ml-1(xs2)
-          v-icon(:disabled='!user.channelbalance' @click='closeChannels') mdi-arrow-left-bold-box
-          v-icon(:disabled='user.balance <= 0' @click='openChannel') mdi-arrow-right-bold-box
-        v-flex(xs5)
+        v-flex(xs6)
+          v-btn(:disabled='user.balance <= 0' @click='openChannel') 
+            v-icon mdi-arrow-down
+        v-flex(xs6)
+          v-btn(:disabled='!user.channelbalance' @click='closeChannels')
+            v-icon mdi-arrow-up
+        v-flex(xs12)
           v-chip(color='grey darken-3' label).white--text.subheading.fullwidth
             v-icon(left color='yellow') mdi-flash
             span {{user.channelbalance}}
+  v-flex(xs12).hidden-sm-and-up
+    v-container
+      v-layout
+        v-flex(xs6).mr-2
+          v-chip(color='grey darken-3' label).white--text.subheading
+            v-avatar
+              img(src='static/img/bitcoin2.png')
+            span {{user.balance}}
+        v-flex(xs6)
+          v-chip(color='grey darken-3' label).white--text.subheading.fullwidth
+            v-icon(left color='yellow') mdi-flash
+            span {{user.channelbalance}}
+      v-layout
+        v-flex(xs6)
+          v-btn(:disabled='user.balance <= 0' @click='openChannel') 
+            span Light it up
+            v-icon mdi-arrow-right
+        v-flex(xs6)
+          v-btn(:disabled='!user.channelbalance' @click='closeChannels')
+            v-icon mdi-arrow-left
+            span Go Normal
 </template>
 
 <script>
@@ -49,6 +78,22 @@ export default {
   methods: {
     ...mapActions(['openChannel', 'closeChannels', 'faucet', 'snack', 'setupSockets']),
 
+    copy () {
+      var textArea = document.createElement('textarea')
+      textArea.style.position = 'fixed'
+      textArea.value = this.user.address
+
+      document.body.appendChild(textArea)
+
+      textArea.focus()
+      textArea.select()
+
+      document.execCommand('copy')
+      document.body.removeChild(textArea)
+
+      this.snack('Copied to Clipboard')
+    },
+
     drawQR () {
       let canvas = document.getElementById('qr')
       qr.toCanvas(canvas, this.user.address, e => { if (e) console.log(e) })
@@ -69,6 +114,15 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-  .chip
+  code 
+    max-width 100%
+    word-wrap break-word
+
+  .v-chip
+    padding 5px
     width 100%
+    margin 0
+
+  .container.no-padding
+    padding 0 !important
 </style>

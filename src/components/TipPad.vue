@@ -1,10 +1,11 @@
 <template lang="pug">
-.tippad
+.tippad.text-xs-right
   span.display-1 {{tip}}
-  v-layout
+  v-layout(wrap)
     v-flex
       v-btn(:class='percent === 0 && "secondary"' @click='percent = 0') No Tip
       v-btn(:class='percent === 10 && "secondary"' @click='percent = 10') +10%
+    v-flex
       v-btn(:class='percent === 15 && "secondary"' @click='percent = 15') +15%
       v-btn(:class='percent === 20 && "secondary"' @click='percent = 20') +20%
 </template>
@@ -35,8 +36,7 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-  .tippad .btn
-    min-width 74px
+  .tippad .v-btn
     margin 5px 5px 5px 0
 </style>
 

@@ -2,7 +2,7 @@
   v-app(dark @mask='setMasks')
     v-toolbar(absolute app dark color="black" clipped-left fixed)
       v-toolbar-side-icon(v-if='user' @click.stop='toggleMenu')
-      v-toolbar-title(dark @click='$router.push("/")')
+      v-toolbar-title(dark @click='$router.push("/home")')
         img.logo(src='static/img/coinos_logo.png')
       v-spacer
       v-btn(icon @click='$router.push("/about")')
@@ -12,8 +12,8 @@
     v-snackbar.yellow--text(v-model="snack" :timeout="2000" top)
       v-icon info
       span {{message}}
-    v-content.pl-3.pr-3.mt-3
-      v-navigation-drawer(color='black' v-if='user' v-model='drawer' enable-resize-watcher app clipped absolute hide-overlay mobile-break-point='10000' width='200')
+    v-content
+      v-navigation-drawer(color='black' v-if='user' v-model='drawer' app absolute clipped hide-overlay mobile-break-point='10000')
         v-list.secondary
           template(v-for='i in menu') 
             v-list-tile(:key='i.route' ripple @click='$router.push(i.route)')
@@ -23,7 +23,8 @@
               v-list-tile-content {{i.content}}
       v-alert(v-if='error' color='error' v-model='error' value='error' dismissible transition='scale-transition') {{error}}
       transition(name="fade" mode="out-in" appear)
-        router-view
+        v-container.mr-3
+          router-view
     v-footer(app)
       v-bottom-nav(v-if='user' absolute style="height: 56px; margin-bottom: 56px")
         v-btn(flat dark @click="$router.push('/receive')")
@@ -191,6 +192,7 @@ export default {
     opacity: 0
 
 img.logo
+  cursor pointer
   max-height 40px
 
 img.fx
