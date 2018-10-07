@@ -13,7 +13,7 @@
       v-icon info
       span {{message}}
     v-content
-      v-navigation-drawer(color='black' v-if='user' v-model='drawer' app absolute clipped hide-overlay mobile-break-point='10000')
+      v-navigation-drawer(color='black' v-if='user' v-model='drawer' absolute clipped mobile-break-point='10000' width='180')
         v-list.secondary
           template(v-for='i in menu') 
             v-list-tile(:key='i.route' ripple @click='$router.push(i.route)')
@@ -26,7 +26,7 @@
         v-container.mr-3
           router-view
     v-footer(app)
-      v-bottom-nav(v-if='user' absolute style="height: 56px; margin-bottom: 56px")
+      v-bottom-nav(v-if='user' absolute style="height: 56px; margin-bottom: 56px; z-index: 6;")
         v-btn(flat dark @click="$router.push('/receive')")
           span Receive
           v-icon mdi-arrow-left-bold-box
@@ -207,4 +207,7 @@ img.fx
 
 .bottom-nav .btn
   width 88px
+
+.v-navigation-drawer__border
+  display none
 </style>

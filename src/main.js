@@ -6,6 +6,7 @@ import App from './App'
 import router from './router'
 import store from './store'
 import 'mdi/css/materialdesignicons.min.css'
+import './main.styl'
 
 Axios.defaults.baseURL = process.env.BASEURL
 

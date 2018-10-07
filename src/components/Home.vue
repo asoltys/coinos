@@ -2,12 +2,12 @@
 v-layout(wrap)
   v-flex(sm8 xs12)
     v-card
-      v-container
+      v-container.request
         v-layout(wrap)
           v-flex.text-xs-center(sm6 xs12)
             canvas#qr
           v-flex(sm6 xs12).text-xs-center
-            code.black--text.ma-1 {{user.address}}
+            code.black--text.mt-2 {{user.address}}
             v-btn(@click="copy")
               v-icon.mr-1 content_copy
               span Copy
@@ -20,10 +20,10 @@ v-layout(wrap)
               img(src='static/img/bitcoin2.png')
             span {{user.balance}}
         v-flex(xs6)
-          v-btn(:disabled='user.balance <= 0' @click='openChannel') 
+          v-btn.arrow(:disabled='user.balance <= 0' @click='openChannel')
             v-icon mdi-arrow-down
         v-flex(xs6)
-          v-btn(:disabled='!user.channelbalance' @click='closeChannels')
+          v-btn.arrow(:disabled='!user.channelbalance' @click='closeChannels')
             v-icon mdi-arrow-up
         v-flex(xs12)
           v-chip(color='grey darken-3' label).white--text.subheading.fullwidth
@@ -41,15 +41,13 @@ v-layout(wrap)
           v-chip(color='grey darken-3' label).white--text.subheading.fullwidth
             v-icon(left color='yellow') mdi-flash
             span {{user.channelbalance}}
-      v-layout
-        v-flex(xs6)
-          v-btn(:disabled='user.balance <= 0' @click='openChannel') 
-            span Light it up
+      v-layout.arrows
+        v-flex(xs6).mr-2
+          v-btn(:disabled='user.balance <= 0' @click='openChannel')
             v-icon mdi-arrow-right
         v-flex(xs6)
           v-btn(:disabled='!user.channelbalance' @click='closeChannels')
             v-icon mdi-arrow-left
-            span Go Normal
 </template>
 
 <script>
@@ -115,7 +113,7 @@ export default {
 
 <style lang="stylus" scoped>
   code 
-    max-width 100%
+    max-width 90%
     word-wrap break-word
 
   .v-chip
@@ -125,4 +123,15 @@ export default {
 
   .container.no-padding
     padding 0 !important
+
+  .arrows .v-btn
+    margin 0
+    margin-top 8px
+    width 100%
+
+  .arrow
+    margin 8px 0
+
+  .request
+    padding 8 0
 </style>
