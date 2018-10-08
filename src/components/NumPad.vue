@@ -75,9 +75,9 @@ export default {
 
 <style lang="stylus" scoped>
   .numpad
-    max-width 300px
+    max-width 220px
     .v-btn
-      min-width 78px
+      min-width 68px
       margin 5px 10px 5px 0px
       padding 0
 </style>

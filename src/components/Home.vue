@@ -5,6 +5,7 @@ v-layout(wrap)
       v-container.request
         v-layout(wrap)
           v-flex.text-xs-center(sm6 xs12)
+            h2 Deposit Bitcoin
             canvas#qr
           v-flex(sm6 xs12).text-xs-center
             code.black--text.mt-2 {{user.address}}
@@ -21,13 +22,13 @@ v-layout(wrap)
             span {{user.balance}}
         v-flex(xs6)
           v-btn.arrow(:disabled='user.balance <= 0' @click='openChannel')
-            v-icon mdi-arrow-down
+            arrow-down
         v-flex(xs6)
           v-btn.arrow(:disabled='!user.channelbalance' @click='closeChannels')
-            v-icon mdi-arrow-up
+            arrow-up
         v-flex(xs12)
           v-chip(color='grey darken-3' label).white--text.subheading.fullwidth
-            v-icon(left color='yellow') mdi-flash
+            flash(fillColor='yellow')
             span {{user.channelbalance}}
   v-flex(xs12).hidden-sm-and-up
     v-container
@@ -39,22 +40,31 @@ v-layout(wrap)
             span {{user.balance}}
         v-flex(xs6)
           v-chip(color='grey darken-3' label).white--text.subheading.fullwidth
-            v-icon(left color='yellow') mdi-flash
+            flash(fillColor='yellow')
             span {{user.channelbalance}}
       v-layout.arrows
         v-flex(xs6).mr-2
           v-btn(:disabled='user.balance <= 0' @click='openChannel')
-            v-icon mdi-arrow-right
+            span Open
+            arrow-right
         v-flex(xs6)
           v-btn(:disabled='!user.channelbalance' @click='closeChannels')
-            v-icon mdi-arrow-left
+            arrow-left
+            span Close
 </template>
 
 <script>
 import qr from 'qrcode'
 import { mapGetters, mapActions } from 'vuex'
+import ArrowDown from 'vue-material-design-icons/ArrowDownBold'
+import ArrowUp from 'vue-material-design-icons/ArrowUpBold'
+import ArrowLeft from 'vue-material-design-icons/ArrowLeftBold'
+import ArrowRight from 'vue-material-design-icons/ArrowRightBold'
+import Flash from 'vue-material-design-icons/Flash'
 
 export default {
+  components: { ArrowDown, ArrowUp, ArrowLeft, ArrowRight, Flash },
+
   data () {
     return {
       playing: false,

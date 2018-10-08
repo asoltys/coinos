@@ -1,11 +1,8 @@
 <template lang="pug">
   div
-    HCE(:accountNumber='total')
     v-progress-linear(v-if='loading' indeterminate)
     template(v-else-if='generated')
       template(v-if='received')
-        video(v-if='!finished' width='100%' ref='connect' @ended='finish' autoplay='' poster='static/img/fff.png')
-          source(src="static/connect.mp4" type="video/mp4")
         v-alert(value='received' color='success') Received {{received}} Satoshis
       v-layout(v-else)
         v-flex(xs12)
@@ -35,34 +32,31 @@
             span.title sats
           v-flex.text-xs-right
             v-btn.darken-4.subheading.grey.white--text(@click='toggle' style='width: 120px') 
-              v-avatar 
-                span(v-html='symbol(currency)')
+              span(v-html='symbol(currency)').mr-1
               span {{conversion}} 
         v-layout
           v-flex.text-xs-center(xs6)
             v-btn(@click='bitcoin' :disabled='total <= 0') 
-              v-avatar.mr-1
-                img(src='static/img/bitcoin2.png')
+              img(src='static/img/bitcoin2.png' width='30px').mr-1
               span Bitcoin
           v-flex.text-xs-center(xs6)
             v-btn(@click='lightning' :disabled='total <= 0') 
-              v-icon.mr-1.yellow--text mdi-flash
+              flash(fillColor='yellow')
               span Lightning
       v-alert(v-else value='!valid') Can't request more than 4294967 satoshis
 </template>
 
 <script>
 import qr from 'qrcode'
-import numpad from './NumPad'
-import tippad from './TipPad'
-import HCE from './HCE'
-import Lightning from './Lightning'
+import Numpad from './NumPad'
+import Tippad from './TipPad'
 import { mapGetters, mapActions } from 'vuex'
+import  Flash from 'vue-material-design-icons/Flash'
 
 const f = parseFloat
 
 export default {
-  components: { numpad, tippad, HCE, Lightning },
+  components: { Flash, Numpad, Tippad },
 
   filters: {
   },
@@ -110,15 +104,6 @@ export default {
     conversion () {
       if (this.fiat) return this.rate
       return parseFloat(1 / this.rate).toFixed(6)
-    },
-  },
-
-  watch: {
-    received () {
-      this.$nextTick(() => {
-        this.$refs.connect ? this.$refs.connect.play() : ''
-        this.finished = false
-      })
     },
   },
 
@@ -219,8 +204,5 @@ export default {
     background #333
     word-wrap break-word
     padding 15px
-
-  [v-cloak]
-    display none
 </style>
 

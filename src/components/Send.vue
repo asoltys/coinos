@@ -8,7 +8,7 @@ div
         span {{user.balance}}
     v-flex(xs6)
       v-chip(color='grey darken-3' label).white--text.subheading.fullwidth
-        v-icon(left color='yellow') mdi-flash
+        flash(fillColor='yellow')
         span {{user.channelbalance}}
   v-card(v-if='payment')
     v-alert.headline(value='true' color='success') Payment Sent!
@@ -27,7 +27,7 @@ div
         v-icon arrow_back
         span Send Another
   template(v-else)
-    v-text-field.mt-2(v-if='!payobj' label='To:' dark v-model='to' clearable multi-line auto-grow rows='1' hide-details autofocus)
+    v-text-field.mt-2(v-if='!payobj' label='Address or Invoice:' dark v-model='to' clearable multi-line auto-grow rows='1' hide-details autofocus)
     v-text-field.mt-4(v-if='address' label='Amount:' dark v-model='amount' autofocus)
     v-list.elevation-1.ma-2(v-if='payobj')
       v-list-tile
@@ -49,12 +49,12 @@ div
 </template>
 
 <script>
-import Lightning from './Lightning'
 import { mapGetters, mapActions } from 'vuex'
 import date from 'date-fns'
+import Flash from 'vue-material-design-icons/Flash'
 
 export default {
-  components: { Lightning },
+  components: { Flash },
 
   filters: {
     trim: w => w.substring(0, 12),

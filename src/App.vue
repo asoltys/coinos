@@ -1,26 +1,17 @@
 <template lang="pug">
   v-app(dark @mask='setMasks')
     v-toolbar(absolute app dark color="black" clipped-left fixed)
-      v-toolbar-side-icon(v-if='user' @click.stop='toggleMenu')
       v-toolbar-title(dark @click='$router.push("/home")')
         img.logo(src='static/img/coinos_logo.png')
       v-spacer
       v-btn(icon @click='$router.push("/about")')
-        v-icon(color='yellow') mdi-flash
+        flash-icon(fillColor="yellow" title="About CoinOS")
       v-btn(v-if='user' icon @click='$router.push("/logout")')
-        v-icon power_settings_new
+        power-settings-icon(title="Logout")
     v-snackbar.yellow--text(v-model="snack" :timeout="2000" top)
-      v-icon info
+      info-icon
       span {{message}}
     v-content
-      v-navigation-drawer(color='black' v-if='user' v-model='drawer' absolute clipped mobile-break-point='10000' width='180')
-        v-list.secondary
-          template(v-for='i in menu') 
-            v-list-tile(:key='i.route' ripple @click='$router.push(i.route)')
-              v-list-tile-action
-                v-btn(icon ripple)
-                  v-icon {{i.icon}}
-              v-list-tile-content {{i.content}}
       v-alert(v-if='error' color='error' v-model='error' value='error' dismissible transition='scale-transition') {{error}}
       transition(name="fade" mode="out-in" appear)
         v-container.mr-3
@@ -29,7 +20,7 @@
       v-bottom-nav(v-if='user' absolute style="height: 56px; margin-bottom: 56px; z-index: 6;")
         v-btn(flat dark @click="$router.push('/receive')")
           span Receive
-          v-icon mdi-arrow-left-bold-box
+          arrow-left
         v-btn(v-if='native()' flat dark @click="scan")
           span Scan
           v-icon camera_alt
@@ -41,25 +32,23 @@
           v-icon home
         v-btn(flat dark @click="$router.push('/send')")
           span Send
-          v-icon mdi-send
+          send
 </template>
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
+import FlashIcon from 'vue-material-design-icons/Flash'
+import InfoIcon from 'vue-material-design-icons/Information'
+import PowerSettingsIcon  from 'vue-material-design-icons/PowerSettings'
+import Send from 'vue-material-design-icons/Send'
+import ArrowLeft from 'vue-material-design-icons/ArrowLeftBold'
 
 export default {
+  components: { ArrowLeft, FlashIcon, InfoIcon, PowerSettingsIcon, Send },
   data () {
     return {
       applink: false,
       drawer: false,
-      menu: [
-        { route: 'home', content: 'Home', icon: 'assignment_returned' },
-        { route: 'send', content: 'Send', icon: 'mdi-send' },
-        { route: 'receive', content: 'Receive', icon: 'mdi-arrow-left-bold-box' },
-        { route: 'payments', content: 'Payments', icon: 'assignment' },
-        { route: 'network', content: 'Network', icon: 'settings_input_antenna' },
-        { route: 'logout', content: 'Logout', icon: 'power_settings_new' },
-      ],
     }
   },
 
@@ -152,10 +141,6 @@ export default {
       } 
     },
 
-    toggleMenu () {
-      this.drawer = !this.drawer
-    },
-
     authenticate (route) {
       const publicpaths = ['/login', '/about', '/register']
       if (!publicpaths.includes(route.path) && !this.user) {
@@ -207,7 +192,4 @@ img.fx
 
 .bottom-nav .btn
   width 88px
-
-.v-navigation-drawer__border
-  display none
 </style>
