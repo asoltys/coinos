@@ -1,6 +1,6 @@
 <template lang="pug">
 .numpad
-  span.display-1 {{amount.toFixed(2)}}
+  span.display-1 {{amount.toFixed(decimals)}}
   span.title.ml-1 {{currency}}
   v-layout(v-for='i in buttons.length / 3' row :key='i')
     v-flex(v-for='j in 3' xs4 :key='j')
@@ -30,6 +30,11 @@ export default {
     }
   },
 
+  computed: {
+    decimals () { return this.currency === 'sats' ? 0 : 2 },
+    divisor () { return 10 ** this.decimals },
+  },
+
   methods: {
     id (n) {
       let prefix = 'button-'
@@ -52,13 +57,13 @@ export default {
       let amount = parseFloat(this.amount)
 
       if (m === '<') {
-        amount = (Math.floor(100 * (parseFloat(amount) / 10)) / 100)
-      } else if (amount < 1000) {
-        amount = 10 * amount + parseFloat(m) / 100
+        amount = (Math.floor(this.divisor * (parseFloat(amount) / 10)) / this.divisor)
+      } else if (amount < 1000000) {
+        amount = 10 * amount + parseFloat(m) / this.divisor
       }
 
       if (m === 'C') amount = 0
-      amount = amount.toFixed(2)
+      amount = amount.toFixed(this.decimals)
       this.$emit('update', amount)
     },
   },

@@ -2,23 +2,13 @@
 div
   h1 Network
   h2 Peers
+  pre {{peers}}
   v-list
     template(v-for='(p, i) in peers')
-      v-list-tile(:key='p.id' @click='')
-        v-list-tile-content
-          v-list-tile-title {{p.pub_key}}
-          h2 Channels
-          v-list(two-line)
-            template(v-for='(c, i) in channels')
-              v-list-tile(:key='c.id' @click='')
-                v-list-tile-content
-                  v-list-tile-action-text local
-                  v-list-tile-sub-title {{c.local_balance}}
-                v-list-tile-action
-                  v-list-tile-title &nbsp;
-                  v-list-tile-action-text remote
-                  v-list-tile-sub-title {{c.remote_balance}}
-                  v-layout
+      h3 {{p.pub_key}}
+      template(v-for='(c, i) in channels.filter(c => c.remote_pubkey === p.pub_key)')
+        div
+          span {{c.local_balance}} {{c.remote_balance}}
 </template>
 
 <script>

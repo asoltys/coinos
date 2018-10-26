@@ -25,25 +25,23 @@
           numpad(:currency='currency' :amount='parseFloat(amount)' @update='a => amount = a')
         v-flex(xs3 sm6)
           tippad(:amount='parseFloat(amount)' @update='t => tip = t')
-      div(v-if='valid')
-        v-layout
-          v-flex
-            span.display-1 {{total}} 
-            span.title sats
-          v-flex.text-xs-right
-            v-btn.darken-4.subheading.grey.white--text(@click='toggle' style='width: 120px') 
-              span(v-html='symbol(currency)').mr-1
-              span {{conversion}} 
-        v-layout
-          v-flex.text-xs-center(xs6)
-            v-btn(@click='bitcoin' :disabled='total <= 0') 
-              img(src='static/img/bitcoin2.png' width='30px').mr-1
-              span Bitcoin
-          v-flex.text-xs-center(xs6)
-            v-btn(@click='lightning' :disabled='total <= 0') 
-              flash(fillColor='yellow')
-              span Lightning
-      v-alert(v-else value='!valid') Can't request more than 4294967 satoshis
+      v-layout
+        v-flex
+          span.display-1 {{total}} 
+          span.title sats
+        v-flex.text-xs-right
+          v-btn.darken-4.subheading.grey.white--text(@click='toggle' style='width: 120px') 
+            span(v-html='symbol(currency)').mr-1
+            span {{conversion}} 
+      v-layout
+        v-flex.text-xs-center(xs6)
+          v-btn(@click='bitcoin' :disabled='total <= 0') 
+            img(src='static/img/bitcoin2.png' width='30px').mr-1
+            span Bitcoin
+        v-flex.text-xs-center(xs6)
+          v-btn(@click='lightning' :disabled='total <= 0') 
+            flash(fillColor='yellow')
+            span Lightning
 </template>
 
 <script>
@@ -78,22 +76,14 @@ export default {
   computed: {
     ...mapGetters(['loading', 'user', 'payreq', 'rate', 'received']),
 
-    copytext () {
-      return this.bitreq || this.payreq
-    },
-
-    code () {
-      return this.showcode ? 'Show QR' : 'Show Code'
-    }, 
-
+    tosats () { return this.currency === 'sats' ? 1 : 100000000 },
+    copytext () { return this.bitreq || this.payreq },
+    code () { return this.showcode ? 'Show QR' : 'Show Code' }, 
     total () {
-      // this.$store.commit('SET_RECEIVED', 0)
-      let total = (f(this.amount) + f(this.tip)) / this.rate
-      return parseInt(total * 100000000)
-    },
-
-    valid () {
-      return this.total < 4294967
+      let total = (f(this.amount) + f(this.tip))
+      console.log(this.amount, total)
+      if (this.fiat) total /= this.rate
+      return (total * this.tosats).toFixed(0)
     },
 
     currency () {
@@ -134,6 +124,11 @@ export default {
 
     toggle () {
       this.fiat = !this.fiat 
+      console.log(this.fiat, this.amount, this.rate)
+      if (this.fiat)
+        this.amount = this.amount / 100000000 * this.rate
+      else
+        this.amount = this.amount * 100000000 / this.rate
     },
 
     timeout (ms) {
