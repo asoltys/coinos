@@ -3,6 +3,7 @@ import Vuetify from 'vuetify'
 import VueAxios from 'vue-axios'
 import Axios from 'axios'
 import App from './App'
+import CamControls from './CamControls'
 import router from './router'
 import store from './store'
 import './main.styl'
@@ -43,4 +44,10 @@ new Vue({
   template: '<app/>',
   router,
   store,
+})
+
+new Vue({
+  components: { CamControls },
+  el: '#camcontrols',
+  template: '<CamControls/>',
 })

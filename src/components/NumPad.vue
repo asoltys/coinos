@@ -2,12 +2,13 @@
 .numpad
   span.display-1 {{amount.toFixed(decimals)}}
   span.title.ml-1 {{currency}}
-  v-layout(v-for='i in buttons.length / 3' row :key='i')
-    v-flex(v-for='j in 3' xs4 :key='j')
-      v-btn(@click='update(buttons[j + 3 * i - 4])' :ref='id(buttons[j  + 3 * i - 4])') 
-        template(v-if='buttons[j + 3 * i - 4] !== "<"')
-          | {{buttons[j + 3 * i - 4]}}
-        v-icon(v-else) undo
+  v-container(fluid style="margin: 0px; padding: 0; margin-left: -15px")
+    v-layout(v-for='i in buttons.length / 3' row :key='i')
+      v-flex(v-for='j in 3' xs4 :key='j')
+        v-btn(@click='update(buttons[j + 3 * i - 4])' :ref='id(buttons[j  + 3 * i - 4])' style="min-width: auto; width: 95%") 
+          template(v-if='buttons[j + 3 * i - 4] !== "<"')
+            | {{buttons[j + 3 * i - 4]}}
+          v-icon(v-else) undo
 </template>
 
 <script>
@@ -78,11 +79,3 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
-  .numpad
-    max-width 220px
-    .v-btn
-      min-width 68px
-      margin 5px 10px 5px 0px
-      padding 0
-</style>

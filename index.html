@@ -8,95 +8,9 @@
     <title>CoinOS</title>
     <link href="static/img/favicon.ico" rel="shortcut icon">
     <link href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js"></script>
-    <script>
-    </script>
-    <style>
-      #camcontrols {
-        position: absolute;
-        height: 100%;
-        width: 100%;
-        top: 0px;
-        left: 0px;
-        display: none;
-      } 
-
-      #crosshair {
-        position: absolute;
-        display: block;
-        width: 200px;
-        height: 200px;
-        border: 10px dashed yellow;
-        top: 50%;
-        left: 50%;
-        margin: -100px 0 0 -100px;
-      } 
-
-      #controls {
-        position: absolute;
-        margin-left: auto;
-        left: 50%;
-        display: block;
-        width: 300px;
-        bottom: 10px;
-        background: yellow;
-        text-align: center;
-        color: black;
-        font-family: Roboto, sans-serif;
-        font-size: 32px;
-        border-radius: 15px;
-        z-index: 500;
-        margin: 0 0 0 -150px;
-      } 
-
-      #wrapper {
-        max-width: 640px;
-        margin: auto;
-        box-shadow: 0 0 0 9999px rgba(20, 20, 20, 1);
-      } 
-
-      #mask {
-        position: relative;
-        height: 0px;
-        width: 0px;
-      } 
-
-      #filler {
-        position: absolute;
-        width: 8000px;
-        background: rgba(20, 20, 20, 1);
-        z-index: 80;
-        left: -8000px;
-      } 
-
-      #rightfiller {
-        position: absolute;
-        width: 8000px;
-        background: rgba(20, 20, 20, 1);
-        z-index: 80;
-        right: -8640px;
-      } 
-
-      body {
-        background: #222;
-      }
-    </style>
   </head>
   <body>
-    <div style="width: 100%">
-      <div id="wrapper">
-        <div id="mask">
-          <div id="filler"></div>
-          <div id="rightfiller"></div>
-        </div>
-        <div id="app"></div>
-      </div>
-    </div>
-    <div id="camcontrols">
-      <div id="crosshair"></div>
-      <div id="controls">
-        <div id="cancel">Stop</div>
-      </div>
-    </div>
+    <div id="app"></div>
+    <div id="camcontrols"></div>
   </body>
 </html>

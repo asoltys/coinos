@@ -16,14 +16,11 @@
             v-btn(@click.native="copy")
               v-icon content_copy
               span Copy
-      v-btn(@click='generated = false; amount = 0') 
-        v-icon.mr-1 arrow_back
-        span Back
     template(v-else)
       v-layout
-        v-flex(xs9 sm6)
+        v-flex(xs9)
           numpad(:currency='currency' :amount='parseFloat(amount)' @update='a => amount = a')
-        v-flex(xs3 sm6)
+        v-flex(xs3)
           tippad(:amount='parseFloat(amount)' @update='t => tip = t')
       v-layout
         v-flex
@@ -176,7 +173,6 @@ export default {
   async mounted () {
     this.$store.commit('SET_LOADING', true)
     this.$store.commit('SET_RECEIVED', 0)
-    new Clipboard('.btn')
     await this.getRates()
     await this.timeout(50)
     this.$nextTick(() => this.$store.commit('SET_LOADING', false))

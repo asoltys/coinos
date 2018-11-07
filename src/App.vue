@@ -1,38 +1,38 @@
 <template lang="pug">
-  v-app(dark @mask='setMasks')
-    v-toolbar(absolute app dark color="black" clipped-left fixed)
-      v-toolbar-title(dark @click='$router.push("/home")')
-        img.logo(src='static/img/coinos_logo.png')
-      v-spacer
-      v-btn(icon @click='$router.push("/about")')
-        flash-icon(fillColor="yellow" title="About CoinOS")
-      v-btn(v-if='user' icon @click='$router.push("/logout")')
-        power-settings-icon(title="Logout")
-    v-snackbar.yellow--text(v-model="snack" :timeout="2000" top)
-      info-icon
-      span {{message}}
-    v-content
-      v-alert(v-if='error' color='error' v-model='error' value='error' dismissible transition='scale-transition') {{error}}
-      transition(name="fade" mode="out-in" appear)
-        v-container.mr-3
-          router-view
-    v-footer(app)
-      v-bottom-nav(v-if='user' absolute style="height: 56px; margin-bottom: 56px; z-index: 6;")
-        v-btn(flat dark @click="$router.push('/receive')")
-          span Receive
-          arrow-left
-        v-btn(v-if='native()' flat dark @click="scan")
-          span Scan
-          v-icon camera_alt
-        v-btn(v-else flat dark @click="$router.push('/payments')")
-          span Payments
-          v-icon assignment 
-        v-btn(flat dark @click="$router.push('/home')")
-          span Home
-          v-icon home
-        v-btn(flat dark @click="$router.push('/send')")
-          span Send
-          send
+    v-app(dark)#app
+      v-toolbar(absolute app dark color="black" clipped-left fixed)
+        v-toolbar-title(dark @click='$router.push("/home")')
+          img.logo(src='static/img/coinos_logo.png')
+        v-spacer
+        v-btn(icon @click='$router.push("/about")')
+          flash-icon(fillColor="yellow" title="About CoinOS")
+        v-btn(v-if='user' icon @click='$router.push("/logout")')
+          power-settings-icon(title="Logout")
+      v-snackbar.yellow--text(v-model="snack" :timeout="2000" top)
+        info-icon
+        span {{message}}
+      v-content
+        v-alert(v-if='error' color='error' v-model='error' value='error' dismissible transition='scale-transition') {{error}}
+        transition(name="fade" mode="out-in" appear)
+          v-container.mr-3
+            router-view
+      v-footer
+        v-bottom-nav(v-if='user' absolute style="position: relative; height: 56px; top: -72px; z-index: 6;")
+          v-btn(flat dark @click="$router.push('/receive')")
+            span Receive
+            arrow-left
+          v-btn(v-if='native()' flat dark @click="scan")
+            span Scan
+            v-icon camera_alt
+          v-btn(v-else flat dark @click="$router.push('/payments')")
+            span Payments
+            v-icon assignment 
+          v-btn(flat dark @click="$router.push('/home')")
+            span Home
+            v-icon home
+          v-btn(flat dark @click="$router.push('/send')")
+            span Send
+            send
 </template>
 
 <script>
@@ -89,21 +89,6 @@ export default {
       }
     },
 
-    setMasks () {
-      this.$nextTick(() => {
-        let body = document.body, html = document.documentElement
-        let height = Math.max(
-          body.scrollHeight, 
-          body.offsetHeight, 
-          html.clientHeight, 
-          html.scrollHeight, 
-          html.offsetHeight)
-
-        document.getElementById('filler').style.height = height
-        document.getElementById('rightfiller').style.height = height
-      })
-    },
-
     scantest () {
       // this.handleScan('lntb15920n1pdfv5mqpp5ygalsdx3g0q24t8sgqv3lwcw8a64c4cejrnqftluljcg5v7x03qsdqqcqzysjgtcyyg03ukffsk29u77a2pgp9jw2f5xsj3q2wnteph62jwk5gj9gs6k8qc467s3d5h58d6gshhk9g7v8axyl4hg6eucv3vk7v2zxpcq8e4222')
       // this.handleScan('2Mtibx7fn88YYY8agCKUECvQL1Wys8P7juo')
@@ -123,7 +108,7 @@ export default {
           } 
 
           window.QRScanner.show(() => {
-            document.querySelector('#wrapper').style.display = 'none'
+            document.querySelector('#app').style.display = 'none'
             document.querySelector('#camcontrols').style.display = 'block'
             window.QRScanner.scan((err, res) => {
               if (err) { 
@@ -132,7 +117,7 @@ export default {
                 this.handleScan(res)
               }
 
-              document.querySelector('#wrapper').style.display = 'block'
+              document.querySelector('#app').style.display = 'block'
               document.querySelector('#camcontrols').style.display = 'none'
               window.QRScanner.hide()
             })
@@ -152,14 +137,39 @@ export default {
   async created () {
     await this.init()
     this.authenticate(this.$route)
-    this.setMasks()
 
-    this.addEvent(window, 'resize', this.setMasks)
+    let elem = document.documentElement
+
+    if (elem.requestFullscreen) {
+      elem.requestFullscreen()
+    } else if (elem.mozRequestFullScreen) {
+      elem.mozRequestFullScreen()
+    } else if (elem.webkitRequestFullscreen) {
+      elem.webkitRequestFullscreen()
+    } else if (elem.msRequestFullscreen) {
+      elem.msRequestFullscreen()
+    }
   },
 }
 </script> 
 
 <style lang="stylus">
+  @media all and (orientation:portrait), (min-width: 800px)
+    .portrait
+      display block
+    .landscape
+      display none
+    #app
+      max-width 768px
+
+  @media all and (orientation:landscape) and (max-width: 1024px)
+    .portrait
+      display none
+    .landscape
+      display block
+    #app
+      max-width 1024px 
+
 .input-group--focused label
   color white !important
 
@@ -190,6 +200,10 @@ img.fx
 .fade-enter
   opacity: 0
 
-.bottom-nav .btn
-  width 88px
+#app 
+  margin auto
+  box-shadow 0 0 0 9999px rgba(20, 20, 20, 1)
+
+body 
+  background #222
 </style>
