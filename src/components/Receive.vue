@@ -17,6 +17,7 @@
               v-icon content_copy
               span Copy
     template(v-else)
+      .portrait
       v-layout
         v-flex(xs9)
           numpad(:currency='currency' :amount='parseFloat(amount)' @update='a => amount = a')
@@ -78,7 +79,6 @@ export default {
     code () { return this.showcode ? 'Show QR' : 'Show Code' }, 
     total () {
       let total = (f(this.amount) + f(this.tip))
-      console.log(this.amount, total)
       if (this.fiat) total /= this.rate
       return (total * this.tosats).toFixed(0)
     },
@@ -168,6 +168,13 @@ export default {
     finish () {
       this.finished = true
     },
+  },
+
+  beforeRouteUpdate (to, from, next) {
+    console.log('hello')
+    this.amount = 0
+    this.generated = false
+    next()
   },
 
   async mounted () {

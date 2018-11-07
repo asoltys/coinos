@@ -4,10 +4,10 @@ v-layout(wrap)
     v-card
       v-container.request
         v-layout(wrap)
-          v-flex.text-xs-center(md6 xs12)
+          v-flex.text-xs-center(xs12)
             h2 Deposit Bitcoin
             canvas.qr
-          v-flex(md6 xs12).text-xs-center
+          v-flex(xs12).text-xs-center
             div
               code.black--text.mt-2 {{user.address}}
             v-btn(@click="copy")
