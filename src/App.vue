@@ -154,9 +154,9 @@ body
   font-size 2vh !important
 
 .v-picker .v-btn__content
-  font-size 12px
+  font-size 12px !important
 
 .v-btn--small .v-btn__content
-  font-size 14px
+  font-size 14px !important
 
 </style>

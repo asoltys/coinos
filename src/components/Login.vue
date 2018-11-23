@@ -8,10 +8,6 @@ v-container
         v-text-field(label="Password" v-model='user.password' type='password')
         v-btn(type='submit') Sign in
         v-btn(@click='$router.push("/register")') Register
-  div.text-xs-center.mt-5(v-if='!native()')
-    v-btn(@click='download')
-      v-icon.mr-1(color='green') android
-      span Android App
 </template>
 
 <script>
