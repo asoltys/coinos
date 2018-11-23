@@ -1,6 +1,6 @@
 <template lang="pug">
-v-footer
-  v-bottom-nav(v-if='user').bottom-nav
+v-footer(height='4vw').mt-auto
+  v-bottom-nav(v-if='user' height='100%').bottom-nav.pb-2
     v-btn(flat dark @click="$router.push('/home')")
       span Home
       v-icon home
@@ -41,9 +41,12 @@ export default {
 <style lang="stylus" scoped>
   .bottom-nav
     position relative 
-    height 56px 
+    height 10vh
     top -72px 
     z-index 6
-    padding-left 10px
-    padding-right 10px
+    padding-left 20px
+    padding-right 20px
+
+    .v-btn
+      min-width 60px
 </style>

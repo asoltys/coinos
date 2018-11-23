@@ -1,7 +1,7 @@
 <template lang="pug">
 .numpad
   span.display-1 {{amount.toFixed(decimals)}}
-  span.title.ml-1 {{currency}}
+  span.ml-1 {{currency}}
   v-container(fluid style="margin: 0px; padding: 0; margin-left: -15px")
     v-layout(v-for='i in buttons.length / 3' row :key='i')
       v-flex(v-for='j in 3' xs4 :key='j')
@@ -78,4 +78,3 @@ export default {
   },
 }
 </script>
-

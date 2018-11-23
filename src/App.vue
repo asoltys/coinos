@@ -88,6 +88,10 @@ export default {
 </script> 
 
 <style lang="stylus">
+  .v-btn
+    font-size 5vh
+    height 8vh
+
   @media all and (orientation:portrait), (min-width: 800px)
     .portrait
       display block
@@ -140,4 +144,19 @@ img.fx
 
 body 
   background #222
+
+.v-btn__content, .v-chip__content
+  font-size 3vh
+
+.display-1
+  font-size 6vh !important
+
+.v-item-group.v-bottom-nav .v-btn .v-btn__content
+  font-size 2vh !important
+
+.v-picker .v-btn__content
+  font-size 12px
+
+.v-btn--small .v-btn__content
+  font-size 14px
 </style>

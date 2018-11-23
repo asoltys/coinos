@@ -4,7 +4,7 @@ div
     v-flex(xs6)
       v-chip(color='grey darken-3' label).white--text.subheading
         v-avatar
-          img(src='static/img/bitcoin2.png')
+          img(src='../assets/bitcoin.png')
         span {{user.balance}}
     v-flex(xs6)
       v-chip(color='grey darken-3' label).white--text.subheading.fullwidth

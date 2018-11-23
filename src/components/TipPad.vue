@@ -36,7 +36,6 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-  .tippad .v-btn
-    margin 5px 5px 5px 0
+.v-btn
+  width 100%
 </style>
-

@@ -3,9 +3,7 @@ div
   v-card
     v-card-text
       p CoinOS is a Bitcoin wallet and point of sale app that you can use to send and receive payments.
-      p It supports normal bitcoin transactions as well as lightning network payments.
-      p The app is free to use and the source code is available on #[a(href="https://github.com/asoltys/coinos.io") Github] in case you want to host your own copy, report issues, or contribute to make it better.
-      p This app is under development. It's not well tested or secured and funds are held in custody on the server so don't put in more than you're willing to lose.
+      p The app is free to use and the source code is available on #[a(href="https://github.com/asoltys/coinos.io") Github] in case you want to host your own node, report issues, or contribute to make it better.
       div.code(:data-clipboard-text='node').text-xs-center
         h3 Lightning Node Info
         canvas#qr

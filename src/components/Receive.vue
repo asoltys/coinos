@@ -6,7 +6,7 @@
         v-alert(value='received' color='success') Received {{received}} Satoshis
       v-layout(v-else)
         v-flex(xs12)
-          h2.text-xs-center Requesting {{total}} Satoshis
+          h2.text-xs-center Send {{total}} Satoshis
           v-card.pa-3.text-xs-center
             div.code(v-if='showcode') {{copytext}}
             canvas#qr(v-show='!showcode' width='100' height='100' @click='fullscreen')
@@ -24,17 +24,17 @@
         v-flex(xs3)
           tippad(:amount='parseFloat(amount)' @update='t => tip = t')
       v-layout
-        v-flex
+        v-flex.my-auto
           span.display-1 {{total}} 
           span.title sats
         v-flex.text-xs-right
-          v-btn.darken-4.subheading.grey.white--text(@click='toggle' style='width: 120px') 
+          v-btn.darken-4.subheading.grey.white--text(@click='toggle') 
             span(v-html='symbol(currency)').mr-1
             span {{conversion}} 
       v-layout
         v-flex.text-xs-center(xs6)
           v-btn(@click='bitcoin' :disabled='total <= 0') 
-            img(src='static/img/bitcoin2.png' width='30px').mr-1
+            img(src='../assets/bitcoin.png' width='30px').mr-1
             span Bitcoin
         v-flex.text-xs-center(xs6)
           v-btn(@click='lightning' :disabled='total <= 0') 
@@ -100,14 +100,31 @@ export default {
 
     fullscreen () {
       if (this.full) {
-        document.webkitCancelFullScreen()
-        document.mozCancelFullScreen()
+        if (document.exitFullscreen) {
+          document.exitFullscreen()
+        } else if (document.mozCancelFullScreen) {
+          document.mozCancelFullScreen()
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen()
+        } else if (document.msExitFullscreen) {
+          document.msExitFullscreen()
+        }
         this.full = false
         return
       }
 
-      let canvas = document.getElementById('qr')
-      canvas.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT)
+      let elem = document.getElementById('qr')
+
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen(Element.ALLOW_KEYBOARD_INPUT)
+      } else if (elem.mozRequestFullScreen) {
+        elem.mozRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT)
+      } else if (elem.webkitRequestFullscreen) {
+        elem.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT)
+      } else if (elem.msRequestFullscreen) {
+        elem.msRequestFullscreen()
+      }
+
       this.full = true
     }, 
 
@@ -214,5 +231,14 @@ export default {
     background #333
     word-wrap break-word
     padding 15px
+
+  .v-btn.subheading
+    width 100%
+
+  .total
+    vertical-
+
+  h2
+    font-size 5vw
 </style>
 

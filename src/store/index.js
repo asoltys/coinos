@@ -78,7 +78,7 @@ export default new Vuex.Store({
     async logout({ commit, state }) {
       deleteCookie('token')
       commit('SET_USER', null)
-      state.socket.disconnect()
+      if (state.socket) state.socket.disconnect()
     }, 
 
     async setupSockets ({ commit, state, dispatch }) {

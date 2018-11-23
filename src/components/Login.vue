@@ -66,8 +66,3 @@ export default {
   },
 }
 </script>
-
-<style lang="stylus" scoped>
-  .logo
-    background-image url('/static/img/coinos_logo.png')
-</style>

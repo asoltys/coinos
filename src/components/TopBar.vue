@@ -1,7 +1,7 @@
 <template lang="pug">
 v-toolbar(absolute app dark color="black" clipped-left fixed)
   v-toolbar-title(dark @click='$router.push("/home")')
-    img.logo(src='static/img/coinos_logo.png')
+    img.logo(src='../assets/coinos_logo.png')
   v-spacer
   v-btn(icon @click='$router.push("/about")')
     flash-icon(fillColor="yellow" title="About CoinOS")
