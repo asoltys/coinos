@@ -112,12 +112,6 @@ export default {
 
   mounted () {
     if (this.clear) this.clearPayment()
-
-    if (typeof cordova !== 'undefined') {
-      console.log('listening for nfc')
-      console.log(window.nfc)
-      window.nfc.addTagDiscoveredListener(e => { console.log('tap detected', e) })
-    }
   },
 }
 </script>

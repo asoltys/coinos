@@ -7,9 +7,6 @@ import Register from '../components/Register'
 import Payments from '../components/Payments'
 import Send from '../components/Send'
 import Receive from '../components/Receive'
-import Withdraw from '../components/Withdraw'
-import Account from '../components/Account'
-import Settings from '../components/Settings'
 import Network from '../components/Network'
 
 const routes = [
@@ -21,9 +18,6 @@ const routes = [
   { name: 'send', path: '/send', component: Send, props: true },
   { path: '/receive/:reset', component: Receive },
   { path: '/receive', component: Receive },
-  { path: '/withdraw', component: Withdraw },
-  { path: '/account', component: Account },
-  { path: '/settings', component: Settings },
   { path: '/network', component: Network},
   { path: '/about', component: About },
   { path: '/logout', component: Login, props: { logout: true } },
