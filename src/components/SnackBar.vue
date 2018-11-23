@@ -5,7 +5,10 @@ v-snackbar.yellow--text(v-model="snack" :timeout="2000" top)
 </template>
 
 <script>
+import InfoIcon from 'vue-material-design-icons/Information'
+
 export default {
+  components: { InfoIcon },
   computed: {
     message: {
       get () { return this.$store.getters.snack },

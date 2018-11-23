@@ -28,12 +28,6 @@ if (navigator.userAgent.match(/Android/)) {
 
   document.addEventListener('deviceready', function () {
     Vue.prototype.$cordova = cordova
-    document.getElementById('cancel').addEventListener('click', () => {
-      window.QRScanner.cancelScan(status => { console.log(status) })
-      document.querySelector('#wrapper').style.display = 'block'
-      document.querySelector('#camcontrols').style.display = 'none'
-      window.QRScanner.hide()
-    })
   }, false)
 }
 
@@ -49,5 +43,5 @@ new Vue({
 new Vue({
   components: { CamControls },
   el: '#camcontrols',
-  template: '<CamControls/>',
+  template: '<cam-controls/>',
 })

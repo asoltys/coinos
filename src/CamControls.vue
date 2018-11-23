@@ -2,7 +2,7 @@
   #camcontrols
     #crosshair
     #controls
-      #cancel Stop
+      #cancel(@click='cancel') Stop
 </template>
 
 <style scoped lang="stylus">
@@ -40,3 +40,16 @@
     z-index 500
     margin 0 0 0 -150px
 </style>
+
+<script>
+export default {
+  methods: {
+    cancel () {
+      window.QRScanner.cancelScan(status => { console.log(status) })
+      document.querySelector('#app').style.display = 'block'
+      document.querySelector('#camcontrols').style.display = 'none'
+      window.QRScanner.hide()
+    },
+  },
+} 
+</script>

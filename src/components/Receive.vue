@@ -9,7 +9,7 @@
           h2.text-xs-center Requesting {{total}} Satoshis
           v-card.pa-3.text-xs-center
             div.code(v-if='showcode') {{copytext}}
-            canvas#qr(v-show='!showcode' width='100' height='100')
+            canvas#qr(v-show='!showcode' width='100' height='100' @click='fullscreen')
             v-btn(@click.native="showcode = !showcode")
               v-icon code
               span {{code}}
@@ -62,6 +62,7 @@ export default {
       message: '',
       about: '',
       amount: 0,
+      full: false,
       tip: 0,
       generated: false,
       showcode: false,
@@ -97,6 +98,19 @@ export default {
   methods: {
     ...mapActions(['addInvoice', 'getRates', 'snack', 'clearPayment']),
 
+    fullscreen () {
+      if (this.full) {
+        document.webkitCancelFullScreen()
+        document.mozCancelFullScreen()
+        this.full = false
+        return
+      }
+
+      let canvas = document.getElementById('qr')
+      canvas.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT)
+      this.full = true
+    }, 
+
     copy () {
       var textArea = document.createElement('textarea')
       textArea.style.position = 'fixed'
@@ -112,7 +126,6 @@ export default {
 
       this.snack('Copied to Clipboard')
     },
-
 
     symbol (v) {
       if (v === 'sats') return '$'
@@ -171,7 +184,6 @@ export default {
   },
 
   beforeRouteUpdate (to, from, next) {
-    console.log('hello')
     this.amount = 0
     this.generated = false
     next()

@@ -2,7 +2,10 @@
     v-app(dark)#app
       top-bar
       snack-bar
-      v-content
+      div(v-if='webscanning').text-xs-center
+        qrcode-stream(@decode='handleScan')
+        v-btn(@click='handleScan' style='margin-bottom: 30px') Cancel
+      v-content(v-show='!scanning')
         v-alert(v-if='error' color='error' v-model='error' value='error' dismissible transition='scale-transition') {{error}}
         transition(name="fade" mode="out-in" appear)
           v-container.mr-3
@@ -16,12 +19,16 @@ import BottomNav from './components/BottomNav'
 import SnackBar from './components/SnackBar'
 import TopBar from './components/TopBar'
 import { mapGetters } from 'vuex'
+import { QrcodeStream } from 'vue-qrcode-reader'
 
 export default {
-  components: { BottomNav, SnackBar, TopBar },
+  components: { BottomNav, SnackBar, TopBar, QrcodeStream },
 
   computed: {
-    ...mapGetters(['user']),
+    ...mapGetters(['scanning', 'user']),
+
+    webscanning () { return this.scanning && !window.QRScanner },
+    
     error: {
       get () { return this.$store.getters.error },
       set (v) { this.$store.commit('SET_ERROR', v) },
@@ -54,6 +61,10 @@ export default {
       if (!publicpaths.includes(route.path) && !this.user) {
         this.$router.push('/login')
       }
+    },
+
+    onDecode (result) {
+      console.log(result)
     },
   },
 

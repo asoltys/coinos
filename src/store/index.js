@@ -36,6 +36,7 @@ export default new Vuex.Store({
     rate: 0,
     received: 0,
     scan: '',
+    scanning: false,
     snack: '',
     socket: null,
     token: '',
@@ -49,7 +50,7 @@ export default new Vuex.Store({
   actions: {
     async init ({ commit, dispatch, state }) {
       let token = readCookie('token')
-      if (token) {
+      if (token || window.QRScanner) {
         if (!state.user.balance) {
           await dispatch('getUser')
         } else if (router.currentRoute === '/login') {
@@ -231,6 +232,37 @@ export default new Vuex.Store({
       commit('SET_PAYREQ', res.data.payment_request)
     },
 
+    async scan ({ commit, dispatch }) {
+      commit('SET_SCANNING', true)
+
+      if (window.QRScanner) {
+        window.QRScanner.prepare((err) => {
+          if (err) {
+            console.error(err)
+            return
+          } 
+
+          window.QRScanner.show(() => {
+            document.querySelector('#app').style.display = 'none'
+            document.querySelector('#camcontrols').style.display = 'block'
+            
+            window.QRScanner.scan((err, res) => {
+              if (err) { 
+                console.log(err) 
+              } else {
+                dispatch('handleScan', res)
+              }
+
+              document.querySelector('#app').style.display = 'block'
+              document.querySelector('#camcontrols').style.display = 'none'
+            
+              window.QRScanner.destroy()
+            })
+          })
+        })
+      }
+    },
+
     async handleScan ({ commit, dispatch }, text) {
       await dispatch('clearPayment')
 
@@ -260,6 +292,8 @@ export default new Vuex.Store({
         commit('SET_ADDRESS', text)
         router.push({ name: 'send', params: { clear: false } })
       } catch (e) { /**/ }
+
+      commit('SET_SCANNING', false)
     },
 
     async snack ({ commit }, msg) {
@@ -284,6 +318,7 @@ export default new Vuex.Store({
     SET_RATE (s, v) { s.rate = v },
     SET_RECEIVED (s, v) { s.received = v },
     SET_SCAN (s, v) { s.scan = v },
+    SET_SCANNING (s, v) { s.scanning = v },
     SET_SNACK (s, v) { s.snack = v },
     SET_SOCKET (s, v) { s.socket = v },
     SET_TOKEN (s, v) { s.token = v },
@@ -305,6 +340,7 @@ export default new Vuex.Store({
     peers: s => s.peers,
     rate: s => s.rate,
     received: s => s.received,
+    scanning: s => s.scanning,
     snack: s => s.snack,
     socket: s => s.socket,
     token: s => s.token,
