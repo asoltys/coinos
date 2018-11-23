@@ -149,7 +149,7 @@ export default {
     },
 
     fiattotal () {
-      return this.filteredPayments.reduce((a, b) => a + parseFloat(b.fiat), 0)
+      return this.filteredPayments.reduce((a, b) => a + parseFloat(b.fiat), 0).toFixed(2)
     },
 
     total () {

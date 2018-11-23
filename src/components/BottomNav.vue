@@ -1,6 +1,6 @@
 <template lang="pug">
-v-footer.mt-auto
-  v-bottom-nav(v-if='user' height='70px').bottom-nav
+v-footer(fixed height='60px')
+  v-bottom-nav(v-if='user' height='60px' absolute)
     v-btn(flat dark @click="$router.push('/home')")
       span Home
       v-icon home
@@ -12,7 +12,7 @@ v-footer.mt-auto
       v-icon camera_alt
     v-btn(flat dark @click="$router.push('/receive/' + Math.floor(Math.random() * 10000))")
       span Receive
-      v-icon 360
+      arrow-left
     v-btn(flat dark @click="$router.push('/send')")
       span Send
       send
@@ -39,10 +39,20 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-  .bottom-nav
-    position relative 
-    top -76px 
+  .v-footer
+    max-width 768px !important
+    left: 50%;
+    transform: translateX(-50%);
 
+  @media all and (orientation:landscape) and (max-width: 1024px)
+    .v-footer
+      max-width 1024px !important
+
+  .v-item-group.v-bottom-nav
+    top -60px !important
+    bottom auto !important
+    
     .v-btn
       min-width 60px
+      height 60px !important
 </style>

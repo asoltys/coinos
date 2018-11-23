@@ -153,10 +153,27 @@ body
 .v-item-group.v-bottom-nav .v-btn .v-btn__content
   font-size 2vh !important
 
-.v-picker .v-btn__content
-  font-size 12px !important
+@media all and (orientation:landscape) and (max-width: 1024px)
+  .v-btn, .v-chip
+    height 5vw !important
 
-.v-btn--small .v-btn__content
-  font-size 14px !important
+  .v-btn__content, .v-chip__content
+    font-size 2.5vw !important
+
+  .display-1
+    font-size 4vw !important
+
+  .v-item-group.v-bottom-nav .v-btn .v-btn__content
+    font-size 2vw !important
+
+  .v-picker .v-btn__content
+    font-size 12px !important
+
+  .v-btn--small .v-btn__content
+    font-size 14px !important
+
+@media only screen and (min-width: 960px)
+  .container
+    max-width 1000px !important
 
 </style>
