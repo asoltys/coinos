@@ -17,7 +17,6 @@
               v-icon content_copy
               span Copy
     template(v-else)
-      .portrait
       v-layout
         v-flex(xs9)
           numpad(:currency='currency' :amount='parseFloat(amount)' @update='a => amount = a')
@@ -237,8 +236,5 @@ export default {
 
   .total
     vertical-
-
-  h2
-    font-size 5vw
 </style>
 

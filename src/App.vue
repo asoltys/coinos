@@ -62,27 +62,11 @@ export default {
         this.$router.push('/login')
       }
     },
-
-    onDecode (result) {
-      console.log(result)
-    },
   },
 
   async created () {
     await this.init()
     this.authenticate(this.$route)
-
-    let elem = document.documentElement
-
-    if (elem.requestFullscreen) {
-      elem.requestFullscreen()
-    } else if (elem.mozRequestFullScreen) {
-      elem.mozRequestFullScreen()
-    } else if (elem.webkitRequestFullscreen) {
-      elem.webkitRequestFullscreen()
-    } else if (elem.msRequestFullscreen) {
-      elem.msRequestFullscreen()
-    }
   },
 }
 </script> 
@@ -141,8 +125,14 @@ img.fx
 body 
   background #222
 
-.v-btn, .v-chip
-  height 8vh !important
+.v-content .v-btn
+  height 6vh !important
+
+.v-picker .v-btn
+  height 32px !important
+
+.v-picker .v-btn__content
+  font-size 14px !important
 
 .v-btn__content, .v-chip__content
   font-size 2.5vh !important

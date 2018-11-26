@@ -13,7 +13,7 @@ Vue.use(Vuex)
 
 function readCookie (n) {
   let a = `; ${document.cookie}`.match(`;\\s*${n}=([^;]+)`)
-  return a ? a[1] : ''
+  return a ? a[1] : null
 }
 
 function deleteCookie (n) {
@@ -45,20 +45,21 @@ export default new Vuex.Store({
       address: null,
       balance: null,
       channelbalance: null,
+      readonly: true,
     },
   },
   actions: {
     async init ({ commit, dispatch, state }) {
-      let token = readCookie('token')
-      if (token || window.QRScanner) {
+      let token = state.token || readCookie('token') || window.localStorage.getItem('token')
+      if (token) {
         if (!state.user.balance) {
           await dispatch('getUser')
         } else if (router.currentRoute === '/login') {
           router.push('/home')
         } 
 
-        await dispatch('setupSockets')
         commit('SET_TOKEN', token)
+        await dispatch('setupSockets')
       }
     },
 
@@ -66,23 +67,26 @@ export default new Vuex.Store({
       try {
         let res = await Vue.axios.post('/login', user)
         await commit('SET_USER', res.data.user)
+        commit('SET_TOKEN', res.data.token)
+        window.localStorage.setItem('token', res.data.token)
       } catch (e) {
         commit('SET_ERROR', 'Login failed')
         return
       }
 
-      dispatch('init')
+      await dispatch('init')
       router.push('/home')
     },
 
     async logout({ commit, state }) {
       deleteCookie('token')
+      commit('SET_TOKEN', null)
       commit('SET_USER', null)
       if (state.socket) state.socket.disconnect()
     }, 
 
     async setupSockets ({ commit, state, dispatch }) {
-      let s = socketio(process.env.SOCKETIO)
+      let s = socketio(process.env.SOCKETIO, { query: { token: state.token } })
       commit('SET_SOCKET', s)
 
       s.on('tx', data => {
@@ -227,9 +231,13 @@ export default new Vuex.Store({
     },
 
     async addInvoice ({ commit }, { amount, tip }) {
-      let res = await Vue.axios.post('/addInvoice', { amount, tip })
-
-      commit('SET_PAYREQ', res.data.payment_request)
+      let res
+      try {
+        res = await Vue.axios.post('/addInvoice', { amount, tip })
+        commit('SET_PAYREQ', res.data.payment_request)
+      } catch (e) {
+        commit('SET_ERROR', e.response.data)
+      } 
     },
 
     async scan ({ commit, dispatch }) {

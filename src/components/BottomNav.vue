@@ -13,7 +13,7 @@ v-footer(fixed height='60px')
     v-btn(flat dark @click="$router.push('/receive/' + Math.floor(Math.random() * 10000))")
       span Receive
       arrow-left
-    v-btn(flat dark @click="$router.push('/send')")
+    v-btn(v-if='!user.readonly' flat dark @click="$router.push('/send')")
       span Send
       send
 </template>

@@ -12,6 +12,7 @@
   "dependencies": {
     "apollo-cache-inmemory": "^1.1.9",
     "apollo-client": "^2.2.5",
+    "apollo-link-context": "^1.0.10",
     "apollo-link-http": "^1.5.2",
     "autoprefixer": "^7.1.2",
     "axios": "^0.18.0",

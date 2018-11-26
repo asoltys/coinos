@@ -25,7 +25,7 @@ v-layout(wrap)
           v-chip(color='grey darken-3' label).white--text.subheading.fullwidth
             flash(fillColor='yellow')
             span {{user.channelbalance}}
-      v-layout.arrows
+      v-layout.arrows(v-if='!user.readonly')
         v-flex(xs6).mr-2
           v-btn(:disabled='user.balance <= 0' @click='openChannel')
             span Open

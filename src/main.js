@@ -20,19 +20,8 @@ Vue.use(Vuetify, {
   },
 })
 
-if (navigator.userAgent.match(/Android/)) {
-  var tag = document.createElement('script')
-  tag.type = 'text/javascript'
-  document.body.appendChild(tag)
-  tag.src = 'cordova.js'
-
-  document.addEventListener('deviceready', function () {
-    Vue.prototype.$cordova = cordova
-  }, false)
-}
-
 /* eslint-disable no-new */
-new Vue({
+let app = new Vue({
   components: { App },
   el: '#app',
   template: '<app/>',
@@ -45,3 +34,16 @@ new Vue({
   el: '#camcontrols',
   template: '<cam-controls/>',
 })
+
+if (navigator.userAgent.match(/Android/)) {
+  var tag = document.createElement('script')
+  tag.type = 'text/javascript'
+  document.body.appendChild(tag)
+  tag.src = 'cordova.js'
+
+  document.addEventListener('deviceready', function () {
+    Vue.prototype.$cordova = cordova
+    app.$router.push('/login')
+  }, false)
+}
+

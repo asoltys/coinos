@@ -2,6 +2,7 @@ import Vue from 'vue'
 import { ApolloClient } from 'apollo-client'
 import { HttpLink } from 'apollo-link-http'
 import { InMemoryCache } from 'apollo-cache-inmemory'
+import { setContext } from 'apollo-link-context'
 import VueApollo from 'vue-apollo'
 
 const httpLink = new HttpLink(
@@ -11,12 +12,22 @@ const httpLink = new HttpLink(
   }
 )
 
+const authLink = setContext((_, { headers }) => {
+  const token = localStorage.getItem('token')
+  return {
+    headers: {
+      ...headers,
+      authorization: token ? `Bearer ${token}` : '',
+    },
+  }
+})
+
 const dataIdFromObject = o => {
   if (o.id) { return o.id }
 }
 
 const apolloClient = new ApolloClient({
-  link: httpLink,
+  link: authLink.concat(httpLink),
   cache: new InMemoryCache({
     dataIdFromObject,
     cacheResolvers: {},

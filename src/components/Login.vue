@@ -52,6 +52,7 @@ export default {
   },
 
   created () {
+    console.log('nihao')
     if (this.logout) {
       this.$store.dispatch('logout')
     }
@@ -62,3 +63,8 @@ export default {
   },
 }
 </script>
+
+<style lang="stylus" scoped>
+  .v-text-field
+    font-size 18px
+</style>

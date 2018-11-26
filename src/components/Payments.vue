@@ -1,18 +1,17 @@
 <template lang="pug">
   div
-    template(v-if='choosefrom || chooseto')
-      v-date-picker(v-if='choosefrom' v-model='fromstring' color='secondary' @input='choosefrom = false')
-      v-date-picker(v-if='chooseto' v-model='tostring' color='secondary' @input='chooseto = false')
-    template(v-else)
+    template
       v-layout.date-picker
         v-flex(xs4)
-          v-btn(@click='choosefrom = !choosefrom; chooseto = false' :color='choosefrom ? "green" : ""' small)
+          v-date-picker(v-if='choosefrom' v-model='fromstring' color='secondary' @input='choosefrom = false')
+          v-btn(v-else @click='choosefrom = !choosefrom; chooseto = false' :color='choosefrom ? "green" : ""' small)
             v-icon.mr-1 event
             span {{from | short}}
         v-flex.ml-3.my-auto.text-xs-center(xs2)
           div.subheading to
         v-flex(xs4)
-          v-btn(@click='chooseto = !chooseto; choosefrom = false' :color='chooseto ? "green" : ""' small)
+          v-date-picker(v-if='chooseto' v-model='tostring' color='secondary' @input='chooseto = false')
+          v-btn(v-else @click='chooseto = !chooseto; choosefrom = false' :color='chooseto ? "green" : ""' small)
             v-icon.mr-1 event
             span {{to | short}}
       v-layout
