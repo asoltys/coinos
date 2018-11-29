@@ -50,7 +50,7 @@ export default {
 } 
 </script>
 
-<style lang="stylus">
+<style lang="stylus" scoped>
   a
     color white
     font-weight bold
@@ -59,7 +59,7 @@ export default {
     max-width 90%
     word-wrap break-word
     font-size 1.5em
-    color black
+    color black !important
 
   .code
     margin auto
