@@ -2,7 +2,7 @@
 v-container
   v-layout
     v-flex
-      v-alert.black--text(color='yellow' icon='info' v-model='showlogout' value='showlogout' dismissible transition='scale-transition') You've logged out 
+      v-alert.black--text.mb-4(color='yellow' icon='info' v-model='showlogout' value='showlogout' dismissible transition='scale-transition') You've logged out 
       v-form(@submit='submit')
         v-text-field(label="Username" v-model='user.username' autofocus dark autocapitalize='none')
         v-text-field(label="Password" v-model='user.password' type='password')
@@ -52,7 +52,6 @@ export default {
   },
 
   created () {
-    console.log('nihao')
     if (this.logout) {
       this.$store.dispatch('logout')
     }

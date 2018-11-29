@@ -1,6 +1,6 @@
 <template lang="pug">
-v-footer(fixed height='60px')
-  v-bottom-nav(v-if='user' height='60px' absolute)
+v-footer(v-if='user && user.username' fixed height='60px')
+  v-bottom-nav(height='60px' absolute)
     v-btn(flat dark @click="$router.push('/home')")
       span Home
       v-icon home

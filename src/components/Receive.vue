@@ -183,14 +183,16 @@ export default {
       this.generated = true
       this.$store.commit('SET_RECEIVED', 0)
       this.$nextTick(async () => {
-        await this.addInvoice({ amount: this.total, tip: this.tip })
-        await this.timeout(200)
-        this.$store.commit('SET_LOADING', false)
-        this.$nextTick(() => {
-          let canvas = document.getElementById('qr')
-          if (!canvas) return
-          qr.toCanvas(canvas, this.payreq, e => { if (e) console.log(e) })
-        })
+        try {
+          await this.addInvoice({ amount: this.total, tip: this.tip })
+          await this.timeout(200)
+          this.$store.commit('SET_LOADING', false)
+          this.$nextTick(() => {
+            let canvas = document.getElementById('qr')
+            if (!canvas) return
+            qr.toCanvas(canvas, this.payreq, e => { if (e) console.log(e) })
+          })
+        } catch (e) { console.log(e) }
       })
     },
 

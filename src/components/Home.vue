@@ -16,24 +16,12 @@ v-layout(wrap)
   v-flex(xs12)
     v-container
       v-layout
-        v-flex(xs6).mr-2
+        v-flex
+          h1 Balance
           v-chip(color='grey darken-3' label).white--text.subheading
             v-avatar
               img(src='../assets/bitcoin.png')
-            span {{user.balance}}
-        v-flex(xs6)
-          v-chip(color='grey darken-3' label).white--text.subheading.fullwidth
-            flash(fillColor='yellow')
-            span {{user.channelbalance}}
-      v-layout.arrows(v-if='!user.readonly')
-        v-flex(xs6).mr-2
-          v-btn(:disabled='user.balance <= 0' @click='openChannel')
-            span Open
-            arrow-right
-        v-flex(xs6)
-          v-btn(:disabled='!user.channelbalance' @click='closeChannels')
-            arrow-left
-            span Close
+            span {{user.balance + user.channelbalance}}
 </template>
 
 <script>
@@ -90,6 +78,8 @@ export default {
       if (!this.user.address) return
       let canvas = document.querySelector('#qr')
       qr.toCanvas(canvas, this.user.address, e => { if (e) console.log(e) })
+      canvas.style.width = '35vh'
+      canvas.style.height = '35vh'
     },
 
     fullscreen () {
@@ -138,6 +128,7 @@ export default {
   code 
     max-width 90%
     word-wrap break-word
+    font-size 1.5em
 
   .v-chip
     padding 5px

@@ -33,6 +33,7 @@ new Vue({
   components: { CamControls },
   el: '#camcontrols',
   template: '<cam-controls/>',
+  store,
 })
 
 if (navigator.userAgent.match(/Android/)) {
@@ -46,4 +47,3 @@ if (navigator.userAgent.match(/Android/)) {
     app.$router.push('/login')
   }, false)
 }
-

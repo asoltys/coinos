@@ -1,15 +1,12 @@
 <template lang="pug">
 div
   v-layout
-    v-flex(xs6)
+    v-flex
+      h3 Balance
       v-chip(color='grey darken-3' label).white--text.subheading
         v-avatar
           img(src='../assets/bitcoin.png')
-        span {{user.balance}}
-    v-flex(xs6)
-      v-chip(color='grey darken-3' label).white--text.subheading.fullwidth
-        flash(fillColor='yellow')
-        span {{user.channelbalance}}
+        span(@click='maxamount') {{user.balance + user.channelbalance}}
   v-card(v-if='payment')
     v-alert.headline(value='true' color='success') Payment Sent!
     v-list
@@ -108,6 +105,7 @@ export default {
 
   methods: {
     ...mapActions(['sendPayment', 'clearPayment']),
+    maxamount () { this.amount = this.user.balance + this.user.channelbalance },
   },
 
   mounted () {
