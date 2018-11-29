@@ -1,45 +1,47 @@
 <template lang="pug">
   div
-    template
-      v-layout.date-picker
-        v-flex(xs4)
-          v-date-picker(v-if='choosefrom' v-model='fromstring' color='secondary' @input='choosefrom = false')
-          v-btn(v-else @click='choosefrom = !choosefrom; chooseto = false' :color='choosefrom ? "green" : ""' small)
-            v-icon.mr-1 event
-            span {{from | short}}
-        v-flex.ml-3.my-auto.text-xs-center(xs2)
-          div.subheading to
-        v-flex(xs4)
-          v-date-picker(v-if='chooseto' v-model='tostring' color='secondary' @input='chooseto = false')
-          v-btn(v-else @click='chooseto = !chooseto; choosefrom = false' :color='chooseto ? "green" : ""' small)
-            v-icon.mr-1 event
-            span {{to | short}}
-      v-layout
-        v-flex(xs12)
-          v-select(:items='Object.keys(presets)' v-model='preset')
-    template(v-if='filteredPayments.length')
-      v-layout
-        v-flex(xs4)
-          v-text-field(label='Total sats' v-model='total' readonly)
-        v-flex(xs4)
-          v-text-field(label='Total CAD' v-model='fiattotal' readonly)
-        v-flex(xs4)
-          v-text-field(label='Total Tips' v-model='tips' readonly)
-      v-list(three-line subheader)
-        template(v-for='(payment, i) in filteredPayments')
-          v-list-tile(background='blue' :key='payment.date' @click='5')
-            v-list-tile-content
-              v-list-tile-title {{payment.hash | trim}}
-              v-list-tile-sub-title(:class='color(payment)') 
-                span {{payment.amount | abs}} sats
-              v-list-tile-sub-title(:class='color(payment)') 
-                span {{payment.fiat | abs | twodec}} CAD
-                small(v-if='payment.tip')  (+{{payment.tip}})
-            v-list-tile-action
-              v-list-tile-action-text {{payment.createdAt | format}}
-              v-list-tile-sub-title balance: {{payment.balance}}
-              v-layout
-    v-alert(value='true' v-else color='yellow').black--text No payments found in the given time period
+    v-progress-linear(v-if='loading' indeterminate)
+    template(v-else)
+      template
+        v-layout.date-picker
+          v-flex(xs4)
+            v-date-picker(v-if='choosefrom' v-model='fromstring' color='secondary' @input='choosefrom = false')
+            v-btn(v-else @click='choosefrom = !choosefrom; chooseto = false' :color='choosefrom ? "green" : ""' small)
+              v-icon.mr-1 event
+              span {{from | short}}
+          v-flex.ml-3.my-auto.text-xs-center(xs2)
+            div.subheading to
+          v-flex(xs4)
+            v-date-picker(v-if='chooseto' v-model='tostring' color='secondary' @input='chooseto = false')
+            v-btn(v-else @click='chooseto = !chooseto; choosefrom = false' :color='chooseto ? "green" : ""' small)
+              v-icon.mr-1 event
+              span {{to | short}}
+        v-layout
+          v-flex(xs12)
+            v-select(:items='Object.keys(presets)' v-model='preset')
+      template(v-if='filteredPayments.length')
+        v-layout
+          v-flex(xs4)
+            v-text-field(label='Total sats' v-model='total' readonly)
+          v-flex(xs4)
+            v-text-field(label='Total CAD' v-model='fiattotal' readonly)
+          v-flex(xs4)
+            v-text-field(label='Total Tips' v-model='tips' readonly)
+        v-list(three-line subheader)
+          template(v-for='(payment, i) in filteredPayments')
+            v-list-tile(background='blue' :key='payment.date' @click='5')
+              v-list-tile-content
+                v-list-tile-title {{payment.hash | trim}}
+                v-list-tile-sub-title(:class='color(payment)') 
+                  span {{payment.amount | abs}} sats
+                v-list-tile-sub-title(:class='color(payment)') 
+                  span {{payment.fiat | abs | twodec}} CAD
+                  small(v-if='payment.tip')  (+{{payment.tip}})
+              v-list-tile-action
+                v-list-tile-action-text {{payment.createdAt | format}}
+                v-list-tile-sub-title balance: {{payment.balance}}
+                v-layout
+      v-alert(value='true' v-else color='yellow').black--text No payments found in the given time period
 </template>
 
 <script>
@@ -85,7 +87,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['payments']),
+    ...mapGetters(['loading', 'payments']),
 
     preset: {
       get () { 

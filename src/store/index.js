@@ -146,10 +146,12 @@ export default new Vuex.Store({
     },
 
     async getPayments ({ commit }) {
+      commit('SET_LOADING', true)
       let res = await apolloClient.query({
         query: paymentsQuery,
         fetchPolicy: 'network-only',
       })
+      commit('SET_LOADING', false)
 
       commit('SET_PAYMENTS', res.data.payments)
     },
