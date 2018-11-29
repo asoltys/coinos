@@ -185,6 +185,8 @@ export default {
           if (!canvas) return
           this.bitreq = `bitcoin:${this.user.address}?amount=${this.total / 100000000}`
           qr.toCanvas(canvas, this.bitreq, e => { if (e) console.log(e) })
+          canvas.style.width = '35vh'
+          canvas.style.height = '35vh'
         })
       })
     },
@@ -203,6 +205,8 @@ export default {
             let canvas = document.getElementById('qr')
             if (!canvas) return
             qr.toCanvas(canvas, this.payreq, e => { if (e) console.log(e) })
+            canvas.style.width = '35vh'
+            canvas.style.height = '35vh'
           })
         } catch (e) { console.log(e) }
       })

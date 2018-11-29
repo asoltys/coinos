@@ -10,6 +10,7 @@
         transition(name="fade" mode="out-in" appear)
           v-container.mr-3
             router-view
+      div(style='height: 40px')
       bottom-nav
 </template>
 
@@ -125,45 +126,7 @@ img.fx
 body 
   background #222
 
-.v-content .v-btn
-  height 6vh !important
-
-.v-picker .v-btn
-  height 32px !important
-
-.v-picker .v-btn__content
-  font-size 14px !important
-
-.v-btn__content, .v-chip__content
-  font-size 2.5vh !important
-
-.display-1
-  font-size 4vh !important
-
-.v-item-group.v-bottom-nav .v-btn .v-btn__content
-  font-size 2vh !important
-
-@media all and (orientation:landscape) and (max-width: 1024px)
-  .v-btn, .v-chip
-    height 5vw !important
-
-  .v-btn__content, .v-chip__content
-    font-size 2.5vw !important
-
-  .display-1
-    font-size 4vw !important
-
-  .v-item-group.v-bottom-nav .v-btn .v-btn__content
-    font-size 2vw !important
-
-  .v-picker .v-btn__content
-    font-size 12px !important
-
-  .v-btn--small .v-btn__content
-    font-size 14px !important
-
 @media only screen and (min-width: 960px)
   .container
     max-width 1000px !important
-
 </style>
