@@ -10,7 +10,7 @@
         transition(name="fade" mode="out-in" appear)
           v-container.mr-3
             router-view
-      div(style='height: 40px')
+      div(style='height: 60px')
       bottom-nav
 </template>
 

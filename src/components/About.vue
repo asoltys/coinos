@@ -7,7 +7,7 @@ div
       div.code(:data-clipboard-text='node').text-xs-center
         h3 Lightning Node Info
         canvas#qr
-        p.mt-3 {{node}}
+        code.mt-3 {{node}}
         div
           v-btn(@click="copy")
             v-icon.mr-1 content_copy
@@ -54,6 +54,12 @@ export default {
   a
     color white
     font-weight bold
+
+  code 
+    max-width 90%
+    word-wrap break-word
+    font-size 1.5em
+    color black
 
   .code
     margin auto

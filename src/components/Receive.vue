@@ -29,28 +29,52 @@
               v-icon content_copy
               span Copy
     template(v-else)
-      v-layout
-        v-flex(xs9)
-          numpad(:currency='currency' :amount='parseFloat(amount)' @update='a => amount = a')
-        v-flex(xs3)
-          tippad(:amount='parseFloat(amount)' @update='t => tip = t')
-      v-layout
-        v-flex.my-auto
-          span.display-1 {{total}} 
-          span.title sats
-        v-flex.text-xs-right
-          v-btn.darken-4.subheading.grey.white--text(@click='toggle') 
-            span(v-html='symbol(currency)').mr-1
-            span {{conversion}} 
-      v-layout
-        v-flex.text-xs-center(xs6)
-          v-btn(@click='bitcoin' :disabled='total <= 0') 
-            img(src='../assets/bitcoin.png' width='30px').mr-1
-            span Bitcoin
-        v-flex.text-xs-center(xs6)
-          v-btn(@click='lightning' :disabled='total <= 0') 
-            flash(fillColor='yellow')
-            span Lightning
+      v-layout(row wrap)
+        v-flex(xs12 sm8).landscape
+          v-layout
+            v-flex(xs9)
+              numpad(:currency='currency' :amount='parseFloat(amount)' @update='a => amount = a')
+            v-flex(xs3)
+              tippad(:amount='parseFloat(amount)' @update='t => tip = t')
+        v-flex(xs12).portrait
+          v-layout
+            v-flex(xs9)
+              numpad(:currency='currency' :amount='parseFloat(amount)' @update='a => amount = a')
+            v-flex(xs3)
+              tippad(:amount='parseFloat(amount)' @update='t => tip = t')
+        v-flex(xs12 sm4).landscape
+          v-layout(column)
+            v-flex.my-auto.text-xs-left.text-sm-right
+              span.display-1 {{total}} 
+              span.title sats
+            v-flex.text-xs-right.ml-auto
+              v-btn.darken-4.subheading.grey.white--text(@click='toggle') 
+                span(v-html='symbol(currency)').mr-1
+                span {{conversion}} 
+            v-flex.text-sm-right
+              v-btn(@click='bitcoin' :disabled='total <= 0').mr-0
+                img(src='../assets/bitcoin.png' width='30px').mr-1
+                span Bitcoin
+            v-flex.text-sm-right
+              v-btn(@click='lightning' :disabled='total <= 0').mr-0
+                flash(fillColor='yellow')
+                span Lightning
+        v-flex(xs12).portrait
+          v-layout(row wrap)
+            v-flex.my-auto(xs6)
+              span.display-1 {{total}} 
+              span.title sats
+            v-flex.text-xs-right(xs6)
+              v-btn.darken-4.subheading.grey.white--text(@click='toggle') 
+                span(v-html='symbol(currency)').mr-1
+                span {{conversion}} 
+            v-flex.text-xs-center.mt-4
+              v-btn(@click='bitcoin' :disabled='total <= 0') 
+                img(src='../assets/bitcoin.png' width='30px').mr-1
+                span Bitcoin
+              v-btn(@click='lightning' :disabled='total <= 0') 
+                flash(fillColor='yellow')
+                span Lightning
 </template>
 
 <script>
