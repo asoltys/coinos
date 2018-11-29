@@ -3,7 +3,19 @@
     v-progress-linear(v-if='loading' indeterminate)
     template(v-else-if='generated')
       template(v-if='received')
-        v-alert(value='received' color='success') Received {{received}} Satoshis
+        v-card
+          v-alert.headline(value='true' color='success') Payment Received!
+          v-list
+            v-list-tile
+              v-list-tile-title Satoshis
+              v-list-tile-sub-title {{received}}
+            v-list-tile
+              v-list-tile-title CAD
+              v-list-tile-sub-title {{(received / 100000000 * rate).toFixed(2)}}
+          v-card-actions
+            v-btn(@click='clear') 
+              v-icon arrow_back
+              span Go Back
       v-layout(v-else)
         v-flex(xs12)
           h2.text-xs-center Send {{total}} Satoshis
@@ -199,6 +211,15 @@ export default {
     finish () {
       this.finished = true
     },
+
+    async clear () {
+      this.generated = false
+      this.$store.commit('SET_LOADING', true)
+      this.$store.commit('SET_RECEIVED', 0)
+      await this.getRates()
+      await this.timeout(50)
+      this.$nextTick(() => this.$store.commit('SET_LOADING', false))
+    },
   },
 
   beforeRouteUpdate (to, from, next) {
@@ -208,11 +229,7 @@ export default {
   },
 
   async mounted () {
-    this.$store.commit('SET_LOADING', true)
-    this.$store.commit('SET_RECEIVED', 0)
-    await this.getRates()
-    await this.timeout(50)
-    this.$nextTick(() => this.$store.commit('SET_LOADING', false))
+    this.clear()
   },
 }
 </script>
