@@ -36,7 +36,7 @@ new Vue({
   store,
 })
 
-if (navigator.userAgent.match(/Android/)) {
+if (/iPad|iPhone|iPod|Android/.test(navigator.userAgent)) {
   var tag = document.createElement('script')
   tag.type = 'text/javascript'
   document.body.appendChild(tag)
