@@ -6,6 +6,7 @@ import App from './App'
 import CamControls from './CamControls'
 import router from './router'
 import store from './store'
+import FastClick from 'fastclick'
 import './main.styl'
 
 Axios.defaults.baseURL = process.env.BASEURL
@@ -35,6 +36,12 @@ new Vue({
   template: '<cam-controls/>',
   store,
 })
+
+if ('addEventListener' in document) {
+  document.addEventListener('DOMContentLoaded', function() {
+    FastClick.attach(document.body)
+  }, false)
+}
 
 if (/iPad|iPhone|iPod|Android/.test(navigator.userAgent)) {
   var tag = document.createElement('script')
