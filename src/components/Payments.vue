@@ -128,6 +128,7 @@ export default {
           o.fiat = (p.amount * p.rate / 100000000).toFixed(2)
           o.tip = parseFloat(p.tip).toFixed(2)
           if (isNaN(o.tip) || o.tip <= 0) o.tip = null
+          if (o.tip) o.fiat -= o.tip
           return o 
         })
         .sort((a, b) => { 
