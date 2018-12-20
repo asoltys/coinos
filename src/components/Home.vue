@@ -21,7 +21,7 @@ v-layout(wrap)
           v-chip(color='grey darken-3' label).white--text.subheading
             v-avatar
               img(src='../assets/bitcoin.png')
-            span {{user.balance + user.channelbalance}}
+            span {{user.balance}}
 </template>
 
 <script>

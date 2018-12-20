@@ -60,16 +60,16 @@ export default {
   data () {
     return {
       presets: {
-        'Last Week': {
-          from: subWeeks(Date.now(), 1),
+        'Last Year': {
+          from: subYears(Date.now(), 1),
           to: Date.now(),
         },
         'Last Month': {
           from: subMonths(Date.now(), 1),
           to: Date.now(),
         }, 
-        'Last Year': {
-          from: subYears(Date.now(), 1),
+        'Last Week': {
+          from: subWeeks(Date.now(), 1),
           to: Date.now(),
         },
         'Custom': {
@@ -80,8 +80,7 @@ export default {
       choosefrom: false,
       chooseto: false,
       currency: 'CAD',
-      quick: 'Last Week',
-      from: subWeeks(Date.now(), 1),
+      from: subYears(Date.now(), 1),
       to: parse(Date.now()),
     }
   },

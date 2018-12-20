@@ -4,7 +4,6 @@ query users {
     balance,
     channel,
     address,
-    channelbalance,
     currency,
     readonlypw,
   }

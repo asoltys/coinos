@@ -44,7 +44,6 @@ export default new Vuex.Store({
     user: {
       address: null,
       balance: null,
-      channelbalance: null,
       readonly: true,
     },
   },
@@ -287,7 +286,7 @@ export default new Vuex.Store({
       try {
         let url = bip21.decode(text)
         commit('SET_ADDRESS', url.address)
-        commit('SET_AMOUNT', url.options.amount * 100000000)
+        commit('SET_AMOUNT', (url.options.amount * 100000000).toFixed(0))
         router.push({ name: 'send', params: { clear: false } })
       } catch (e) { /**/ } 
 
@@ -314,7 +313,6 @@ export default new Vuex.Store({
     SET_ADDRESS (s, v) { s.address = v },
     SET_AMOUNT (s, v) { s.amount = v },
     SET_BALANCE (s, v) { s.balance = v },
-    SET_CHANNEL_BALANCE (s, v) { Vue.set(s.user, 'channelbalance', v) },
     SET_CHANNELS (s, v) { s.channels = v },
     SET_ERROR (s, v) { 
       s.error = v 

@@ -6,7 +6,7 @@ div
       v-chip(color='grey darken-3' label).white--text.subheading
         v-avatar
           img(src='../assets/bitcoin.png')
-        span(@click='maxamount') {{user.balance + user.channelbalance}}
+        span(@click='maxamount') {{user.balance}}
   v-card(v-if='payment')
     v-alert.headline(value='true' color='success') Payment Sent!
     v-list
@@ -105,7 +105,7 @@ export default {
 
   methods: {
     ...mapActions(['sendPayment', 'clearPayment']),
-    maxamount () { this.amount = this.user.balance + this.user.channelbalance },
+    maxamount () { this.amount = this.user.balance },
   },
 
   mounted () {
