@@ -89,6 +89,7 @@ export default new Vuex.Store({
       commit('SET_SOCKET', s)
 
       s.on('tx', data => {
+        console.log('got tx', data)
         bitcoin.Transaction.fromHex(data).outs.map(o => {
           try {
             let network = bitcoin.networks.bitcoin
@@ -231,10 +232,10 @@ export default new Vuex.Store({
       commit('SET_ERROR', null)
     },
 
-    async addInvoice ({ commit }, { amount, tip }) {
+    async addInvoice ({ commit }, { amount, tip, address }) {
       let res
       try {
-        res = await Vue.axios.post('/addInvoice', { amount, tip })
+        res = await Vue.axios.post('/addInvoice', { amount, tip, address })
         commit('SET_PAYREQ', res.data.payment_request)
       } catch (e) {
         commit('SET_ERROR', e.response.data)

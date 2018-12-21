@@ -198,17 +198,26 @@ export default {
     },
 
     bitcoin () {
+      let { address } = this.user
+      let { tip, total } = this
+      let amount = total
+
       this.$store.commit('SET_LOADING', true)
-      this.generated = true
       this.$store.commit('SET_RECEIVED', 0)
+
+      this.generated = true
+
       this.$nextTick(async () => {
-        await this.timeout(200)
+        await this.addInvoice({ amount, tip, address })
+
         this.$store.commit('SET_LOADING', false)
         this.$nextTick(() => {
           let canvas = document.getElementById('qr')
           if (!canvas) return
+
           this.bitreq = `bitcoin:${this.user.address}?amount=${this.total / 100000000}`
           qr.toCanvas(canvas, this.bitreq, e => { if (e) console.log(e) })
+
           canvas.style.width = '35vh'
           canvas.style.height = '35vh'
         })
@@ -223,7 +232,6 @@ export default {
       this.$nextTick(async () => {
         try {
           await this.addInvoice({ amount: this.total, tip: this.tip })
-          await this.timeout(200)
           this.$store.commit('SET_LOADING', false)
           this.$nextTick(() => {
             let canvas = document.getElementById('qr')
