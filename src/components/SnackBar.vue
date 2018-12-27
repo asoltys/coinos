@@ -1,6 +1,6 @@
 <template lang="pug">
 v-snackbar.yellow--text(v-model="snack" :timeout="2000" top)
-  info-icon
+  info-icon.mr-1
   span {{message}}
 </template>
 

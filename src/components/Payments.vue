@@ -52,7 +52,7 @@ export default {
   filters: {
     abs: v => Math.abs(v),
     format: d => format(d, 'YYYY-MM-DD HH:mm'),
-    short: d => format(d, 'MMM D, \'YY'),
+    short: d => format(d, 'MMM D, YYYY'),
     trim: s => s.substr(0, 18),
     twodec: n => n.toFixed(2),
   },

@@ -8,6 +8,8 @@ v-container
         v-text-field(label="Password" v-model='user.password' type='password')
         v-btn(type='submit') Sign in
         v-btn(@click='$router.push("/register")') Register
+        v-btn(color="#4267b2")
+          fb-signin-button(:params="fbSignInParams" @success="onSignInSuccess" @error="onSignInError") Facebook Login
 </template>
 
 <script>
@@ -23,6 +25,10 @@ export default {
 
   data () {
     return {
+      fbSignInParams: {
+        scope: 'email,user_friends',
+        return_scopes: true,
+      },
       user: {
         username: '',
         password: '',
@@ -34,10 +40,18 @@ export default {
   computed: mapGetters(['error']),
 
   methods: {
-    ...mapActions(['login']),
+    ...mapActions(['login', 'facebookLogin']),
 
     download () {
       window.location = 'https://play.google.com/store/apps/details?id=io.cordova.coinos'
+    },
+
+    onSignInSuccess (res) {
+      this.facebookLogin(res)
+    },
+
+    onSignInError (error) {
+      console.log('Facebook login failed', error)
     },
 
     native () {
@@ -66,4 +80,9 @@ export default {
 <style lang="stylus" scoped>
   .v-text-field
     font-size 18px
+
+  .fb-signin-button 
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 3px;
 </style>

@@ -77,12 +77,50 @@ export default new Vuex.Store({
       router.push('/home')
     },
 
+    async facebookLogin ({ commit, dispatch }, data) {
+      console.log(data)
+      let { accessToken, userID } = data.authResponse
+      let res
+
+      window.FB.getLoginStatus(async ({ status }) => {
+        switch (status) {
+        case 'connected':
+          res = await Vue.axios.post('/facebookLogin', { accessToken, userID })
+          window.FB.api(`/${userID}/friends?access_token=${accessToken}`, async ({ data }) => {
+            if (data.find(f => f.id === '106809130385673')) 
+              res.data.user.canbuy = true
+
+            await commit('SET_USER', res.data.user)
+            commit('SET_TOKEN', res.data.token)
+            window.localStorage.setItem('token', res.data.token)
+            await dispatch('init')
+            router.push('/home')
+          })
+          break
+        } 
+      })
+    },
+
     async logout({ commit, state }) {
       deleteCookie('token')
       commit('SET_TOKEN', null)
       commit('SET_USER', null)
       if (state.socket) state.socket.disconnect()
     }, 
+
+    async buy ({ state, dispatch }, { amount, token }) {
+      console.log('bingo')
+      try {
+        let sats = ((100000000 * amount / 100) / state.rate).toFixed(0)
+        await Vue.axios.post('/buy', { amount, token, sats })
+        await dispatch ('getUser')
+        router.push('/home')
+        dispatch ('snack', `Bought ${sats} satoshis`)
+      } catch (e) {
+        console.log('error charging credit card', e)
+        return
+      }
+    },
 
     async setupSockets ({ commit, state, dispatch }) {
       let s = socketio(process.env.SOCKETIO, { query: { token: state.token } })
@@ -99,7 +137,7 @@ export default new Vuex.Store({
             let address = bitcoin.address.fromOutputScript(o.script, network)
             if (address === state.user.address) {
               commit('SET_RECEIVED', o.value)
-              dispatch('snack', `Received ${o.value} satoshis`)
+              dispatch('snack', `Received ${o.value} satoshi`)
             } 
           } catch(e) { /* */ }
         })
@@ -110,7 +148,7 @@ export default new Vuex.Store({
       s.on('invoice', data => {
         commit('SET_RECEIVED', data.value)
         dispatch('getUser')
-        dispatch('snack', `Received ${data.value} satoshis`)
+        dispatch('snack', `Received ${data.value} satoshi`)
       })
     },
 
@@ -177,24 +215,6 @@ export default new Vuex.Store({
       let res = await Vue.axios.get('/peers')
 
       commit('SET_PEERS', res.data.peers)
-    },
-
-    async faucet ({ dispatch }) {
-      await Vue.axios.post('/faucet')
-      dispatch('getUser')
-    },
-
-    async openChannel ({ commit, dispatch }) {
-      dispatch('clearPayment')
-      try {
-        await Vue.axios.post('/openchannel')
-        dispatch('getUser')
-      } catch (e) { commit('SET_ERROR', e.response.data) } 
-    },
-
-    async closeChannels ({ dispatch }) {
-      await Vue.axios.post('/closechannels')
-      dispatch('getUser')
     },
 
     async sendPayment ({ commit, dispatch, getters }) {

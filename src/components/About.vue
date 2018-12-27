@@ -12,6 +12,8 @@ div
           v-btn(@click="copy")
             v-icon.mr-1 content_copy
             span Copy
+      h2 Privacy Policy
+      p CoinOS stores your chosen username and a hash of your password and your payment history. If you login with Facebook then I check to see if you're friends with me to enable extra awesome sauce but I don't store any of your personal information.
 </template>
 
 <script>

@@ -1,11 +1,14 @@
 <template lang='pug'>
-v-layout(wrap)
+div.text-xs-center
+  v-flex
+    span.display-2 {{user.balance}} 
+    span.headline satoshi
+    h3 ({{((user.balance / 100000000) * rate).toFixed(2)}} CAD)
   v-flex(xs12)
     v-card
       v-container.request
         v-layout(wrap)
           v-flex.text-xs-center(xs12)
-            h2 Deposit Bitcoin
             canvas#qr(@click='fullscreen')
           v-flex(xs12).text-xs-center
             div
@@ -13,15 +16,9 @@ v-layout(wrap)
             v-btn(@click="copy")
               v-icon.mr-1 content_copy
               span Copy
-  v-flex(xs12)
-    v-container
-      v-layout
-        v-flex
-          h1 Balance
-          v-chip(color='grey darken-3' label).white--text.subheading
-            v-avatar
-              img(src='../assets/bitcoin.png')
-            span {{user.balance}}
+  v-btn.mx-auto(v-if='user.limit > 0' @click="$router.push('/buy')")
+    v-icon.mr-1 credit_card
+    span Add Funds
 </template>
 
 <script>
@@ -46,7 +43,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['user']),
+    ...mapGetters(['rate', 'user']),
   }, 
 
   watch: {
@@ -56,7 +53,7 @@ export default {
   },
 
   methods: {
-    ...mapActions(['openChannel', 'closeChannels', 'faucet', 'snack', 'setupSockets']),
+    ...mapActions(['getRates', 'snack']),
 
     copy () {
       var textArea = document.createElement('textarea')
@@ -78,8 +75,9 @@ export default {
       if (!this.user.address) return
       let canvas = document.querySelector('#qr')
       qr.toCanvas(canvas, this.user.address, e => { if (e) console.log(e) })
-      canvas.style.width = '35vh'
-      canvas.style.height = '35vh'
+      canvas.style.width = '25vh'
+      canvas.style.height = '25vh'
+      canvas.style.cursor = 'pointer'
     },
 
     fullscreen () {
@@ -120,6 +118,7 @@ export default {
   mounted () {
     this.max()
     this.drawQR()
+    this.getRates()
   }, 
 }
 </script>
@@ -128,7 +127,7 @@ export default {
   code 
     max-width 90%
     word-wrap break-word
-    font-size 1.5em
+    font-size 1.1em
 
   .v-chip
     padding 5px
