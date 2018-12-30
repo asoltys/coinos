@@ -4,7 +4,7 @@ div
     v-flex.text-xs-center.mb-2
       span.display-2 {{user.balance}} 
       span.headline satoshi
-      h3 ({{((user.balance / 100000000) * rate).toFixed(2)}} CAD)
+      h3 ({{((user.balance / 100000000) * rate).toFixed(2)}} CAD @ #[span.yellow--text {{rate}}] per BTC)
   v-card(v-if='payment')
     v-alert.headline(value='true' color='success') Payment Sent!
     v-list
