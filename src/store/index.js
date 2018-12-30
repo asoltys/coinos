@@ -11,6 +11,8 @@ import router from '../router'
 import bitcoin from 'bitcoinjs-lib'
 Vue.use(Vuex)
 
+const l = console.log
+
 function readCookie (n) {
   let a = `; ${document.cookie}`.match(`;\\s*${n}=([^;]+)`)
   return a ? a[1] : null
@@ -28,10 +30,12 @@ export default new Vuex.Store({
     channels: [],
     error: '',
     fees: 0,
+    friends: [],
     loading: false,
     payment: null,
     payobj: null,
     payreq: '',
+    payuser: '',
     peers: [],
     rate: 0,
     received: 0,
@@ -78,7 +82,6 @@ export default new Vuex.Store({
     },
 
     async facebookLogin ({ commit, dispatch }, data) {
-      console.log(data)
       let { accessToken, userID } = data.authResponse
       let res
 
@@ -86,16 +89,11 @@ export default new Vuex.Store({
         switch (status) {
         case 'connected':
           res = await Vue.axios.post('/facebookLogin', { accessToken, userID })
-          window.FB.api(`/${userID}/friends?access_token=${accessToken}`, async ({ data }) => {
-            if (data.find(f => f.id === '106809130385673')) 
-              res.data.user.canbuy = true
-
-            await commit('SET_USER', res.data.user)
-            commit('SET_TOKEN', res.data.token)
-            window.localStorage.setItem('token', res.data.token)
-            await dispatch('init')
-            router.push('/home')
-          })
+          await commit('SET_USER', res.data.user)
+          commit('SET_TOKEN', res.data.token)
+          window.localStorage.setItem('token', res.data.token)
+          await dispatch('init')
+          router.push('/home')
           break
         } 
       })
@@ -109,7 +107,6 @@ export default new Vuex.Store({
     }, 
 
     async buy ({ state, dispatch }, { amount, token }) {
-      console.log('bingo')
       try {
         let sats = ((100000000 * amount / 100) / state.rate).toFixed(0)
         await Vue.axios.post('/buy', { amount, token, sats })
@@ -117,7 +114,7 @@ export default new Vuex.Store({
         router.push('/home')
         dispatch ('snack', `Bought ${sats} satoshis`)
       } catch (e) {
-        console.log('error charging credit card', e)
+        l('error charging credit card', e)
         return
       }
     },
@@ -127,7 +124,7 @@ export default new Vuex.Store({
       commit('SET_SOCKET', s)
 
       s.on('tx', data => {
-        console.log('got tx', data)
+        l('got tx', data)
         bitcoin.Transaction.fromHex(data).outs.map(o => {
           try {
             let network = bitcoin.networks.bitcoin
@@ -194,6 +191,29 @@ export default new Vuex.Store({
       commit('SET_PAYMENTS', res.data.payments)
     },
 
+    async getFriends ({ commit, state }) {
+      if (window.FB) {
+        commit('SET_LOADING', true)
+        window.FB.api(`/${state.user.username}/friends?accessToken=${state.user.fbtoken}`, async res => {
+          if (res.data) {
+            let friends = await Promise.all(res.data.map(async f => {
+              f.pic = (await new Promise((resolve, reject) => {
+                window.FB.api(`/${f.id}/picture?redirect=false&type=small&accessToken=${state.user.fbtoken}`, reject, resolve)
+              })).data.url
+
+              return f
+            }))
+
+            commit('SET_FRIENDS', friends)
+          } else {
+            l(res)
+          } 
+
+          commit('SET_LOADING', false)
+        })
+      }
+    },
+
     async getRates ({ commit }) {
       let res = await Vue.axios('/rates')
       commit('SET_RATE', res.data.ask)
@@ -220,7 +240,7 @@ export default new Vuex.Store({
     async sendPayment ({ commit, dispatch, getters }) {
       commit('SET_LOADING', true)
 
-      let { address, amount, payreq } = getters
+      let { address, amount, payreq, payuser } = getters
       if (payreq) {
         try {
           let res = await Vue.axios.post('/sendPayment', { payreq })
@@ -229,6 +249,14 @@ export default new Vuex.Store({
           commit('SET_ERROR', e.response.data)
         } 
       }
+      else if (payuser) {
+        try {
+          let res = await Vue.axios.post('/payUser', { payuser, amount })
+          commit('SET_PAYMENT', res.data)
+        } catch (e) {
+          commit('SET_ERROR', e.response.data)
+        } 
+      } 
       else if (address) {
         try {
           let res = await Vue.axios.post('/sendCoins', { address, amount })
@@ -248,6 +276,7 @@ export default new Vuex.Store({
       commit('SET_ADDRESS', '')
       commit('SET_PAYMENT', null)
       commit('SET_PAYOBJ', null)
+      commit('SET_PAYUSER', null)
       commit('SET_AMOUNT', null)
       commit('SET_ERROR', null)
     },
@@ -278,7 +307,7 @@ export default new Vuex.Store({
             
             window.QRScanner.scan((err, res) => {
               if (err) { 
-                console.log(err) 
+                l(err) 
               } else {
                 dispatch('handleScan', res)
               }
@@ -339,10 +368,12 @@ export default new Vuex.Store({
       s.error = v 
       if (v && v.toString().includes('502 Bad')) s.error = 'Problem connecting to server'
     },
+    SET_FRIENDS (s, v) { s.friends = v },
     SET_LOADING (s, v) { s.loading = v },
     SET_PAYMENT (s, v) { s.payment = v },
     SET_PAYOBJ (s, v) { s.payobj = v },
     SET_PAYREQ (s, v) { s.payreq = v },
+    SET_PAYUSER (s, v) { s.payuser = v },
     SET_PEERS (s, v) { s.peers = v },
     SET_RATE (s, v) { s.rate = v },
     SET_RECEIVED (s, v) { s.received = v },
@@ -361,11 +392,13 @@ export default new Vuex.Store({
     channels: s => s.channels,
     error: s => s.error,
     fees: s => s.fees,
+    friends: s => s.friends,
     loading: s => s.loading,
     payment: s => s.payment,
     payments: s => s.payments,
     payobj: s => s.payobj,
     payreq: s => s.payreq,
+    payuser: s => s.payuser,
     peers: s => s.peers,
     rate: s => s.rate,
     received: s => s.received,

@@ -7,5 +7,6 @@ query users {
     currency,
     readonlypw,
     limit,
+    fbtoken,
   }
 }

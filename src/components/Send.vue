@@ -1,12 +1,10 @@
 <template lang="pug">
 div
   v-layout
-    v-flex
-      h3 Balance
-      v-chip(color='grey darken-3' label).white--text.subheading
-        v-avatar
-          img(src='../assets/bitcoin.png')
-        span(@click='maxamount') {{user.balance}}
+    v-flex.text-xs-center.mb-2
+      span.display-2 {{user.balance}} 
+      span.headline satoshi
+      h3 ({{((user.balance / 100000000) * rate).toFixed(2)}} CAD)
   v-card(v-if='payment')
     v-alert.headline(value='true' color='success') Payment Sent!
     v-list
@@ -20,12 +18,13 @@ div
         v-list-tile-title Fees
         v-list-tile-sub-title {{fees}}
     v-card-actions
-      v-btn(@click='clearPayment') 
+      v-btn(@click='init') 
         v-icon arrow_back
         span Send Another
   template(v-else)
-    v-text-field.mt-2(v-if='!payobj' label='Address or Invoice:' dark v-model='to' clearable multi-line auto-grow rows='1' hide-details autofocus)
-    v-text-field.mt-4(v-if='address' label='Amount:' dark v-model='amount' autofocus)
+    v-textarea.mt-2(v-if='!payobj && !$route.query.to' label='Address or Invoice:' dark v-model='to' clearable auto-grow rows='1' hide-details autofocus)
+    v-text-field.mt-4(v-if='address || $route.query.to' label='Amount:' dark v-model='amount' autofocus)
+      v-btn(slot='append' @click='maxamount') Max
     v-list.elevation-1.ma-2(v-if='payobj')
       v-list-tile
         v-list-tile-title Amount
@@ -66,12 +65,12 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['address', 'fees', 'balance', 'loading', 'user', 'payment', 'payreq', 'payobj']),
+    ...mapGetters(['address', 'fees', 'balance', 'loading', 'user', 'payment', 'payreq', 'payobj', 'payuser', 'rate']),
 
     total () {
       let p = this.payment
       if (p) {
-        if (p.payment_route) return p.payment_route.total_amt
+        if (p.payment_route) return p.payment_route.total_amt - p.payment_route.total_fees
         return p.amount
       }
       return 0
@@ -95,6 +94,7 @@ export default {
       get () {
         if (this.payreq) return this.payreq
         if (this.address) return this.address
+        if (this.payuser) return this.payuser
       },
       set (v) {
         if (!v) v = ''
@@ -105,11 +105,15 @@ export default {
 
   methods: {
     ...mapActions(['sendPayment', 'clearPayment']),
+    init () {
+      if (this.clear) this.clearPayment()
+      this.$store.commit('SET_PAYUSER', this.$route.query.to)
+    },
     maxamount () { this.amount = this.user.balance },
   },
 
   mounted () {
-    if (this.clear) this.clearPayment()
+    this.init()
   },
 }
 </script>

@@ -1,6 +1,6 @@
 <template lang='pug'>
 div.text-xs-center
-  v-flex
+  v-flex.mb-2
     span.display-2 {{user.balance}} 
     span.headline satoshi
     h3 ({{((user.balance / 100000000) * rate).toFixed(2)}} CAD)
@@ -16,6 +16,9 @@ div.text-xs-center
             v-btn(@click="copy")
               v-icon.mr-1 content_copy
               span Copy
+  v-btn.mx-auto(v-if='user.fbtoken' @click="$router.push('/contacts')") 
+    v-icon.mr-1 person
+    span Address Book
   v-btn.mx-auto(v-if='user.limit > 0' @click="$router.push('/buy')")
     v-icon.mr-1 credit_card
     span Add Funds
@@ -43,7 +46,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['rate', 'user']),
+    ...mapGetters(['fbtoken', 'rate', 'user']),
   }, 
 
   watch: {
