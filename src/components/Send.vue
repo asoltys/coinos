@@ -107,7 +107,7 @@ export default {
 
     amount: {
       get () { return this.$store.getters.amount },
-      set (v) { console.log(v); this.$store.commit('SET_AMOUNT', v) },
+      set (v) { this.$store.commit('SET_AMOUNT', v) },
     },
 
     to: {

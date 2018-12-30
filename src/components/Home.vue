@@ -129,9 +129,9 @@ export default {
 
 <style lang="stylus" scoped>
   code 
-    max-width 90%
+    max-width 100%
     word-wrap break-word
-    font-size 1.1em
+    font-size 0.9em
 
   .v-chip
     padding 5px

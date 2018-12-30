@@ -59,9 +59,9 @@ export default {
     font-weight bold
 
   code 
-    max-width 90%
+    max-width 100%
     word-wrap break-word
-    font-size 1.5em
+    font-size 0.9em
     color black !important
 
   .code
