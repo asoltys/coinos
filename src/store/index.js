@@ -277,7 +277,7 @@ export default new Vuex.Store({
       commit('SET_PAYMENT', null)
       commit('SET_PAYOBJ', null)
       commit('SET_PAYUSER', null)
-      commit('SET_AMOUNT', null)
+      commit('SET_AMOUNT', 0)
       commit('SET_ERROR', null)
     },
 

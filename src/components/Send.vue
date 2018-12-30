@@ -22,9 +22,13 @@ div
         v-icon arrow_back
         span Send Another
   template(v-else)
-    v-textarea.mt-2(v-if='!payobj && !$route.query.to' label='Address or Invoice:' dark v-model='to' clearable auto-grow rows='1' hide-details autofocus)
-    v-text-field.mt-4(v-if='address || $route.query.to' label='Amount:' dark v-model='amount' autofocus)
-      v-btn(slot='append' @click='maxamount') Max
+    v-textarea.mt-2(v-if='!payobj && !payuser' label='Address or Invoice:' dark v-model='to' clearable auto-grow rows='1' hide-details autofocus)
+    template(v-if='address || payuser')
+      numpad.mt-4(:currency='currency' :amount='parseFloat(amount)' @update='a => amount = a')
+      div
+        v-btn.darken-4.subheading.grey.white--text(@click='toggle') 
+          span(v-html='symbol(currency)').mr-1
+          span {{conversion}} 
     v-list.elevation-1.ma-2(v-if='payobj')
       v-list-tile
         v-list-tile-title Amount
@@ -35,7 +39,7 @@ div
       v-list-tile
         v-list-tile-title Date
         v-list-tile-sub-title {{payobj.timestampString | format}}
-    v-btn(v-if='payobj' @click='clearPayment')
+    v-btn(@click='back')
       v-icon arrow_back
       span Back
     v-progress-linear(v-if='loading' indeterminate)
@@ -48,9 +52,10 @@ div
 import { mapGetters, mapActions } from 'vuex'
 import date from 'date-fns'
 import Flash from 'vue-material-design-icons/Flash'
+import Numpad from './NumPad'
 
 export default {
-  components: { Flash },
+  components: { Flash, Numpad },
 
   filters: {
     trim: w => w.substring(0, 12),
@@ -64,8 +69,23 @@ export default {
     },
   },
 
+  data () {
+    return {
+      fiat: false,
+    }
+  },
+
   computed: {
+    conversion () {
+      if (this.fiat) return this.rate
+      return parseFloat(1 / this.rate).toFixed(6)
+    },
     ...mapGetters(['address', 'fees', 'balance', 'loading', 'user', 'payment', 'payreq', 'payobj', 'payuser', 'rate']),
+
+    currency () {
+      if (this.fiat) return this.user.currency
+      return 'sats'
+    },
 
     total () {
       let p = this.payment
@@ -87,7 +107,7 @@ export default {
 
     amount: {
       get () { return this.$store.getters.amount },
-      set (v) { this.$store.commit('SET_AMOUNT', v) },
+      set (v) { console.log(v); this.$store.commit('SET_AMOUNT', v) },
     },
 
     to: {
@@ -104,12 +124,30 @@ export default {
   }, 
 
   methods: {
+    symbol (v) {
+      if (v === 'sats') return '$'
+      return 'B'
+    },
+
     ...mapActions(['sendPayment', 'clearPayment']),
     init () {
       if (this.clear) this.clearPayment()
-      this.$store.commit('SET_PAYUSER', this.$route.query.to)
+      this.$store.commit('SET_PAYUSER', this.$route.query.payuser)
+    },
+
+    back () {
+      if (this.payreq) return this.clearPayment()
+      if (this.payuser) return this.$router.push('/contacts')
+      return this.$router.push('/home')
     },
     maxamount () { this.amount = this.user.balance },
+    toggle () {
+      this.fiat = !this.fiat 
+      if (this.fiat)
+        this.amount = this.amount / 100000000 * this.rate
+      else
+        this.amount = this.amount * 100000000 / this.rate
+    },
   },
 
   mounted () {

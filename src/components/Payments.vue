@@ -53,7 +53,7 @@ export default {
     abs: v => Math.abs(v),
     format: d => format(d, 'YYYY-MM-DD HH:mm'),
     short: d => format(d, 'MMM D, YYYY'),
-    trim: s => s.substr(0, 18),
+    trim: s => s.length > 20 ? s.substr(0, 20) + '...' : s,
     twodec: n => n.toFixed(2),
   },
 
