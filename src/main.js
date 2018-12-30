@@ -8,7 +8,6 @@ import router from './router'
 import store from './store'
 import FastClick from 'fastclick'
 import FBSignInButton from 'vue-facebook-signin-button'
-import { promisify } from 'es6-promisify'
 import './main.styl'
 
 Axios.defaults.baseURL = process.env.BASEURL
@@ -47,8 +46,6 @@ window.fbAsyncInit = function() {
     xfbml: true,
     version: 'v3.2',
   })
-
-  window.FB.a = promisify(window.FB.api)
 }
 
 ;(function(d, s, id) {

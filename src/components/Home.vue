@@ -16,12 +16,13 @@ div.text-xs-center
             v-btn(@click="copy")
               v-icon.mr-1 content_copy
               span Copy
-  v-btn.mx-auto(v-if='user.fbtoken' @click="$router.push('/contacts')") 
-    v-icon.mr-1 person
-    span Address Book
-  v-btn.mx-auto(v-if='user.limit > 0' @click="$router.push('/buy')")
-    v-icon.mr-1 credit_card
-    span Add Funds
+  div.mx-auto
+    v-btn.mr-2(v-if='user.fbtoken' @click="$router.push('/contacts')") 
+      v-icon.mr-1 person
+      span Address Book
+    v-btn(v-if='user.limit > 0' @click="$router.push('/buy')")
+      v-icon.mr-1 credit_card
+      span Add Funds
 </template>
 
 <script>

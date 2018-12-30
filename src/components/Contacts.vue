@@ -1,7 +1,7 @@
 <template lang="pug">
   div
     v-progress-linear(v-if='loading' indeterminate)
-    v-list(v-if='friends.length')
+    v-list(v-else-if='friends.length')
       template(v-for='(friend, i) in friends')
         v-list-tile
           v-list-tile-content

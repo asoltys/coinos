@@ -2,6 +2,7 @@
 div
   v-card
     v-card-text
+      h1 Welcome!
       p CoinOS is a Bitcoin wallet and point of sale app that you can use to send and receive payments.
       p The app is free to use and the source code is available on #[a(href="https://github.com/asoltys/coinos.io") Github] in case you want to host your own node, report issues, or contribute to make it better.
       div.code(:data-clipboard-text='node').text-xs-center
@@ -13,7 +14,7 @@ div
             v-icon.mr-1 content_copy
             span Copy
       h2 Privacy Policy
-      p CoinOS stores your chosen username and a hash of your password and your payment history. If you login with Facebook then I check to see if you're friends with me to enable extra awesome sauce but I don't store any of your personal information.
+      p CoinOS stores your username, a hash of your password, and your payment history. If you login with Facebook, we access your friends list in order to populate your address book.
 </template>
 
 <script>
