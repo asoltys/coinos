@@ -59,7 +59,7 @@ export default {
 
       if (m === '<') {
         amount = (Math.floor(this.divisor * (parseFloat(amount) / 10)) / this.divisor)
-      } else if (amount < 1000000) {
+      } else if (amount < 10000000) {
         amount = 10 * amount + parseFloat(m) / this.divisor
       }
 

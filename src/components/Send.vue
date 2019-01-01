@@ -18,13 +18,14 @@ div
         v-list-tile-title Fees
         v-list-tile-sub-title {{fees}}
     v-card-actions
-      v-btn(@click='init') 
+      v-btn(@click='back') 
         v-icon arrow_back
         span Send Another
   template(v-else)
     v-textarea.mt-2(v-if='!payobj && !payuser' label='Address or Invoice:' dark v-model='to' clearable auto-grow rows='1' hide-details autofocus)
     template(v-if='address || payuser')
-      numpad.mt-4(:currency='currency' :amount='parseFloat(amount)' @update='a => amount = a')
+      numpad.mt-4(:currency='currency' :amount='parseFloat(display)' @update='updateAmount')
+      span.display-1 {{amount}} 
       div
         v-btn.darken-4.subheading.grey.white--text(@click='toggle') 
           span(v-html='symbol(currency)').mr-1
@@ -72,6 +73,7 @@ export default {
   data () {
     return {
       fiat: false,
+      display: 0,
     }
   },
 
@@ -80,7 +82,7 @@ export default {
       if (this.fiat) return this.rate
       return parseFloat(1 / this.rate).toFixed(6)
     },
-    ...mapGetters(['address', 'fees', 'balance', 'loading', 'user', 'payment', 'payreq', 'payobj', 'payuser', 'rate']),
+    ...mapGetters(['address', 'amount', 'fees', 'balance', 'loading', 'user', 'payment', 'payreq', 'payobj', 'payuser', 'rate']),
 
     currency () {
       if (this.fiat) return this.user.currency
@@ -105,11 +107,6 @@ export default {
       return 0
     },
 
-    amount: {
-      get () { return this.$store.getters.amount },
-      set (v) { this.$store.commit('SET_AMOUNT', v) },
-    },
-
     to: {
       get () {
         if (this.payreq) return this.payreq
@@ -124,6 +121,15 @@ export default {
   }, 
 
   methods: {
+    updateAmount (v) {
+      this.display = v
+      if (this.fiat) {
+        this.$store.commit('SET_AMOUNT', (v * 100000000 / this.rate).toFixed(0))
+      } else {
+        this.$store.commit('SET_AMOUNT', v)
+      } 
+    },
+
     symbol (v) {
       if (v === 'sats') return '$'
       return 'B'
@@ -136,7 +142,7 @@ export default {
     },
 
     back () {
-      if (this.payreq) return this.clearPayment()
+      if (this.payreq || this.address) return this.clearPayment()
       if (this.payuser) return this.$router.push('/contacts')
       return this.$router.push('/home')
     },
@@ -144,9 +150,9 @@ export default {
     toggle () {
       this.fiat = !this.fiat 
       if (this.fiat)
-        this.amount = this.amount / 100000000 * this.rate
+        this.display = this.display / 100000000 * this.rate
       else
-        this.amount = this.amount * 100000000 / this.rate
+        this.display = this.display * 100000000 / this.rate
     },
   },
 

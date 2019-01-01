@@ -19,6 +19,7 @@ function readCookie (n) {
 }
 
 function deleteCookie (n) {
+  window.localStorage.removeItem('token')
   document.cookie = n + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;'
 }
 
@@ -124,11 +125,10 @@ export default new Vuex.Store({
       commit('SET_SOCKET', s)
 
       s.on('tx', data => {
-        l('got tx', data)
         bitcoin.Transaction.fromHex(data).outs.map(o => {
           try {
             let network = bitcoin.networks.bitcoin
-            if (process.env.NODE_ENV !== 'production') {
+            if (process.env.NODE_ENV !== 'production' || window.location.href.includes('test')) {
               network = bitcoin.networks.testnet
             } 
             let address = bitcoin.address.fromOutputScript(o.script, network)
@@ -136,7 +136,7 @@ export default new Vuex.Store({
               commit('SET_RECEIVED', o.value)
               dispatch('snack', `Received ${o.value} satoshi`)
             } 
-          } catch(e) { /* */ }
+          } catch(e) { l(e) }
         })
 
         dispatch('getUser')
@@ -239,6 +239,7 @@ export default new Vuex.Store({
 
     async sendPayment ({ commit, dispatch, getters }) {
       commit('SET_LOADING', true)
+      commit('SET_ERROR', null)
 
       let { address, amount, payreq, payuser } = getters
       if (payreq) {

@@ -29,7 +29,7 @@
             v-text-field(label='Total Tips' v-model='tips' readonly)
         v-list(three-line subheader)
           template(v-for='(payment, i) in filteredPayments')
-            v-list-tile(background='blue' :key='payment.date' @click='5')
+            v-list-tile(background='blue' :key='payment.date' @click='link(payment)')
               v-list-tile-content
                 v-list-tile-title {{payment.hash | trim}}
                 v-list-tile-sub-title(:class='color(payment)') 
@@ -167,6 +167,13 @@ export default {
 
   methods: {
     color (p) { return p.amount < 0 ? 'sent' : 'received' },
+    link (p) {
+      if (p.hash.startsWith('ln') || p.hash.startsWith('txn')) return
+      let bs = 'https://blockstream.info'
+      if (process.env.NODE_ENV !== 'production')
+        bs += 'testnet'
+      window.location = `${bs}/tx/${p.hash}`
+    },
   },
 
   mounted () {
