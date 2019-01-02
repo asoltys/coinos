@@ -142,6 +142,7 @@ export default {
     },
 
     back () {
+      this.display = 0
       if (this.payreq || this.address) return this.clearPayment()
       if (this.payuser) return this.$router.push('/contacts')
       return this.$router.push('/home')

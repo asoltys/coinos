@@ -131,7 +131,7 @@ export default {
   },
 
   methods: {
-    ...mapActions(['addInvoice', 'getRates', 'snack', 'clearPayment']),
+    ...mapActions(['addInvoice', 'snack', 'clearPayment']),
 
     fullscreen () {
       if (this.full) {
@@ -252,7 +252,6 @@ export default {
       this.generated = false
       this.$store.commit('SET_LOADING', true)
       this.$store.commit('SET_RECEIVED', 0)
-      await this.getRates()
       await this.timeout(50)
       this.$nextTick(() => this.$store.commit('SET_LOADING', false))
     },

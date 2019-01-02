@@ -2,7 +2,6 @@ import apolloClient from '../apollo-client'
 import socketio from 'socket.io-client'
 import Vue from 'vue'
 import Vuex from 'vuex'
-import getUserQuery from '../graphql/getUser.gql'
 import paymentsQuery from '../graphql/getPayments.gql'
 import bech32 from 'bech32'
 import bip21 from 'bip21'
@@ -19,7 +18,6 @@ function readCookie (n) {
 }
 
 function deleteCookie (n) {
-  window.localStorage.removeItem('token')
   document.cookie = n + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;'
 }
 
@@ -53,16 +51,14 @@ export default new Vuex.Store({
     },
   },
   actions: {
-    async init ({ commit, dispatch, state }) {
-      let token = state.token || readCookie('token') || window.localStorage.getItem('token')
+    async init ({ dispatch, state }) {
+      let token = window.localStorage.getItem('token') || state.token || readCookie('token')
+
       if (token) {
-        if (!state.user.balance) {
-          await dispatch('getUser')
-        } else if (router.currentRoute === '/login') {
+        if (router.currentRoute === '/login') {
           router.push('/home')
         } 
 
-        commit('SET_TOKEN', token)
         await dispatch('setupSockets')
       }
     },
@@ -111,7 +107,6 @@ export default new Vuex.Store({
       try {
         let sats = ((100000000 * amount / 100) / state.rate).toFixed(0)
         await Vue.axios.post('/buy', { amount, token, sats })
-        await dispatch ('getUser')
         router.push('/home')
         dispatch ('snack', `Bought ${sats} satoshis`)
       } catch (e) {
@@ -138,15 +133,23 @@ export default new Vuex.Store({
             } 
           } catch(e) { l(e) }
         })
+      })
 
-        dispatch('getUser')
+      s.on('block', () => {
+        dispatch('getPayments')
       })
 
       s.on('invoice', data => {
         commit('SET_RECEIVED', data.value)
-        dispatch('getUser')
         dispatch('snack', `Received ${data.value} satoshi`)
       })
+
+      s.on('connected', () => {
+        s.emit('getuser', {}, user => { commit('SET_USER', user) })
+      })
+
+      s.on('rate', rate => commit('SET_RATE', rate))
+      s.on('user', user => commit('SET_USER', user))
     },
 
     async createUser ({ commit, dispatch }, form) {
@@ -169,15 +172,6 @@ export default new Vuex.Store({
     /* eslint-disable-next-line */
     async updateUser ({ commit }, user) {
       await Vue.axios.post('/user', user)
-    },
-
-    async getUser ({ commit }) {
-      let res = await apolloClient.query({
-        query: getUserQuery,
-        fetchPolicy: 'network-only',
-      })
-
-      commit('SET_USER', res.data.users[0])
     },
 
     async getPayments ({ commit }) {
@@ -214,11 +208,6 @@ export default new Vuex.Store({
       }
     },
 
-    async getRates ({ commit }) {
-      let res = await Vue.axios('/rates')
-      commit('SET_RATE', res.data.ask)
-    },
-
     async getBalance ({ commit }) {
       let res = await Vue.axios.get('/balance')
 
@@ -237,7 +226,7 @@ export default new Vuex.Store({
       commit('SET_PEERS', res.data.peers)
     },
 
-    async sendPayment ({ commit, dispatch, getters }) {
+    async sendPayment ({ commit, getters }) {
       commit('SET_LOADING', true)
       commit('SET_ERROR', null)
 
@@ -268,7 +257,6 @@ export default new Vuex.Store({
       }
 
       commit('SET_LOADING', false)
-      dispatch('getUser')
     },
 
     async clearPayment ({ commit }) {

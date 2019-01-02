@@ -8,7 +8,8 @@ div
       div.code(:data-clipboard-text='node').text-xs-center
         h3 Lightning Node Info
         canvas#qr
-        code.mt-3 {{node}}
+        div
+          code.mt-3 {{node}}
         div
           v-btn(@click="copy")
             v-icon.mr-1 content_copy

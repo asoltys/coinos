@@ -8,5 +8,6 @@ query payments {
     createdAt,
     received,
     tip,
+    confirmed,
   }
 }

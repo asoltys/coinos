@@ -51,6 +51,7 @@
     "friendly-errors-webpack-plugin": "^1.6.1",
     "graphql": "^0.12.0",
     "graphql-tag": "https://github.com/apollographql/graphql-tag#7ec4ce38d4d1f99a904530f3c4f20b73b9ab6117",
+    "gsap": "^2.0.2",
     "html-webpack-plugin": "^2.30.1",
     "moment": "^2.21.0",
     "node-notifier": "^5.1.2",

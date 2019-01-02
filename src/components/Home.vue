@@ -1,9 +1,13 @@
 <template lang='pug'>
 div.text-xs-center
   v-flex.mb-2
-    span.display-2 {{user.balance}} 
+    span.display-2 {{animatedBalance}} 
     span.headline satoshi
-    h3 ({{((user.balance / 100000000) * rate).toFixed(2)}} CAD @ #[span.yellow--text {{rate}}] per BTC)
+    h3 ({{((animatedBalance / 100000000) * animatedRate).toFixed(2)}} CAD @ #[span.yellow--text {{animatedRate}}] per BTC)
+    div(v-if='user.pending').green--text
+      span.display-2 {{animatedPending}} 
+      span.headline pending
+      h3 ({{((animatedPending / 100000000) * animatedRate).toFixed(2)}} CAD)
   v-flex(xs12)
     v-card
       v-container.request
@@ -33,12 +37,16 @@ import ArrowUp from 'vue-material-design-icons/ArrowUpBold'
 import ArrowLeft from 'vue-material-design-icons/ArrowLeftBold'
 import ArrowRight from 'vue-material-design-icons/ArrowRightBold'
 import Flash from 'vue-material-design-icons/Flash'
+import { TweenLite } from 'gsap'
 
 export default {
   components: { ArrowDown, ArrowUp, ArrowLeft, ArrowRight, Flash },
 
   data () {
     return {
+      tweenedBalance: null,
+      tweenedPending: null,
+      tweenedRate: null,
       full: false,
       playing: false,
       received: 0,
@@ -48,16 +56,37 @@ export default {
 
   computed: {
     ...mapGetters(['fbtoken', 'rate', 'user']),
+    animatedBalance () { return parseInt(this.tweenedBalance).toFixed(0) },
+    animatedPending () { return parseInt(this.tweenedPending).toFixed(0) },
+    animatedRate () { return parseFloat(this.tweenedRate).toFixed(2) },
   }, 
 
   watch: {
-    user () {
-      this.drawQR()
+    rate (rate) {
+      let tweenedRate = rate
+      TweenLite.to(this.$data, 0.5, { tweenedRate })
+    },
+
+    user: {
+      handler (user) {
+        let tweenedBalance = user.balance
+        let tweenedPending = user.pending
+
+        console.log(user.balance, user.username)
+
+        if (user.pending === 0) user.pending = null
+
+        TweenLite.to(this.$data, 0.5, { tweenedBalance })
+        TweenLite.to(this.$data, 0.5, { tweenedPending })
+
+        this.drawQR()
+      },
+      deep: true,
     },
   },
 
   methods: {
-    ...mapActions(['getRates', 'snack']),
+    ...mapActions(['snack']),
 
     copy () {
       var textArea = document.createElement('textarea')
@@ -122,8 +151,13 @@ export default {
   mounted () {
     this.max()
     this.drawQR()
-    this.getRates()
   }, 
+
+  created () {
+    this.tweenedBalance = this.user.balance
+    this.tweenedPending = this.user.pending
+    this.tweenedRate = this.rate
+  },
 }
 </script>
 

@@ -36,11 +36,9 @@ export default {
     ...mapGetters(['rate']),
   }, 
 
-  methods: mapActions(['getRates', 'buy', 'snack']),
+  methods: mapActions(['buy', 'snack']),
 
   async mounted () {
-    await this.getRates()
-
     Bus.$off('vue-stripe.success')
     Bus.$once('vue-stripe.success', payload => {
       let { token } = payload
