@@ -8,7 +8,8 @@ v-container
         v-text-field(label="Password" v-model='user.password' type='password')
         v-btn(type='submit') Sign in
         v-btn(@click='$router.push("/register")') Register
-        v-btn(color="#4267b2")
+        v-btn(v-if='native()' color="#4267b2" @click='facebookConnect') Facebook Login 
+        v-btn(v-else color="#4267b2")
           fb-signin-button(:params="fbSignInParams" @success="onSignInSuccess" @error="onSignInError") Facebook Login
 </template>
 
@@ -54,8 +55,12 @@ export default {
       console.log('Facebook login failed', error)
     },
 
+    facebookConnect () {
+      window.facebookConnectPlugin.login(this.fbSignInParams.scope.split(','), this.onSignInSuccess, this.onSignInError)
+    }, 
+
     native () {
-      return typeof window.cordova !== 'undefined'
+      return window.location.protocol === 'file:'
     },
 
     submit (e) {

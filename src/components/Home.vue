@@ -72,8 +72,6 @@ export default {
         let tweenedBalance = user.balance
         let tweenedPending = user.pending
 
-        console.log(user.balance, user.username)
-
         if (user.pending === 0) user.pending = null
 
         TweenLite.to(this.$data, 0.5, { tweenedBalance })

@@ -55,7 +55,7 @@ export default new Vuex.Store({
       let token = window.localStorage.getItem('token') || state.token || readCookie('token')
 
       if (token) {
-        if (router.currentRoute === '/login') {
+        if (router.currentRoute.path === '/login') {
           router.push('/home')
         } 
 
@@ -66,7 +66,7 @@ export default new Vuex.Store({
     async login ({ commit, dispatch }, user) {
       try {
         let res = await Vue.axios.post('/login', user)
-        await commit('SET_USER', res.data.user)
+        commit('SET_USER', res.data.user)
         commit('SET_TOKEN', res.data.token)
         window.localStorage.setItem('token', res.data.token)
       } catch (e) {
@@ -82,18 +82,16 @@ export default new Vuex.Store({
       let { accessToken, userID } = data.authResponse
       let res
 
-      window.FB.getLoginStatus(async ({ status }) => {
-        switch (status) {
-        case 'connected':
-          res = await Vue.axios.post('/facebookLogin', { accessToken, userID })
-          await commit('SET_USER', res.data.user)
-          commit('SET_TOKEN', res.data.token)
-          window.localStorage.setItem('token', res.data.token)
-          await dispatch('init')
-          router.push('/home')
-          break
-        } 
-      })
+      switch (data.status) {
+      case 'connected':
+        res = await Vue.axios.post('/facebookLogin', { accessToken, userID })
+        commit('SET_USER', res.data.user)
+        commit('SET_TOKEN', res.data.token)
+        window.localStorage.setItem('token', res.data.token)
+        await dispatch('init')
+        router.push('/home')
+        break
+      } 
     },
 
     async logout({ commit, state }) {
@@ -186,26 +184,39 @@ export default new Vuex.Store({
     },
 
     async getFriends ({ commit, state }) {
-      if (window.FB) {
-        commit('SET_LOADING', true)
-        window.FB.api(`/${state.user.username}/friends?accessToken=${state.user.fbtoken}`, async res => {
-          if (res.data) {
-            let friends = await Promise.all(res.data.map(async f => {
-              f.pic = (await new Promise((resolve, reject) => {
-                window.FB.api(`/${f.id}/picture?redirect=false&type=small&accessToken=${state.user.fbtoken}`, reject, resolve)
-              })).data.url
+      let api
 
-              return f
+      if (window.FB) {
+        api = window.FB.api
+      }
+      else if (window.facebookConnectPlugin) { 
+        api = (p, s, f) => window.facebookConnectPlugin.api(p, ['user_friends'], s, f)
+      }
+
+      if (!api) return
+
+      commit('SET_LOADING', true)
+      api(`/${state.user.username}/friends?accessToken=${state.user.fbtoken}`, async res => {
+        if (res.data) {
+          try {
+            let friends = await Promise.all(res.data.map(async f => {
+              try {
+                f.pic = (await new Promise((resolve, reject) => {
+                  api(`/${f.id}/picture?redirect=false&type=small&accessToken=${state.user.fbtoken}`, reject, resolve)
+                })).data.url
+
+                return f
+              } catch (e) { l(e) }
             }))
 
             commit('SET_FRIENDS', friends)
-          } else {
-            l(res)
-          } 
+          } catch (e) { l(e) }
+        } else {
+          l(res)
+        } 
 
-          commit('SET_LOADING', false)
-        })
-      }
+        commit('SET_LOADING', false)
+      })
     },
 
     async getBalance ({ commit }) {

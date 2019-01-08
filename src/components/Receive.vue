@@ -186,7 +186,6 @@ export default {
 
     toggle () {
       this.fiat = !this.fiat 
-      console.log(this.fiat, this.amount, this.rate)
       if (this.fiat)
         this.amount = this.amount / 100000000 * this.rate
       else
