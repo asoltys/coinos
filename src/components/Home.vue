@@ -2,12 +2,12 @@
 div.text-xs-center
   v-flex.mb-2
     span.display-2 {{animatedBalance}} 
-    span.headline satoshi
-    h3 ({{((animatedBalance / 100000000) * animatedRate).toFixed(2)}} CAD @ #[span.yellow--text {{animatedRate}}] per BTC)
-    div(v-if='user.pending').green--text
+    span.headline SAT
+    h3 {{((animatedBalance / 100000000) * animatedRate).toFixed(2)}} CAD @ #[span.yellow--text {{animatedRate}}] per BTC
+    div(v-if='user.pending').yellow--text.text--lighten-3
       span.display-2 {{animatedPending}} 
       span.headline pending
-      h3 ({{((animatedPending / 100000000) * animatedRate).toFixed(2)}} CAD)
+      h3 {{((animatedPending / 100000000) * animatedRate).toFixed(2)}} CAD
   v-flex(xs12)
     v-card
       v-container.request

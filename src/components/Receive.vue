@@ -33,24 +33,17 @@
         v-flex(xs12 sm8).landscape
           v-layout
             v-flex(xs9)
-              numpad(:currency='currency' :amount='parseFloat(amount)' @update='a => amount = a')
+              numpad(:currency='currency' :amount='parseFloat(amount)' @update='a => amount = a' @toggle='toggle')
             v-flex(xs3)
               tippad(:amount='parseFloat(amount)' @update='t => tip = t')
         v-flex(xs12).portrait
           v-layout
             v-flex(xs9)
-              numpad(:currency='currency' :amount='parseFloat(amount)' @update='a => amount = a')
+              numpad(:currency='currency' :amount='parseFloat(amount)' @update='a => amount = a' @toggle='toggle')
             v-flex(xs3)
               tippad(:amount='parseFloat(amount)' @update='t => tip = t')
         v-flex(xs12 sm4).landscape
-          v-layout(column)
-            v-flex.my-auto.text-xs-left.text-sm-right
-              span.display-1 {{total}} 
-              span.title sats
-            v-flex.text-xs-right.ml-auto
-              v-btn.darken-4.subheading.grey.white--text(@click='toggle') 
-                span(v-html='symbol(currency)').mr-1
-                span {{conversion}} 
+          v-layout(column justify-center)
             v-flex.text-sm-right
               v-btn(@click='bitcoin' :disabled='total <= 0').mr-0
                 img(src='../assets/bitcoin.png' width='30px').mr-1
@@ -61,13 +54,6 @@
                 span Lightning
         v-flex(xs12).portrait
           v-layout(row wrap)
-            v-flex.my-auto(xs6)
-              span.display-1 {{total}} 
-              span.title sats
-            v-flex.text-xs-right(xs6)
-              v-btn.darken-4.subheading.grey.white--text(@click='toggle') 
-                span(v-html='symbol(currency)').mr-1
-                span {{conversion}} 
             v-flex.text-xs-center.mt-4
               v-btn(@click='bitcoin' :disabled='total <= 0') 
                 img(src='../assets/bitcoin.png' width='30px').mr-1
@@ -110,18 +96,18 @@ export default {
   computed: {
     ...mapGetters(['loading', 'user', 'payreq', 'rate', 'received']),
 
-    tosats () { return this.currency === 'sats' ? 1 : 100000000 },
+    tosat () { return this.currency === 'sat' ? 1 : 100000000 },
     copytext () { return this.bitreq || this.payreq },
     code () { return this.showcode ? 'Show QR' : 'Show Code' }, 
     total () {
       let total = (f(this.amount) + f(this.tip))
       if (this.fiat) total /= this.rate
-      return (total * this.tosats).toFixed(0)
+      return (total * this.tosat).toFixed(0)
     },
 
     currency () {
       if (this.fiat) return this.user.currency
-      return 'sats'
+      return 'sat'
     },
 
     conversion () {
@@ -177,11 +163,6 @@ export default {
       document.body.removeChild(textArea)
 
       this.snack('Copied to Clipboard')
-    },
-
-    symbol (v) {
-      if (v === 'sats') return '$'
-      return 'B'
     },
 
     toggle () {

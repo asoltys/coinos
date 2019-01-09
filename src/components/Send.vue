@@ -3,8 +3,8 @@ div
   v-layout
     v-flex.text-xs-center.mb-2
       span.display-2 {{user.balance}} 
-      span.headline satoshi
-      h3 ({{((user.balance / 100000000) * rate).toFixed(2)}} CAD @ #[span.yellow--text {{rate}}] per BTC)
+      span.headline SAT
+      h3 {{((user.balance / 100000000) * rate).toFixed(2)}} CAD @ #[span.yellow--text {{rate}}] per BTC
   v-card(v-if='payment')
     v-alert.headline(value='true' color='success') Payment Sent!
     v-list
@@ -22,14 +22,19 @@ div
         v-icon arrow_back
         span Send Another
   template(v-else)
-    v-textarea.mt-2(v-if='!payobj && !payuser' label='Address or Invoice:' dark v-model='to' clearable auto-grow rows='1' hide-details autofocus)
+    v-textarea.mt-2(v-if='!payobj && !payuser && !address' label='Address or Invoice:' dark v-model='to' clearable auto-grow rows='1' hide-details autofocus)
+    v-card.elevation-1.pa-2.text-xs-center(v-if='address')
+      v-layout(row wrap)
+        v-flex
+          .body-1.gray--text Recipient Address Balance
+          v-divider
+        v-flex(xs12)
+          code.black--text.mt-2 {{address}}
+        v-flex
+          span.display-1 {{scannedBalance}} 
+          span SAT
     template(v-if='address || payuser')
-      numpad.mt-4(:currency='currency' :amount='parseFloat(display)' @update='updateAmount')
-      span.display-1 {{amount}} 
-      div
-        v-btn.darken-4.subheading.grey.white--text(@click='toggle') 
-          span(v-html='symbol(currency)').mr-1
-          span {{conversion}} 
+      numpad.mt-4(:currency='currency' :amount='parseFloat(display)' @update='updateAmount' @toggle='toggle')
     v-list.elevation-1.ma-2(v-if='payobj')
       v-list-tile
         v-list-tile-title Amount
@@ -40,13 +45,14 @@ div
       v-list-tile
         v-list-tile-title Date
         v-list-tile-sub-title {{payobj.timestampString | format}}
-    v-btn(@click='back')
-      v-icon arrow_back
-      span Back
-    v-progress-linear(v-if='loading' indeterminate)
-    v-btn(v-else-if='to' color="green" dark @click='sendPayment')
-      v-icon.mr-1 send
-      span Pay
+    div
+      v-btn(@click='back')
+        v-icon arrow_back
+        span Back
+      v-progress-linear(v-if='loading' indeterminate)
+      v-btn(v-else-if='to' color="green" dark @click='sendPayment')
+        v-icon.mr-1 send
+        span Pay
 </template>
 
 <script>
@@ -82,11 +88,11 @@ export default {
       if (this.fiat) return this.rate
       return parseFloat(1 / this.rate).toFixed(6)
     },
-    ...mapGetters(['address', 'amount', 'fees', 'balance', 'loading', 'user', 'payment', 'payreq', 'payobj', 'payuser', 'rate']),
+    ...mapGetters(['address', 'amount', 'fees', 'balance', 'loading', 'user', 'payment', 'payreq', 'payobj', 'payuser', 'rate', 'scannedBalance']),
 
     currency () {
       if (this.fiat) return this.user.currency
-      return 'sats'
+      return 'sat'
     },
 
     total () {
@@ -130,11 +136,6 @@ export default {
       } 
     },
 
-    symbol (v) {
-      if (v === 'sats') return '$'
-      return 'B'
-    },
-
     ...mapActions(['sendPayment', 'clearPayment']),
     init () {
       if (this.clear) this.clearPayment()
@@ -170,4 +171,10 @@ export default {
   .v-chip
     width 95%
     padding 5px
+
+  code 
+    max-width 100%
+    word-wrap break-word
+    font-size 1.2em
+
 </style>

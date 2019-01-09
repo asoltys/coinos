@@ -13,7 +13,7 @@
                 v-list-tile-title
                   span {{friend.name}}
           v-list-tile-action
-            v-btn.px-2(@click='$router.push({ path: "/send", query: { payuser: friend.id } })') Send Payment
+            v-btn.pay.px-2(color='green' @click='$router.push({ path: "/send", query: { payuser: friend.id } })') Pay
     v-alert(value='true' v-else color='yellow').black--text None of your friends are using CoinOS
 </template>
 
@@ -31,6 +31,9 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
+.pay
+  min-width 0
+
 .sent
   color rgb(255, 185, 85) !important
 

@@ -40,6 +40,7 @@ export default new Vuex.Store({
     received: 0,
     scan: '',
     scanning: false,
+    scannedBalance: null,
     snack: '',
     socket: null,
     token: '',
@@ -331,28 +332,36 @@ export default new Vuex.Store({
         commit('SET_PAYOBJ', payobj)
         commit('SET_PAYREQ', text)
         router.push({ name: 'send', params: { clear: false } })
+        return commit('SET_SCANNING', false)
       } catch (e) { /**/ }
 
       try {
         let url = bip21.decode(text)
         commit('SET_ADDRESS', url.address)
         commit('SET_AMOUNT', (url.options.amount * 100000000).toFixed(0))
+        let network = (process.env.NODE_ENV !== 'production' || window.location.href.includes('test')) ? 'test3' : 'main'
+        let res = await Vue.axios.get(`https://api.blockcypher.com/v1/btc/${network}/addrs/${url.address}/balance`)
+        commit('SET_SCANNED_BALANCE', res.data.final_balance)
         router.push({ name: 'send', params: { clear: false } })
+        return commit('SET_SCANNING', false)
       } catch (e) { /**/ } 
 
       try {
         bitcoin.address.fromBase58Check(text)
         commit('SET_ADDRESS', text)
+        let network = (process.env.NODE_ENV !== 'production' || window.location.href.includes('test')) ? 'test3' : 'main'
+        let res = await Vue.axios.get(`https://api.blockcypher.com/v1/btc/${network}/addrs/${text}/balance`)
+        commit('SET_SCANNED_BALANCE', res.data.final_balance)
         router.push({ name: 'send', params: { clear: false } })
+        return commit('SET_SCANNING', false)
       } catch (e) { /**/ }
 
       try {
         bech32.decode(text)
         commit('SET_ADDRESS', text)
         router.push({ name: 'send', params: { clear: false } })
+        return commit('SET_SCANNING', false)
       } catch (e) { /**/ }
-
-      commit('SET_SCANNING', false)
     },
 
     async snack ({ commit }, msg) {
@@ -379,6 +388,7 @@ export default new Vuex.Store({
     SET_RECEIVED (s, v) { s.received = v },
     SET_SCAN (s, v) { s.scan = v },
     SET_SCANNING (s, v) { s.scanning = v },
+    SET_SCANNED_BALANCE (s, v) { s.scannedBalance = v },
     SET_SNACK (s, v) { s.snack = v },
     SET_SOCKET (s, v) { s.socket = v },
     SET_TOKEN (s, v) { s.token = v },
@@ -403,6 +413,7 @@ export default new Vuex.Store({
     rate: s => s.rate,
     received: s => s.received,
     scanning: s => s.scanning,
+    scannedBalance: s => s.scannedBalance,
     snack: s => s.snack,
     socket: s => s.socket,
     token: s => s.token,

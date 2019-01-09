@@ -1,7 +1,7 @@
 <template lang="pug">
 .numpad
   span.display-1 {{amount.toFixed(decimals)}}
-  span.ml-1 {{currency}}
+  v-btn.toggle.black--text(color='yellow' small @click='$emit("toggle")') {{currency}}
   v-container(fluid style="margin: 0px; padding: 0; margin-left: -15px")
     v-layout(v-for='i in buttons.length / 3' row :key='i')
       v-flex(v-for='j in 3' xs4 :key='j')
@@ -32,7 +32,7 @@ export default {
   },
 
   computed: {
-    decimals () { return this.currency === 'sats' ? 0 : 2 },
+    decimals () { return this.currency === 'sat' ? 0 : 2 },
     divisor () { return 10 ** this.decimals },
   },
 
@@ -78,3 +78,9 @@ export default {
   },
 }
 </script>
+
+<style lang="stylus" scoped>
+.toggle
+  margin-top -10px
+  min-width 0
+</style>

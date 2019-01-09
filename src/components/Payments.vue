@@ -22,7 +22,7 @@
       template(v-if='filteredPayments.length')
         v-layout
           v-flex(xs4)
-            v-text-field(label='Total sats' v-model='total' readonly)
+            v-text-field(label='Total sat' v-model='total' readonly)
           v-flex(xs4)
             v-text-field(label='Total CAD' v-model='fiattotal' readonly)
           v-flex(xs4)
@@ -33,7 +33,7 @@
               v-list-tile-content
                 v-list-tile-title {{payment.hash | trim}}
                 v-list-tile-sub-title(:class='color(payment)') 
-                  span {{payment.amount | abs}} sats
+                  span {{payment.amount | abs}} sat
                 v-list-tile-sub-title(:class='color(payment)') 
                   span {{payment.fiat | abs | twodec}} CAD
                   small(v-if='payment.tip')  (+{{payment.tip}})
