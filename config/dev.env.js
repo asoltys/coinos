@@ -5,7 +5,7 @@ module.exports = merge(prodEnv, {
   NODE_ENV: '"development"',
   GRAPHQL: '"/graphql"',
   BASEURL: '"/api"',
-  SOCKETIO: 'null',
+  SOCKETIO: '"https://localhost"',
   PORT: 8085,
   FACEBOOK: "'290368338058652'",
   STRIPE: '"pk_test_hGki6lIOnbfnRDnKNoeZxlxA"',

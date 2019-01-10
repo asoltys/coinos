@@ -2,9 +2,10 @@
     v-app(dark)#app
       top-bar
       snack-bar
-      div(v-if='webscanning').text-xs-center
-        qrcode-stream(@decode='handleScan')
-        v-btn(@click='handleScan' style='margin-bottom: 30px') Cancel
+      v-content(v-show='scanning')
+        div(v-if='webscanning').text-xs-center
+          qrcode-stream.mt-4(@decode='handleScan')
+          v-btn(@click='handleScan' style='margin-bottom: 30px') Cancel
       v-content(v-show='!scanning')
         v-alert(v-if='error' color='error' v-model='error' value='error' dismissible transition='scale-transition') {{error}}
         transition(name="fade" mode="out-in" appear)
@@ -26,7 +27,7 @@ export default {
   components: { BottomNav, SnackBar, TopBar, QrcodeStream },
 
   computed: {
-    ...mapGetters(['scanning', 'user']),
+    ...mapGetters(['loading', 'scanning', 'user']),
 
     webscanning () { return this.scanning && !window.QRScanner },
     
@@ -45,15 +46,6 @@ export default {
   methods: {
     ...mapActions(['init', 'handleScan']),
 
-    checkRefresh () {
-      if (this.$route.query.refresh !== undefined) {
-        this.loaded = false
-        this.$router.replace(this.$route.path)
-      } else {
-        this.init()
-      }
-    },
-
     addEvent (object, type, callback) {
       if (object == null || typeof(object) == 'undefined') return
       if (object.addEventListener) {
@@ -64,15 +56,6 @@ export default {
         object['on' + type] = callback
       }
     },
-  },
-
-  beforeRouteUpdate (to, from, next) {
-    next()
-    this.checkRefresh()
-  },
-
-  created () {
-    this.checkRefresh()
   },
 }
 </script> 

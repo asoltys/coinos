@@ -12,15 +12,6 @@ Vue.use(Vuex)
 
 const l = console.log
 
-function readCookie (n) {
-  let a = `; ${document.cookie}`.match(`;\\s*${n}=([^;]+)`)
-  return a ? a[1] : null
-}
-
-function deleteCookie (n) {
-  document.cookie = n + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;'
-}
-
 export default new Vuex.Store({
   state: {
     address: '',
@@ -52,8 +43,9 @@ export default new Vuex.Store({
   },
   actions: {
     async init ({ commit, dispatch, state }) {
+      l('whaaa')
       commit('SET_ERROR', '')
-      let token = window.sessionStorage.getItem('token') || readCookie('token')
+      let token = window.sessionStorage.getItem('token')
 
       if (token && token !== 'null') {
         commit('SET_TOKEN', token)
@@ -62,12 +54,12 @@ export default new Vuex.Store({
         } 
 
         await dispatch('setupSockets')
-      } else {
-        const publicpaths = ['/login', '/about', '/register']
-        if (!(publicpaths.includes(router.currentRoute.path) || (state.user && state.user.address))) {
-          router.push('/')
-        }
-      } 
+      }
+
+      const publicpaths = ['/login', '/about', '/register']
+      if (!(publicpaths.includes(router.currentRoute.path) || (state.user && state.user.address))) {
+        router.push('/')
+      }
     },
 
     async login ({ commit, dispatch }, user) {
@@ -100,7 +92,6 @@ export default new Vuex.Store({
     },
 
     async logout({ commit, state }) {
-      deleteCookie('token')
       window.sessionStorage.removeItem('token')
       commit('SET_TOKEN', null)
       commit('SET_USER', null)
@@ -324,14 +315,15 @@ export default new Vuex.Store({
 
     async handleScan ({ commit, dispatch }, text) {
       await dispatch('clearPayment')
+      commit('SET_SCANNING', false)
 
       try { 
         if (text.slice(0, 10) === 'lightning:') text = text.slice(10)
         let payobj = bolt11.decode(text)
         commit('SET_PAYOBJ', payobj)
         commit('SET_PAYREQ', text)
-        router.push({ name: 'send', params: { clear: false } })
-        return commit('SET_SCANNING', false)
+        router.push({ name: 'send', params: { keep: true } })
+        return
       } catch (e) { /**/ }
 
       try {
@@ -341,8 +333,8 @@ export default new Vuex.Store({
         let network = (process.env.NODE_ENV !== 'production' || window.location.href.includes('test')) ? 'test3' : 'main'
         let res = await Vue.axios.get(`https://api.blockcypher.com/v1/btc/${network}/addrs/${url.address}/balance`)
         commit('SET_SCANNED_BALANCE', res.data.final_balance)
-        router.push({ name: 'send', params: { clear: false } })
-        return commit('SET_SCANNING', false)
+        router.push({ name: 'send', params: { keep: true } })
+        return
       } catch (e) { /**/ } 
 
       try {
@@ -351,15 +343,15 @@ export default new Vuex.Store({
         let network = (process.env.NODE_ENV !== 'production' || window.location.href.includes('test')) ? 'test3' : 'main'
         let res = await Vue.axios.get(`https://api.blockcypher.com/v1/btc/${network}/addrs/${text}/balance`)
         commit('SET_SCANNED_BALANCE', res.data.final_balance)
-        router.push({ name: 'send', params: { clear: false } })
-        return commit('SET_SCANNING', false)
+        router.push({ name: 'send', params: { keep: true } })
+        return
       } catch (e) { /**/ }
 
       try {
         bech32.decode(text)
         commit('SET_ADDRESS', text)
-        router.push({ name: 'send', params: { clear: false } })
-        return commit('SET_SCANNING', false)
+        router.push({ name: 'send', params: { keep: true } })
+        return
       } catch (e) { /**/ }
     },
 
@@ -391,6 +383,7 @@ export default new Vuex.Store({
     SET_SOCKET (s, v) { s.socket = v },
     SET_TOKEN (s, v) { 
       window.sessionStorage.setItem('token', v)
+      Vue.axios.defaults.headers.common = { 'Authorization': `bearer ${v}` }
       s.token = v
     },
     SET_PAYMENTS (s, v) { s.payments = v },

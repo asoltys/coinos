@@ -13,7 +13,7 @@ v-footer(v-if='user && user.username' fixed height='60px')
     v-btn(flat dark @click="$router.push('/receive?refresh')")
       span Receive
       arrow-left
-    v-btn(v-if='!user.readonly' flat dark @click="$router.push('/send')")
+    v-btn(v-if='!user.readonly' flat dark @click="$router.push('/send?refresh')")
       span Send
       send
 </template>

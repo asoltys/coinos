@@ -26,7 +26,7 @@ div
         v-list-tile-sub-title {{fees}}
     v-card-actions
       v-btn(@click='back') 
-        v-icon arrow_back
+        v-icon.mr-2 arrow_back
         span Send Another
   template(v-else)
     v-textarea.my-4(v-if='!payobj && !payuser && !address' label='Address or Invoice:' dark v-model='to' clearable auto-grow rows='1' hide-details autofocus)
@@ -77,9 +77,9 @@ export default {
   },
 
   props: {
-    clear: {
+    keep: {
       type: Boolean,
-      default: true,
+      default: false,
     },
   },
 
@@ -145,7 +145,7 @@ export default {
 
     ...mapActions(['sendPayment', 'clearPayment', 'snack']),
     init () {
-      if (this.clear) this.clearPayment()
+      if (!this.keep) this.clearPayment()
       this.$store.commit('SET_PAYUSER', this.$route.query.payuser)
     },
 
@@ -184,10 +184,25 @@ export default {
 
       this.snack('Copied to Clipboard')
     },
+
+    checkRefresh () {
+      if (this.$route.query.refresh !== undefined) {
+        this.$router.replace(this.$route.path)
+      } else {
+        this.clearPayment()
+      }
+    },
   },
+
+  beforeRouteUpdate (to, from, next) {
+    next()
+    this.checkRefresh()
+  },
+
 
   mounted () {
     this.init()
+    this.checkRefresh()
   },
 }
 </script>

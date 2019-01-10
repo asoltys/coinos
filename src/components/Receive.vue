@@ -33,19 +33,28 @@
             span Go Back
     template(v-else)
       v-layout(row wrap)
-        v-flex(xs12 sm8).landscape
+        v-flex(v-if='portrait()' xs12)
           v-layout
             v-flex(xs9)
               numpad(:currency='currency' :amount='parseFloat(amount)' @update='a => amount = a' @toggle='toggle')
             v-flex(xs3)
               tippad(:amount='parseFloat(amount)' @update='t => tip = t')
-        v-flex(xs12).portrait
+        v-flex(v-else xs12 sm8)
           v-layout
             v-flex(xs9)
               numpad(:currency='currency' :amount='parseFloat(amount)' @update='a => amount = a' @toggle='toggle')
             v-flex(xs3)
               tippad(:amount='parseFloat(amount)' @update='t => tip = t')
-        v-flex(xs12 sm4).landscape
+        v-flex(v-if='portrait()' xs12)
+          v-layout(row wrap)
+            v-flex.text-xs-center.mt-4
+              v-btn(@click='bitcoin' :disabled='total <= 0') 
+                img(src='../assets/bitcoin.png' width='30px').mr-1
+                span Bitcoin
+              v-btn(@click='lightning' :disabled='total <= 0') 
+                flash(fillColor='yellow')
+                span Lightning
+        v-flex(v-else xs12 sm4)
           v-layout(column justify-center)
             v-flex.text-sm-right
               v-btn(@click='bitcoin' :disabled='total <= 0').mr-0
@@ -53,15 +62,6 @@
                 span Bitcoin
             v-flex.text-sm-right
               v-btn(@click='lightning' :disabled='total <= 0').mr-0
-                flash(fillColor='yellow')
-                span Lightning
-        v-flex(xs12).portrait
-          v-layout(row wrap)
-            v-flex.text-xs-center.mt-4
-              v-btn(@click='bitcoin' :disabled='total <= 0') 
-                img(src='../assets/bitcoin.png' width='30px').mr-1
-                span Bitcoin
-              v-btn(@click='lightning' :disabled='total <= 0') 
                 flash(fillColor='yellow')
                 span Lightning
 </template>
@@ -121,6 +121,10 @@ export default {
 
   methods: {
     ...mapActions(['addInvoice', 'snack', 'clearPayment']),
+
+    portrait () {
+      return window.innerHeight > window.innerWidth
+    },
 
     fullscreen () {
       if (this.full) {
@@ -238,17 +242,26 @@ export default {
       await this.timeout(50)
       this.$nextTick(() => this.$store.commit('SET_LOADING', false))
     },
+
+    checkRefresh () {
+      if (this.$route.query.refresh !== undefined) {
+        this.$router.replace(this.$route.path)
+      } else {
+        this.clear()
+        this.amount = 0
+        this.generated = false
+      }
+    },
   },
 
   beforeRouteUpdate (to, from, next) {
     next()
-    this.clear()
-    this.amount = 0
-    this.generated = false
+    this.checkRefresh()
   },
 
   mounted () {
     this.clear()
+    this.checkRefresh()
   },
 }
 </script>

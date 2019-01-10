@@ -1,5 +1,5 @@
 <template lang="pug">
-.numpad
+.numpad(@keyup='keyup')
   span.display-1 {{amount.toFixed(decimals)}}
   v-btn.toggle.black--text(color='yellow' small @click='$emit("toggle")') {{currency}}
   v-container(fluid style="margin: 0px; padding: 0; margin-left: -15px")
@@ -46,12 +46,12 @@ export default {
     keyup (e) {
       let key = e.keyCode
       if (key > 57) key -= 48
-      let id = this.codes.indexOf(key)
-      if (key === 8) id = 'undo'
-      if (key === 46 || key === 13) id = 'C'
-      if (id < 0) return
-      let event = { target: { innerHTML: id.toString() } }
-      this.update(event)
+      let n = this.codes.indexOf(key).toString()
+      if (key === 8) n = '<'
+      if (key === 46 || key === 13) n = 'C'
+      console.log(n)
+      if (n < 0) return
+      this.update(n)
     },
 
     update (m) {
