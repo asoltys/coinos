@@ -43,20 +43,20 @@ export default new Vuex.Store({
   },
   actions: {
     async init ({ commit, dispatch, state }) {
-      l('whaaa')
       commit('SET_ERROR', '')
       let token = window.sessionStorage.getItem('token')
 
+      if (!token) {
+        let cookie = `; ${document.cookie}`.match(';\\s*token=([^;]+)')
+        if (cookie && cookie[1]) token = cookie[1]
+      }
+
       if (token && token !== 'null') {
         commit('SET_TOKEN', token)
-        if (router.currentRoute.path === '/login' || router.currentRoute.path === '/') {
-          router.push('/home')
-        } 
-
         await dispatch('setupSockets')
       }
 
-      const publicpaths = ['/login', '/about', '/register']
+      const publicpaths = ['/', '/login', '/about', '/register']
       if (!(publicpaths.includes(router.currentRoute.path) || (state.user && state.user.address))) {
         router.push('/')
       }
@@ -92,6 +92,7 @@ export default new Vuex.Store({
     },
 
     async logout({ commit, state }) {
+      document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:01 GMT;'
       window.sessionStorage.removeItem('token')
       commit('SET_TOKEN', null)
       commit('SET_USER', null)
@@ -139,12 +140,23 @@ export default new Vuex.Store({
         dispatch('snack', `Received ${data.value} satoshi`)
       })
 
-      s.on('connected', () => {
-        s.emit('getuser', {}, user => { commit('SET_USER', user) })
-      })
-
       s.on('rate', rate => commit('SET_RATE', rate))
       s.on('user', user => commit('SET_USER', user))
+
+      return new Promise((resolve, reject) => {
+        s.on('connected', () => {
+          s.emit('getuser', {}, user => { 
+            commit('SET_USER', user) 
+            if (router.currentRoute.path === '/login' || router.currentRoute.path === '/') {
+              router.push('/home')
+            } 
+            resolve()
+          })
+        })
+
+        s.on('connect_failed', reject)
+        s.on('error', reject)
+      })
     },
 
     async createUser ({ commit, dispatch }, form) {

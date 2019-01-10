@@ -49,7 +49,6 @@ export default {
       let n = this.codes.indexOf(key).toString()
       if (key === 8) n = '<'
       if (key === 46 || key === 13) n = 'C'
-      console.log(n)
       if (n < 0) return
       this.update(n)
     },
