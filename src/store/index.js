@@ -25,7 +25,6 @@ export default new Vuex.Store({
   state: {
     address: '',
     amount: 0,
-    balance: 0,
     channels: [],
     error: '',
     fees: 0,
@@ -43,7 +42,7 @@ export default new Vuex.Store({
     scannedBalance: null,
     snack: '',
     socket: null,
-    token: '',
+    token: null,
     payments: [],
     user: {
       address: null,
@@ -52,16 +51,23 @@ export default new Vuex.Store({
     },
   },
   actions: {
-    async init ({ dispatch, state }) {
-      let token = window.localStorage.getItem('token') || state.token || readCookie('token')
+    async init ({ commit, dispatch, state }) {
+      commit('SET_ERROR', '')
+      let token = window.sessionStorage.getItem('token') || readCookie('token')
 
-      if (token) {
-        if (router.currentRoute.path === '/login') {
+      if (token && token !== 'null') {
+        commit('SET_TOKEN', token)
+        if (router.currentRoute.path === '/login' || router.currentRoute.path === '/') {
           router.push('/home')
         } 
 
         await dispatch('setupSockets')
-      }
+      } else {
+        const publicpaths = ['/login', '/about', '/register']
+        if (!(publicpaths.includes(router.currentRoute.path) || (state.user && state.user.address))) {
+          router.push('/')
+        }
+      } 
     },
 
     async login ({ commit, dispatch }, user) {
@@ -69,7 +75,6 @@ export default new Vuex.Store({
         let res = await Vue.axios.post('/login', user)
         commit('SET_USER', res.data.user)
         commit('SET_TOKEN', res.data.token)
-        window.localStorage.setItem('token', res.data.token)
       } catch (e) {
         commit('SET_ERROR', 'Login failed')
         return
@@ -88,7 +93,6 @@ export default new Vuex.Store({
         res = await Vue.axios.post('/facebookLogin', { accessToken, userID })
         commit('SET_USER', res.data.user)
         commit('SET_TOKEN', res.data.token)
-        window.localStorage.setItem('token', res.data.token)
         await dispatch('init')
         router.push('/home')
         break
@@ -97,6 +101,7 @@ export default new Vuex.Store({
 
     async logout({ commit, state }) {
       deleteCookie('token')
+      window.sessionStorage.removeItem('token')
       commit('SET_TOKEN', null)
       commit('SET_USER', null)
       if (state.socket) state.socket.disconnect()
@@ -104,10 +109,10 @@ export default new Vuex.Store({
 
     async buy ({ state, dispatch }, { amount, token }) {
       try {
-        let sats = ((100000000 * amount / 100) / state.rate).toFixed(0)
-        await Vue.axios.post('/buy', { amount, token, sats })
+        let sat = ((100000000 * amount / 100) / state.rate).toFixed(0)
+        await Vue.axios.post('/buy', { amount, token, sat })
         router.push('/home')
-        dispatch ('snack', `Bought ${sats} satoshis`)
+        dispatch ('snack', `Bought ${sat} satoshis`)
       } catch (e) {
         l('error charging credit card', e)
         return
@@ -218,12 +223,6 @@ export default new Vuex.Store({
 
         commit('SET_LOADING', false)
       })
-    },
-
-    async getBalance ({ commit }) {
-      let res = await Vue.axios.get('/balance')
-
-      commit('SET_BALANCE', res.data.balance)
     },
 
     async getChannels({ commit }) {
@@ -371,7 +370,6 @@ export default new Vuex.Store({
   mutations: {
     SET_ADDRESS (s, v) { s.address = v },
     SET_AMOUNT (s, v) { s.amount = v },
-    SET_BALANCE (s, v) { s.balance = v },
     SET_CHANNELS (s, v) { s.channels = v },
     SET_ERROR (s, v) { 
       s.error = v 
@@ -391,14 +389,16 @@ export default new Vuex.Store({
     SET_SCANNED_BALANCE (s, v) { s.scannedBalance = v },
     SET_SNACK (s, v) { s.snack = v },
     SET_SOCKET (s, v) { s.socket = v },
-    SET_TOKEN (s, v) { s.token = v },
+    SET_TOKEN (s, v) { 
+      window.sessionStorage.setItem('token', v)
+      s.token = v
+    },
     SET_PAYMENTS (s, v) { s.payments = v },
     SET_USER (s, v) { Vue.set(s, 'user', v) },
   },
   getters: {
     address: s => s.address,
     amount: s => s.amount,
-    balance: s => s.balance,
     channels: s => s.channels,
     error: s => s.error,
     fees: s => s.fees,

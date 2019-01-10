@@ -74,8 +74,11 @@ export default {
 
         if (user.pending === 0) user.pending = null
 
-        TweenLite.to(this.$data, 0.5, { tweenedBalance })
-        TweenLite.to(this.$data, 0.5, { tweenedPending })
+        TweenLite.to(this, 0.5, { tweenedBalance })
+        TweenLite.to(this, 0.5, { tweenedPending })
+        
+        this.tweenedBalance = 0
+        this.pendingBalance = 0
 
         this.drawQR()
       },

@@ -170,8 +170,8 @@ export default {
     link (p) {
       if (p.hash.startsWith('ln') || p.hash.startsWith('txn')) return
       let bs = 'https://blockstream.info'
-      if (process.env.NODE_ENV !== 'production')
-        bs += 'testnet'
+      if (process.env.NODE_ENV !== 'production' || window.location.href.contains('test'))
+        bs += '/testnet'
       window.location = `${bs}/tx/${p.hash}`
     },
   },

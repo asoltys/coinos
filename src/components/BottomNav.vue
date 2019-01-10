@@ -10,7 +10,7 @@ v-footer(v-if='user && user.username' fixed height='60px')
     v-btn(flat dark @click="scan")
       span Scan
       v-icon camera_alt
-    v-btn(flat dark @click="$router.push('/receive/' + Math.floor(Math.random() * 10000))")
+    v-btn(flat dark @click="$router.push('/receive?refresh')")
       span Receive
       arrow-left
     v-btn(v-if='!user.readonly' flat dark @click="$router.push('/send')")

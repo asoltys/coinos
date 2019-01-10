@@ -9,7 +9,7 @@
         v-alert(v-if='error' color='error' v-model='error' value='error' dismissible transition='scale-transition') {{error}}
         transition(name="fade" mode="out-in" appear)
           v-container.mr-3
-            router-view
+            router-view(:key="$route.path")
       div(style='height: 60px')
       bottom-nav
 </template>
@@ -37,14 +37,22 @@ export default {
   }, 
 
   watch: {
-    $route (route) {
-      this.$store.commit('SET_ERROR', '')
-      this.authenticate(route)
+    $route () {
+      this.init()
     },
   },
 
   methods: {
     ...mapActions(['init', 'handleScan']),
+
+    checkRefresh () {
+      if (this.$route.query.refresh !== undefined) {
+        this.loaded = false
+        this.$router.replace(this.$route.path)
+      } else {
+        this.init()
+      }
+    },
 
     addEvent (object, type, callback) {
       if (object == null || typeof(object) == 'undefined') return
@@ -56,18 +64,15 @@ export default {
         object['on' + type] = callback
       }
     },
-
-    authenticate (route) {
-      const publicpaths = ['/login', '/about', '/register']
-      if (!publicpaths.includes(route.path) && (!this.user || !this.user.address)) {
-        this.$router.push('/login')
-      }
-    },
   },
 
-  async created () {
-    await this.init()
-    this.authenticate(this.$route)
+  beforeRouteUpdate (to, from, next) {
+    next()
+    this.checkRefresh()
+  },
+
+  created () {
+    this.checkRefresh()
   },
 }
 </script> 

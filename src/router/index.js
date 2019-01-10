@@ -19,7 +19,7 @@ const routes = [
   { path: '/register', component: Register },
   { path: '/payments', component: Payments },
   { name: 'send', path: '/send', component: Send, props: true},
-  { path: '/receive/:reset', component: Receive },
+  { path: '/receive', component: Receive },
   { path: '/receive', component: Receive },
   { path: '/buy', component: Buy },
   { path: '/network', component: Network },

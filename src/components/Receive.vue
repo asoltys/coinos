@@ -28,6 +28,9 @@
             v-btn(@click.native="copy")
               v-icon content_copy
               span Copy
+          v-btn(@click='clear') 
+            v-icon arrow_back
+            span Go Back
     template(v-else)
       v-layout(row wrap)
         v-flex(xs12 sm8).landscape
@@ -238,12 +241,13 @@ export default {
   },
 
   beforeRouteUpdate (to, from, next) {
+    next()
+    this.clear()
     this.amount = 0
     this.generated = false
-    next()
   },
 
-  async mounted () {
+  mounted () {
     this.clear()
   },
 }

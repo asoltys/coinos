@@ -9,8 +9,15 @@ div
     v-alert.headline(value='true' color='success') Payment Sent!
     v-list
       v-list-tile(v-if='payment.txid')
-        v-list-tile-title Transaction ID
-        v-list-tile-sub-title {{payment.txid}}
+        v-list-tile-content
+          v-list-tile-title Transaction ID
+          v-list-tile-sub-title {{payment.txid}} 
+        v-list-tile-action
+          v-flex.text-xs-right
+            v-btn(small icon ripple @click="copy(payment.txid)").mr-1
+              v-icon(small) content_copy
+            v-btn(small icon ripple @click='link(payment.txid)')
+              v-icon(small) open_in_new
       v-list-tile
         v-list-tile-title Amount
         v-list-tile-sub-title {{total}}
@@ -22,16 +29,16 @@ div
         v-icon arrow_back
         span Send Another
   template(v-else)
-    v-textarea.mt-2(v-if='!payobj && !payuser && !address' label='Address or Invoice:' dark v-model='to' clearable auto-grow rows='1' hide-details autofocus)
-    v-card.elevation-1.pa-2.text-xs-center(v-if='address')
+    v-textarea.my-4(v-if='!payobj && !payuser && !address' label='Address or Invoice:' dark v-model='to' clearable auto-grow rows='1' hide-details autofocus)
+    v-card.elevation-1.pa-2.my-4.text-xs-center(v-if='address')
       v-layout(row wrap)
         v-flex
-          .body-1.gray--text Recipient Address Balance
+          .body-1.gray--text Recipient Address
           v-divider
         v-flex(xs12)
           code.black--text.mt-2 {{address}}
         v-flex
-          span.display-1 {{scannedBalance}} 
+          span.display-1 &nbsp;{{scannedBalance}} 
           span SAT
     template(v-if='address || payuser')
       numpad.mt-4(:currency='currency' :amount='parseFloat(display)' @update='updateAmount' @toggle='toggle')
@@ -48,7 +55,7 @@ div
     div
       v-btn(@click='back')
         v-icon arrow_back
-        span Back
+        span Go Back
       v-progress-linear(v-if='loading' indeterminate)
       v-btn(v-else-if='to' color="green" dark @click='sendPayment')
         v-icon.mr-1 send
@@ -136,7 +143,7 @@ export default {
       } 
     },
 
-    ...mapActions(['sendPayment', 'clearPayment']),
+    ...mapActions(['sendPayment', 'clearPayment', 'snack']),
     init () {
       if (this.clear) this.clearPayment()
       this.$store.commit('SET_PAYUSER', this.$route.query.payuser)
@@ -155,6 +162,27 @@ export default {
         this.display = this.display / 100000000 * this.rate
       else
         this.display = this.display * 100000000 / this.rate
+    },
+    link (tx) {
+      let bs = 'https://blockstream.info'
+      if (process.env.NODE_ENV !== 'production' || window.location.href.contains('test'))
+        bs += '/testnet'
+      window.location = `${bs}/tx/${tx}`
+    },
+    copy (tx) {
+      var textArea = document.createElement('textarea')
+      textArea.style.position = 'fixed'
+      textArea.value = tx
+
+      document.body.appendChild(textArea)
+
+      textArea.focus()
+      textArea.select()
+
+      document.execCommand('copy')
+      document.body.removeChild(textArea)
+
+      this.snack('Copied to Clipboard')
     },
   },
 
