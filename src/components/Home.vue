@@ -12,7 +12,7 @@ div.text-xs-center
     v-card
       v-container.request
         v-layout(wrap)
-          v-flex.text-xs-center(xs12)
+          v-flex.text-xs-center#canvas-container(xs12)
             canvas#qr(@click='fullscreen')
           v-flex(xs12).text-xs-center
             div
@@ -115,32 +115,24 @@ export default {
     },
 
     fullscreen () {
+      let canvas = document.getElementById('qr')
+
       if (this.full) {
-        if (document.exitFullscreen) {
-          document.exitFullscreen()
-        } else if (document.mozCancelFullScreen) {
-          document.mozCancelFullScreen()
-        } else if (document.webkitExitFullscreen) {
-          document.webkitExitFullscreen()
-        } else if (document.msExitFullscreen) {
-          document.msExitFullscreen()
-        }
+        canvas.style.position = 'relative'
+        canvas.style.width = '25vh'
+        canvas.style.height = '25vh'
+        canvas.style.left = 0
+        document.querySelector('#canvas-container').appendChild(canvas)
         this.full = false
         return
       }
 
-      let elem = document.getElementById('qr')
-
-      if (elem.requestFullscreen) {
-        elem.requestFullscreen(Element.ALLOW_KEYBOARD_INPUT)
-      } else if (elem.mozRequestFullScreen) {
-        elem.mozRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT)
-      } else if (elem.webkitRequestFullscreen) {
-        elem.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT)
-      } else if (elem.msRequestFullscreen) {
-        elem.msRequestFullscreen()
-      }
-
+      canvas.style.position = 'absolute'
+      canvas.style.top = 0
+      canvas.style.left = ((window.innerWidth / 2) - Math.min(window.innerWidth, window.innerHeight) / 2) + 'px'
+      canvas.style.width = canvas.style.height = Math.min(window.innerWidth, window.innerHeight) + 'px'
+      canvas.style.zIndex = 9999
+      document.querySelector('body').appendChild(canvas)
       this.full = true
     }, 
 
