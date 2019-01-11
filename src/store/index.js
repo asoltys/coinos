@@ -192,40 +192,15 @@ export default new Vuex.Store({
       commit('SET_PAYMENTS', res.data.payments)
     },
 
-    async getFriends ({ commit, state }) {
-      let api
-
-      if (window.FB) {
-        api = window.FB.api
-      }
-      else if (window.facebookConnectPlugin) { 
-        api = (p, s, f) => window.facebookConnectPlugin.api(p, ['user_friends'], s, f)
-      }
-
-      if (!api) return
-
+    async getFriends ({ commit }) {
       commit('SET_LOADING', true)
-      api(`/${state.user.username}/friends?accessToken=${state.user.fbtoken}`, async res => {
-        if (res.data) {
-          try {
-            let friends = await Promise.all(res.data.map(async f => {
-              try {
-                f.pic = (await new Promise((resolve, reject) => {
-                  api(`/${f.id}/picture?redirect=false&type=small&accessToken=${state.user.fbtoken}`, reject, resolve)
-                })).data.url
-
-                return f
-              } catch (e) { l(e) }
-            }))
-
-            commit('SET_FRIENDS', friends)
-          } catch (e) { l(e) }
-        } else {
-          l(res)
-        } 
-
+      try {
+        let res = await Vue.axios.get('/friends')
+        commit('SET_FRIENDS', res.data)
         commit('SET_LOADING', false)
-      })
+      } catch (e) {
+        commit('SET_ERROR', e.response.data)
+      } 
     },
 
     async getChannels({ commit }) {
@@ -245,6 +220,8 @@ export default new Vuex.Store({
       commit('SET_ERROR', null)
 
       let { address, amount, payreq, payuser } = getters
+      console.log(payuser)
+
       if (payreq) {
         try {
           let res = await Vue.axios.post('/sendPayment', { payreq })
@@ -257,8 +234,10 @@ export default new Vuex.Store({
         try {
           let res = await Vue.axios.post('/payUser', { payuser, amount })
           commit('SET_PAYMENT', res.data)
+          l('nihao')
         } catch (e) {
           commit('SET_ERROR', e.response.data)
+          l(e)
         } 
       } 
       else if (address) {

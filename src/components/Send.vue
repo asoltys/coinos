@@ -144,6 +144,7 @@ export default {
     },
 
     ...mapActions(['sendPayment', 'clearPayment', 'snack']),
+
     init () {
       if (!this.keep) this.clearPayment()
       this.$store.commit('SET_PAYUSER', this.$route.query.payuser)
@@ -201,8 +202,8 @@ export default {
 
 
   mounted () {
-    this.init()
     this.checkRefresh()
+    this.init()
   },
 }
 </script>

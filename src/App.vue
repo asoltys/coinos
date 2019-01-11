@@ -7,9 +7,9 @@
           qrcode-stream.mt-4(@decode='handleScan')
           v-btn(@click='handleScan' style='margin-bottom: 30px') Cancel
       v-content(v-show='!scanning')
-        v-alert(v-if='error' color='error' v-model='error' value='error' dismissible transition='scale-transition') {{error}}
         transition(name="fade" mode="out-in" appear)
           v-container.mr-3
+            v-alert.ma-4(v-if='error' color='error' v-model='error' value='error' dismissible transition='scale-transition') {{error}}
             router-view(:key="$route.path")
       div(style='height: 60px')
       bottom-nav
