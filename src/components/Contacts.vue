@@ -3,7 +3,7 @@
     v-progress-linear(v-if='loading' indeterminate)
     v-list(v-else-if='friends.length')
       template(v-for='(friend, i) in friends')
-        v-list-tile
+        v-list-tile(@click='send(friend)')
           v-list-tile-content
             v-layout
               v-flex.my-auto
@@ -13,7 +13,7 @@
                 v-list-tile-title
                   span {{friend.name}}
           v-list-tile-action
-            v-btn.pay.px-2(color='green' @click='$router.push({ path: "/send", query: { payuser: friend.id } })') Pay
+            v-btn.pay.px-2(@click='send(friend)') Send
     v-alert(value='true' v-else color='yellow').black--text None of your friends are using CoinOS
 </template>
 
@@ -22,7 +22,13 @@ import { mapActions, mapGetters } from 'vuex'
 
 export default {
   computed: mapGetters(['friends', 'loading']),
-  methods: mapActions(['getFriends']),
+  methods: {
+    ...mapActions(['getFriends']),
+
+    send (friend) {
+      this.$router.push({ path: '/send', query: { payuser: friend.id } })
+    },
+  },
 
   mounted () {
     this.getFriends()

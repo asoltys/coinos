@@ -37,9 +37,17 @@ div
           v-divider
         v-flex(xs12)
           code.black--text.mt-2 {{address}}
-        v-flex
+        v-flex(v-if='scannedBalance')
           span.display-1 &nbsp;{{scannedBalance}} 
           span SAT
+    v-card.elevation-1.pa-2.my-4.text-xs-center(v-if='payuser')
+      v-layout(row wrap)
+        v-flex
+          .body-1.gray--text Send To
+        v-flex(v-if='friend' xs12)
+          v-avatar
+            img(:src='friend.pic')
+          span.subheading.ml-2 {{friend.name}}
     template(v-if='address || payuser')
       numpad.mt-4(:currency='currency' :amount='parseFloat(display)' @update='updateAmount' @toggle='toggle')
     v-list.elevation-1.ma-2(v-if='payobj')
@@ -91,11 +99,15 @@ export default {
   },
 
   computed: {
+    friend () {
+      return this.friends.find(f => f.id === this.payuser)
+    },
+
     conversion () {
       if (this.fiat) return this.rate
       return parseFloat(1 / this.rate).toFixed(6)
     },
-    ...mapGetters(['address', 'amount', 'fees', 'balance', 'loading', 'user', 'payment', 'payreq', 'payobj', 'payuser', 'rate', 'scannedBalance']),
+    ...mapGetters(['address', 'amount', 'fees', 'friends', 'balance', 'loading', 'user', 'payment', 'payreq', 'payobj', 'payuser', 'rate', 'scannedBalance']),
 
     currency () {
       if (this.fiat) return this.user.currency
@@ -134,6 +146,15 @@ export default {
   }, 
 
   methods: {
+    ...mapActions(['sendPayment', 'clearPayment', 'snack']),
+
+    init () {
+      if (!this.keep) this.clearPayment()
+      if (this.$route.query.refresh !== undefined) {
+        this.$router.replace(this.$route.path)
+      }
+    },
+
     updateAmount (v) {
       this.display = v
       if (this.fiat) {
@@ -143,20 +164,15 @@ export default {
       } 
     },
 
-    ...mapActions(['sendPayment', 'clearPayment', 'snack']),
-
-    init () {
-      if (!this.keep) this.clearPayment()
-      this.$store.commit('SET_PAYUSER', this.$route.query.payuser)
-    },
-
     back () {
       this.display = 0
       if (this.payreq || this.address) return this.clearPayment()
       if (this.payuser) return this.$router.push('/contacts')
       return this.$router.push('/home')
     },
+
     maxamount () { this.amount = this.user.balance },
+
     toggle () {
       this.fiat = !this.fiat 
       if (this.fiat)
@@ -164,12 +180,14 @@ export default {
       else
         this.display = this.display * 100000000 / this.rate
     },
+
     link (tx) {
       let bs = 'https://blockstream.info'
       if (process.env.NODE_ENV !== 'production' || window.location.href.contains('test'))
         bs += '/testnet'
       window.location = `${bs}/tx/${tx}`
     },
+
     copy (tx) {
       var textArea = document.createElement('textarea')
       textArea.style.position = 'fixed'
@@ -185,25 +203,16 @@ export default {
 
       this.snack('Copied to Clipboard')
     },
-
-    checkRefresh () {
-      if (this.$route.query.refresh !== undefined) {
-        this.$router.replace(this.$route.path)
-      } else {
-        this.clearPayment()
-      }
-    },
   },
 
   beforeRouteUpdate (to, from, next) {
     next()
-    this.checkRefresh()
+    this.init()
   },
 
-
   mounted () {
-    this.checkRefresh()
     this.init()
+    this.$store.commit('SET_PAYUSER', this.$route.query.payuser)
   },
 }
 </script>
@@ -220,5 +229,4 @@ export default {
     max-width 100%
     word-wrap break-word
     font-size 1.2em
-
 </style>

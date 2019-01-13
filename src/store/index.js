@@ -43,6 +43,8 @@ export default new Vuex.Store({
   },
   actions: {
     async init ({ commit, dispatch, state }) {
+      commit('SET_LOADING', true)
+      commit('SET_SCANNING', false)
       commit('SET_ERROR', '')
       let token = window.sessionStorage.getItem('token')
 
@@ -60,6 +62,7 @@ export default new Vuex.Store({
       if (!(publicpaths.includes(router.currentRoute.path) || (state.user && state.user.address))) {
         router.push('/')
       }
+      commit('SET_LOADING', false)
     },
 
     async login ({ commit, dispatch }, user) {
@@ -194,13 +197,15 @@ export default new Vuex.Store({
 
     async getFriends ({ commit }) {
       commit('SET_LOADING', true)
+
       try {
         let res = await Vue.axios.get('/friends')
         commit('SET_FRIENDS', res.data)
-        commit('SET_LOADING', false)
       } catch (e) {
         commit('SET_ERROR', e.response.data)
       } 
+
+      commit('SET_LOADING', false)
     },
 
     async getChannels({ commit }) {
@@ -220,7 +225,6 @@ export default new Vuex.Store({
       commit('SET_ERROR', null)
 
       let { address, amount, payreq, payuser } = getters
-      console.log(payuser)
 
       if (payreq) {
         try {
@@ -234,7 +238,6 @@ export default new Vuex.Store({
         try {
           let res = await Vue.axios.post('/payUser', { payuser, amount })
           commit('SET_PAYMENT', res.data)
-          l('nihao')
         } catch (e) {
           commit('SET_ERROR', e.response.data)
           l(e)
@@ -311,9 +314,10 @@ export default new Vuex.Store({
       try { 
         if (text.slice(0, 10) === 'lightning:') text = text.slice(10)
         let payobj = bolt11.decode(text)
+        console.log('lightning', payobj)
+        router.push({ name: 'send', params: { keep: true } })
         commit('SET_PAYOBJ', payobj)
         commit('SET_PAYREQ', text)
-        router.push({ name: 'send', params: { keep: true } })
         return
       } catch (e) { /**/ }
 
