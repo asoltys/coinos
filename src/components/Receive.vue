@@ -189,15 +189,15 @@ export default {
       let { tip, total } = this
       let amount = total
 
-      this.$store.commit('SET_LOADING', true)
-      this.$store.commit('SET_RECEIVED', 0)
+      this.$store.commit('loading', true)
+      this.$store.commit('received', 0)
 
       this.generated = true
 
       this.$nextTick(async () => {
         await this.addInvoice({ amount, tip, address })
 
-        this.$store.commit('SET_LOADING', false)
+        this.$store.commit('loading', false)
         this.$nextTick(() => {
           let canvas = document.getElementById('qr')
           if (!canvas) return
@@ -213,13 +213,13 @@ export default {
 
     lightning () {
       this.bitreq = null
-      this.$store.commit('SET_LOADING', true)
+      this.$store.commit('loading', true)
       this.generated = true
-      this.$store.commit('SET_RECEIVED', 0)
+      this.$store.commit('received', 0)
       this.$nextTick(async () => {
         try {
           await this.addInvoice({ amount: this.total, tip: this.tip })
-          this.$store.commit('SET_LOADING', false)
+          this.$store.commit('loading', false)
           this.$nextTick(() => {
             let canvas = document.getElementById('qr')
             if (!canvas) return
@@ -237,10 +237,10 @@ export default {
 
     async clear () {
       this.generated = false
-      this.$store.commit('SET_LOADING', true)
-      this.$store.commit('SET_RECEIVED', 0)
+      this.$store.commit('loading', true)
+      this.$store.commit('received', 0)
       await this.timeout(50)
-      this.$nextTick(() => this.$store.commit('SET_LOADING', false))
+      this.$nextTick(() => this.$store.commit('loading', false))
     },
 
     checkRefresh () {

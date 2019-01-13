@@ -12,7 +12,7 @@ export default {
   computed: {
     message: {
       get () { return this.$store.getters.snack },
-      set (v) { this.$store.commit('SET_SNACK', v) },
+      set (v) { this.$store.commit('snack', v) },
     },
     snack: {
       get () { return this.message },

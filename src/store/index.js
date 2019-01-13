@@ -8,44 +8,50 @@ import bip21 from 'bip21'
 import bolt11 from 'bolt11'
 import router from '../router'
 import bitcoin from 'bitcoinjs-lib'
+import pathify, { make } from 'vuex-pathify'
 Vue.use(Vuex)
 
+pathify.options.mapping = 'simple'
+
 const l = console.log
+const state = {
+  address: '',
+  amount: 0,
+  channels: [],
+  error: '',
+  fees: 0,
+  friends: [],
+  loading: false,
+  orders: [],
+  payment: null,
+  payobj: null,
+  payreq: '',
+  payuser: '',
+  peers: [],
+  rate: 0,
+  received: 0,
+  scan: '',
+  scanning: false,
+  scannedBalance: null,
+  snack: '',
+  socket: null,
+  token: null,
+  payments: [],
+  user: {
+    address: null,
+    balance: null,
+    readonly: true,
+  },
+}
 
 export default new Vuex.Store({
-  state: {
-    address: '',
-    amount: 0,
-    channels: [],
-    error: '',
-    fees: 0,
-    friends: [],
-    loading: false,
-    payment: null,
-    payobj: null,
-    payreq: '',
-    payuser: '',
-    peers: [],
-    rate: 0,
-    received: 0,
-    scan: '',
-    scanning: false,
-    scannedBalance: null,
-    snack: '',
-    socket: null,
-    token: null,
-    payments: [],
-    user: {
-      address: null,
-      balance: null,
-      readonly: true,
-    },
-  },
+  plugins: [ pathify.plugin ],
+  state,
   actions: {
     async init ({ commit, dispatch, state }) {
-      commit('SET_LOADING', true)
-      commit('SET_SCANNING', false)
-      commit('SET_ERROR', '')
+      commit('loading', true)
+      commit('scanning', false)
+      commit('error', '')
       let token = window.sessionStorage.getItem('token')
 
       if (!token) {
@@ -54,7 +60,7 @@ export default new Vuex.Store({
       }
 
       if (token && token !== 'null') {
-        commit('SET_TOKEN', token)
+        commit('token', token)
         await dispatch('setupSockets')
       }
 
@@ -62,16 +68,16 @@ export default new Vuex.Store({
       if (!(publicpaths.includes(router.currentRoute.path) || (state.user && state.user.address))) {
         router.push('/')
       }
-      commit('SET_LOADING', false)
+      commit('loading', false)
     },
 
     async login ({ commit, dispatch }, user) {
       try {
         let res = await Vue.axios.post('/login', user)
-        commit('SET_USER', res.data.user)
-        commit('SET_TOKEN', res.data.token)
+        commit('user', res.data.user)
+        commit('token', res.data.token)
       } catch (e) {
-        commit('SET_ERROR', 'Login failed')
+        commit('error', 'login failed')
         return
       }
 
@@ -86,8 +92,8 @@ export default new Vuex.Store({
       switch (data.status) {
       case 'connected':
         res = await Vue.axios.post('/facebookLogin', { accessToken, userID })
-        commit('SET_USER', res.data.user)
-        commit('SET_TOKEN', res.data.token)
+        commit('user', res.data.user)
+        commit('token', res.data.token)
         await dispatch('init')
         router.push('/home')
         break
@@ -97,8 +103,8 @@ export default new Vuex.Store({
     async logout({ commit, state }) {
       document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:01 GMT;'
       window.sessionStorage.removeItem('token')
-      commit('SET_TOKEN', null)
-      commit('SET_USER', null)
+      commit('token', null)
+      commit('user', null)
       if (state.socket) state.socket.disconnect()
     }, 
 
@@ -116,7 +122,7 @@ export default new Vuex.Store({
 
     async setupSockets ({ commit, state, dispatch }) {
       let s = socketio(process.env.SOCKETIO, { query: { token: state.token } })
-      commit('SET_SOCKET', s)
+      commit('socket', s)
 
       s.on('tx', data => {
         bitcoin.Transaction.fromHex(data).outs.map(o => {
@@ -127,7 +133,7 @@ export default new Vuex.Store({
             } 
             let address = bitcoin.address.fromOutputScript(o.script, network)
             if (address === state.user.address) {
-              commit('SET_RECEIVED', o.value)
+              commit('received', o.value)
               dispatch('snack', `Received ${o.value} satoshi`)
             } 
           } catch(e) { l(e) }
@@ -139,17 +145,17 @@ export default new Vuex.Store({
       })
 
       s.on('invoice', data => {
-        commit('SET_RECEIVED', data.value)
+        commit('received', data.value)
         dispatch('snack', `Received ${data.value} satoshi`)
       })
 
-      s.on('rate', rate => commit('SET_RATE', rate))
-      s.on('user', user => commit('SET_USER', user))
+      s.on('rate', rate => commit('rate', rate))
+      s.on('user', user => commit('user', user))
 
       return new Promise((resolve, reject) => {
         s.on('connected', () => {
           s.emit('getuser', {}, user => { 
-            commit('SET_USER', user) 
+            commit('user', user) 
             if (router.currentRoute.path === '/login' || router.currentRoute.path === '/') {
               router.push('/home')
             } 
@@ -164,7 +170,7 @@ export default new Vuex.Store({
 
     async createUser ({ commit, dispatch }, form) {
       if (form.password !== form.passconfirm) {
-        commit('SET_ERROR', 'Passwords don\'t match')
+        commit('error', 'passwords don\'t match')
         return
       }
 
@@ -175,7 +181,7 @@ export default new Vuex.Store({
         await Vue.axios.post('/register', user)
         dispatch('login', user)
       } catch (e) { 
-        commit('SET_ERROR', e.response.data)
+        commit('error', e.response.data)
       }
     },
 
@@ -185,99 +191,99 @@ export default new Vuex.Store({
     },
 
     async getPayments ({ commit }) {
-      commit('SET_LOADING', true)
+      commit('loading', true)
       let res = await apolloClient.query({
         query: paymentsQuery,
         fetchPolicy: 'network-only',
       })
-      commit('SET_LOADING', false)
+      commit('loading', false)
 
-      commit('SET_PAYMENTS', res.data.payments)
+      commit('payments', res.data.payments)
     },
 
     async getFriends ({ commit }) {
-      commit('SET_LOADING', true)
+      commit('loading', true)
 
       try {
         let res = await Vue.axios.get('/friends')
-        commit('SET_FRIENDS', res.data)
+        commit('friends', res.data)
       } catch (e) {
-        commit('SET_ERROR', e.response.data)
+        commit('error', e.response.data)
       } 
 
-      commit('SET_LOADING', false)
+      commit('loading', false)
     },
 
     async getChannels({ commit }) {
       let res = await Vue.axios.get('/channels')
 
-      commit('SET_CHANNELS', res.data.channels)
+      commit('channels', res.data.channels)
     },
 
     async getPeers({ commit }) {
       let res = await Vue.axios.get('/peers')
 
-      commit('SET_PEERS', res.data.peers)
+      commit('peers', res.data.peers)
     },
 
     async sendPayment ({ commit, getters }) {
-      commit('SET_LOADING', true)
-      commit('SET_ERROR', null)
+      commit('loading', true)
+      commit('error', null)
 
       let { address, amount, payreq, payuser } = getters
 
       if (payreq) {
         try {
           let res = await Vue.axios.post('/sendPayment', { payreq })
-          commit('SET_PAYMENT', res.data)
+          commit('payment', res.data)
         } catch (e) {
-          commit('SET_ERROR', e.response.data)
+          commit('error', e.response.data)
         } 
       }
       else if (payuser) {
         try {
           let res = await Vue.axios.post('/payUser', { payuser, amount })
-          commit('SET_PAYMENT', res.data)
+          commit('payment', res.data)
         } catch (e) {
-          commit('SET_ERROR', e.response.data)
+          commit('error', e.response.data)
           l(e)
         } 
       } 
       else if (address) {
         try {
           let res = await Vue.axios.post('/sendCoins', { address, amount })
-          commit('SET_PAYMENT', res.data)
+          commit('payment', res.data)
         } catch (e) {
-          commit('SET_ERROR', e.response.data)
+          commit('error', e.response.data)
         } 
       }
 
-      commit('SET_LOADING', false)
+      commit('loading', false)
     },
 
     async clearPayment ({ commit }) {
-      commit('SET_LOADING', false)
-      commit('SET_PAYREQ', '')
-      commit('SET_ADDRESS', '')
-      commit('SET_PAYMENT', null)
-      commit('SET_PAYOBJ', null)
-      commit('SET_PAYUSER', null)
-      commit('SET_AMOUNT', 0)
-      commit('SET_ERROR', null)
+      commit('loading', false)
+      commit('payreq', '')
+      commit('address', '')
+      commit('payment', null)
+      commit('payobj', null)
+      commit('payuser', null)
+      commit('amount', 0)
+      commit('error', null)
     },
 
     async addInvoice ({ commit }, { amount, tip, address }) {
       let res
       try {
         res = await Vue.axios.post('/addInvoice', { amount, tip, address })
-        commit('SET_PAYREQ', res.data.payment_request)
+        commit('payreq', res.data.payment_request)
       } catch (e) {
-        commit('SET_ERROR', e.response.data)
+        commit('error', e.response.data)
       } 
     },
 
     async scan ({ commit, dispatch }) {
-      commit('SET_SCANNING', true)
+      commit('scanning', true)
 
       if (window.QRScanner) {
         window.QRScanner.prepare((err) => {
@@ -309,102 +315,63 @@ export default new Vuex.Store({
 
     async handleScan ({ commit, dispatch }, text) {
       await dispatch('clearPayment')
-      commit('SET_SCANNING', false)
+      commit('scanning', false)
 
       try { 
         if (text.slice(0, 10) === 'lightning:') text = text.slice(10)
         let payobj = bolt11.decode(text)
         console.log('lightning', payobj)
         router.push({ name: 'send', params: { keep: true } })
-        commit('SET_PAYOBJ', payobj)
-        commit('SET_PAYREQ', text)
+        commit('payobj', payobj)
+        commit('payreq', text)
         return
       } catch (e) { /**/ }
 
       try {
         let url = bip21.decode(text)
-        commit('SET_ADDRESS', url.address)
-        commit('SET_AMOUNT', (url.options.amount * 100000000).toFixed(0))
+        commit('address', url.address)
+        commit('amount', (url.options.amount * 100000000).toFixed(0))
         let network = (process.env.NODE_ENV !== 'production' || window.location.href.includes('test')) ? 'test3' : 'main'
         let res = await Vue.axios.get(`https://api.blockcypher.com/v1/btc/${network}/addrs/${url.address}/balance`)
-        commit('SET_SCANNED_BALANCE', res.data.final_balance)
+        commit('scannedBalance', res.data.final_balance)
         router.push({ name: 'send', params: { keep: true } })
         return
       } catch (e) { /**/ } 
 
       try {
         bitcoin.address.fromBase58Check(text)
-        commit('SET_ADDRESS', text)
+        commit('address', text)
         let network = (process.env.NODE_ENV !== 'production' || window.location.href.includes('test')) ? 'test3' : 'main'
         let res = await Vue.axios.get(`https://api.blockcypher.com/v1/btc/${network}/addrs/${text}/balance`)
-        commit('SET_SCANNED_BALANCE', res.data.final_balance)
+        commit('scannedBalance', res.data.final_balance)
         router.push({ name: 'send', params: { keep: true } })
         return
       } catch (e) { /**/ }
 
       try {
         bech32.decode(text)
-        commit('SET_ADDRESS', text)
+        commit('address', text)
         router.push({ name: 'send', params: { keep: true } })
         return
       } catch (e) { /**/ }
     },
 
     async snack ({ commit }, msg) {
-      commit('SET_SNACK', msg)
+      commit('snack', msg)
     }, 
   },
   mutations: {
-    SET_ADDRESS (s, v) { s.address = v },
-    SET_AMOUNT (s, v) { s.amount = v },
-    SET_CHANNELS (s, v) { s.channels = v },
+    ...make.mutations(state),
     SET_ERROR (s, v) { 
       s.error = v 
       if (v && v.toString().includes('502 Bad')) s.error = 'Problem connecting to server'
     },
-    SET_FRIENDS (s, v) { s.friends = v },
-    SET_LOADING (s, v) { s.loading = v },
-    SET_PAYMENT (s, v) { s.payment = v },
-    SET_PAYOBJ (s, v) { s.payobj = v },
-    SET_PAYREQ (s, v) { s.payreq = v },
-    SET_PAYUSER (s, v) { s.payuser = v },
-    SET_PEERS (s, v) { s.peers = v },
-    SET_RATE (s, v) { s.rate = v },
-    SET_RECEIVED (s, v) { s.received = v },
-    SET_SCAN (s, v) { s.scan = v },
-    SET_SCANNING (s, v) { s.scanning = v },
-    SET_SCANNED_BALANCE (s, v) { s.scannedBalance = v },
-    SET_SNACK (s, v) { s.snack = v },
-    SET_SOCKET (s, v) { s.socket = v },
     SET_TOKEN (s, v) { 
       window.sessionStorage.setItem('token', v)
       Vue.axios.defaults.headers.common = { 'Authorization': `bearer ${v}` }
       s.token = v
     },
-    SET_PAYMENTS (s, v) { s.payments = v },
     SET_USER (s, v) { Vue.set(s, 'user', v) },
   },
-  getters: {
-    address: s => s.address,
-    amount: s => s.amount,
-    channels: s => s.channels,
-    error: s => s.error,
-    fees: s => s.fees,
-    friends: s => s.friends,
-    loading: s => s.loading,
-    payment: s => s.payment,
-    payments: s => s.payments,
-    payobj: s => s.payobj,
-    payreq: s => s.payreq,
-    payuser: s => s.payuser,
-    peers: s => s.peers,
-    rate: s => s.rate,
-    received: s => s.received,
-    scanning: s => s.scanning,
-    scannedBalance: s => s.scannedBalance,
-    snack: s => s.snack,
-    socket: s => s.socket,
-    token: s => s.token,
-    user: s => s.user,
-  },
+  getters: make.getters(state),
 })

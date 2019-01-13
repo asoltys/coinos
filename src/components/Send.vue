@@ -107,7 +107,22 @@ export default {
       if (this.fiat) return this.rate
       return parseFloat(1 / this.rate).toFixed(6)
     },
-    ...mapGetters(['address', 'amount', 'fees', 'friends', 'balance', 'loading', 'user', 'payment', 'payreq', 'payobj', 'payuser', 'rate', 'scannedBalance']),
+
+    ...mapGetters([
+      'address',
+      'amount',
+      'fees',
+      'friends',
+      'balance',
+      'loading',
+      'user',
+      'payment',
+      'payreq',
+      'payobj',
+      'payuser',
+      'rate',
+      'scannedBalance'
+    ]),
 
     currency () {
       if (this.fiat) return this.user.currency
@@ -153,14 +168,15 @@ export default {
       if (this.$route.query.refresh !== undefined) {
         this.$router.replace(this.$route.path)
       }
+      this.updateAmount(this.amount)
     },
 
     updateAmount (v) {
       this.display = v
       if (this.fiat) {
-        this.$store.commit('SET_AMOUNT', (v * 100000000 / this.rate).toFixed(0))
+        this.$store.commit('amount', (v * 100000000 / this.rate).toFixed(0))
       } else {
-        this.$store.commit('SET_AMOUNT', v)
+        this.$store.commit('amount', v)
       } 
     },
 
@@ -212,7 +228,7 @@ export default {
 
   mounted () {
     this.init()
-    this.$store.commit('SET_PAYUSER', this.$route.query.payuser)
+    this.$store.commit('payuser', this.$route.query.payuser)
   },
 }
 </script>

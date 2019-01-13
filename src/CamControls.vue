@@ -49,7 +49,7 @@ export default {
       document.querySelector('#app').style.display = 'block'
       document.querySelector('#camcontrols').style.display = 'none'
       window.QRScanner.hide()
-      this.$store.commit('SET_SCANNING', false)
+      this.$store.commit('scanning', false)
     },
   },
 } 
