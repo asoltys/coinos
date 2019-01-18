@@ -5,8 +5,21 @@ v-toolbar(absolute app dark color="black" clipped-left fixed)
   v-spacer
   v-btn(icon @click='$router.push("/about")')
     flash-icon(fillColor="yellow" title="About CoinOS")
-  v-btn(v-if='user' icon @click='$router.push("/logout")')
-    power-settings-icon(title="Logout")
+  v-menu(v-if='user' offset-y)
+    v-btn(slot='activator')
+      v-avatar(v-if='user.pic' size='30').mr-2
+        img(:src='user.pic')
+      v-icon(v-else) person 
+      span {{user.name}}
+    v-list
+      v-list-tile(@click='$router.push("/settings")')
+        v-list-tile-action
+          v-icon settings
+        v-list-tile-content Settings
+      v-list-tile(@click='$router.push("/logout")')
+        v-list-tile-action
+          power-settings-icon(title="Logout")
+        v-list-tile-content Logout
 </template>
 
 <script>

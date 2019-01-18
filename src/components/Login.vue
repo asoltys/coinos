@@ -1,7 +1,6 @@
 <template lang="pug">
 v-container
-  v-progress-linear(v-if='loading' indeterminate)
-  v-layout(v-else)
+  v-layout
     v-flex
       v-alert.black--text.mb-4(color='yellow' icon='info' v-model='showlogout' value='showlogout' dismissible transition='scale-transition') You've logged out 
       v-form(@submit='submit')

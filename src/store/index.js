@@ -108,6 +108,11 @@ export default new Vuex.Store({
       if (state.socket) state.socket.disconnect()
     }, 
 
+    async verify({ dispatch }, data) {
+      let res = await Vue.axios.post('/verify', data)
+      if (res.data) dispatch ('snack', 'Your email has been verified')
+    }, 
+
     async buy ({ state, dispatch }, { amount, token }) {
       try {
         let sat = ((100000000 * amount / 100) / state.rate).toFixed(0)
@@ -155,8 +160,8 @@ export default new Vuex.Store({
       return new Promise((resolve, reject) => {
         s.on('connected', () => {
           s.emit('getuser', {}, user => { 
-            commit('user', user) 
-            if (router.currentRoute.path === '/login' || router.currentRoute.path === '/') {
+            if (user && (router.currentRoute.path === '/login' || router.currentRoute.path === '/')) {
+              commit('user', user) 
               router.push('/home')
             } 
             resolve()
@@ -168,14 +173,11 @@ export default new Vuex.Store({
       })
     },
 
-    async createUser ({ commit, dispatch }, form) {
-      if (form.password !== form.passconfirm) {
+    async createUser ({ commit, dispatch }, user) {
+      if (user.password !== user.passconfirm) {
         commit('error', 'passwords don\'t match')
         return
       }
-
-      /* eslint-disable-next-line */
-      let { passconfirm, ...user } = form
 
       try {
         await Vue.axios.post('/register', user)
@@ -185,9 +187,10 @@ export default new Vuex.Store({
       }
     },
 
-    /* eslint-disable-next-line */
     async updateUser ({ commit }, user) {
-      await Vue.axios.post('/user', user)
+      let res = await Vue.axios.post('/user', user)
+      commit('user', res.data)
+      router.push('/home')
     },
 
     async getPayments ({ commit }) {
@@ -362,16 +365,16 @@ export default new Vuex.Store({
   },
   mutations: {
     ...make.mutations(state),
-    SET_ERROR (s, v) { 
+    error (s, v) { 
       s.error = v 
       if (v && v.toString().includes('502 Bad')) s.error = 'Problem connecting to server'
     },
-    SET_TOKEN (s, v) { 
+    token (s, v) { 
       window.sessionStorage.setItem('token', v)
       Vue.axios.defaults.headers.common = { 'Authorization': `bearer ${v}` }
       s.token = v
     },
-    SET_USER (s, v) { Vue.set(s, 'user', v) },
+    user (s, v) { Vue.set(s, 'user', v) },
   },
   getters: make.getters(state),
 })

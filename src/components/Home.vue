@@ -42,6 +42,17 @@ import { TweenLite } from 'gsap'
 export default {
   components: { ArrowDown, ArrowUp, ArrowLeft, ArrowRight, Flash },
 
+  props: {
+    email: {
+      type: String,
+      default: '',
+    },
+    token: {
+      type: String,
+      default: '',
+    },
+  },
+
   data () {
     return {
       tweenedBalance: null,
@@ -55,7 +66,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['fbtoken', 'rate', 'user']),
+    ...mapGetters(['fbtoken', 'rate', 'user', 'verified']),
     animatedBalance () { return parseInt(this.tweenedBalance).toFixed(0) },
     animatedPending () { return parseInt(this.tweenedPending).toFixed(0) },
     animatedRate () { return parseFloat(this.tweenedRate).toFixed(2) },
@@ -146,6 +157,10 @@ export default {
   }, 
 
   created () {
+    if (this.token) {
+      this.$store.dispatch('verify', { email: this.email, token: this.token })
+    }
+
     this.tweenedBalance = this.user.balance
     this.tweenedPending = this.user.pending
     this.tweenedRate = this.rate

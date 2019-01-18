@@ -3,8 +3,8 @@ v-layout
   v-flex(xs12)
     v-form(@submit='submit')
       v-text-field(label='Username' v-model='form.username' autofocus)
-      v-text-field(label='Passphrase' v-model='form.password' type='password')
-      v-text-field(label='Confirm' v-model='form.passconfirm' type='password')
+      v-text-field(label='Password' v-model='form.password' type='password')
+      v-text-field(label='Confirm Password' v-model='form.passconfirm' type='password')
       v-btn(type='submit') Register
 </template>
 
@@ -16,6 +16,7 @@ export default {
     return {
       form: {
         username: '',
+        email: '',
         password: '',
         passconfirm: '',
         unit: 'BTC',
