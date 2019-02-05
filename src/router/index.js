@@ -29,7 +29,8 @@ const routes = [
   { path: '/about', component: About },
   { path: '/settings', component: Settings },
   { path: '/logout', component: Login, props: { logout: true } },
-  { path: '/verify/:email/:token', component: Home, props: true },
+  { path: '/verifyEmail/:username/:token', component: Home, props: route => ({ username: route.params.username, token: route.params.token, email: true }) },
+  { path: '/verifyPhone/:username/:token', component: Home, props: route => ({ username: route.params.username, token: route.params.token, phone: true }) },
 ]
 
 Vue.use(VueRouter)

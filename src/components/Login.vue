@@ -1,5 +1,12 @@
 <template lang="pug">
 v-container
+  v-dialog(:value='loggingIn' max-width='350')
+    v-card
+      v-card-title.subheading Approval Required
+      v-card-text 
+        v-layout
+          img.mr-2.logo(src='../assets/authy.png')
+          span Use the Authy app on your phone to approve the login request
   v-layout
     v-flex
       v-alert.black--text.mb-4(color='yellow' icon='info' v-model='showlogout' value='showlogout' dismissible transition='scale-transition') You've logged out 
@@ -8,8 +15,8 @@ v-container
         v-text-field(label="Password" v-model='user.password' type='password')
         v-btn(type='submit') Sign in
         v-btn(@click='$router.push("/register")') Register
-        v-btn(v-if='native()' color="#4267b2" @click='facebookConnect') Facebook Login 
-        v-btn(v-else color="#4267b2")
+        v-btn(v-if='native()' color='#4267b2' @click='facebookConnect') Facebook Login 
+        v-btn(v-else color='#4267b2' @click='fblogin')
           fb-signin-button(:params="fbSignInParams" @success="onSignInSuccess" @error="onSignInError") Facebook Login
 </template>
 
@@ -30,6 +37,7 @@ export default {
         scope: 'email,user_friends',
         return_scopes: true,
       },
+      loggingIn: false,
       user: {
         username: '',
         password: '',
@@ -42,6 +50,11 @@ export default {
 
   methods: {
     ...mapActions(['login', 'facebookLogin']),
+    
+    fblogin () {
+      let i = setInterval(() => { this.loggingIn = true; clearInterval(i) }, 1000)
+      let j = setInterval(() => { this.loggingIn = false; clearInterval(j) }, 60000)
+    },
 
     download () {
       window.location = 'https://play.google.com/store/apps/details?id=io.cordova.coinos'
@@ -65,6 +78,8 @@ export default {
 
     submit (e) {
       e.preventDefault()
+      let i = setInterval(() => { this.loggingIn = true; clearInterval(i) }, 1000)
+      let j = setInterval(() => { this.loggingIn = false; clearInterval(j) }, 60000)
       this.login(this.user)
       this.showlogout = false
     },

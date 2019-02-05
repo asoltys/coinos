@@ -43,9 +43,17 @@ export default {
   components: { ArrowDown, ArrowUp, ArrowLeft, ArrowRight, Flash },
 
   props: {
-    email: {
+    username: {
       type: String,
       default: '',
+    },
+    email: {
+      type: Boolean,
+      default: false,
+    },
+    phone: {
+      type: Boolean,
+      default: false,
     },
     token: {
       type: String,
@@ -157,9 +165,13 @@ export default {
   }, 
 
   created () {
-    if (this.token) {
-      this.$store.dispatch('verify', { email: this.email, token: this.token })
+    if (this.email) {
+      this.$store.dispatch('verifyEmail', { username: this.username, token: this.token })
     }
+
+    if (this.phone) {
+      this.$store.dispatch('verifyPhone', { username: this.username, token: this.token })
+    } 
 
     this.tweenedBalance = this.user.balance
     this.tweenedPending = this.user.pending

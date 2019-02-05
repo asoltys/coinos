@@ -14,7 +14,8 @@
                   span {{friend.name}}
           v-list-tile-action
             v-btn.pay.px-2(@click='send(friend)') Send
-    v-alert(value='true' v-else color='yellow').black--text None of your friends are using CoinOS
+    v-alert(value='true' v-else color='yellow').black--text
+      span None of your friends are using CoinOS
 </template>
 
 <script>

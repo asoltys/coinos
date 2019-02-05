@@ -78,6 +78,7 @@ export default new Vuex.Store({
         commit('token', res.data.token)
       } catch (e) {
         commit('error', 'login failed')
+        l(e)
         return
       }
 
@@ -109,7 +110,7 @@ export default new Vuex.Store({
     }, 
 
     async verify({ dispatch }, data) {
-      let res = await Vue.axios.post('/verify', data)
+      let res = await Vue.axios.get(`/verify/${data.email}/${data.token}`)
       if (res.data) dispatch ('snack', 'Your email has been verified')
     }, 
 
@@ -126,8 +127,10 @@ export default new Vuex.Store({
     },
 
     async setupSockets ({ commit, state, dispatch }) {
+      if (state.socket) return
       let s = socketio(process.env.SOCKETIO, { query: { token: state.token } })
       commit('socket', s)
+      l('setting up socket')
 
       s.on('tx', data => {
         bitcoin.Transaction.fromHex(data).outs.map(o => {
@@ -143,6 +146,14 @@ export default new Vuex.Store({
             } 
           } catch(e) { l(e) }
         })
+      })
+
+      s.on('emailVerified', () => {
+        dispatch('snack', 'Your email has been verified')
+      })
+
+      s.on('verifiedPhone', () => {
+        dispatch('snack', 'Your phone number has been verified')
       })
 
       s.on('block', () => {
@@ -190,7 +201,22 @@ export default new Vuex.Store({
     async updateUser ({ commit }, user) {
       let res = await Vue.axios.post('/user', user)
       commit('user', res.data)
-      router.push('/home')
+    },
+
+    async requestEmail(_, email) {
+      await Vue.axios.post('/requestEmail', { email })
+    },
+
+    async requestPhone(_, phone) {
+      await Vue.axios.post('/requestPhone', { phone })
+    },
+
+    async verifyEmail(_, params) {
+      await Vue.axios.get(`/verifyEmail/${params.username}/${params.token}`)
+    },
+
+    async verifyPhone(_, params) {
+      await Vue.axios.get(`/verifyPhone/${params.username}/${params.token}`)
     },
 
     async getPayments ({ commit }) {
