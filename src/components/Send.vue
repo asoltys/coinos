@@ -121,7 +121,7 @@ export default {
       'payobj',
       'payuser',
       'rate',
-      'scannedBalance'
+      'scannedBalance',
     ]),
 
     currency () {
