@@ -11,8 +11,8 @@ v-container
     v-flex
       v-alert.black--text.mb-4(color='yellow' icon='info' v-model='showlogout' value='showlogout' dismissible transition='scale-transition') You've logged out 
       v-form(@submit='submit')
-        v-text-field(label="Username" v-model='user.username' autofocus dark autocapitalize='none')
-        v-text-field(label="Password" v-model='user.password' type='password')
+        v-text-field(label="Username" v-model='form.username' autofocus dark autocapitalize='none')
+        v-text-field(label="Password" v-model='form.password' type='password')
         v-btn(type='submit') Sign in
         v-btn(@click='$router.push("/register")') Register
         v-btn(v-if='native()' color='#4267b2' @click='facebookConnect') Facebook Login 
@@ -38,7 +38,7 @@ export default {
         return_scopes: true,
       },
       loggingIn: false,
-      user: {
+      form: {
         username: '',
         password: '',
       },
@@ -46,7 +46,7 @@ export default {
     }
   },
 
-  computed: mapGetters(['error']),
+  computed: mapGetters(['error', 'user']),
 
   methods: {
     ...mapActions(['login', 'facebookLogin']),
@@ -80,7 +80,7 @@ export default {
       e.preventDefault()
       let i = setInterval(() => { this.loggingIn = true; clearInterval(i) }, 1000)
       let j = setInterval(() => { this.loggingIn = false; clearInterval(j) }, 60000)
-      this.login(this.user)
+      this.login(this.form)
       this.showlogout = false
     },
   },
