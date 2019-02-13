@@ -75,7 +75,7 @@ export default {
     },
 
     checkCode () {
-      if (this.form.phoneCode.length === 6)
+      if (this.form.phoneCode && this.form.phoneCode.length === 6)
         this.verifyPhone({ username: this.form.username, token: this.form.phoneCode })
     },
 
@@ -105,7 +105,7 @@ export default {
   },
 
   mounted () {
-    Object.assign(this.form, this.user)
+    Object.keys(this.user).filter(key => key in this.form && this.user[key]).forEach(key => this.form[key] = this.user[key])
   },
 }
 </script>

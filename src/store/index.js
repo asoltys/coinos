@@ -107,6 +107,7 @@ export default new Vuex.Store({
       commit('token', null)
       commit('user', null)
       if (state.socket) state.socket.disconnect()
+      commit('socket', null)
     }, 
 
     async verify({ dispatch }, data) {
@@ -130,7 +131,6 @@ export default new Vuex.Store({
       if (state.socket) return
       let s = socketio(process.env.SOCKETIO, { query: { token: state.token } })
       commit('socket', s)
-      l('setting up socket')
 
       s.on('tx', data => {
         bitcoin.Transaction.fromHex(data).outs.map(o => {
