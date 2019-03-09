@@ -69,8 +69,7 @@ div
       v-btn(@click='back')
         v-icon arrow_back
         span Go Back
-      v-progress-linear(v-if='loading' indeterminate)
-      v-btn(v-else-if='to' color="green" dark @click='sendPayment')
+      v-btn(v-if='!loading && to' color="green" dark @click='sendPayment')
         v-icon.mr-1 send
         span Pay
 </template>
