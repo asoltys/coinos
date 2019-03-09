@@ -11,6 +11,7 @@ import Buy from '../components/Buy'
 import Network from '../components/Network'
 import Market from '../components/Market'
 import Contacts from '../components/Contacts'
+import Settings from '../components/Settings'
 
 const routes = [
   { path: '/', component: Login, props: { logout: false } },
@@ -26,7 +27,10 @@ const routes = [
   { path: '/market', component: Market },
   { path: '/contacts', component: Contacts },
   { path: '/about', component: About },
+  { path: '/settings', component: Settings },
   { path: '/logout', component: Login, props: { logout: true } },
+  { path: '/verifyEmail/:username/:token', component: Home, props: route => ({ username: route.params.username, token: route.params.token, email: true }) },
+  { path: '/verifyPhone/:username/:token', component: Home, props: route => ({ username: route.params.username, token: route.params.token, phone: true }) },
 ]
 
 Vue.use(VueRouter)

@@ -29,7 +29,12 @@ div
         v-icon.mr-2 arrow_back
         span Send Another
   template(v-else)
-    v-textarea.my-4(v-if='!payobj && !payuser && !address' label='Address or Invoice:' dark v-model='to' clearable auto-grow rows='1' hide-details autofocus)
+    div(v-if='!payobj && !payuser && !address')
+      v-textarea.my-4(label='Address or Invoice:' dark v-model='to' clearable auto-grow rows='1' hide-details autofocus)
+      div.mx-auto
+        v-btn.mr-2(v-if='user.fbtoken' @click="$router.push('/contacts')") 
+          v-icon.mr-1 person
+          span Address Book
     v-card.elevation-1.pa-2.my-4.text-xs-center(v-if='address')
       v-layout(row wrap)
         v-flex
@@ -64,8 +69,7 @@ div
       v-btn(@click='back')
         v-icon arrow_back
         span Go Back
-      v-progress-linear(v-if='loading' indeterminate)
-      v-btn(v-else-if='to' color="green" dark @click='sendPayment')
+      v-btn(v-if='!loading && to' color="green" dark @click='sendPayment')
         v-icon.mr-1 send
         span Pay
 </template>

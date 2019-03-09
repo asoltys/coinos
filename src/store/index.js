@@ -78,6 +78,7 @@ export default new Vuex.Store({
         commit('token', res.data.token)
       } catch (e) {
         commit('error', 'login failed')
+        l(e)
         return
       }
 
@@ -106,6 +107,12 @@ export default new Vuex.Store({
       commit('token', null)
       commit('user', null)
       if (state.socket) state.socket.disconnect()
+      commit('socket', null)
+    }, 
+
+    async verify({ dispatch }, data) {
+      let res = await Vue.axios.get(`/verify/${data.email}/${data.token}`)
+      if (res.data) dispatch ('snack', 'Your email has been verified')
     }, 
 
     async buy ({ state, dispatch }, { amount, token }) {
@@ -121,6 +128,7 @@ export default new Vuex.Store({
     },
 
     async setupSockets ({ commit, state, dispatch }) {
+      if (state.socket) return
       let s = socketio(process.env.SOCKETIO, { query: { token: state.token } })
       commit('socket', s)
 
@@ -140,6 +148,14 @@ export default new Vuex.Store({
         })
       })
 
+      s.on('emailVerified', () => {
+        dispatch('snack', 'Your email has been verified')
+      })
+
+      s.on('verifiedPhone', () => {
+        dispatch('snack', 'Your phone number has been verified')
+      })
+
       s.on('block', () => {
         dispatch('getPayments')
       })
@@ -155,8 +171,8 @@ export default new Vuex.Store({
       return new Promise((resolve, reject) => {
         s.on('connected', () => {
           s.emit('getuser', {}, user => { 
-            commit('user', user) 
-            if (router.currentRoute.path === '/login' || router.currentRoute.path === '/') {
+            if (user && (router.currentRoute.path === '/login' || router.currentRoute.path === '/')) {
+              commit('user', user) 
               router.push('/home')
             } 
             resolve()
@@ -168,14 +184,11 @@ export default new Vuex.Store({
       })
     },
 
-    async createUser ({ commit, dispatch }, form) {
-      if (form.password !== form.passconfirm) {
+    async createUser ({ commit, dispatch }, user) {
+      if (user.password !== user.passconfirm) {
         commit('error', 'passwords don\'t match')
         return
       }
-
-      /* eslint-disable-next-line */
-      let { passconfirm, ...user } = form
 
       try {
         await Vue.axios.post('/register', user)
@@ -185,9 +198,25 @@ export default new Vuex.Store({
       }
     },
 
-    /* eslint-disable-next-line */
     async updateUser ({ commit }, user) {
-      await Vue.axios.post('/user', user)
+      let res = await Vue.axios.post('/user', user)
+      commit('user', res.data)
+    },
+
+    async requestEmail(_, email) {
+      await Vue.axios.post('/requestEmail', { email })
+    },
+
+    async requestPhone(_, phone) {
+      await Vue.axios.post('/requestPhone', { phone })
+    },
+
+    async verifyEmail(_, params) {
+      await Vue.axios.get(`/verifyEmail/${params.username}/${params.token}`)
+    },
+
+    async verifyPhone(_, params) {
+      await Vue.axios.get(`/verifyPhone/${params.username}/${params.token}`)
     },
 
     async getPayments ({ commit }) {
@@ -362,16 +391,16 @@ export default new Vuex.Store({
   },
   mutations: {
     ...make.mutations(state),
-    SET_ERROR (s, v) { 
+    error (s, v) { 
       s.error = v 
       if (v && v.toString().includes('502 Bad')) s.error = 'Problem connecting to server'
     },
-    SET_TOKEN (s, v) { 
+    token (s, v) { 
       window.sessionStorage.setItem('token', v)
       Vue.axios.defaults.headers.common = { 'Authorization': `bearer ${v}` }
       s.token = v
     },
-    SET_USER (s, v) { Vue.set(s, 'user', v) },
+    user (s, v) { Vue.set(s, 'user', v) },
   },
   getters: make.getters(state),
 })
