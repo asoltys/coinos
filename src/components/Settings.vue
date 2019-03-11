@@ -35,7 +35,7 @@ v-layout
             v-alert.black--text.mb-4(v-if='!user.phoneVerified' color='yellow' icon='info' v-model='verifyingPhone' dismissible transition='scale-transition') A 6 digit code will be texted to your phone. Enter it below:
           v-layout(v-if='verifyingPhone && form.phone.length === 10 && !(user.phoneVerified && user.phone === form.phone)')
             v-text-field(label='Code' v-model='form.phoneCode' ref='phoneCode' type='text' @keyup='checkCode')
-          v-switch(:label='`Two-Factor Authentication "2FA" ${user.phoneVerified ? "" : "(Requires Verified Phone Number)"}`' v-model='form.twofa' :disabled='!user.phoneVerified')
+          v-switch(:label='`Two-Factor Authentication "2FA" ${(user.emailVerified && user.phoneVerified) ? "" : "(Requires Verified Email and Phone Number)"}`' v-model='form.twofa' :disabled='!(user.emailVerified && user.phoneVerified)')
           v-btn(@click='save') Save Settings
 </template>
 
@@ -76,7 +76,7 @@ export default {
 
     checkCode () {
       if (this.form.phoneCode && this.form.phoneCode.length === 6)
-        this.verifyPhone({ username: this.form.username, token: this.form.phoneCode })
+        this.verifyPhone({ username: this.user.username, token: this.form.phoneCode })
     },
 
     validate (email) {

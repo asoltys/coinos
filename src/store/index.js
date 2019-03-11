@@ -45,10 +45,10 @@ const state = {
 }
 
 export default new Vuex.Store({
-  plugins: [ pathify.plugin ],
+  plugins: [pathify.plugin],
   state,
   actions: {
-    async init ({ commit, dispatch, state }) {
+    async init({ commit, dispatch, state }) {
       commit('loading', true)
       commit('scanning', false)
       commit('error', '')
@@ -65,13 +65,18 @@ export default new Vuex.Store({
       }
 
       const publicpaths = ['/', '/login', '/about', '/register']
-      if (!(publicpaths.includes(router.currentRoute.path) || (state.user && state.user.address))) {
+      if (
+        !(
+          publicpaths.includes(router.currentRoute.path) ||
+          (state.user && state.user.address)
+        )
+      ) {
         router.push('/')
       }
       commit('loading', false)
     },
 
-    async login ({ commit, dispatch }, user) {
+    async login({ commit, dispatch }, user) {
       try {
         let res = await Vue.axios.post('/login', user)
         commit('user', res.data.user)
@@ -86,7 +91,7 @@ export default new Vuex.Store({
       router.push('/home')
     },
 
-    async facebookLogin ({ commit, dispatch }, data) {
+    async facebookLogin({ commit, dispatch }, data) {
       let { accessToken, userID } = data.authResponse
       let res
 
@@ -98,7 +103,7 @@ export default new Vuex.Store({
         await dispatch('init')
         router.push('/home')
         break
-      } 
+      }
     },
 
     async logout({ commit, state }) {
@@ -108,26 +113,26 @@ export default new Vuex.Store({
       commit('user', null)
       if (state.socket) state.socket.disconnect()
       commit('socket', null)
-    }, 
+    },
 
     async verify({ dispatch }, data) {
       let res = await Vue.axios.get(`/verify/${data.email}/${data.token}`)
-      if (res.data) dispatch ('snack', 'Your email has been verified')
-    }, 
+      if (res.data) dispatch('snack', 'Your email has been verified')
+    },
 
-    async buy ({ state, dispatch }, { amount, token }) {
+    async buy({ state, dispatch }, { amount, token }) {
       try {
-        let sat = ((100000000 * amount / 100) / state.rate).toFixed(0)
+        let sat = ((100000000 * amount) / 100 / state.rate).toFixed(0)
         await Vue.axios.post('/buy', { amount, token, sat })
         router.push('/home')
-        dispatch ('snack', `Bought ${sat} satoshis`)
+        dispatch('snack', `Bought ${sat} satoshis`)
       } catch (e) {
         l('error charging credit card', e)
         return
       }
     },
 
-    async setupSockets ({ commit, state, dispatch }) {
+    async setupSockets({ commit, state, dispatch }) {
       if (state.socket) return
       let s = socketio(process.env.SOCKETIO, { query: { token: state.token } })
       commit('socket', s)
@@ -136,15 +141,20 @@ export default new Vuex.Store({
         bitcoin.Transaction.fromHex(data).outs.map(o => {
           try {
             let network = bitcoin.networks.bitcoin
-            if (process.env.NODE_ENV !== 'production' || window.location.href.includes('test')) {
+            if (
+              process.env.NODE_ENV !== 'production' ||
+              window.location.href.includes('test')
+            ) {
               network = bitcoin.networks.testnet
-            } 
+            }
             let address = bitcoin.address.fromOutputScript(o.script, network)
             if (address === state.user.address) {
               commit('received', o.value)
               dispatch('snack', `Received ${o.value} satoshi`)
-            } 
-          } catch(e) { l(e) }
+            }
+          } catch (e) {
+            l(e)
+          }
         })
       })
 
@@ -152,7 +162,7 @@ export default new Vuex.Store({
         dispatch('snack', 'Your email has been verified')
       })
 
-      s.on('verifiedPhone', () => {
+      s.on('phoneVerified', () => {
         dispatch('snack', 'Your phone number has been verified')
       })
 
@@ -170,11 +180,15 @@ export default new Vuex.Store({
 
       return new Promise((resolve, reject) => {
         s.on('connected', () => {
-          s.emit('getuser', {}, user => { 
-            if (user && (router.currentRoute.path === '/login' || router.currentRoute.path === '/')) {
-              commit('user', user) 
+          s.emit('getuser', {}, user => {
+            if (
+              user &&
+              (router.currentRoute.path === '/login' ||
+                router.currentRoute.path === '/')
+            ) {
+              commit('user', user)
               router.push('/home')
-            } 
+            }
             resolve()
           })
         })
@@ -184,7 +198,7 @@ export default new Vuex.Store({
       })
     },
 
-    async createUser ({ commit, dispatch }, user) {
+    async createUser({ commit, dispatch }, user) {
       if (user.password !== user.passconfirm) {
         commit('error', 'passwords don\'t match')
         return
@@ -193,12 +207,13 @@ export default new Vuex.Store({
       try {
         await Vue.axios.post('/register', user)
         dispatch('login', user)
-      } catch (e) { 
+      } catch (e) {
         commit('error', e.response.data)
       }
     },
 
-    async updateUser ({ commit }, user) {
+    async updateUser({ commit }, user) {
+      console.log(user.twofa)
       let res = await Vue.axios.post('/user', user)
       commit('user', res.data)
     },
@@ -219,7 +234,7 @@ export default new Vuex.Store({
       await Vue.axios.get(`/verifyPhone/${params.username}/${params.token}`)
     },
 
-    async getPayments ({ commit }) {
+    async getPayments({ commit }) {
       commit('loading', true)
       let res = await apolloClient.query({
         query: paymentsQuery,
@@ -230,7 +245,7 @@ export default new Vuex.Store({
       commit('payments', res.data.payments)
     },
 
-    async getFriends ({ commit }) {
+    async getFriends({ commit }) {
       commit('loading', true)
 
       try {
@@ -238,7 +253,7 @@ export default new Vuex.Store({
         commit('friends', res.data)
       } catch (e) {
         commit('error', e.response.data)
-      } 
+      }
 
       commit('loading', false)
     },
@@ -255,7 +270,7 @@ export default new Vuex.Store({
       commit('peers', res.data.peers)
     },
 
-    async sendPayment ({ commit, getters }) {
+    async sendPayment({ commit, getters }) {
       commit('loading', true)
       commit('error', null)
 
@@ -267,30 +282,28 @@ export default new Vuex.Store({
           commit('payment', res.data)
         } catch (e) {
           commit('error', e.response.data)
-        } 
-      }
-      else if (payuser) {
+        }
+      } else if (payuser) {
         try {
           let res = await Vue.axios.post('/payUser', { payuser, amount })
           commit('payment', res.data)
         } catch (e) {
           commit('error', e.response.data)
           l(e)
-        } 
-      } 
-      else if (address) {
+        }
+      } else if (address) {
         try {
           let res = await Vue.axios.post('/sendCoins', { address, amount })
           commit('payment', res.data)
         } catch (e) {
           commit('error', e.response.data)
-        } 
+        }
       }
 
       commit('loading', false)
     },
 
-    async clearPayment ({ commit }) {
+    async clearPayment({ commit }) {
       commit('loading', false)
       commit('payreq', '')
       commit('address', '')
@@ -301,40 +314,40 @@ export default new Vuex.Store({
       commit('error', null)
     },
 
-    async addInvoice ({ commit }, { amount, tip, address }) {
+    async addInvoice({ commit }, { amount, tip, address }) {
       let res
       try {
         res = await Vue.axios.post('/addInvoice', { amount, tip, address })
         commit('payreq', res.data.payment_request)
       } catch (e) {
         commit('error', e.response.data)
-      } 
+      }
     },
 
-    async scan ({ commit, dispatch }) {
+    async scan({ commit, dispatch }) {
       commit('scanning', true)
 
       if (window.QRScanner) {
-        window.QRScanner.prepare((err) => {
+        window.QRScanner.prepare(err => {
           if (err) {
             console.error(err)
             return
-          } 
+          }
 
           window.QRScanner.show(() => {
             document.querySelector('#app').style.display = 'none'
             document.querySelector('#camcontrols').style.display = 'block'
-            
+
             window.QRScanner.scan((err, res) => {
-              if (err) { 
-                l(err) 
+              if (err) {
+                l(err)
               } else {
                 dispatch('handleScan', res)
               }
 
               document.querySelector('#app').style.display = 'block'
               document.querySelector('#camcontrols').style.display = 'none'
-            
+
               window.QRScanner.destroy()
             })
           })
@@ -342,11 +355,11 @@ export default new Vuex.Store({
       }
     },
 
-    async handleScan ({ commit, dispatch }, text) {
+    async handleScan({ commit, dispatch }, text) {
       await dispatch('clearPayment')
       commit('scanning', false)
 
-      try { 
+      try {
         if (text.slice(0, 10) === 'lightning:') text = text.slice(10)
         let payobj = bolt11.decode(text)
         console.log('lightning', payobj)
@@ -354,53 +367,78 @@ export default new Vuex.Store({
         commit('payobj', payobj)
         commit('payreq', text)
         return
-      } catch (e) { /**/ }
+      } catch (e) {
+        /**/
+      }
 
       try {
         let url = bip21.decode(text)
         commit('address', url.address)
         commit('amount', (url.options.amount * 100000000).toFixed(0))
-        let network = (process.env.NODE_ENV !== 'production' || window.location.href.includes('test')) ? 'test3' : 'main'
-        let res = await Vue.axios.get(`https://api.blockcypher.com/v1/btc/${network}/addrs/${url.address}/balance`)
+        let network =
+          process.env.NODE_ENV !== 'production' ||
+          window.location.href.includes('test')
+            ? 'test3'
+            : 'main'
+        let res = await Vue.axios.get(
+          `https://api.blockcypher.com/v1/btc/${network}/addrs/${
+            url.address
+          }/balance`
+        )
         commit('scannedBalance', res.data.final_balance)
         router.push({ name: 'send', params: { keep: true } })
         return
-      } catch (e) { /**/ } 
+      } catch (e) {
+        /**/
+      }
 
       try {
         bitcoin.address.fromBase58Check(text)
         commit('address', text)
-        let network = (process.env.NODE_ENV !== 'production' || window.location.href.includes('test')) ? 'test3' : 'main'
-        let res = await Vue.axios.get(`https://api.blockcypher.com/v1/btc/${network}/addrs/${text}/balance`)
+        let network =
+          process.env.NODE_ENV !== 'production' ||
+          window.location.href.includes('test')
+            ? 'test3'
+            : 'main'
+        let res = await Vue.axios.get(
+          `https://api.blockcypher.com/v1/btc/${network}/addrs/${text}/balance`
+        )
         commit('scannedBalance', res.data.final_balance)
         router.push({ name: 'send', params: { keep: true } })
         return
-      } catch (e) { /**/ }
+      } catch (e) {
+        /**/
+      }
 
       try {
         bech32.decode(text)
         commit('address', text)
         router.push({ name: 'send', params: { keep: true } })
         return
-      } catch (e) { /**/ }
+      } catch (e) {
+        /**/
+      }
     },
 
-    async snack ({ commit }, msg) {
+    async snack({ commit }, msg) {
       commit('snack', msg)
-    }, 
+    },
   },
   mutations: {
     ...make.mutations(state),
-    error (s, v) { 
-      s.error = v 
-      if (v && v.toString().includes('502 Bad')) s.error = 'Problem connecting to server'
+    error(s, v) {
+      s.error = v
+      if (v && v.toString().includes('502 Bad'))
+        s.error = 'Problem connecting to server'
     },
-    token (s, v) { 
+    token(s, v) {
       window.sessionStorage.setItem('token', v)
-      Vue.axios.defaults.headers.common = { 'Authorization': `bearer ${v}` }
+      Vue.axios.defaults.headers.common = { Authorization: `bearer ${v}` }
       s.token = v
     },
-    user (s, v) { Vue.set(s, 'user', v) },
+    user(s, v) {
+      Vue.set(s, 'user', v)
+    },
   },
   getters: make.getters(state),
 })

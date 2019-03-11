@@ -9,7 +9,7 @@ const sourceMapEnabled = isProduction
 module.exports = {
   loaders: utils.cssLoaders({
     sourceMap: sourceMapEnabled,
-    extract: isProduction
+    extract: isProduction,
   }),
   cssSourceMap: sourceMapEnabled,
   cacheBusting: config.dev.cacheBusting,
@@ -17,6 +17,6 @@ module.exports = {
     video: ['src', 'poster'],
     source: 'src',
     img: 'src',
-    image: 'xlink:href'
-  }
+    image: 'xlink:href',
+  },
 }

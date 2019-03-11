@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="io.coinos" version="1.0.1" xmlns="http://www.w3.org/ns/widgets">
+<widget id="io.cordova.coinos" version="1.0.2" xmlns="http://www.w3.org/ns/widgets">
     <name>CoinOS</name>
     <description>
         A bitcoin lightning wallet
