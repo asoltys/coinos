@@ -1,6 +1,6 @@
 <template lang='pug'>
 div.text-xs-center
-  v-flex.mb-2
+  v-flex.mb-2(v-if='!isNaN(animatedBalance)')
     span.display-2 {{animatedBalance}} 
     span.headline SAT
     h3 {{((animatedBalance / 100000000) * animatedRate).toFixed(2)}} CAD @ #[span.yellow--text {{animatedRate}}] per BTC

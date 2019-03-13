@@ -27,7 +27,6 @@ const state = {
   payobj: null,
   payreq: '',
   payuser: '',
-  peers: [],
   rate: 0,
   received: 0,
   scan: '',
@@ -49,7 +48,6 @@ export default new Vuex.Store({
   state,
   actions: {
     async init({ commit, dispatch, state }) {
-      commit('loading', true)
       commit('scanning', false)
       commit('error', '')
       let token = window.sessionStorage.getItem('token')
@@ -73,7 +71,6 @@ export default new Vuex.Store({
       ) {
         router.push('/')
       }
-      commit('loading', false)
     },
 
     async login({ commit, dispatch }, user) {
@@ -181,13 +178,14 @@ export default new Vuex.Store({
       return new Promise((resolve, reject) => {
         s.on('connected', () => {
           s.emit('getuser', {}, user => {
-            if (
-              user &&
-              (router.currentRoute.path === '/login' ||
-                router.currentRoute.path === '/')
-            ) {
+            if (user) {
               commit('user', user)
-              router.push('/home')
+              if (
+                router.currentRoute.path === '/login' ||
+                router.currentRoute.path === '/'
+              ) {
+                router.push('/home')
+              }
             }
             resolve()
           })
@@ -213,7 +211,6 @@ export default new Vuex.Store({
     },
 
     async updateUser({ commit }, user) {
-      console.log(user.twofa)
       let res = await Vue.axios.post('/user', user)
       commit('user', res.data)
     },
@@ -362,7 +359,6 @@ export default new Vuex.Store({
       try {
         if (text.slice(0, 10) === 'lightning:') text = text.slice(10)
         let payobj = bolt11.decode(text)
-        console.log('lightning', payobj)
         router.push({ name: 'send', params: { keep: true } })
         commit('payobj', payobj)
         commit('payreq', text)
