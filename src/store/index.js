@@ -76,11 +76,11 @@ export default new Vuex.Store({
     async login({ commit, dispatch }, user) {
       try {
         let res = await Vue.axios.post('/login', user)
+
         commit('user', res.data.user)
         commit('token', res.data.token)
       } catch (e) {
-        commit('error', 'login failed')
-        l(e)
+        commit('error', 'Login failed')
         return
       }
 
@@ -370,18 +370,14 @@ export default new Vuex.Store({
       try {
         let url = bip21.decode(text)
         commit('address', url.address)
-        commit('amount', (url.options.amount * 100000000).toFixed(0))
-        let network =
-          process.env.NODE_ENV !== 'production' ||
-          window.location.href.includes('test')
-            ? 'test3'
-            : 'main'
-        let res = await Vue.axios.get(
-          `https://api.blockcypher.com/v1/btc/${network}/addrs/${
-            url.address
-          }/balance`
-        )
-        commit('scannedBalance', res.data.final_balance)
+        if (url.options.amount)
+          commit('amount', (url.options.amount * 100000000).toFixed(0))
+        try {
+          let res = await Vue.axios.get(`/balance/${url.address}`)
+          commit('scannedBalance', res.data.final_balance)
+        } catch (e) {
+          /**/
+        }
         router.push({ name: 'send', params: { keep: true } })
         return
       } catch (e) {
@@ -391,15 +387,12 @@ export default new Vuex.Store({
       try {
         bitcoin.address.fromBase58Check(text)
         commit('address', text)
-        let network =
-          process.env.NODE_ENV !== 'production' ||
-          window.location.href.includes('test')
-            ? 'test3'
-            : 'main'
-        let res = await Vue.axios.get(
-          `https://api.blockcypher.com/v1/btc/${network}/addrs/${text}/balance`
-        )
-        commit('scannedBalance', res.data.final_balance)
+        try {
+          let res = await Vue.axios.get(`/balance/${text}`)
+          commit('scannedBalance', res.data.final_balance)
+        } catch (e) {
+          /**/
+        }
         router.push({ name: 'send', params: { keep: true } })
         return
       } catch (e) {

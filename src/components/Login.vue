@@ -1,6 +1,6 @@
 <template lang="pug">
 v-container
-  v-dialog(:value='loggingIn' max-width='350')
+  v-dialog(:value='loggingIn && !error' max-width='350')
     v-card
       v-card-title.subheading Approval Required
       v-card-text 
@@ -16,7 +16,7 @@ v-container
         v-btn(type='submit') Sign in
         v-btn(@click='$router.push("/register")') Register
         v-btn(v-if='native()' color='#4267b2' @click='facebookConnect') Facebook Login 
-        v-btn(v-else color='#4267b2' @click='fblogin')
+        v-btn(v-else color='#4267b2')
           fb-signin-button(:params="fbSignInParams" @success="onSignInSuccess" @error="onSignInError") Facebook Login
 </template>
 
@@ -51,16 +51,15 @@ export default {
   methods: {
     ...mapActions(['login', 'facebookLogin']),
     
-    fblogin () {
-      let i = setInterval(() => { this.loggingIn = true; clearInterval(i) }, 1000)
-      let j = setInterval(() => { this.loggingIn = false; clearInterval(j) }, 60000)
-    },
-
     download () {
       window.location = 'https://play.google.com/store/apps/details?id=io.cordova.coinos'
     },
 
     onSignInSuccess (res) {
+      if (res.status === 'connected') {
+        let i = setInterval(() => { this.loggingIn = true; clearInterval(i) }, 1000)
+        let j = setInterval(() => { this.loggingIn = false; clearInterval(j) }, 60000)
+      }
       this.facebookLogin(res)
     },
 

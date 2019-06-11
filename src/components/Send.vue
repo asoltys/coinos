@@ -164,6 +164,15 @@ export default {
     }, 
   }, 
 
+  watch: {
+    amount (v) {
+      if (this.fiat)
+        this.display = (v / 100000000 * this.rate).toFixed(2)
+      else
+        this.display = v
+    },
+  },
+
   methods: {
     ...mapActions(['sendPayment', 'clearPayment', 'snack']),
 
@@ -176,7 +185,6 @@ export default {
     },
 
     updateAmount (v) {
-      this.display = v
       if (this.fiat) {
         this.$store.commit('amount', (v * 100000000 / this.rate).toFixed(0))
       } else {
