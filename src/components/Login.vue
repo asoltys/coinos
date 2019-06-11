@@ -57,7 +57,7 @@ export default {
 
     onSignInSuccess (res) {
       if (res.status === 'connected') {
-        let i = setInterval(() => { this.loggingIn = true; clearInterval(i) }, 1000)
+        let i = setInterval(() => { this.loggingIn = true; clearInterval(i) }, 3000)
         let j = setInterval(() => { this.loggingIn = false; clearInterval(j) }, 60000)
       }
       this.facebookLogin(res)
@@ -77,7 +77,7 @@ export default {
 
     submit (e) {
       e.preventDefault()
-      let i = setInterval(() => { this.loggingIn = true; clearInterval(i) }, 1000)
+      let i = setInterval(() => { this.loggingIn = true; clearInterval(i) }, 3000)
       let j = setInterval(() => { this.loggingIn = false; clearInterval(j) }, 60000)
       this.login(this.form)
       this.showlogout = false
