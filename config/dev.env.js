@@ -3,9 +3,9 @@ var prodEnv = require("./prod.env");
 
 module.exports = merge(prodEnv, {
   NODE_ENV: '"development"',
-  GRAPHQL: '"/graphql"',
+  GRAPHQL: '"/api/graphql"',
   BASEURL: '"/api"',
-  SOCKETIO: '"https://dev.coinos.io"',
+  SOCKETIO: '"/"',
   PORT: 8085,
   FACEBOOK: "'290368338058652'",
   STRIPE: '"pk_test_hGki6lIOnbfnRDnKNoeZxlxA"'
