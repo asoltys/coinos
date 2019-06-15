@@ -1,6 +1,7 @@
 <template lang="pug">
 div
-  v-layout
+  v-progress-linear(v-if='loading' indeterminate)
+  v-layout(v-else)
     v-flex.text-xs-center.mb-2
       span.display-2 {{user.balance}} 
       span.headline SAT
