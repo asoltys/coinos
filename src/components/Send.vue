@@ -156,6 +156,7 @@ export default {
         if (this.payreq) return this.payreq
         if (this.address) return this.address
         if (this.payuser) return this.payuser
+        return null
       },
       set (v) {
         if (!v) v = ''
