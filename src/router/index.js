@@ -19,7 +19,7 @@ const routes = [
   { path: '/login', component: Login, props: { logout: false } },
   { path: '/register', component: Register },
   { path: '/payments', component: Payments },
-  { name: 'send', path: '/send', component: Send, props: true},
+  { name: 'send', path: '/send', component: Send, props: true },
   { path: '/receive', component: Receive },
   { path: '/receive', component: Receive },
   { path: '/buy', component: Buy },
@@ -29,8 +29,24 @@ const routes = [
   { path: '/about', component: About },
   { path: '/settings', component: Settings },
   { path: '/logout', component: Login, props: { logout: true } },
-  { path: '/verifyEmail/:username/:token', component: Home, props: route => ({ username: route.params.username, token: route.params.token, email: true }) },
-  { path: '/verifyPhone/:username/:token', component: Home, props: route => ({ username: route.params.username, token: route.params.token, phone: true }) },
+  {
+    path: '/verifyEmail/:username/:token',
+    component: Home,
+    props: route => ({
+      username: route.params.username,
+      token: route.params.token,
+      email: true,
+    }),
+  },
+  {
+    path: '/verifyPhone/:username/:token',
+    component: Home,
+    props: route => ({
+      username: route.params.username,
+      token: route.params.token,
+      phone: true,
+    }),
+  },
 ]
 
 Vue.use(VueRouter)
@@ -38,7 +54,7 @@ Vue.use(VueRouter)
 export default new VueRouter({
   mode: 'history',
   routes: routes,
-  scrollBehavior: function (to, from, savedPosition) {
+  scrollBehavior: function(to, from, savedPosition) {
     if (savedPosition) {
       return savedPosition
     } else {
