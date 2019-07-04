@@ -19,20 +19,20 @@ export default {
     },
   },
 
-  data () {
+  data() {
     return {
       percent: 0,
-    }
+    };
   },
 
   computed: {
-    tip () {
-      let tip = (this.percent * this.amount * 0.01).toFixed(2)
-      this.$emit('update', tip)
-      return tip
+    tip() {
+      let tip = (this.percent * this.amount * 0.01).toFixed(2);
+      this.$emit('update', tip);
+      return tip;
     },
   },
-}
+};
 </script>
 
 <style lang="stylus" scoped>

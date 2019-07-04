@@ -1,17 +1,17 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
-import Home from '../components/Home'
-import About from '../components/About'
-import Login from '../components/Login'
-import Register from '../components/Register'
-import Payments from '../components/Payments'
-import Send from '../components/Send'
-import Receive from '../components/Receive'
-import Buy from '../components/Buy'
-import Network from '../components/Network'
-import Market from '../components/Market'
-import Contacts from '../components/Contacts'
-import Settings from '../components/Settings'
+import Vue from 'vue';
+import VueRouter from 'vue-router';
+import Home from '../components/Home';
+import About from '../components/About';
+import Login from '../components/Login';
+import Register from '../components/Register';
+import Payments from '../components/Payments';
+import Send from '../components/Send';
+import Receive from '../components/Receive';
+import Buy from '../components/Buy';
+import Network from '../components/Network';
+import Market from '../components/Market';
+import Contacts from '../components/Contacts';
+import Settings from '../components/Settings';
 
 const routes = [
   { path: '/', component: Login, props: { logout: false } },
@@ -47,18 +47,18 @@ const routes = [
       phone: true,
     }),
   },
-]
+];
 
-Vue.use(VueRouter)
+Vue.use(VueRouter);
 
 export default new VueRouter({
   mode: 'history',
   routes: routes,
   scrollBehavior: function(to, from, savedPosition) {
     if (savedPosition) {
-      return savedPosition
+      return savedPosition;
     } else {
-      return { x: 0, y: 0 }
+      return { x: 0, y: 0 };
     }
   },
-})
+});

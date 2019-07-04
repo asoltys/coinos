@@ -19,55 +19,60 @@ div
 </template>
 
 <script>
-import qr from 'qrcode'
-import { mapActions } from 'vuex'
+import qr from 'qrcode';
+import { mapActions } from 'vuex';
 
-const node = '02868e12f320073cad0c2959c42559fbcfd1aa326fcb943492ed7f02c9820aa399@coinos.io:9735'
+const node =
+  '02868e12f320073cad0c2959c42559fbcfd1aa326fcb943492ed7f02c9820aa399@coinos.io:9735';
 
 export default {
-  data () { return { node } },
+  data() {
+    return { node };
+  },
 
-  mounted () {
-    let canvas = document.getElementById('qr')
-    if (!canvas) return
-    qr.toCanvas(canvas, node, e => { if (e) console.log(e) })
+  mounted() {
+    let canvas = document.getElementById('qr');
+    if (!canvas) return;
+    qr.toCanvas(canvas, node, e => {
+      if (e) console.log(e);
+    });
   },
 
   methods: {
     ...mapActions(['snack']),
-    copy () {
-      var textArea = document.createElement('textarea')
-      textArea.style.position = 'fixed'
-      textArea.value = node
+    copy() {
+      var textArea = document.createElement('textarea');
+      textArea.style.position = 'fixed';
+      textArea.value = node;
 
-      document.body.appendChild(textArea)
+      document.body.appendChild(textArea);
 
-      textArea.focus()
-      textArea.select()
+      textArea.focus();
+      textArea.select();
 
-      document.execCommand('copy')
-      document.body.removeChild(textArea)
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
 
-      this.snack('Copied to Clipboard')
+      this.snack('Copied to Clipboard');
     },
   },
-} 
+};
 </script>
 
 <style lang="stylus" scoped>
-  a
-    color white
-    font-weight bold
+a
+  color white
+  font-weight bold
 
-  code 
-    max-width 100%
-    word-wrap break-word
-    font-size 0.9em
-    color black !important
+code
+  max-width 100%
+  word-wrap break-word
+  font-size 0.9em
+  color black !important
 
-  .code
-    margin auto
-    background #333
-    word-wrap break-word
-    padding 10px
+.code
+  margin auto
+  background #333
+  word-wrap break-word
+  padding 10px
 </style>

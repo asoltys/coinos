@@ -19,22 +19,22 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters } from 'vuex';
 
 export default {
   computed: mapGetters(['friends', 'loading']),
   methods: {
     ...mapActions(['getFriends']),
 
-    send (friend) {
-      this.$router.push({ path: '/send', query: { payuser: friend.id } })
+    send(friend) {
+      this.$router.push({ path: '/send', query: { payuser: friend.id } });
     },
   },
 
-  mounted () {
-    this.getFriends()
+  mounted() {
+    this.getFriends();
   },
-}
+};
 </script>
 
 <style lang="stylus" scoped>

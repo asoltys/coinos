@@ -12,15 +12,14 @@
 
 </template>
 
-
 <script>
-import { Bus, StripeCheckout } from 'vue-stripe'
-import { mapGetters, mapActions } from 'vuex'
+import { Bus, StripeCheckout } from 'vue-stripe';
+import { mapGetters, mapActions } from 'vuex';
 
 export default {
   components: { StripeCheckout },
 
-  data () {
+  data() {
     return {
       product: {
         name: 'Bitcoin',
@@ -28,29 +27,29 @@ export default {
         amount: 2500,
       },
       items: [],
-      stripe: process.env.STRIPE,
-    }
+      stripe: process.env.VUE_APP_STRIPE,
+    };
   },
-  
+
   computed: {
     ...mapGetters(['rate']),
-  }, 
+  },
 
   methods: mapActions(['buy', 'snack']),
 
-  async mounted () {
-    Bus.$off('vue-stripe.success')
+  async mounted() {
+    Bus.$off('vue-stripe.success');
     Bus.$once('vue-stripe.success', payload => {
-      let { token } = payload
-      let { amount } = this.product
-      this.buy({ amount, token })
-    })
+      let { token } = payload;
+      let { amount } = this.product;
+      this.buy({ amount, token });
+    });
 
     this.items = [
       { text: '$25', value: 2500 },
       { text: '$50', value: 5000 },
       { text: '$100', value: 10000 },
-    ]
+    ];
   },
-}
+};
 </script>

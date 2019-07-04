@@ -23,13 +23,13 @@ v-toolbar(absolute app dark color="black" clipped-left fixed)
 </template>
 
 <script>
-import FlashIcon from 'vue-material-design-icons/Flash'
-import InfoIcon from 'vue-material-design-icons/Information'
-import PowerSettingsIcon  from 'vue-material-design-icons/PowerSettings'
-import { mapGetters } from 'vuex'
+import FlashIcon from 'vue-material-design-icons/Flash';
+import InfoIcon from 'vue-material-design-icons/Information';
+import PowerSettingsIcon from 'vue-material-design-icons/PowerSettings';
+import { mapGetters } from 'vuex';
 
 export default {
   components: { FlashIcon, InfoIcon, PowerSettingsIcon },
   computed: mapGetters(['user']),
-} 
+};
 </script>

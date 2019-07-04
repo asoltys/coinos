@@ -40,11 +40,11 @@ v-layout
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
-import validator from 'email-validator'
+import { mapActions, mapGetters } from 'vuex';
+import validator from 'email-validator';
 
 export default {
-  data () {
+  data() {
     return {
       form: {
         email: '',
@@ -59,53 +59,63 @@ export default {
       },
       verifyingEmail: false,
       verifyingPhone: false,
-    }
+    };
   },
 
   computed: mapGetters(['user']),
 
   methods: {
-    updatePhone () {
-      this.form.phoneCode = ''
+    updatePhone() {
+      this.form.phoneCode = '';
     },
 
-    save () {
-      this.submit()
-      this.$router.push('/home')
+    save() {
+      this.submit();
+      this.$router.push('/home');
     },
 
-    checkCode () {
+    checkCode() {
       if (this.form.phoneCode && this.form.phoneCode.length === 6)
-        this.verifyPhone({ username: this.user.username, token: this.form.phoneCode })
+        this.verifyPhone({
+          username: this.user.username,
+          token: this.form.phoneCode,
+        });
     },
 
-    validate (email) {
-      return validator.validate(email)
+    validate(email) {
+      return validator.validate(email);
     },
 
-    challengeEmail () {
-      this.verifyingEmail = true
-      this.submit()
-      this.requestEmail(this.form.email)
-    }, 
-
-    challengePhone () {
-      this.verifyingPhone = true
-      this.submit()
-      this.requestPhone(this.form.phone)
-      this.$nextTick(() => this.$refs.phoneCode.focus())
-    }, 
-
-    submit (e) {
-      if (e) e.preventDefault()
-      this.updateUser(this.form)
+    challengeEmail() {
+      this.verifyingEmail = true;
+      this.submit();
+      this.requestEmail(this.form.email);
     },
 
-    ...mapActions(['updateUser', 'requestEmail', 'requestPhone', 'verifyPhone']),
+    challengePhone() {
+      this.verifyingPhone = true;
+      this.submit();
+      this.requestPhone(this.form.phone);
+      this.$nextTick(() => this.$refs.phoneCode.focus());
+    },
+
+    submit(e) {
+      if (e) e.preventDefault();
+      this.updateUser(this.form);
+    },
+
+    ...mapActions([
+      'updateUser',
+      'requestEmail',
+      'requestPhone',
+      'verifyPhone',
+    ]),
   },
 
-  mounted () {
-    Object.keys(this.user).filter(key => key in this.form && this.user[key]).forEach(key => this.form[key] = this.user[key])
+  mounted() {
+    Object.keys(this.user)
+      .filter(key => key in this.form && this.user[key])
+      .forEach(key => (this.form[key] = this.user[key]));
   },
-}
+};
 </script>

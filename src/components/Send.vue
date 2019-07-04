@@ -76,10 +76,10 @@ div
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
-import date from 'date-fns'
-import Flash from 'vue-material-design-icons/Flash'
-import Numpad from './NumPad'
+import { mapGetters, mapActions } from 'vuex';
+import date from 'date-fns';
+import Flash from 'vue-material-design-icons/Flash';
+import Numpad from './NumPad';
 
 export default {
   components: { Flash, Numpad },
@@ -96,21 +96,21 @@ export default {
     },
   },
 
-  data () {
+  data() {
     return {
       fiat: false,
       display: 0,
-    }
+    };
   },
 
   computed: {
-    friend () {
-      return this.friends.find(f => f.id === this.payuser)
+    friend() {
+      return this.friends.find(f => f.id === this.payuser);
     },
 
-    conversion () {
-      if (this.fiat) return this.rate
-      return parseFloat(1 / this.rate).toFixed(6)
+    conversion() {
+      if (this.fiat) return this.rate;
+      return parseFloat(1 / this.rate).toFixed(6);
     },
 
     ...mapGetters([
@@ -129,134 +129,136 @@ export default {
       'scannedBalance',
     ]),
 
-    currency () {
-      if (this.fiat) return this.user.currency
-      return 'sat'
+    currency() {
+      if (this.fiat) return this.user.currency;
+      return 'sat';
     },
 
-    total () {
-      let p = this.payment
+    total() {
+      let p = this.payment;
       if (p) {
-        if (p.payment_route) return p.payment_route.total_amt - p.payment_route.total_fees
-        return p.amount
+        if (p.payment_route)
+          return p.payment_route.total_amt - p.payment_route.total_fees;
+        return p.amount;
       }
-      return 0
+      return 0;
     },
 
-    fees () {
-      let p = this.payment
+    fees() {
+      let p = this.payment;
       if (p) {
-        if (p.payment_route) return p.payment_route.total_fees
-        return p.fees
+        if (p.payment_route) return p.payment_route.total_fees;
+        return p.fees;
       }
-      return 0
+      return 0;
     },
 
     to: {
-      get () {
-        if (this.payreq) return this.payreq
-        if (this.address) return this.address
-        if (this.payuser) return this.payuser
-        return null
+      get() {
+        if (this.payreq) return this.payreq;
+        if (this.address) return this.address;
+        if (this.payuser) return this.payuser;
+        return null;
       },
-      set (v) {
-        if (!v) v = ''
-        this.$store.dispatch('handleScan', v.trim())
+      set(v) {
+        if (!v) v = '';
+        this.$store.dispatch('handleScan', v.trim());
       },
-    }, 
-  }, 
+    },
+  },
 
   watch: {
-    amount (v) {
-      if (this.fiat)
-        this.display = (v / 100000000 * this.rate).toFixed(2)
-      else
-        this.display = v
+    amount(v) {
+      if (this.fiat) this.display = ((v / 100000000) * this.rate).toFixed(2);
+      else this.display = v;
     },
   },
 
   methods: {
     ...mapActions(['sendPayment', 'clearPayment', 'snack']),
 
-    init () {
-      if (!this.keep) this.clearPayment()
+    init() {
+      if (!this.keep) this.clearPayment();
       if (this.$route.query.refresh !== undefined) {
-        this.$router.replace(this.$route.path)
+        this.$router.replace(this.$route.path);
       }
-      this.updateAmount(this.amount)
+      this.updateAmount(this.amount);
     },
 
-    updateAmount (v) {
+    updateAmount(v) {
       if (this.fiat) {
-        this.$store.commit('amount', (v * 100000000 / this.rate).toFixed(0))
+        this.$store.commit('amount', ((v * 100000000) / this.rate).toFixed(0));
       } else {
-        this.$store.commit('amount', v)
-      } 
+        this.$store.commit('amount', v);
+      }
     },
 
-    back () {
-      this.display = 0
-      if (this.payreq || this.address) return this.clearPayment()
-      if (this.payuser) return this.$router.push('/contacts')
-      return this.$router.push('/home')
+    back() {
+      this.display = 0;
+      if (this.payreq || this.address) return this.clearPayment();
+      if (this.payuser) return this.$router.push('/contacts');
+      return this.$router.push('/home');
     },
 
-    maxamount () { this.amount = this.user.balance },
-
-    toggle () {
-      this.fiat = !this.fiat 
-      if (this.fiat)
-        this.display = this.display / 100000000 * this.rate
-      else
-        this.display = this.display * 100000000 / this.rate
+    maxamount() {
+      this.amount = this.user.balance;
     },
 
-    link (tx) {
-      let bs = 'https://blockstream.info'
-      if (process.env.NODE_ENV !== 'production' || window.location.href.contains('test'))
-        bs += '/testnet'
-      window.location = `${bs}/tx/${tx}`
+    toggle() {
+      this.fiat = !this.fiat;
+      if (this.fiat) this.display = (this.display / 100000000) * this.rate;
+      else this.display = (this.display * 100000000) / this.rate;
     },
 
-    copy (tx) {
-      var textArea = document.createElement('textarea')
-      textArea.style.position = 'fixed'
-      textArea.value = tx
+    link(tx) {
+      let bs = 'https://blockstream.info';
+      if (
+        process.env.NODE_ENV !== 'production' ||
+        window.location.href.contains('test')
+      )
+        bs += '/testnet';
+      window.location = `${bs}/tx/${tx}`;
+    },
 
-      document.body.appendChild(textArea)
+    copy(tx) {
+      var textArea = document.createElement('textarea');
+      textArea.style.position = 'fixed';
+      textArea.value = tx;
 
-      textArea.focus()
-      textArea.select()
+      document.body.appendChild(textArea);
 
-      document.execCommand('copy')
-      document.body.removeChild(textArea)
+      textArea.focus();
+      textArea.select();
 
-      this.snack('Copied to Clipboard')
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+
+      this.snack('Copied to Clipboard');
     },
   },
 
-  beforeRouteUpdate (to, from, next) {
-    next()
-    this.init()
+  beforeRouteUpdate(to, from, next) {
+    next();
+    this.init();
   },
 
-  mounted () {
-    this.init()
-    this.$store.commit('payuser', this.$route.query.payuser)
+  mounted() {
+    this.init();
+    this.$store.commit('payuser', this.$route.query.payuser);
   },
-}
+};
 </script>
 
 <style lang="stylus" scoped>
-  .icon
-    width 40px !important
+.icon
+  width 40px !important
 
-  .v-chip
-    width 95%
-    padding 5px
+.v-chip
+  width 95%
+  padding 5px
 
-  code 
-    max-width 100%
-    word-wrap break-word
-    font-size 1.2em
+code
+  max-width 100%
+  word-wrap break-word
+  font-size 1.2em
 </style>

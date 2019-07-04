@@ -45,19 +45,28 @@
 </template>
 
 <script>
-import { format, parse, isBefore, isSameDay, isWithinRange, subWeeks, subMonths, subYears } from 'date-fns'
-import { mapGetters } from 'vuex'
+import {
+  format,
+  parse,
+  isBefore,
+  isSameDay,
+  isWithinRange,
+  subWeeks,
+  subMonths,
+  subYears,
+} from 'date-fns';
+import { mapGetters } from 'vuex';
 
 export default {
   filters: {
     abs: v => Math.abs(v),
     format: d => format(d, 'YYYY-MM-DD HH:mm'),
     short: d => format(d, 'MMM D, YYYY'),
-    trim: s => s.length > 20 ? s.substr(0, 20) + '...' : s,
+    trim: s => (s.length > 20 ? s.substr(0, 20) + '...' : s),
     twodec: n => n.toFixed(2),
   },
 
-  data () {
+  data() {
     return {
       presets: {
         'Last Year': {
@@ -67,12 +76,12 @@ export default {
         'Last Month': {
           from: subMonths(Date.now(), 1),
           to: Date.now(),
-        }, 
+        },
         'Last Week': {
           from: subWeeks(Date.now(), 1),
           to: Date.now(),
         },
-        'Custom': {
+        Custom: {
           from: null,
           to: null,
         },
@@ -82,104 +91,126 @@ export default {
       currency: 'CAD',
       from: subYears(Date.now(), 1),
       to: parse(Date.now()),
-    }
+    };
   },
 
   computed: {
     ...mapGetters(['loading', 'payments']),
 
     preset: {
-      get () { 
-        let preset = 'Custom'
-        let { from, to } = this
+      get() {
+        let preset = 'Custom';
+        let { from, to } = this;
         Object.keys(this.presets).map(k => {
-          let p = this.presets[k]
+          let p = this.presets[k];
           if (isSameDay(p.from, from) && isSameDay(p.to, to)) {
-            preset = k  
-          } 
-        })
+            preset = k;
+          }
+        });
 
-        return preset
+        return preset;
       },
-      set (v) { 
-        if (v === 'Custom') return
-        this.from = this.presets[v].from
-        this.to = this.presets[v].to 
+      set(v) {
+        if (v === 'Custom') return;
+        this.from = this.presets[v].from;
+        this.to = this.presets[v].to;
       },
     },
 
     fromstring: {
-      get () { return format(this.from, 'YYYY-MM-DD') },
-      set (v) { this.from = parse(v) },
+      get() {
+        return format(this.from, 'YYYY-MM-DD');
+      },
+      set(v) {
+        this.from = parse(v);
+      },
     },
 
     tostring: {
-      get () { return format(this.to, 'YYYY-MM-DD') },
-      set (v) { this.to = parse(v) },
+      get() {
+        return format(this.to, 'YYYY-MM-DD');
+      },
+      set(v) {
+        this.to = parse(v);
+      },
     },
 
-    filteredPayments () {
-      if (!this.payments.length) return []
-      this.$nextTick(() => this.$emit('mask'))
-      let balance = 0
+    filteredPayments() {
+      if (!this.payments.length) return [];
+      this.$nextTick(() => this.$emit('mask'));
+      let balance = 0;
       return this.payments
-        .map(p => { 
-          let o = JSON.parse(JSON.stringify(p))
-          o.fiat = (p.amount * p.rate / 100000000).toFixed(2)
-          o.tip = parseFloat(p.tip).toFixed(2)
-          if (isNaN(o.tip) || o.tip <= 0) o.tip = null
-          if (o.tip) o.fiat -= o.tip
-          return o 
+        .map(p => {
+          let o = JSON.parse(JSON.stringify(p));
+          o.fiat = ((p.amount * p.rate) / 100000000).toFixed(2);
+          o.tip = parseFloat(p.tip).toFixed(2);
+          if (isNaN(o.tip) || o.tip <= 0) o.tip = null;
+          if (o.tip) o.fiat -= o.tip;
+          return o;
         })
-        .sort((a, b) => { 
+        .sort((a, b) => {
           if (isBefore(parse(a.createdAt), parse(b.createdAt))) {
-            return -1
+            return -1;
           }
-          return 1
+          return 1;
         })
-        .map(p => { 
-          balance += parseFloat(p.amount)
-          p.balance = balance
-          return p
+        .map(p => {
+          balance += parseFloat(p.amount);
+          p.balance = balance;
+          return p;
         })
         .filter(p => {
-          return isWithinRange(parse(p.createdAt), this.from, this.to) &&
-          (p.amount < 0 || p.received)
+          return (
+            isWithinRange(parse(p.createdAt), this.from, this.to) &&
+            (p.amount < 0 || p.received)
+          );
         })
-        .reverse()
+        .reverse();
     },
 
-    fiattotal () {
-      return this.filteredPayments.reduce((a, b) => a + parseFloat(b.fiat), 0).toFixed(2)
+    fiattotal() {
+      return this.filteredPayments
+        .reduce((a, b) => a + parseFloat(b.fiat), 0)
+        .toFixed(2);
     },
 
-    total () {
-      return this.filteredPayments.reduce((a, b) => a + parseFloat(b.amount), 0)
+    total() {
+      return this.filteredPayments.reduce(
+        (a, b) => a + parseFloat(b.amount),
+        0
+      );
     },
 
-    tips () {
-      return this.filteredPayments.reduce((a, b) => {
-        if (!parseFloat(b.tip)) return a
-        return a + parseFloat(b.tip)
-      }, 0).toFixed(2)
+    tips() {
+      return this.filteredPayments
+        .reduce((a, b) => {
+          if (!parseFloat(b.tip)) return a;
+          return a + parseFloat(b.tip);
+        }, 0)
+        .toFixed(2);
     },
   },
 
   methods: {
-    color (p) { return p.amount < 0 ? 'sent' : 'received' },
-    link (p) {
-      if (p.hash.startsWith('ln') || p.hash.startsWith('txn')) return
-      let bs = 'https://blockstream.info'
-      if (process.env.NODE_ENV !== 'production' || window.location.href.includes('test'))
-        bs += '/testnet'
-      window.location = `${bs}/tx/${p.hash}`
+    color(p) {
+      return p.amount < 0 ? 'sent' : 'received';
+    },
+    link(p) {
+      if (p.hash.startsWith('ln') || p.hash.startsWith('txn')) return;
+      let bs = 'https://blockstream.info';
+      if (
+        process.env.NODE_ENV !== 'production' ||
+        window.location.href.includes('test')
+      )
+        bs += '/testnet';
+      window.location = `${bs}/tx/${p.hash}`;
     },
   },
 
-  mounted () {
-    this.$store.dispatch('getPayments')
+  mounted() {
+    this.$store.dispatch('getPayments');
   },
-}
+};
 </script>
 
 <style lang="stylus" scoped>

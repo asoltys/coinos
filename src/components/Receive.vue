@@ -67,21 +67,20 @@
 </template>
 
 <script>
-import qr from 'qrcode'
-import Numpad from './NumPad'
-import Tippad from './TipPad'
-import { mapGetters, mapActions } from 'vuex'
-import  Flash from 'vue-material-design-icons/Flash'
+import qr from 'qrcode';
+import Numpad from './NumPad';
+import Tippad from './TipPad';
+import { mapGetters, mapActions } from 'vuex';
+import Flash from 'vue-material-design-icons/Flash';
 
-const f = parseFloat
+const f = parseFloat;
 
 export default {
   components: { Flash, Numpad, Tippad },
 
-  filters: {
-  },
+  filters: {},
 
-  data () {
+  data() {
     return {
       message: '',
       about: '',
@@ -93,199 +92,209 @@ export default {
       finished: false,
       fiat: true,
       bitreq: '',
-    }
+    };
   },
 
   computed: {
     ...mapGetters(['loading', 'user', 'payreq', 'rate', 'received']),
 
-    tosat () { return this.currency === 'sat' ? 1 : 100000000 },
-    copytext () { return this.bitreq || this.payreq },
-    code () { return this.showcode ? 'Show QR' : 'Show Code' }, 
-    total () {
-      let total = (f(this.amount) + f(this.tip))
-      if (this.fiat) total /= this.rate
-      return (total * this.tosat).toFixed(0)
+    tosat() {
+      return this.currency === 'sat' ? 1 : 100000000;
+    },
+    copytext() {
+      return this.bitreq || this.payreq;
+    },
+    code() {
+      return this.showcode ? 'Show QR' : 'Show Code';
+    },
+    total() {
+      let total = f(this.amount) + f(this.tip);
+      if (this.fiat) total /= this.rate;
+      return (total * this.tosat).toFixed(0);
     },
 
-    currency () {
-      if (this.fiat) return this.user.currency
-      return 'sat'
+    currency() {
+      if (this.fiat) return this.user.currency;
+      return 'sat';
     },
 
-    conversion () {
-      if (this.fiat) return this.rate
-      return parseFloat(1 / this.rate).toFixed(6)
+    conversion() {
+      if (this.fiat) return this.rate;
+      return parseFloat(1 / this.rate).toFixed(6);
     },
   },
 
   methods: {
     ...mapActions(['addInvoice', 'snack', 'clearPayment']),
 
-    portrait () {
-      return window.innerHeight > window.innerWidth
+    portrait() {
+      return window.innerHeight > window.innerWidth;
     },
 
-    fullscreen () {
+    fullscreen() {
       if (this.full) {
         if (document.exitFullscreen) {
-          document.exitFullscreen()
+          document.exitFullscreen();
         } else if (document.mozCancelFullScreen) {
-          document.mozCancelFullScreen()
+          document.mozCancelFullScreen();
         } else if (document.webkitExitFullscreen) {
-          document.webkitExitFullscreen()
+          document.webkitExitFullscreen();
         } else if (document.msExitFullscreen) {
-          document.msExitFullscreen()
+          document.msExitFullscreen();
         }
-        this.full = false
-        return
+        this.full = false;
+        return;
       }
 
-      let elem = document.getElementById('qr')
+      let elem = document.getElementById('qr');
 
       if (elem.requestFullscreen) {
-        elem.requestFullscreen(Element.ALLOW_KEYBOARD_INPUT)
+        elem.requestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
       } else if (elem.mozRequestFullScreen) {
-        elem.mozRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT)
+        elem.mozRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
       } else if (elem.webkitRequestFullscreen) {
-        elem.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT)
+        elem.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
       } else if (elem.msRequestFullscreen) {
-        elem.msRequestFullscreen()
+        elem.msRequestFullscreen();
       }
 
-      this.full = true
-    }, 
-
-    copy () {
-      var textArea = document.createElement('textarea')
-      textArea.style.position = 'fixed'
-      textArea.value = this.copytext
-
-      document.body.appendChild(textArea)
-
-      textArea.focus()
-      textArea.select()
-
-      document.execCommand('copy')
-      document.body.removeChild(textArea)
-
-      this.snack('Copied to Clipboard')
+      this.full = true;
     },
 
-    toggle () {
-      this.fiat = !this.fiat 
-      if (this.fiat)
-        this.amount = this.amount / 100000000 * this.rate
-      else
-        this.amount = this.amount * 100000000 / this.rate
+    copy() {
+      var textArea = document.createElement('textarea');
+      textArea.style.position = 'fixed';
+      textArea.value = this.copytext;
+
+      document.body.appendChild(textArea);
+
+      textArea.focus();
+      textArea.select();
+
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+
+      this.snack('Copied to Clipboard');
     },
 
-    timeout (ms) {
-      return new Promise(resolve => setTimeout(resolve, ms))
+    toggle() {
+      this.fiat = !this.fiat;
+      if (this.fiat) this.amount = (this.amount / 100000000) * this.rate;
+      else this.amount = (this.amount * 100000000) / this.rate;
     },
 
-    bitcoin () {
-      let { address } = this.user
-      let { tip, total } = this
-      let amount = total
+    timeout(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    },
 
-      this.$store.commit('loading', true)
-      this.$store.commit('received', 0)
+    bitcoin() {
+      let { address } = this.user;
+      let { tip, total } = this;
+      let amount = total;
 
-      this.generated = true
+      this.$store.commit('loading', true);
+      this.$store.commit('received', 0);
+
+      this.generated = true;
 
       this.$nextTick(async () => {
-        await this.addInvoice({ amount, tip, address })
+        await this.addInvoice({ amount, tip, address });
 
-        this.$store.commit('loading', false)
+        this.$store.commit('loading', false);
         this.$nextTick(() => {
-          let canvas = document.getElementById('qr')
-          if (!canvas) return
+          let canvas = document.getElementById('qr');
+          if (!canvas) return;
 
-          this.bitreq = `bitcoin:${this.user.address}?amount=${this.total / 100000000}`
-          qr.toCanvas(canvas, this.bitreq, e => { if (e) console.log(e) })
+          this.bitreq = `bitcoin:${this.user.address}?amount=${this.total /
+            100000000}`;
+          qr.toCanvas(canvas, this.bitreq, e => {
+            if (e) console.log(e);
+          });
 
-          canvas.style.width = '35vh'
-          canvas.style.height = '35vh'
-        })
-      })
+          canvas.style.width = '35vh';
+          canvas.style.height = '35vh';
+        });
+      });
     },
 
-    lightning () {
-      this.bitreq = null
-      this.$store.commit('loading', true)
-      this.generated = true
-      this.$store.commit('received', 0)
+    lightning() {
+      this.bitreq = null;
+      this.$store.commit('loading', true);
+      this.generated = true;
+      this.$store.commit('received', 0);
       this.$nextTick(async () => {
         try {
-          await this.addInvoice({ amount: this.total, tip: this.tip })
-          this.$store.commit('loading', false)
+          await this.addInvoice({ amount: this.total, tip: this.tip });
+          this.$store.commit('loading', false);
           this.$nextTick(() => {
-            let canvas = document.getElementById('qr')
-            if (!canvas) return
-            qr.toCanvas(canvas, this.payreq, e => { if (e) console.log(e) })
-            canvas.style.width = '35vh'
-            canvas.style.height = '35vh'
-          })
-        } catch (e) { console.log(e) }
-      })
+            let canvas = document.getElementById('qr');
+            if (!canvas) return;
+            qr.toCanvas(canvas, this.payreq, e => {
+              if (e) console.log(e);
+            });
+            canvas.style.width = '35vh';
+            canvas.style.height = '35vh';
+          });
+        } catch (e) {
+          console.log(e);
+        }
+      });
     },
 
-    finish () {
-      this.finished = true
+    finish() {
+      this.finished = true;
     },
 
-    async clear () {
-      this.generated = false
-      this.$store.commit('loading', true)
-      this.$store.commit('received', 0)
-      await this.timeout(50)
-      this.$nextTick(() => this.$store.commit('loading', false))
+    async clear() {
+      this.generated = false;
+      this.$store.commit('loading', true);
+      this.$store.commit('received', 0);
+      await this.timeout(50);
+      this.$nextTick(() => this.$store.commit('loading', false));
     },
 
-    checkRefresh () {
+    checkRefresh() {
       if (this.$route.query.refresh !== undefined) {
-        this.$router.replace(this.$route.path)
+        this.$router.replace(this.$route.path);
       } else {
-        this.clear()
-        this.amount = 0
-        this.generated = false
+        this.clear();
+        this.amount = 0;
+        this.generated = false;
       }
     },
   },
 
-  beforeRouteUpdate (to, from, next) {
-    next()
-    this.checkRefresh()
+  beforeRouteUpdate(to, from, next) {
+    next();
+    this.checkRefresh();
   },
 
-  mounted () {
-    this.clear()
-    this.checkRefresh()
+  mounted() {
+    this.clear();
+    this.checkRefresh();
   },
-}
+};
 </script>
 
 <style lang="stylus" scoped>
-  canvas
-    position relative
-    display block
-    height 100%
-    margin-left auto
-    margin-right auto
+canvas
+  position relative
+  display block
+  height 100%
+  margin-left auto
+  margin-right auto
 
-  .code
-    margin auto
-    width 260px
-    height 260px
-    background #333
-    word-wrap break-word
-    padding 15px
+.code
+  margin auto
+  width 260px
+  height 260px
+  background #333
+  word-wrap break-word
+  padding 15px
 
-  .v-btn.subheading
-    width 100%
+.v-btn.subheading
+  width 100%
 
-  .total
-    vertical-
+.total
+  vertical-
 </style>
-

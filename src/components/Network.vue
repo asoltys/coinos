@@ -12,17 +12,17 @@ div
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters } from 'vuex';
 
 export default {
-  data () {
+  data() {
     return {
       headers: [
         { text: 'id', value: 'chan_id' },
         { text: 'local', value: 'local_balance' },
         { text: 'remote', value: 'remote_balance' },
       ],
-    }
+    };
   },
   computed: {
     ...mapGetters(['channels', 'peers']),
@@ -30,9 +30,9 @@ export default {
   methods: {
     ...mapActions(['getChannels', 'getPeers']),
   },
-  mounted () {
-    this.getChannels()
-    this.getPeers()
+  mounted() {
+    this.getChannels();
+    this.getPeers();
   },
-} 
+};
 </script>

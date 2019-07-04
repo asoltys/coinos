@@ -16,12 +16,12 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
-import BottomNav from './components/BottomNav'
-import SnackBar from './components/SnackBar'
-import TopBar from './components/TopBar'
-import { mapGetters } from 'vuex'
-import { QrcodeStream } from 'vue-qrcode-reader'
+import { mapActions } from 'vuex';
+import BottomNav from './components/BottomNav';
+import SnackBar from './components/SnackBar';
+import TopBar from './components/TopBar';
+import { mapGetters } from 'vuex';
+import { QrcodeStream } from 'vue-qrcode-reader';
 
 export default {
   components: { BottomNav, SnackBar, TopBar, QrcodeStream },
@@ -29,40 +29,46 @@ export default {
   computed: {
     ...mapGetters(['loading', 'scanning', 'user']),
 
-    webscanning () { return this.scanning && !window.QRScanner },
-    
-    error: {
-      get () { return this.$store.getters.error },
-      set (v) { this.$store.commit('SET_ERROR', v) },
+    webscanning() {
+      return this.scanning && !window.QRScanner;
     },
-  }, 
+
+    error: {
+      get() {
+        return this.$store.getters.error;
+      },
+      set(v) {
+        this.$store.commit('SET_ERROR', v);
+      },
+    },
+  },
 
   watch: {
-    $route () {
-      this.init()
+    $route() {
+      this.init();
     },
   },
 
   methods: {
     ...mapActions(['init', 'handleScan']),
 
-    addEvent (object, type, callback) {
-      if (object == null || typeof(object) == 'undefined') return
+    addEvent(object, type, callback) {
+      if (object == null || typeof object == 'undefined') return;
       if (object.addEventListener) {
-        object.addEventListener(type, callback, false)
+        object.addEventListener(type, callback, false);
       } else if (object.attachEvent) {
-        object.attachEvent('on' + type, callback)
+        object.attachEvent('on' + type, callback);
       } else {
-        object['on' + type] = callback
+        object['on' + type] = callback;
       }
     },
   },
 
-  created () {
-    this.init()
+  created() {
+    this.init();
   },
-}
-</script> 
+};
+</script>
 
 <style lang="stylus">
   @media all and (orientation:portrait), (min-width: 800px)
@@ -79,7 +85,7 @@ export default {
     .landscape
       display block
     #app
-      max-width 1024px 
+      max-width 1024px
 
 .input-group--focused label
   color white !important
@@ -90,10 +96,10 @@ export default {
 .fade-transition
   &-leave-active
     position: absolute
- 
+
   &-enter-active, &-leave, &-leave-to
     transition: $primary-transition
- 
+
   &-enter, &-leave-to
     opacity: 0
 
@@ -111,11 +117,11 @@ img.fx
 .fade-enter
   opacity: 0
 
-#app 
+#app
   margin auto
   box-shadow 0 0 0 9999px rgba(20, 20, 20, 1)
 
-body 
+body
   background #222
 
 @media only screen and (min-width: 960px)
