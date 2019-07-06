@@ -48,6 +48,7 @@ export default new Vuex.Store({
   state,
   actions: {
     async init({ commit, dispatch, state }) {
+      commit('initializing', true)
       commit('scanning', false);
       commit('error', '');
       let token = window.sessionStorage.getItem('token');
@@ -71,6 +72,8 @@ export default new Vuex.Store({
       ) {
         router.push('/');
       }
+
+      commit('initializing', false)
     },
 
     async login({ commit, dispatch }, user) {

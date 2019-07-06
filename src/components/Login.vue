@@ -1,5 +1,5 @@
 <template lang="pug">
-v-container
+v-container(v-if='!initializing')
   v-dialog(:value='loggingIn && !error' max-width='350')
     v-card
       v-card-title.subheading Approval Required
@@ -46,7 +46,7 @@ export default {
     };
   },
 
-  computed: mapGetters(['error', 'user']),
+  computed: mapGetters(['error', 'user', 'initializing']),
 
   methods: {
     ...mapActions(['login', 'facebookLogin']),
