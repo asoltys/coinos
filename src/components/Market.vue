@@ -27,15 +27,15 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-import { format } from 'date-fns'
+import { mapGetters } from 'vuex';
+import { format } from 'date-fns';
 
 export default {
   filters: {
     format: d => format(d, 'YYYY-MM-DD HH:mm'),
-  }, 
+  },
 
-  data () {
+  data() {
     return {
       currency: 'CAD',
       buys: [
@@ -87,16 +87,15 @@ export default {
           price: 7000,
         },
       ],
-    }
+    };
   },
 
   computed: {
     ...mapGetters(['loading', 'rate']),
   },
 
-  mounted () {
-  },
-}
+  mounted() {},
+};
 </script>
 
 <style lang="stylus" scoped>

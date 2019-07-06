@@ -1,13 +1,13 @@
 query payments {
   payments {
-    hash,
-    address,
-    currency,
-    amount,
-    rate,
-    createdAt,
-    received,
-    tip,
-    confirmed,
+    hash
+    address
+    currency
+    amount
+    rate
+    createdAt
+    received
+    tip
+    confirmed
   }
 }

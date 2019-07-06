@@ -21,7 +21,7 @@ v-container
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters } from 'vuex';
 
 export default {
   props: {
@@ -31,7 +31,7 @@ export default {
     },
   },
 
-  data () {
+  data() {
     return {
       fbSignInParams: {
         scope: 'email,user_friends',
@@ -43,65 +43,82 @@ export default {
         password: '',
       },
       showlogout: false,
-    }
+    };
   },
 
   computed: mapGetters(['error', 'user']),
 
   methods: {
     ...mapActions(['login', 'facebookLogin']),
-    
-    download () {
-      window.location = 'https://play.google.com/store/apps/details?id=io.cordova.coinos'
+
+    download() {
+      window.location =
+        'https://play.google.com/store/apps/details?id=io.cordova.coinos';
     },
 
-    onSignInSuccess (res) {
+    onSignInSuccess(res) {
       if (res.status === 'connected') {
-        let i = setInterval(() => { this.loggingIn = true; clearInterval(i) }, 3000)
-        let j = setInterval(() => { this.loggingIn = false; clearInterval(j) }, 60000)
+        let i = setInterval(() => {
+          this.loggingIn = true;
+          clearInterval(i);
+        }, 3000);
+        let j = setInterval(() => {
+          this.loggingIn = false;
+          clearInterval(j);
+        }, 60000);
       }
-      this.facebookLogin(res)
+      this.facebookLogin(res);
     },
 
-    onSignInError (error) {
-      console.log('Facebook login failed', error)
+    onSignInError(error) {
+      console.log('Facebook login failed', error);
     },
 
-    facebookConnect () {
-      window.facebookConnectPlugin.login(this.fbSignInParams.scope.split(','), this.onSignInSuccess, this.onSignInError)
-    }, 
-
-    native () {
-      return window.location.protocol === 'file:'
+    facebookConnect() {
+      window.facebookConnectPlugin.login(
+        this.fbSignInParams.scope.split(','),
+        this.onSignInSuccess,
+        this.onSignInError
+      );
     },
 
-    submit (e) {
-      e.preventDefault()
-      let i = setInterval(() => { this.loggingIn = true; clearInterval(i) }, 3000)
-      let j = setInterval(() => { this.loggingIn = false; clearInterval(j) }, 60000)
-      this.login(this.form)
-      this.showlogout = false
+    native() {
+      return window.location.protocol === 'file:';
+    },
+
+    submit(e) {
+      e.preventDefault();
+      let i = setInterval(() => {
+        this.loggingIn = true;
+        clearInterval(i);
+      }, 3000);
+      let j = setInterval(() => {
+        this.loggingIn = false;
+        clearInterval(j);
+      }, 60000);
+      this.login(this.form);
+      this.showlogout = false;
     },
   },
 
-  created () {
+  created() {
     if (this.logout) {
-      this.$store.dispatch('logout')
+      this.$store.dispatch('logout');
     }
   },
 
-  mounted () {
-    this.showlogout = this.logout
+  mounted() {
+    this.showlogout = this.logout;
   },
-}
+};
 </script>
 
 <style lang="stylus" scoped>
-  .v-text-field
-    font-size 18px
+.v-text-field
+  font-size 18px
 
-  .fb-signin-button 
-    display: inline-block;
-    padding: 4px 8px;
-    border-radius: 3px;
+.fb-signin-button
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 3px;
 </style>

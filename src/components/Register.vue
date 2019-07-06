@@ -9,10 +9,10 @@ v-layout
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions } from 'vuex';
 
 export default {
-  data () {
+  data() {
     return {
       form: {
         username: '',
@@ -24,17 +24,17 @@ export default {
         pubkey: '',
         privkey: '',
         address: '',
-      }, 
-    }
+      },
+    };
   },
 
   methods: {
-    submit (e) {
-      e.preventDefault()
-      this.createUser(this.form)
+    submit(e) {
+      e.preventDefault();
+      this.createUser(this.form);
     },
 
     ...mapActions(['createUser']),
   },
-}
+};
 </script>

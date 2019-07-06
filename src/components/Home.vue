@@ -1,4 +1,4 @@
-<template lang='pug'>
+<template lang="pug">
 div.text-xs-center
   v-flex.mb-2(v-if='!isNaN(animatedBalance)')
     span.display-2 {{animatedBalance}} 
@@ -30,14 +30,14 @@ div.text-xs-center
 </template>
 
 <script>
-import qr from 'qrcode'
-import { mapGetters, mapActions } from 'vuex'
-import ArrowDown from 'vue-material-design-icons/ArrowDownBold'
-import ArrowUp from 'vue-material-design-icons/ArrowUpBold'
-import ArrowLeft from 'vue-material-design-icons/ArrowLeftBold'
-import ArrowRight from 'vue-material-design-icons/ArrowRightBold'
-import Flash from 'vue-material-design-icons/Flash'
-import { TweenLite } from 'gsap'
+import qr from 'qrcode';
+import { mapGetters, mapActions } from 'vuex';
+import ArrowDown from 'vue-material-design-icons/ArrowDownBold';
+import ArrowUp from 'vue-material-design-icons/ArrowUpBold';
+import ArrowLeft from 'vue-material-design-icons/ArrowLeftBold';
+import ArrowRight from 'vue-material-design-icons/ArrowRightBold';
+import Flash from 'vue-material-design-icons/Flash';
+import { TweenLite } from 'gsap';
 
 export default {
   components: { ArrowDown, ArrowUp, ArrowLeft, ArrowRight, Flash },
@@ -61,7 +61,7 @@ export default {
     },
   },
 
-  data () {
+  data() {
     return {
       tweenedBalance: null,
       tweenedPending: null,
@@ -70,35 +70,41 @@ export default {
       playing: false,
       received: 0,
       funding_amt: 0,
-    }
+    };
   },
 
   computed: {
     ...mapGetters(['fbtoken', 'rate', 'user', 'verified']),
-    animatedBalance () { return parseInt(this.tweenedBalance).toFixed(0) },
-    animatedPending () { return parseInt(this.tweenedPending).toFixed(0) },
-    animatedRate () { return parseFloat(this.tweenedRate).toFixed(2) },
-  }, 
+    animatedBalance() {
+      return parseInt(this.tweenedBalance).toFixed(0);
+    },
+    animatedPending() {
+      return parseInt(this.tweenedPending).toFixed(0);
+    },
+    animatedRate() {
+      return parseFloat(this.tweenedRate).toFixed(2);
+    },
+  },
 
   watch: {
-    rate (rate) {
-      let tweenedRate = rate
-      TweenLite.to(this.$data, 0.5, { tweenedRate })
+    rate(rate) {
+      let tweenedRate = rate;
+      TweenLite.to(this.$data, 0.5, { tweenedRate });
     },
 
     user: {
-      handler (user) {
-        let tweenedBalance = user.balance
-        let tweenedPending = user.pending
+      handler(user) {
+        let tweenedBalance = user.balance;
+        let tweenedPending = user.pending;
 
-        if (user.pending === 0) user.pending = null
+        if (user.pending === 0) user.pending = null;
 
-        TweenLite.to(this, 0.5, { tweenedBalance })
-        TweenLite.to(this, 0.5, { tweenedPending })
-        
-        if (!this.tweenedBalance) this.tweenedBalance = 0
+        TweenLite.to(this, 0.5, { tweenedBalance });
+        TweenLite.to(this, 0.5, { tweenedPending });
 
-        this.drawQR()
+        if (!this.tweenedBalance) this.tweenedBalance = 0;
+
+        this.drawQR();
       },
       deep: true,
     },
@@ -107,101 +113,113 @@ export default {
   methods: {
     ...mapActions(['snack']),
 
-    copy () {
-      var textArea = document.createElement('textarea')
-      textArea.style.position = 'fixed'
-      textArea.value = this.user.address
+    copy() {
+      var textArea = document.createElement('textarea');
+      textArea.style.position = 'fixed';
+      textArea.value = this.user.address;
 
-      document.body.appendChild(textArea)
+      document.body.appendChild(textArea);
 
-      textArea.focus()
-      textArea.select()
+      textArea.focus();
+      textArea.select();
 
-      document.execCommand('copy')
-      document.body.removeChild(textArea)
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
 
-      this.snack('Copied to Clipboard')
+      this.snack('Copied to Clipboard');
     },
 
-    drawQR () {
-      if (!this.user.address) return
-      let canvas = document.querySelector('#qr')
-      qr.toCanvas(canvas, this.user.address, e => { if (e) console.log(e) })
-      canvas.style.width = '25vh'
-      canvas.style.height = '25vh'
-      canvas.style.cursor = 'pointer'
+    drawQR() {
+      if (!this.user.address) return;
+      let canvas = document.querySelector('#qr');
+      qr.toCanvas(canvas, this.user.address, e => {
+        if (e) console.log(e);
+      });
+      canvas.style.width = '25vh';
+      canvas.style.height = '25vh';
+      canvas.style.cursor = 'pointer';
     },
 
-    fullscreen () {
-      let canvas = document.getElementById('qr')
+    fullscreen() {
+      let canvas = document.getElementById('qr');
 
       if (this.full) {
-        canvas.style.position = 'relative'
-        canvas.style.width = '25vh'
-        canvas.style.height = '25vh'
-        canvas.style.left = 0
-        document.querySelector('#canvas-container').appendChild(canvas)
-        this.full = false
-        return
+        canvas.style.position = 'relative';
+        canvas.style.width = '25vh';
+        canvas.style.height = '25vh';
+        canvas.style.left = 0;
+        document.querySelector('#canvas-container').appendChild(canvas);
+        this.full = false;
+        return;
       }
 
-      canvas.style.position = 'absolute'
-      canvas.style.top = 0
-      canvas.style.left = ((window.innerWidth / 2) - Math.min(window.innerWidth, window.innerHeight) / 2) + 'px'
-      canvas.style.width = canvas.style.height = Math.min(window.innerWidth, window.innerHeight) + 'px'
-      canvas.style.zIndex = 9999
-      document.querySelector('body').appendChild(canvas)
-      this.full = true
-    }, 
+      canvas.style.position = 'absolute';
+      canvas.style.top = 0;
+      canvas.style.left =
+        window.innerWidth / 2 -
+        Math.min(window.innerWidth, window.innerHeight) / 2 +
+        'px';
+      canvas.style.width = canvas.style.height =
+        Math.min(window.innerWidth, window.innerHeight) + 'px';
+      canvas.style.zIndex = 9999;
+      document.querySelector('body').appendChild(canvas);
+      this.full = true;
+    },
 
-    max () {
-      this.funding_amt = this.user.balance
+    max() {
+      this.funding_amt = this.user.balance;
     },
   },
 
-  mounted () {
-    this.max()
-    this.drawQR()
-  }, 
+  mounted() {
+    this.max();
+    this.drawQR();
+  },
 
-  created () {
+  created() {
     if (this.email) {
-      this.$store.dispatch('verifyEmail', { username: this.username, token: this.token })
+      this.$store.dispatch('verifyEmail', {
+        username: this.username,
+        token: this.token,
+      });
     }
 
     if (this.phone) {
-      this.$store.dispatch('verifyPhone', { username: this.username, token: this.token })
-    } 
+      this.$store.dispatch('verifyPhone', {
+        username: this.username,
+        token: this.token,
+      });
+    }
 
-    this.tweenedBalance = this.user.balance
-    this.tweenedPending = this.user.pending
-    this.tweenedRate = this.rate
+    this.tweenedBalance = this.user.balance;
+    this.tweenedPending = this.user.pending;
+    this.tweenedRate = this.rate;
   },
-}
+};
 </script>
 
 <style lang="stylus" scoped>
-  code 
-    max-width 100%
-    word-wrap break-word
-    font-size 0.9em
+code
+  max-width 100%
+  word-wrap break-word
+  font-size 0.9em
 
-  .v-chip
-    padding 5px
-    width 100%
-    margin 0
+.v-chip
+  padding 5px
+  width 100%
+  margin 0
 
-  .container.no-padding
-    padding 0 !important
+.container.no-padding
+  padding 0 !important
 
-  .arrows .v-btn
-    margin 0
-    margin-top 8px
-    width 100%
+.arrows .v-btn
+  margin 0
+  margin-top 8px
+  width 100%
 
-  .arrow
-    margin 8px 0
+.arrow
+  margin 8px 0
 
-  .request
-    padding 8 0
+.request
+  padding 8 0
 </style>

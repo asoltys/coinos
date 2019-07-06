@@ -1,12 +1,39 @@
-# CoinOS
+# coinos.io
 
-CoinOS is a bitcoin wallet and point-of-sale app. This is the code for the frontend UI. It uses VueJS and the Vuetify UI framework. The backend API server is at https://github.com/asoltys/coinos-server
+## Project setup
+```
+npm install
+```
 
-# Install
+### Compiles and hot-reloads for development
+```
+npm run serve
+```
 
-    git clone https://github.com/asoltys/coinos.io
-    cd coinos
-    yarn
-    yarn start 
+### Compiles and minifies for production
+```
+npm run build
+```
 
-Now the app should be runnning at http://localhost:3001/
+### Run your tests
+```
+npm run test
+```
+
+### Lints and fixes files
+```
+npm run lint
+```
+
+### Run your end-to-end tests
+```
+npm run test:e2e
+```
+
+### Run your unit tests
+```
+npm run test:unit
+```
+
+### Customize configuration
+See [Configuration Reference](https://cli.vuejs.org/config/).
