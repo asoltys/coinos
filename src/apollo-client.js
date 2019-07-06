@@ -30,7 +30,7 @@ const apolloClient = new ApolloClient({
   link: authLink.concat(httpLink),
   cache: new InMemoryCache({
     dataIdFromObject,
-    cacheResolvers: {},
+    cacheRedirects: {},
   }),
   connectToDevTools: true,
 });
