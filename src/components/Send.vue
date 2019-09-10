@@ -138,8 +138,8 @@ export default {
       let p = this.payment;
       if (p) {
         if (p.payment_route)
-          return p.payment_route.total_amt - p.payment_route.total_fees;
-        return p.amount;
+          return p.payment_route.total_amt.low - p.payment_route.total_fees.low;
+        return p.amount.low;
       }
       return 0;
     },

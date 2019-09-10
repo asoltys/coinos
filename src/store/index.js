@@ -7,7 +7,7 @@ import bech32 from 'bech32';
 import bip21 from 'bip21';
 import bolt11 from 'bolt11';
 import router from '../router';
-import bitcoin from 'bitcoinjs-lib';
+import { address as addr, networks, Transaction } from 'bitcoinjs-lib';
 import pathify, { make } from 'vuex-pathify';
 Vue.use(Vuex);
 
@@ -141,16 +141,16 @@ export default new Vuex.Store({
       commit('socket', s);
 
       s.on('tx', data => {
-        bitcoin.Transaction.fromHex(data).outs.map(o => {
+        Transaction.fromHex(data).outs.map(o => {
           try {
-            let network = bitcoin.networks.bitcoin;
+            let network = networks.bitcoin;
             if (
               process.env.NODE_ENV !== 'production' ||
               window.location.href.includes('test')
             ) {
-              network = bitcoin.networks.testnet;
+              network = networks.regtest;
             }
-            let address = bitcoin.address.fromOutputScript(o.script, network);
+            let address = addr.fromOutputScript(o.script, network);
             if (address === state.user.address) {
               commit('received', o.value);
               dispatch('snack', `Received ${o.value} satoshi`);
@@ -174,8 +174,8 @@ export default new Vuex.Store({
       });
 
       s.on('invoice', data => {
-        commit('received', data.value);
-        dispatch('snack', `Received ${data.value} satoshi`);
+        commit('received', data.value.low);
+        dispatch('snack', `Received ${data.value.low} satoshi`);
       });
 
       s.on('rate', rate => commit('rate', rate));
@@ -391,7 +391,7 @@ export default new Vuex.Store({
       }
 
       try {
-        bitcoin.address.fromBase58Check(text);
+        addr.fromBase58Check(text);
         commit('address', text);
         try {
           let res = await Vue.axios.get(`/balance/${text}`);
