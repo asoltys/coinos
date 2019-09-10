@@ -24,7 +24,7 @@ div
         v-list-tile-sub-title {{total}}
       v-list-tile
         v-list-tile-title Fees
-        v-list-tile-sub-title {{fees}}
+        v-list-tile-sub-title {{fees || 0}}
     v-card-actions
       v-btn(@click='back') 
         v-icon.mr-2 arrow_back
@@ -137,8 +137,12 @@ export default {
     total() {
       let p = this.payment;
       if (p) {
-        if (p.payment_route)
-          return p.payment_route.total_amt.low - p.payment_route.total_fees.low;
+        if (p.payment_route) {
+          let amt = p.payment_route.total_amt.low;
+          if (p.payment_route.total_fees) amt -= p.payment_route.total_fees.low;
+          return amt;
+        }
+
         return p.amount.low;
       }
       return 0;
