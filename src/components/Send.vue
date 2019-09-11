@@ -186,14 +186,17 @@ export default {
       if (this.$route.query.refresh !== undefined) {
         this.$router.replace(this.$route.path);
       }
+
       this.updateAmount(this.amount);
     },
 
     updateAmount(v) {
       if (this.fiat) {
         this.$store.commit('amount', ((v * 100000000) / this.rate).toFixed(0));
+        this.display = ((v / 100000000) * this.rate).toFixed(2);
       } else {
         this.$store.commit('amount', v);
+        this.display = v;
       }
     },
 

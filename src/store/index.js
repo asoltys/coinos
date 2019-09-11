@@ -364,7 +364,7 @@ export default new Vuex.Store({
 
       try {
         if (text.slice(0, 10) === 'lightning:') text = text.slice(10);
-        let payobj = bolt11.decode(text);
+        let payobj = bolt11.decode(text.toLowerCase());
         router.push({ name: 'send', params: { keep: true } });
         commit('payobj', payobj);
         commit('payreq', text);
@@ -376,14 +376,17 @@ export default new Vuex.Store({
       try {
         let url = bip21.decode(text);
         commit('address', url.address);
+
         if (url.options.amount)
           commit('amount', (url.options.amount * 100000000).toFixed(0));
+
         try {
           let res = await Vue.axios.get(`/balance/${url.address}`);
           commit('scannedBalance', res.data.final_balance);
         } catch (e) {
           /**/
         }
+
         router.push({ name: 'send', params: { keep: true } });
         return;
       } catch (e) {
