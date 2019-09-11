@@ -1,23 +1,60 @@
-<template lang="pug">
-v-container(v-if='!initializing')
-  v-dialog(:value='loggingIn && !error' max-width='350')
-    v-card
-      v-card-title.subheading Approval Required
-      v-card-text 
-        v-layout
-          img.mr-2.logo(src='../assets/authy.png')
-          span Use the Authy app on your phone to approve the login request
-  v-layout
-    v-flex
-      v-alert.black--text.mb-4(color='yellow' icon='info' v-model='showlogout' value='showlogout' dismissible transition='scale-transition') You've logged out 
-      v-form(@submit='submit')
-        v-text-field(label="Username" v-model='form.username' autofocus dark autocapitalize='none')
-        v-text-field(label="Password" v-model='form.password' type='password')
-        v-btn(type='submit') Sign in
-        v-btn(@click='$router.push("/register")') Register
-        v-btn(v-if='native()' color='#4267b2' @click='facebookConnect') Facebook Login 
-        v-btn(v-else color='#4267b2')
-          fb-signin-button(:params="fbSignInParams" @success="onSignInSuccess" @error="onSignInError") Facebook Login
+<template>
+  <v-container v-if="!initializing">
+    <v-dialog :value="loggingIn && !error" max-width="350">
+      <v-card>
+        <v-card-title class="subheading">Approval Required</v-card-title>
+        <v-card-text>
+          <v-layout
+            ><img class="mr-2 logo" src="../assets/authy.png" /><span
+              >Use the Authy app on your phone to approve the login
+              request</span
+            ></v-layout
+          >
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+    <v-layout>
+      <v-flex>
+        <v-alert
+          class="black--text mb-4"
+          color="yellow"
+          icon="info"
+          v-model="showlogout"
+          value="showlogout"
+          dismissible
+          transition="scale-transition"
+          >You've logged out
+        </v-alert>
+        <v-form @submit="submit">
+          <v-text-field
+            label="Username"
+            v-model="form.username"
+            autofocus
+            dark
+            autocapitalize="none"
+          ></v-text-field>
+          <v-text-field
+            label="Password"
+            v-model="form.password"
+            type="password"
+          ></v-text-field>
+          <v-btn type="submit">Sign in</v-btn>
+          <v-btn @click="$router.push('/register')">Register</v-btn>
+          <v-btn v-if="native()" color="#4267b2" @click="facebookConnect"
+            >Facebook Login
+          </v-btn>
+          <v-btn v-else color="#4267b2">
+            <fb-signin-button
+              :params="fbSignInParams"
+              @success="onSignInSuccess"
+              @error="onSignInError"
+              >Facebook Login</fb-signin-button
+            >
+          </v-btn>
+        </v-form>
+      </v-flex>
+    </v-layout>
+  </v-container>
 </template>
 
 <script>

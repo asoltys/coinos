@@ -1,21 +1,33 @@
-<template lang="pug">
-  div
-    v-progress-linear(v-if='loading' indeterminate)
-    v-list(v-else-if='friends.length')
-      template(v-for='(friend, i) in friends')
-        v-list-tile(@click='send(friend)')
-          v-list-tile-content
-            v-layout
-              v-flex.my-auto
-                v-avatar(size='40').mr-2
-                  img(:src='friend.pic')
-              v-flex.my-auto
-                v-list-tile-title
-                  span {{friend.name}}
-          v-list-tile-action
-            v-btn.pay.px-2(@click='send(friend)') Send
-    v-alert(value='true' v-else color='yellow').black--text
-      span None of your friends are using CoinOS
+<template>
+  <div>
+    <v-progress-linear v-if="loading" indeterminate></v-progress-linear>
+    <v-list v-else-if="friends.length">
+      <template v-for="(friend, i) in friends">
+        <v-list-tile @click="send(friend)" :key="i">
+          <v-list-tile-content>
+            <v-layout>
+              <v-flex class="my-auto">
+                <v-avatar class="mr-2" size="40"
+                  ><img :src="friend.pic"
+                /></v-avatar>
+              </v-flex>
+              <v-flex class="my-auto">
+                <v-list-tile-title
+                  ><span>{{ friend.name }}</span></v-list-tile-title
+                >
+              </v-flex>
+            </v-layout>
+          </v-list-tile-content>
+          <v-list-tile-action>
+            <v-btn class="pay px-2" @click="send(friend)">Send</v-btn>
+          </v-list-tile-action>
+        </v-list-tile>
+      </template>
+    </v-list>
+    <v-alert class="black--text" value="true" v-else color="yellow"
+      ><span>None of your friends are using CoinOS</span></v-alert
+    >
+  </div>
 </template>
 
 <script>

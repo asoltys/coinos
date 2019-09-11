@@ -3,11 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "npm run serve",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "format": "prettier --write '**/*.{js,mjs,json,vue,gql}'",
+    "start": "npm run serve",
     "test:e2e": "vue-cli-service test:e2e",
     "test:unit": "vue-cli-service test:unit"
   },
@@ -36,11 +36,12 @@
     "vue-qrcode-reader": "^2.0.1",
     "vue-router": "^3.0.7",
     "vue-stripe": "^0.1.52",
-    "vuetify": "^1.5.16",
+    "vuetify": "^2.0.0",
     "vuex": "^3.1.1",
     "vuex-pathify": "^1.2.4"
   },
   "devDependencies": {
+    "@mdi/font": "^4.4.95",
     "@vue/cli-plugin-babel": "^3.9.0",
     "@vue/cli-plugin-e2e-cypress": "^3.9.0",
     "@vue/cli-plugin-eslint": "^3.9.1",
@@ -54,14 +55,19 @@
     "eslint": "^6.0.1",
     "eslint-plugin-graphql": "^3.0.3",
     "eslint-plugin-vue": "^5.2.3",
+    "eslint-plugin-vuetify": "^1.0.0-beta.3",
     "graphql-tag": "^2.10.1",
     "pug": "^2.0.4",
     "pug-plain-loader": "^1.0.0",
+    "sass": "^1.17.4",
+    "sass-loader": "^7.1.0",
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.2",
     "vue-cli-plugin-apollo": "^0.21.0",
+    "vue-cli-plugin-vuetify": "^0.6.3",
     "vue-cli-plugin-webpack-bundle-analyzer": "^1.4.0",
     "vue-template-compiler": "^2.6.10",
+    "vuetify-loader": "^1.2.2",
     "webpack": "^4.35.2"
   }
 }

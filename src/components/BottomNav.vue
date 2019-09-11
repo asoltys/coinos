@@ -1,21 +1,32 @@
-<template lang="pug">
-v-footer(v-if='user && user.username' fixed height='60px')
-  v-bottom-nav(height='60px' absolute)
-    v-btn(flat dark @click="$router.push('/home')")
-      span Home
-      v-icon home
-    v-btn(flat dark @click="$router.push('/payments')")
-      span Payments
-      v-icon assignment 
-    v-btn(flat dark @click="scan")
-      span Scan
-      v-icon camera_alt
-    v-btn(flat dark @click="$router.push('/receive?refresh')")
-      span Receive
-      arrow-left
-    v-btn(v-if='!user.readonly' flat dark @click="$router.push('/send?refresh')")
-      span Send
-      send
+<template>
+  <v-footer v-if="user && user.username" fixed height="60px">
+    <v-bottom-navigation height="60px" absolute>
+      <v-btn flat dark @click="$router.push('/home')"
+        ><span>Home</span>
+        <v-icon>home</v-icon>
+      </v-btn>
+      <v-btn flat dark @click="$router.push('/payments')"
+        ><span>Payments</span>
+        <v-icon>assignment </v-icon>
+      </v-btn>
+      <v-btn flat dark @click="scan"
+        ><span>Scan</span>
+        <v-icon>camera_alt</v-icon>
+      </v-btn>
+      <v-btn flat dark @click="$router.push('/receive?refresh')"
+        ><span>Receive</span>
+        <arrow-left></arrow-left>
+      </v-btn>
+      <v-btn
+        v-if="!user.readonly"
+        flat
+        dark
+        @click="$router.push('/send?refresh')"
+        ><span>Send</span>
+        <send></send>
+      </v-btn>
+    </v-bottom-navigation>
+  </v-footer>
 </template>
 
 <script>

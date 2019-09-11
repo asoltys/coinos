@@ -4,10 +4,10 @@ const IS_PRODUCTION = !['development', 'test'].includes(process.env.NODE_ENV);
 module.exports = IS_PRODUCTION
   ? {}
   : {
-    pluginOptions: {
+      pluginOptions: {
         webpackBundleAnalyzer: {
-          openAnalyzer: true
-        }
+          openAnalyzer: true,
+        },
       },
       runtimeCompiler: true,
       devServer: {

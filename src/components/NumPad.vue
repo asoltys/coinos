@@ -1,14 +1,30 @@
-<template lang="pug">
-.numpad(@keyup='keyup')
-  span.display-1 {{amount.toFixed(decimals)}}
-  v-btn.toggle.black--text(color='yellow' small @click='$emit("toggle")') {{currency}}
-  v-container(fluid style="margin: 0px; padding: 0; margin-left: -15px")
-    v-layout(v-for='i in buttons.length / 3' row :key='i')
-      v-flex(v-for='j in 3' xs4 :key='j')
-        v-btn(@click='update(buttons[j + 3 * i - 4])' :ref='id(buttons[j  + 3 * i - 4])' style="min-width: auto; width: 95%") 
-          template(v-if='buttons[j + 3 * i - 4] !== "<"')
-            | {{buttons[j + 3 * i - 4]}}
-          v-icon(v-else) undo
+<template>
+  <div class="numpad" @keyup="keyup">
+    <span class="display-1">{{ amount.toFixed(decimals) }}</span>
+    <v-btn
+      class="toggle black--text"
+      color="yellow"
+      small
+      @click="$emit('toggle')"
+      >{{ currency }}</v-btn
+    >
+    <v-container fluid style="margin: 0px; padding: 0; margin-left: -15px">
+      <v-layout v-for="i in buttons.length / 3" :key="i">
+        <v-flex v-for="j in 3" xs4 :key="j">
+          <v-btn
+            @click="update(buttons[j + 3 * i - 4])"
+            :ref="id(buttons[j + 3 * i - 4])"
+            style="min-width: auto; width: 95%"
+          >
+            <template v-if="buttons[j + 3 * i - 4] !== '<'">{{
+              buttons[j + 3 * i - 4]
+            }}</template>
+            <v-icon v-else>undo</v-icon>
+          </v-btn>
+        </v-flex>
+      </v-layout>
+    </v-container>
+  </div>
 </template>
 
 <script>

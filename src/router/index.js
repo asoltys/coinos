@@ -8,7 +8,6 @@ import Payments from '../components/Payments';
 import Send from '../components/Send';
 import Receive from '../components/Receive';
 import Buy from '../components/Buy';
-import Network from '../components/Network';
 import Market from '../components/Market';
 import Contacts from '../components/Contacts';
 import Settings from '../components/Settings';
@@ -23,7 +22,6 @@ const routes = [
   { path: '/receive', component: Receive },
   { path: '/receive', component: Receive },
   { path: '/buy', component: Buy },
-  { path: '/network', component: Network },
   { path: '/market', component: Market },
   { path: '/contacts', component: Contacts },
   { path: '/about', component: About },

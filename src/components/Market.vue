@@ -1,29 +1,65 @@
-<template lang="pug">
-  div
-    v-progress-linear(v-if='loading' indeterminate)
-    template(v-else)
-      v-layout
-        v-flex(md6).mr-2
-          template(v-if='buys.length')
-            v-list(subheader)
-              template(v-for='(order, i) in buys')
-                v-list-tile(@click='5')
-                  v-list-tile-content
-                    v-layout(row)
-                      v-list-tile-action-text {{order.date | format}}
-                      v-list-tile-sub-title {{order.amount * order.price}} CAD
-                      v-list-tile-title.received.text-xs-right.ml-auto {{order.amount}} BTC at {{order.price}}
-        v-flex(md6)
-          template(v-if='sells.length')
-            v-list(subheader)
-              template(v-for='(order, i) in sells')
-                v-list-tile(@click='5')
-                  v-list-tile-action-text {{order.date | format}}
-                  v-list-tile-content.sent
-                    v-list-tile-title {{order.price}} for {{order.amount}} BTC
-                    v-list-tile-sub-title
-                      span {{order.amount * order.price}} CAD
-          v-alert(value='true' v-else color='yellow').black--text No payments found in the given time period
+<template>
+  <div>
+    <v-progress-linear v-if="loading" indeterminate></v-progress-linear>
+    <template v-else>
+      <v-layout>
+        <v-flex class="mr-2" md6>
+          <template v-if="buys.length">
+            <v-list subheader>
+              <template v-for="(order, i) in buys">
+                <v-list-tile @click="5" :key="i">
+                  <v-list-tile-content>
+                    <v-layout>
+                      <v-list-tile-action-text>{{
+                        order.date | format
+                      }}</v-list-tile-action-text>
+                      <v-list-tile-sub-title
+                        >{{
+                          order.amount * order.price
+                        }}
+                        CAD</v-list-tile-sub-title
+                      >
+                      <v-list-tile-title class="received text-right ml-auto"
+                        >{{ order.amount }} BTC at
+                        {{ order.price }}</v-list-tile-title
+                      >
+                    </v-layout>
+                  </v-list-tile-content>
+                </v-list-tile>
+              </template>
+            </v-list>
+          </template>
+        </v-flex>
+        <v-flex md6>
+          <template v-if="sells.length">
+            <v-list subheader>
+              <template v-for="(order, i) in sells">
+                <v-list-tile @click="5" :key="i">
+                  <v-list-tile-action-text>{{
+                    order.date | format
+                  }}</v-list-tile-action-text>
+                  <v-list-tile-content class="sent">
+                    <v-list-tile-title
+                      >{{ order.price }} for
+                      {{ order.amount }} BTC</v-list-tile-title
+                    >
+                    <v-list-tile-sub-title
+                      ><span
+                        >{{ order.amount * order.price }} CAD</span
+                      ></v-list-tile-sub-title
+                    >
+                  </v-list-tile-content>
+                </v-list-tile>
+              </template>
+            </v-list>
+          </template>
+          <v-alert class="black--text" value="true" v-else color="yellow"
+            >No payments found in the given time period</v-alert
+          >
+        </v-flex>
+      </v-layout>
+    </template>
+  </div>
 </template>
 
 <script>

@@ -1,21 +1,39 @@
-<template lang="pug">
-div
-  v-card
-    v-card-text
-      h1 Welcome!
-      p CoinOS is a Bitcoin wallet and point of sale app that you can use to send and receive payments.
-      p The app is free to use and the source code is available on #[a(href="https://github.com/asoltys/coinos.io") Github] in case you want to host your own node, report issues, or contribute to make it better.
-      div.code(:data-clipboard-text='node').text-xs-center
-        h3 Lightning Node Info
-        canvas#qr
-        div
-          code.mt-3 {{node}}
-        div
-          v-btn(@click="copy")
-            v-icon.mr-1 content_copy
-            span Copy
-      h2 Privacy Policy
-      p CoinOS stores your username, a hash of your password, and your payment history. If you login with Facebook, we access your friends list in order to populate your address book.
+<template>
+  <div>
+    <v-card>
+      <v-card-text>
+        <h1>Welcome!</h1>
+        <p>
+          CoinOS is a Bitcoin wallet and point of sale app that you can use to
+          send and receive payments.
+        </p>
+        <p>
+          The app is free to use and the source code is available on
+          <a href="https://github.com/asoltys/coinos.io">Github</a> in case you
+          want to host your own node, report issues, or contribute to make it
+          better.
+        </p>
+        <div class="code text-center" :data-clipboard-text="node">
+          <h3>Lightning Node Info</h3>
+          <canvas id="qr"></canvas>
+          <div>
+            <code class="mt-3">{{ node }}</code>
+          </div>
+          <div>
+            <v-btn @click="copy">
+              <v-icon class="mr-1">content_copy</v-icon><span>Copy</span>
+            </v-btn>
+          </div>
+        </div>
+        <h2>Privacy Policy</h2>
+        <p>
+          CoinOS stores your username, a hash of your password, and your payment
+          history. If you login with Facebook, we access your friends list in
+          order to populate your address book.
+        </p>
+      </v-card-text>
+    </v-card>
+  </div>
 </template>
 
 <script>

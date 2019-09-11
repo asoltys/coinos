@@ -1,11 +1,26 @@
-<template lang="pug">
-v-layout
-  v-flex(xs12)
-    v-form(@submit='submit')
-      v-text-field(label='Username' v-model='form.username' autofocus)
-      v-text-field(label='Password' v-model='form.password' type='password')
-      v-text-field(label='Confirm Password' v-model='form.passconfirm' type='password')
-      v-btn(type='submit') Register
+<template>
+  <v-layout>
+    <v-flex xs12>
+      <v-form @submit="submit">
+        <v-text-field
+          label="Username"
+          v-model="form.username"
+          autofocus
+        ></v-text-field>
+        <v-text-field
+          label="Password"
+          v-model="form.password"
+          type="password"
+        ></v-text-field>
+        <v-text-field
+          label="Confirm Password"
+          v-model="form.passconfirm"
+          type="password"
+        ></v-text-field>
+        <v-btn type="submit">Register</v-btn>
+      </v-form>
+    </v-flex>
+  </v-layout>
 </template>
 
 <script>

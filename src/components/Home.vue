@@ -1,47 +1,60 @@
-<template lang="pug">
-div.text-xs-center
-  v-flex.mb-2(v-if='!isNaN(animatedBalance)')
-    span.display-2 {{animatedBalance}} 
-    span.headline SAT
-    h3 {{((animatedBalance / 100000000) * animatedRate).toFixed(2)}} CAD @ #[span.yellow--text {{animatedRate}}] per BTC
-    div(v-if='user.pending').yellow--text.text--lighten-3
-      span.display-2 {{animatedPending}} 
-      span.headline pending
-      h3 {{((animatedPending / 100000000) * animatedRate).toFixed(2)}} CAD
-  v-flex(xs12)
-    v-card
-      v-container.request
-        v-layout(wrap)
-          v-flex.text-xs-center#canvas-container(xs12)
-            canvas#qr(@click='fullscreen')
-          v-flex(xs12).text-xs-center
-            div
-              code.black--text.mt-2 {{user.address}}
-            v-btn(@click="copy")
-              v-icon.mr-1 content_copy
-              span Copy
-  div.mx-auto
-    v-btn.mr-2(v-if='user.fbtoken' @click="$router.push('/contacts')") 
-      v-icon.mr-1 person
-      span Address Book
-    v-btn(v-if='user.limit > 0' @click="$router.push('/buy')")
-      v-icon.mr-1 credit_card
-      span Add Funds
+<template>
+  <div class="text-center">
+    <v-flex class="mb-2" v-if="!isNaN(animatedBalance)"
+      ><span class="display-2">{{ animatedBalance }} </span
+      ><span class="headline">SAT</span>
+      <h3>
+        {{ ((animatedBalance / 100000000) * animatedRate).toFixed(2) }} CAD @
+        <span class="yellow--text">{{ animatedRate }}</span> per BTC
+      </h3>
+      <div class="yellow--text text--lighten-3" v-if="user.pending">
+        <span class="display-2">{{ animatedPending }} </span
+        ><span class="headline">pending</span>
+        <h3>
+          {{ ((animatedPending / 100000000) * animatedRate).toFixed(2) }} CAD
+        </h3>
+      </div>
+    </v-flex>
+    <v-flex xs12>
+      <v-card>
+        <v-container class="request">
+          <v-layout wrap>
+            <v-flex class="text-center" id="canvas-container" xs12>
+              <canvas id="qr" @click="fullscreen"></canvas>
+            </v-flex>
+            <v-flex class="text-center" xs12>
+              <div>
+                <code class="black--text mt-2">{{ user.address }}</code>
+              </div>
+              <v-btn @click="copy">
+                <v-icon class="mr-1">content_copy</v-icon><span>Copy</span>
+              </v-btn>
+            </v-flex>
+          </v-layout>
+        </v-container>
+      </v-card>
+    </v-flex>
+    <div class="mx-auto">
+      <v-btn
+        class="mr-2"
+        v-if="user.fbtoken"
+        @click="$router.push('/contacts')"
+      >
+        <v-icon class="mr-1">person</v-icon><span>Address Book</span>
+      </v-btn>
+      <v-btn v-if="user.limit > 0" @click="$router.push('/buy')">
+        <v-icon class="mr-1">credit_card</v-icon><span>Add Funds</span>
+      </v-btn>
+    </div>
+  </div>
 </template>
 
 <script>
 import qr from 'qrcode';
 import { mapGetters, mapActions } from 'vuex';
-import ArrowDown from 'vue-material-design-icons/ArrowDownBold';
-import ArrowUp from 'vue-material-design-icons/ArrowUpBold';
-import ArrowLeft from 'vue-material-design-icons/ArrowLeftBold';
-import ArrowRight from 'vue-material-design-icons/ArrowRightBold';
-import Flash from 'vue-material-design-icons/Flash';
 import { TweenLite } from 'gsap';
 
 export default {
-  components: { ArrowDown, ArrowUp, ArrowLeft, ArrowRight, Flash },
-
   props: {
     username: {
       type: String,

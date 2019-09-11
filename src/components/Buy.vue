@@ -1,15 +1,21 @@
-<template lang="pug">
-  form(action='/api/payment' method='post')
-    v-radio-group(name='amount' label='Amount' v-model='product.amount')
-      v-radio(v-for='i in items' :label='i.text' :value='i.value' :key='i.value')
-    stripe-checkout(
-      :stripe-key='stripe'
-      :product='product'
-      button='Buy Bitcoin / Dump Dollars'
-      button-class='v-btn'
-      on-success='broadcast'
-    )
-
+<template>
+  <form action="/api/payment" method="post">
+    <v-radio-group name="amount" label="Amount" v-model="product.amount">
+      <v-radio
+        v-for="i in items"
+        :label="i.text"
+        :value="i.value"
+        :key="i.value"
+      ></v-radio>
+    </v-radio-group>
+    <stripe-checkout
+      :stripe-key="stripe"
+      :product="product"
+      button="Buy Bitcoin / Dump Dollars"
+      button-class="v-btn"
+      on-success="broadcast"
+    ></stripe-checkout>
+  </form>
 </template>
 
 <script>

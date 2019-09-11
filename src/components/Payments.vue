@@ -1,47 +1,120 @@
-<template lang="pug">
-  div
-    v-progress-linear(v-if='loading' indeterminate)
-    template(v-else)
-      template
-        v-layout.date-picker
-          v-flex(xs4)
-            v-date-picker(v-if='choosefrom' v-model='fromstring' color='secondary' @input='choosefrom = false')
-            v-btn(v-else @click='choosefrom = !choosefrom; chooseto = false' :color='choosefrom ? "green" : ""' small)
-              v-icon.mr-1 event
-              span {{from | short}}
-          v-flex.ml-3.my-auto.text-xs-center(xs2)
-            div.subheading to
-          v-flex(xs4)
-            v-date-picker(v-if='chooseto' v-model='tostring' color='secondary' @input='chooseto = false')
-            v-btn(v-else @click='chooseto = !chooseto; choosefrom = false' :color='chooseto ? "green" : ""' small)
-              v-icon.mr-1 event
-              span {{to | short}}
-        v-layout
-          v-flex(xs12)
-            v-select(:items='Object.keys(presets)' v-model='preset')
-      template(v-if='filteredPayments.length')
-        v-layout
-          v-flex(xs4)
-            v-text-field(label='Total sat' v-model='total' readonly)
-          v-flex(xs4)
-            v-text-field(label='Total CAD' v-model='fiattotal' readonly)
-          v-flex(xs4)
-            v-text-field(label='Total Tips' v-model='tips' readonly)
-        v-list(three-line subheader)
-          template(v-for='(payment, i) in filteredPayments')
-            v-list-tile(background='blue' :key='payment.date' @click='link(payment)')
-              v-list-tile-content
-                v-list-tile-title {{payment.hash | trim}}
-                v-list-tile-sub-title(:class='color(payment)') 
-                  span {{payment.amount | abs}} sat
-                v-list-tile-sub-title(:class='color(payment)') 
-                  span {{payment.fiat | abs | twodec}} CAD
-                  small(v-if='payment.tip')  (+{{payment.tip}})
-              v-list-tile-action
-                v-list-tile-action-text {{payment.createdAt | format}}
-                v-list-tile-sub-title balance: {{payment.balance}}
-                v-layout
-      v-alert(value='true' v-else color='yellow').black--text No payments found in the given time period
+<template>
+  <div>
+    <v-progress-linear v-if="loading" indeterminate></v-progress-linear>
+    <template v-else>
+      <template>
+        <v-layout class="date-picker">
+          <v-flex xs4>
+            <v-date-picker
+              v-if="choosefrom"
+              v-model="fromstring"
+              color="secondary"
+              @input="choosefrom = false"
+            ></v-date-picker>
+            <v-btn
+              v-else
+              @click="
+                choosefrom = !choosefrom;
+                chooseto = false;
+              "
+              :color="choosefrom ? 'green' : ''"
+              small
+            >
+              <v-icon class="mr-1">event</v-icon><span>{{ from | short }}</span>
+            </v-btn>
+          </v-flex>
+          <v-flex class="ml-3 my-auto text-center" xs2>
+            <div class="subheading">to</div>
+          </v-flex>
+          <v-flex xs4>
+            <v-date-picker
+              v-if="chooseto"
+              v-model="tostring"
+              color="secondary"
+              @input="chooseto = false"
+            ></v-date-picker>
+            <v-btn
+              v-else
+              @click="
+                chooseto = !chooseto;
+                choosefrom = false;
+              "
+              :color="chooseto ? 'green' : ''"
+              small
+            >
+              <v-icon class="mr-1">event</v-icon><span>{{ to | short }}</span>
+            </v-btn>
+          </v-flex>
+        </v-layout>
+        <v-layout>
+          <v-flex xs12>
+            <v-select :items="Object.keys(presets)" v-model="preset"></v-select>
+          </v-flex>
+        </v-layout>
+      </template>
+      <template v-if="filteredPayments.length">
+        <v-layout>
+          <v-flex xs4>
+            <v-text-field
+              label="Total sat"
+              v-model="total"
+              readonly
+            ></v-text-field>
+          </v-flex>
+          <v-flex xs4>
+            <v-text-field
+              label="Total CAD"
+              v-model="fiattotal"
+              readonly
+            ></v-text-field>
+          </v-flex>
+          <v-flex xs4>
+            <v-text-field
+              label="Total Tips"
+              v-model="tips"
+              readonly
+            ></v-text-field>
+          </v-flex>
+        </v-layout>
+        <v-list three-line subheader>
+          <template v-for="payment in filteredPayments">
+            <v-list-tile
+              background="blue"
+              :key="payment.date"
+              @click="link(payment)"
+            >
+              <v-list-tile-content>
+                <v-list-tile-title>{{ payment.hash | trim }}</v-list-tile-title>
+                <v-list-tile-sub-title :class="color(payment)">
+                  <span
+                    >{{ payment.amount | abs }} sat</span
+                  ></v-list-tile-sub-title
+                >
+                <v-list-tile-sub-title :class="color(payment)">
+                  <span>{{ payment.fiat | abs | twodec }} CAD</span
+                  ><small v-if="payment.tip">
+                    (+{{ payment.tip }})</small
+                  ></v-list-tile-sub-title
+                >
+              </v-list-tile-content>
+              <v-list-tile-action>
+                <v-list-tile-action-text>{{
+                  payment.createdAt | format
+                }}</v-list-tile-action-text>
+                <v-list-tile-sub-title
+                  >balance: {{ payment.balance }}</v-list-tile-sub-title
+                >
+                <v-layout></v-layout>
+              </v-list-tile-action>
+            </v-list-tile>
+          </template>
+        </v-list>
+      </template>
+      <v-alert class="black--text" value="true" v-else color="yellow"
+        >No payments found in the given time period</v-alert
+      >
+    </template>
+  </div>
 </template>
 
 <script>

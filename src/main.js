@@ -1,5 +1,4 @@
 import Vue from 'vue';
-import Vuetify from 'vuetify';
 import VueAxios from 'vue-axios';
 import Axios from 'axios';
 import App from './App';
@@ -10,20 +9,12 @@ import FastClick from 'fastclick';
 import FBSignInButton from 'vue-facebook-signin-button';
 import './main.styl';
 import { createProvider } from './vue-apollo';
+import vuetify from './plugins/vuetify';
 
 Axios.defaults.baseURL = process.env.VUE_APP_BASEURL;
 
 Vue.use(FBSignInButton);
 Vue.use(VueAxios, Axios);
-Vue.use(Vuetify, {
-  theme: {
-    primary: '#ff0',
-    secondary: '#333',
-    accent: '#ff0',
-    error: '#b71c1c',
-  },
-});
-
 /* eslint-disable no-new */
 let app = new Vue({
   components: { App },
@@ -31,6 +22,7 @@ let app = new Vue({
   template: '<app/>',
   router,
   apolloProvider: createProvider(),
+  vuetify,
   store,
 });
 
