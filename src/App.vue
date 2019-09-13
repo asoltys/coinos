@@ -1,18 +1,32 @@
-<template lang="pug">
-    v-app(dark)#app
-      top-bar
-      snack-bar
-      v-content(v-show='scanning')
-        div(v-if='webscanning').text-xs-center
-          qrcode-stream.mt-4(@decode='handleScan')
-          v-btn(@click='handleScan' style='margin-bottom: 30px') Cancel
-      v-content(v-show='!scanning')
-        transition(name="fade" mode="out-in" appear)
-          v-container.mr-3
-            v-alert.ma-4(v-if='error' color='error' v-model='error' value='error' dismissible transition='scale-transition') {{error}}
-            router-view(:key="$route.path")
-      div(style='height: 60px')
-      bottom-nav
+<template>
+  <v-app dark id="app">
+    <top-bar />
+    <snack-bar />
+    <v-content v-show="scanning">
+      <div class="text-center" v-if="webscanning">
+        <qrcode-stream class="mt-4" @decode="handleScan"></qrcode-stream>
+        <v-btn @click="handleScan" style="margin-bottom: 30px">Cancel</v-btn>
+      </div>
+    </v-content>
+    <v-content v-show="!scanning">
+      <transition name="fade" mode="out-in" appear>
+        <v-container class="mr-3">
+          <v-alert
+            class="ma-4"
+            v-if="error"
+            color="error"
+            v-model="error"
+            value="error"
+            dismissible
+            transition="scale-transition"
+            >{{ error }}</v-alert
+          >
+          <router-view :key="$route.path"></router-view>
+        </v-container>
+      </transition>
+    </v-content>
+    <bottom-nav />
+  </v-app>
 </template>
 
 <script>

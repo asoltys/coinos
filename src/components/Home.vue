@@ -1,11 +1,11 @@
 <template>
   <div class="text-center">
     <v-flex class="mb-2" v-if="!isNaN(animatedBalance)"
-      ><span class="display-2">{{ animatedBalance }} </span
+      ><span class="display-2 font-weight-black">{{ animatedBalance }} </span
       ><span class="headline">SAT</span>
       <h3>
         {{ ((animatedBalance / 100000000) * animatedRate).toFixed(2) }} CAD @
-        <span class="yellow--text">{{ animatedRate }}</span> per BTC
+        <span class="font-weight-black yellow--text">{{ animatedRate }}</span> per BTC
       </h3>
       <div class="yellow--text text--lighten-3" v-if="user.pending">
         <span class="display-2">{{ animatedPending }} </span

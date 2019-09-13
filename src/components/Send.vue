@@ -16,12 +16,12 @@
         >Payment Sent!</v-alert
       >
       <v-list>
-        <v-list-tile v-if="payment.txid">
-          <v-list-tile-content>
-            <v-list-tile-title>Transaction ID</v-list-tile-title>
-            <v-list-tile-sub-title>{{ payment.txid }} </v-list-tile-sub-title>
-          </v-list-tile-content>
-          <v-list-tile-action>
+        <v-list-item v-if="payment.txid">
+          <v-list-item-content>
+            <v-list-item-title>Transaction ID</v-list-item-title>
+            <v-list-item-subtitle>{{ payment.txid }} </v-list-item-subtitle>
+          </v-list-item-content>
+          <v-list-item-action>
             <v-flex class="text-right">
               <v-btn class="mr-1" small icon ripple @click="copy(payment.txid)">
                 <v-icon small>content_copy</v-icon>
@@ -30,16 +30,16 @@
                 <v-icon small>open_in_new</v-icon>
               </v-btn>
             </v-flex>
-          </v-list-tile-action>
-        </v-list-tile>
-        <v-list-tile>
-          <v-list-tile-title>Amount</v-list-tile-title>
-          <v-list-tile-sub-title>{{ total }}</v-list-tile-sub-title>
-        </v-list-tile>
-        <v-list-tile>
-          <v-list-tile-title>Fees</v-list-tile-title>
-          <v-list-tile-sub-title>{{ fees || 0 }}</v-list-tile-sub-title>
-        </v-list-tile>
+          </v-list-item-action>
+        </v-list-item>
+        <v-list-item>
+          <v-list-item-title>Amount</v-list-item-title>
+          <v-list-item-subtitle>{{ total }}</v-list-item-subtitle>
+        </v-list-item>
+        <v-list-item>
+          <v-list-item-title>Fees</v-list-item-title>
+          <v-list-item-subtitle>{{ fees || 0 }}</v-list-item-subtitle>
+        </v-list-item>
       </v-list>
       <v-card-actions>
         <v-btn @click="back">
@@ -106,22 +106,22 @@
         ></numpad>
       </template>
       <v-list class="elevation-1 ma-2" v-if="payobj">
-        <v-list-tile>
-          <v-list-tile-title>Amount</v-list-tile-title>
-          <v-list-tile-sub-title>{{ payobj.satoshis }}</v-list-tile-sub-title>
-        </v-list-tile>
-        <v-list-tile>
-          <v-list-tile-title>Recipient</v-list-tile-title>
-          <v-list-tile-sub-title>{{
+        <v-list-item>
+          <v-list-item-title>Amount</v-list-item-title>
+          <v-list-item-subtitle>{{ payobj.satoshis }}</v-list-item-subtitle>
+        </v-list-item>
+        <v-list-item>
+          <v-list-item-title>Recipient</v-list-item-title>
+          <v-list-item-subtitle>{{
             payobj.payeeNodeKey
-          }}</v-list-tile-sub-title>
-        </v-list-tile>
-        <v-list-tile>
-          <v-list-tile-title>Date</v-list-tile-title>
-          <v-list-tile-sub-title>{{
+          }}</v-list-item-subtitle>
+        </v-list-item>
+        <v-list-item>
+          <v-list-item-title>Date</v-list-item-title>
+          <v-list-item-subtitle>{{
             payobj.timestampString | format
-          }}</v-list-tile-sub-title>
-        </v-list-tile>
+          }}</v-list-item-subtitle>
+        </v-list-item>
       </v-list>
       <div>
         <v-btn @click="back">

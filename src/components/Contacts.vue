@@ -3,8 +3,8 @@
     <v-progress-linear v-if="loading" indeterminate></v-progress-linear>
     <v-list v-else-if="friends.length">
       <template v-for="(friend, i) in friends">
-        <v-list-tile @click="send(friend)" :key="i">
-          <v-list-tile-content>
+        <v-list-item @click="send(friend)" :key="i">
+          <v-list-item-content>
             <v-layout>
               <v-flex class="my-auto">
                 <v-avatar class="mr-2" size="40"
@@ -12,16 +12,16 @@
                 /></v-avatar>
               </v-flex>
               <v-flex class="my-auto">
-                <v-list-tile-title
-                  ><span>{{ friend.name }}</span></v-list-tile-title
+                <v-list-item-title
+                  ><span>{{ friend.name }}</span></v-list-item-title
                 >
               </v-flex>
             </v-layout>
-          </v-list-tile-content>
-          <v-list-tile-action>
+          </v-list-item-content>
+          <v-list-item-action>
             <v-btn class="pay px-2" @click="send(friend)">Send</v-btn>
-          </v-list-tile-action>
-        </v-list-tile>
+          </v-list-item-action>
+        </v-list-item>
       </template>
     </v-list>
     <v-alert class="black--text" value="true" v-else color="yellow"

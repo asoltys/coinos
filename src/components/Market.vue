@@ -7,25 +7,25 @@
           <template v-if="buys.length">
             <v-list subheader>
               <template v-for="(order, i) in buys">
-                <v-list-tile @click="5" :key="i">
-                  <v-list-tile-content>
+                <v-list-item @click="5" :key="i">
+                  <v-list-item-content>
                     <v-layout>
-                      <v-list-tile-action-text>{{
+                      <v-list-item-action-text>{{
                         order.date | format
-                      }}</v-list-tile-action-text>
-                      <v-list-tile-sub-title
+                      }}</v-list-item-action-text>
+                      <v-list-item-subtitle
                         >{{
                           order.amount * order.price
                         }}
-                        CAD</v-list-tile-sub-title
+                        CAD</v-list-item-subtitle
                       >
-                      <v-list-tile-title class="received text-right ml-auto"
+                      <v-list-item-title class="received text-right ml-auto"
                         >{{ order.amount }} BTC at
-                        {{ order.price }}</v-list-tile-title
+                        {{ order.price }}</v-list-item-title
                       >
                     </v-layout>
-                  </v-list-tile-content>
-                </v-list-tile>
+                  </v-list-item-content>
+                </v-list-item>
               </template>
             </v-list>
           </template>
@@ -34,22 +34,22 @@
           <template v-if="sells.length">
             <v-list subheader>
               <template v-for="(order, i) in sells">
-                <v-list-tile @click="5" :key="i">
-                  <v-list-tile-action-text>{{
+                <v-list-item @click="5" :key="i">
+                  <v-list-item-action-text>{{
                     order.date | format
-                  }}</v-list-tile-action-text>
-                  <v-list-tile-content class="sent">
-                    <v-list-tile-title
+                  }}</v-list-item-action-text>
+                  <v-list-item-content class="sent">
+                    <v-list-item-title
                       >{{ order.price }} for
-                      {{ order.amount }} BTC</v-list-tile-title
+                      {{ order.amount }} BTC</v-list-item-title
                     >
-                    <v-list-tile-sub-title
+                    <v-list-item-subtitle
                       ><span
                         >{{ order.amount * order.price }} CAD</span
-                      ></v-list-tile-sub-title
+                      ></v-list-item-subtitle
                     >
-                  </v-list-tile-content>
-                </v-list-tile>
+                  </v-list-item-content>
+                </v-list-item>
               </template>
             </v-list>
           </template>

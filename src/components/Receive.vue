@@ -8,16 +8,16 @@
             >Payment Received!</v-alert
           >
           <v-list>
-            <v-list-tile>
-              <v-list-tile-title>Satoshis</v-list-tile-title>
-              <v-list-tile-sub-title>{{ received }}</v-list-tile-sub-title>
-            </v-list-tile>
-            <v-list-tile>
-              <v-list-tile-title>CAD</v-list-tile-title>
-              <v-list-tile-sub-title>{{
+            <v-list-item>
+              <v-list-item-title>Satoshis</v-list-item-title>
+              <v-list-item-subtitle>{{ received }}</v-list-item-subtitle>
+            </v-list-item>
+            <v-list-item>
+              <v-list-item-title>CAD</v-list-item-title>
+              <v-list-item-subtitle>{{
                 ((received / 100000000) * rate).toFixed(2)
-              }}</v-list-tile-sub-title>
-            </v-list-tile>
+              }}</v-list-item-subtitle>
+            </v-list-item>
           </v-list>
           <v-card-actions>
             <v-btn @click="clear">

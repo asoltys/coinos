@@ -1,5 +1,5 @@
 <template>
-  <v-toolbar absolute app dark color="black" clipped-left fixed>
+  <v-app-bar absolute app dark color="black" fixed>
     <v-toolbar-title dark @click="$router.push('/home')"
       ><img class="logo" src="../assets/coinos_logo.png"
     /></v-toolbar-title>
@@ -8,28 +8,30 @@
       <flash-icon fillColor="yellow" title="About CoinOS"></flash-icon>
     </v-btn>
     <v-menu v-if="user && user.name" offset-y>
-      <v-btn slot="activator">
-        <v-avatar class="mr-2" v-if="user.pic" size="30"
-          ><img :src="user.pic"
-        /></v-avatar>
-        <v-icon v-else>person </v-icon><span>{{ user.name }}</span>
-      </v-btn>
-      <v-list>
-        <v-list-tile @click="$router.push('/settings')">
-          <v-list-tile-action>
+      <template v-slot:activator="{ on }">
+        <v-btn v-on="on">
+          <v-avatar class="mr-2" v-if="user.pic" size="30"
+            ><img :src="user.pic"
+          /></v-avatar>
+          <v-icon v-else>person </v-icon><span>{{ user.name }}</span>
+        </v-btn>
+      </template>
+      <v-card tile class="mx-auto" max-width="400">
+        <v-list-item @click="$router.push('/settings')">
+          <v-list-item-action>
             <v-icon>settings</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>Settings</v-list-tile-content>
-        </v-list-tile>
-        <v-list-tile @click="$router.push('/logout')">
-          <v-list-tile-action>
+          </v-list-item-action>
+          <v-list-item-content>Settings</v-list-item-content>
+        </v-list-item>
+        <v-list-item @click="$router.push('/logout')">
+          <v-list-item-action>
             <power-settings-icon title="Logout"></power-settings-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>Logout</v-list-tile-content>
-        </v-list-tile>
-      </v-list>
+          </v-list-item-action>
+          <v-list-item-content>Logout</v-list-item-content>
+        </v-list-item>
+      </v-card>
     </v-menu>
-  </v-toolbar>
+  </v-app-bar>
 </template>
 
 <script>

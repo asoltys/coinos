@@ -78,39 +78,43 @@
         </v-layout>
         <v-list three-line subheader>
           <template v-for="payment in filteredPayments">
-            <v-list-tile
+            <v-list-item
               background="blue"
               :key="payment.date"
               @click="link(payment)"
             >
-              <v-list-tile-content>
-                <v-list-tile-title>{{ payment.hash | trim }}</v-list-tile-title>
-                <v-list-tile-sub-title :class="color(payment)">
+              <v-list-item-content>
+                <v-list-item-title>{{ payment.hash | trim }}</v-list-item-title>
+                <v-list-item-subtitle :class="color(payment)">
                   <span
                     >{{ payment.amount | abs }} sat</span
-                  ></v-list-tile-sub-title
+                  ></v-list-item-subtitle
                 >
-                <v-list-tile-sub-title :class="color(payment)">
+                <v-list-item-subtitle :class="color(payment)">
                   <span>{{ payment.fiat | abs | twodec }} CAD</span
                   ><small v-if="payment.tip">
                     (+{{ payment.tip }})</small
-                  ></v-list-tile-sub-title
+                  ></v-list-item-subtitle
                 >
-              </v-list-tile-content>
-              <v-list-tile-action>
-                <v-list-tile-action-text>{{
+              </v-list-item-content>
+              <v-list-item-action>
+                <v-list-item-action-text>{{
                   payment.createdAt | format
-                }}</v-list-tile-action-text>
-                <v-list-tile-sub-title
-                  >balance: {{ payment.balance }}</v-list-tile-sub-title
+                }}</v-list-item-action-text>
+                <v-list-item-subtitle
+                  >balance: {{ payment.balance }}</v-list-item-subtitle
                 >
                 <v-layout></v-layout>
-              </v-list-tile-action>
-            </v-list-tile>
+              </v-list-item-action>
+            </v-list-item>
           </template>
         </v-list>
       </template>
-      <v-alert class="black--text" value="true" v-else color="yellow"
+      <v-alert
+        class="black--text"
+        :value="!filteredPayments.length"
+        v-else
+        color="yellow"
         >No payments found in the given time period</v-alert
       >
     </template>

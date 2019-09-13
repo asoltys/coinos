@@ -5,10 +5,15 @@ Vue.use(Vuetify);
 
 export default new Vuetify({
   theme: {
-    primary: '#ff0',
-    secondary: '#333',
-    accent: '#ff0',
-    error: '#b71c1c',
+    dark: true,
+    themes: {
+      dark: {
+        primary: '#ffff00',
+        secondary: '#333',
+        accent: '#ff0',
+        error: '#b71c1c',
+      },
+    },
   },
   icons: {
     iconfont: 'mdi',
