@@ -2,128 +2,69 @@
   <div>
     <v-progress-linear v-if="loading" indeterminate></v-progress-linear>
     <template v-else-if="generated">
-      <template v-if="received">
-        <v-card>
-          <v-alert class="headline" value="true" color="success"
-            >Payment Received!</v-alert
-          >
-          <v-list>
-            <v-list-item>
-              <v-list-item-title>Satoshis</v-list-item-title>
-              <v-list-item-subtitle>{{ received }}</v-list-item-subtitle>
-            </v-list-item>
-            <v-list-item>
-              <v-list-item-title>CAD</v-list-item-title>
-              <v-list-item-subtitle>{{
-                ((received / 100000000) * rate).toFixed(2)
-              }}</v-list-item-subtitle>
-            </v-list-item>
-          </v-list>
-          <v-card-actions>
-            <v-btn @click="clear">
-              <v-icon>arrow_back</v-icon><span>Go Back</span>
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </template>
-      <v-layout v-else>
-        <v-flex xs12>
-          <h2 class="text-center">Send {{ total }} Satoshis</h2>
-          <v-card class="pa-3 text-center">
-            <div class="code" v-if="showcode">{{ copytext }}</div>
-            <canvas
-              id="qr"
-              v-show="!showcode"
-              width="100"
-              height="100"
-              @click="fullscreen"
-            ></canvas>
-            <v-btn @click.native="showcode = !showcode">
-              <v-icon>code</v-icon><span>{{ code }}</span>
-            </v-btn>
-            <v-btn @click.native="copy">
-              <v-icon>content_copy</v-icon><span>Copy</span>
-            </v-btn>
-          </v-card>
-          <v-btn @click="clear">
-            <v-icon>arrow_back</v-icon><span>Go Back</span>
-          </v-btn>
-        </v-flex>
-      </v-layout>
+      <Received v-if="received" :received="received" :rate="rate" />
+      <Request v-else :total="total" :copytext="copytext" :clear="clear" />
     </template>
     <template v-else>
-      <v-layout wrap>
-        <v-flex v-if="portrait()" xs12>
-          <v-layout>
-            <v-flex xs9>
-              <numpad
-                :currency="currency"
-                :amount="parseFloat(amount)"
-                @update="a => (amount = a)"
-                @toggle="toggle"
-              ></numpad>
-            </v-flex>
-            <v-flex xs3>
-              <tippad
-                :amount="parseFloat(amount)"
-                @update="t => (tip = t)"
-              ></tippad>
-            </v-flex>
-          </v-layout>
-        </v-flex>
-        <v-flex v-else xs12 sm8>
-          <v-layout>
-            <v-flex xs9>
-              <numpad
-                :currency="currency"
-                :amount="parseFloat(amount)"
-                @update="a => (amount = a)"
-                @toggle="toggle"
-              ></numpad>
-            </v-flex>
-            <v-flex xs3>
-              <tippad
-                :amount="parseFloat(amount)"
-                @update="t => (tip = t)"
-              ></tippad>
-            </v-flex>
-          </v-layout>
-        </v-flex>
-        <v-flex v-if="portrait()" xs12>
-          <v-layout wrap>
-            <v-flex class="text-center mt-4">
-              <v-btn @click="bitcoin" :disabled="total <= 0">
-                <img
-                  class="mr-1"
-                  src="../assets/bitcoin.png"
-                  width="30px"
-                /><span>Bitcoin</span></v-btn
-              >
-              <v-btn @click="lightning" :disabled="total <= 0">
-                <flash fillColor="yellow"></flash><span>Lightning</span>
-              </v-btn>
-            </v-flex>
-          </v-layout>
-        </v-flex>
-        <v-flex v-else xs12 sm4>
-          <v-layout column justify-center>
-            <v-flex class="text-sm-right">
-              <v-btn class="mr-0" @click="bitcoin" :disabled="total <= 0"
-                ><img
-                  class="mr-1"
-                  src="../assets/bitcoin.png"
-                  width="30px"
-                /><span>Bitcoin</span></v-btn
-              >
-            </v-flex>
-            <v-flex class="text-sm-right">
-              <v-btn class="mr-0" @click="lightning" :disabled="total <= 0">
-                <flash fillColor="yellow"></flash><span>Lightning</span>
-              </v-btn>
-            </v-flex>
-          </v-layout>
-        </v-flex>
-      </v-layout>
+      <v-flex v-if="portrait()" xs12>
+        <numpad
+          :currency="currency"
+          :amount="parseFloat(amount)"
+          @update="a => (amount = a)"
+          @toggle="toggle"
+        ></numpad>
+        <tippad :amount="parseFloat(amount)" @update="t => (tip = t)"></tippad>
+      </v-flex>
+      <v-flex v-else xs12 sm8>
+        <v-layout>
+          <v-flex xs9>
+            <numpad
+              :currency="currency"
+              :amount="parseFloat(amount)"
+              @update="a => (amount = a)"
+              @toggle="toggle"
+            ></numpad>
+          </v-flex>
+          <v-flex xs3>
+            <tippad
+              :amount="parseFloat(amount)"
+              @update="t => (tip = t)"
+            ></tippad>
+          </v-flex>
+        </v-layout>
+      </v-flex>
+      <v-flex v-if="portrait()" xs12>
+        <v-layout wrap>
+          <v-flex class="text-center mt-4">
+            <v-btn @click="bitcoin" :disabled="total <= 0">
+              <img class="mr-1" src="../assets/bitcoin.png" width="30px" /><span
+                >Bitcoin</span
+              ></v-btn
+            >
+            <v-btn @click="lightning" :disabled="total <= 0">
+              <flash fillColor="yellow"></flash><span>Lightning</span>
+            </v-btn>
+          </v-flex>
+        </v-layout>
+      </v-flex>
+      <v-flex v-else xs12 sm4>
+        <v-layout column justify-center>
+          <v-flex class="text-sm-right">
+            <v-btn class="mr-0" @click="bitcoin" :disabled="total <= 0"
+              ><img
+                class="mr-1"
+                src="../assets/bitcoin.png"
+                width="30px"
+              /><span>Bitcoin</span></v-btn
+            >
+          </v-flex>
+          <v-flex class="text-sm-right">
+            <v-btn class="mr-0" @click="lightning" :disabled="total <= 0">
+              <flash fillColor="yellow"></flash><span>Lightning</span>
+            </v-btn>
+          </v-flex>
+        </v-layout>
+      </v-flex>
     </template>
   </div>
 </template>
@@ -131,6 +72,8 @@
 <script>
 import qr from 'qrcode';
 import Numpad from './NumPad';
+import Received from './Received';
+import Request from './Request';
 import Tippad from './TipPad';
 import { mapGetters, mapActions } from 'vuex';
 import Flash from 'vue-material-design-icons/Flash';
@@ -138,7 +81,7 @@ import Flash from 'vue-material-design-icons/Flash';
 const f = parseFloat;
 
 export default {
-  components: { Flash, Numpad, Tippad },
+  components: { Flash, Numpad, Received, Request, Tippad },
 
   filters: {},
 
@@ -165,9 +108,6 @@ export default {
     },
     copytext() {
       return this.bitreq || this.payreq;
-    },
-    code() {
-      return this.showcode ? 'Show QR' : 'Show Code';
     },
     total() {
       let total = f(this.amount) + f(this.tip);

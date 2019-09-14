@@ -8,22 +8,21 @@
       @click="$emit('toggle')"
       >{{ currency }}</v-btn
     >
-    <v-container fluid style="margin: 0px; padding: 0; margin-left: -15px">
-      <v-layout v-for="i in buttons.length / 3" :key="i">
-        <v-flex v-for="j in 3" xs4 :key="j">
-          <v-btn
-            @click="update(buttons[j + 3 * i - 4])"
-            :ref="id(buttons[j + 3 * i - 4])"
-            style="min-width: auto; width: 95%"
-          >
-            <template v-if="buttons[j + 3 * i - 4] !== '<'">{{
-              buttons[j + 3 * i - 4]
-            }}</template>
-            <v-icon v-else>undo</v-icon>
-          </v-btn>
-        </v-flex>
-      </v-layout>
-    </v-container>
+    <div class="d-flex" v-for="i in buttons.length / 3" :key="i">
+      <v-btn
+        class="col-4 ma-1"
+        v-for="j in 3"
+        :key="j"
+        @click="update(buttons[j + 3 * i - 4])"
+        :ref="id(buttons[j + 3 * i - 4])"
+        style="min-width: auto; width: 95%"
+      >
+        <template v-if="buttons[j + 3 * i - 4] !== '<'">{{
+          buttons[j + 3 * i - 4]
+        }}</template>
+        <v-icon v-else>undo</v-icon>
+      </v-btn>
+    </div>
   </div>
 </template>
 
