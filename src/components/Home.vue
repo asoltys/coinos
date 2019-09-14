@@ -27,7 +27,7 @@
               <div>
                 <code class="black--text mt-2">{{ user.address }}</code>
               </div>
-              <v-btn @click="copy">
+              <v-btn @click="copy" class="mt-2">
                 <v-icon class="mr-1">content_copy</v-icon><span>Copy</span>
               </v-btn>
             </v-flex>

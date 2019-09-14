@@ -1,6 +1,7 @@
 <template>
   <v-snackbar class="yellow--text" v-model="snack" :timeout="2000" top>
-    <info-icon class="mr-1"></info-icon><span>{{ message }}</span>
+    <info-icon class="mr-1" />
+    <b>{{ message }}</b>
   </v-snackbar>
 </template>
 

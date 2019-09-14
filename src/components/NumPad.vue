@@ -1,21 +1,21 @@
 <template>
   <div class="numpad" @keyup="keyup">
-    <span class="display-1">{{ amount.toFixed(decimals) }}</span>
-    <v-btn
-      class="toggle black--text"
-      color="yellow"
-      small
-      @click="$emit('toggle')"
-      >{{ currency }}</v-btn
-    >
+    <div class="mb-2">
+      <span class="display-1">{{ amount.toFixed(decimals) }}</span>
+      <v-btn
+        class="toggle black--text ml-2"
+        color="yellow"
+        @click="$emit('toggle')"
+        >{{ currency }}</v-btn
+      >
+    </div>
     <div class="d-flex" v-for="i in buttons.length / 3" :key="i">
       <v-btn
-        class="col-4 ma-1"
+        class="col-4 ma-1 numpad-button"
         v-for="j in 3"
         :key="j"
         @click="update(buttons[j + 3 * i - 4])"
         :ref="id(buttons[j + 3 * i - 4])"
-        style="min-width: auto; width: 95%"
       >
         <template v-if="buttons[j + 3 * i - 4] !== '<'">{{
           buttons[j + 3 * i - 4]
@@ -100,6 +100,10 @@ export default {
 
 <style lang="stylus" scoped>
 .toggle
-  margin-top -10px
+  margin-top -14px
+  max-height 30px
   min-width 0
+
+.numpad-button
+  height 50px !important
 </style>

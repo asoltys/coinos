@@ -1,5 +1,10 @@
 <template>
-  <v-bottom-navigation class="d-flex justify-space-around" height="60">
+  <v-bottom-navigation
+    class="d-flex justify-space-around"
+    height="60"
+    background-color="#212121"
+    dark
+  >
     <v-btn class="flex-grow-1" text @click="$router.push('/home')">
       <span>Home</span>
       <v-icon>home</v-icon>
@@ -49,6 +54,6 @@ export default {
 </script>
 
 <style lang="stylus">
-.v-btn
+.v-bottom-navigation .v-btn
   height 60px !important
 </style>

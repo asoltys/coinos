@@ -1,36 +1,23 @@
 <template>
   <div>
     <v-card>
-      <v-card-text>
-        <h1>Welcome!</h1>
+      <v-card-text class="white--text body-1">
         <p>
-          CoinOS is a Bitcoin wallet and point of sale app that you can use to
-          send and receive payments.
-        </p>
-        <p>
-          The app is free to use and the source code is available on
+          This app is free to use and the source code is available on
           <a href="https://github.com/asoltys/coinos.io">Github</a> in case you
           want to host your own node, report issues, or contribute to make it
           better.
         </p>
-        <div class="code text-center" :data-clipboard-text="node">
-          <h3>Lightning Node Info</h3>
-          <canvas id="qr"></canvas>
-          <div>
-            <code class="mt-3">{{ node }}</code>
-          </div>
-          <div>
-            <v-btn @click="copy">
-              <v-icon class="mr-1">content_copy</v-icon><span>Copy</span>
-            </v-btn>
-          </div>
-        </div>
-        <h2>Privacy Policy</h2>
-        <p>
-          CoinOS stores your username, a hash of your password, and your payment
-          history. If you login with Facebook, we access your friends list in
-          order to populate your address book.
-        </p>
+        <v-card class="code text-center mb-4" :data-clipboard-text="node">
+          <h3 class="mb-4">Lightning Node Info</h3>
+          <canvas id="qr" class="d-block mx-auto mb-4" />
+          <v-chip class="body-2 font-weight-black d-block mb-4">{{
+            node
+          }}</v-chip>
+          <v-btn @click="copy" class="d-block mx-auto">
+            <v-icon class="mr-1">content_copy</v-icon><span>Copy</span>
+          </v-btn>
+        </v-card>
       </v-card-text>
     </v-card>
   </div>
@@ -78,19 +65,12 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-a
-  color white
-  font-weight bold
-
 code
-  max-width 100%
+  max-width 400 !important
   word-wrap break-word
-  font-size 0.9em
-  color black !important
 
 .code
   margin auto
   background #333
-  word-wrap break-word
   padding 10px
 </style>

@@ -1,71 +1,32 @@
 <template>
   <div>
-    <v-progress-linear v-if="loading" indeterminate></v-progress-linear>
+    <v-progress-linear v-if="loading" indeterminate />
     <template v-else-if="generated">
       <Received v-if="received" :received="received" :rate="rate" />
       <Request v-else :total="total" :copytext="copytext" :clear="clear" />
     </template>
-    <template v-else>
-      <v-flex v-if="portrait()" xs12>
-        <numpad
-          :currency="currency"
-          :amount="parseFloat(amount)"
-          @update="a => (amount = a)"
-          @toggle="toggle"
-        ></numpad>
-        <tippad :amount="parseFloat(amount)" @update="t => (tip = t)"></tippad>
-      </v-flex>
-      <v-flex v-else xs12 sm8>
-        <v-layout>
-          <v-flex xs9>
-            <numpad
-              :currency="currency"
-              :amount="parseFloat(amount)"
-              @update="a => (amount = a)"
-              @toggle="toggle"
-            ></numpad>
-          </v-flex>
-          <v-flex xs3>
-            <tippad
-              :amount="parseFloat(amount)"
-              @update="t => (tip = t)"
-            ></tippad>
-          </v-flex>
-        </v-layout>
-      </v-flex>
-      <v-flex v-if="portrait()" xs12>
-        <v-layout wrap>
-          <v-flex class="text-center mt-4">
-            <v-btn @click="bitcoin" :disabled="total <= 0">
-              <img class="mr-1" src="../assets/bitcoin.png" width="30px" /><span
-                >Bitcoin</span
-              ></v-btn
-            >
-            <v-btn @click="lightning" :disabled="total <= 0">
-              <flash fillColor="yellow"></flash><span>Lightning</span>
-            </v-btn>
-          </v-flex>
-        </v-layout>
-      </v-flex>
-      <v-flex v-else xs12 sm4>
-        <v-layout column justify-center>
-          <v-flex class="text-sm-right">
-            <v-btn class="mr-0" @click="bitcoin" :disabled="total <= 0"
-              ><img
-                class="mr-1"
-                src="../assets/bitcoin.png"
-                width="30px"
-              /><span>Bitcoin</span></v-btn
-            >
-          </v-flex>
-          <v-flex class="text-sm-right">
-            <v-btn class="mr-0" @click="lightning" :disabled="total <= 0">
-              <flash fillColor="yellow"></flash><span>Lightning</span>
-            </v-btn>
-          </v-flex>
-        </v-layout>
-      </v-flex>
-    </template>
+    <div class="d-flex" v-else>
+      <numpad
+        class="col-8"
+        :currency="currency"
+        :amount="parseFloat(amount)"
+        @update="a => (amount = a)"
+        @toggle="toggle"
+      />
+      <tippad
+        class="col-4"
+        :amount="parseFloat(amount)"
+        @update="t => (tip = t)"
+      />
+    </div>
+    <v-btn class="mr-2" @click="bitcoin" :disabled="total <= 0">
+      <img class="mr-1" src="../assets/bitcoin.png" width="30px" />
+      <span>Bitcoin</span>
+    </v-btn>
+    <v-btn class="mr-0" @click="lightning" :disabled="total <= 0">
+      <flash fillColor="yellow"></flash>
+      <span>Lightning</span>
+    </v-btn>
   </div>
 </template>
 
@@ -131,52 +92,6 @@ export default {
 
     portrait() {
       return window.innerHeight > window.innerWidth;
-    },
-
-    fullscreen() {
-      if (this.full) {
-        if (document.exitFullscreen) {
-          document.exitFullscreen();
-        } else if (document.mozCancelFullScreen) {
-          document.mozCancelFullScreen();
-        } else if (document.webkitExitFullscreen) {
-          document.webkitExitFullscreen();
-        } else if (document.msExitFullscreen) {
-          document.msExitFullscreen();
-        }
-        this.full = false;
-        return;
-      }
-
-      let elem = document.getElementById('qr');
-
-      if (elem.requestFullscreen) {
-        elem.requestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-      } else if (elem.mozRequestFullScreen) {
-        elem.mozRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
-      } else if (elem.webkitRequestFullscreen) {
-        elem.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-      } else if (elem.msRequestFullscreen) {
-        elem.msRequestFullscreen();
-      }
-
-      this.full = true;
-    },
-
-    copy() {
-      var textArea = document.createElement('textarea');
-      textArea.style.position = 'fixed';
-      textArea.value = this.copytext;
-
-      document.body.appendChild(textArea);
-
-      textArea.focus();
-      textArea.select();
-
-      document.execCommand('copy');
-      document.body.removeChild(textArea);
-
-      this.snack('Copied to Clipboard');
     },
 
     toggle() {
@@ -285,14 +200,6 @@ canvas
   height 100%
   margin-left auto
   margin-right auto
-
-.code
-  margin auto
-  width 260px
-  height 260px
-  background #333
-  word-wrap break-word
-  padding 15px
 
 .v-btn.subheading
   width 100%

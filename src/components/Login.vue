@@ -4,12 +4,12 @@
       <v-card>
         <v-card-title class="subheading">Approval Required</v-card-title>
         <v-card-text>
-          <v-layout
-            ><img class="mr-2 logo" src="../assets/authy.png" /><span
-              >Use the Authy app on your phone to approve the login
-              request</span
-            ></v-layout
-          >
+          <v-layout>
+            <img class="mr-2 logo" src="../assets/authy.png" />
+            <span>
+              Use the Authy app on your phone to approve the login request
+            </span>
+          </v-layout>
         </v-card-text>
       </v-card>
     </v-dialog>
@@ -32,16 +32,23 @@
             autofocus
             dark
             autocapitalize="none"
-          ></v-text-field>
+          />
           <v-text-field
             label="Password"
             v-model="form.password"
             type="password"
-          ></v-text-field>
-          <v-btn type="submit">Sign in</v-btn>
-          <v-btn @click="$router.push('/register')">Register</v-btn>
-          <v-btn v-if="native()" color="#4267b2" @click="facebookConnect"
-            >Facebook Login
+          />
+          <v-btn class="mr-2" type="submit">Sign in</v-btn>
+          <v-btn class="mr-2" @click="$router.push('/register')"
+            >Register</v-btn
+          >
+          <v-btn
+            class="mr-2"
+            v-if="native()"
+            color="#4267b2"
+            @click="facebookConnect"
+          >
+            Facebook Login
           </v-btn>
           <v-btn v-else color="#4267b2">
             <fb-signin-button

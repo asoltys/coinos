@@ -1,28 +1,27 @@
 <template>
-  <v-layout>
-    <v-flex xs12>
-      <h2 class="text-center">Send {{ total }} Satoshis</h2>
-      <v-card class="pa-3 text-center">
-        <div class="code" v-if="showcode">{{ copytext }}</div>
-        <canvas
-          id="qr"
-          v-show="!showcode"
-          width="100"
-          height="100"
-          @click="fullscreen"
-        ></canvas>
-        <v-btn @click.native="showcode = !showcode">
-          <v-icon>code</v-icon><span>{{ code }}</span>
-        </v-btn>
-        <v-btn @click.native="copy">
-          <v-icon>content_copy</v-icon><span>Copy</span>
-        </v-btn>
-      </v-card>
-      <v-btn @click="clear">
-        <v-icon>arrow_back</v-icon><span>Go Back</span>
+  <div class="d-flex">
+    <h2 class="text-center">Send {{ total }} Satoshis</h2>
+    <v-card class="pa-3 text-center">
+      <div class="code" v-if="showcode">{{ copytext }}</div>
+      <canvas
+        id="qr"
+        v-show="!showcode"
+        width="100"
+        height="100"
+        @click="fullscreen"
+        class="w-100"
+      />
+      <v-btn @click.native="showcode = !showcode">
+        <v-icon>code</v-icon><span>{{ code }}</span>
       </v-btn>
-    </v-flex>
-  </v-layout>
+      <v-btn @click.native="copy">
+        <v-icon>content_copy</v-icon><span>Copy</span>
+      </v-btn>
+    </v-card>
+    <v-btn @click="clear">
+      <v-icon>arrow_back</v-icon><span>Go Back</span>
+    </v-btn>
+  </div>
 </template>
 
 <script>
@@ -103,3 +102,13 @@ export default {
   },
 };
 </script>
+
+<style lang="stylus" scoped>
+.code
+  margin auto
+  width 260px
+  height 260px
+  background #333
+  word-wrap break-word
+  padding 15px
+</style>
