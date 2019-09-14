@@ -1,26 +1,28 @@
 <template>
-  <v-bottom-navigation class="d-flex">
-    <v-btn text @click="$router.push('/home')">
+  <v-bottom-navigation class="d-flex justify-space-around" height="60">
+    <v-btn class="flex-grow-1" text @click="$router.push('/home')">
       <span>Home</span>
       <v-icon>home</v-icon>
     </v-btn>
-    <v-btn text @click="$router.push('/payments')">
+    <v-btn class="flex-grow-1" text @click="$router.push('/payments')">
       <span>Payments</span>
       <v-icon>assignment </v-icon>
     </v-btn>
-    <v-btn text @click="scan">
+    <v-btn class="flex-grow-1" text @click="scan">
       <span>Scan</span>
       <v-icon>camera_alt</v-icon>
     </v-btn>
-    <v-btn text @click="$router.push('/receive?refresh')">
+    <v-btn class="flex-grow-1" text @click="$router.push('/receive?refresh')">
       <span>Receive</span>
       <arrow-left />
     </v-btn>
     <v-btn
+      class="flex-grow-1"
       v-if="user && !user.readonly"
       text
       @click="$router.push('/send?refresh')"
-      ><span>Send</span>
+    >
+      <span>Send</span>
       <send></send>
     </v-btn>
   </v-bottom-navigation>
@@ -45,3 +47,8 @@ export default {
   },
 };
 </script>
+
+<style lang="stylus">
+.v-btn
+  height 60px !important
+</style>

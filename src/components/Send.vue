@@ -2,9 +2,9 @@
   <div>
     <v-progress-linear v-if="loading" indeterminate></v-progress-linear>
     <v-layout v-else>
-      <v-flex class="text-center mb-2"
-        ><span class="display-2">{{ user.balance }} </span
-        ><span class="headline">SAT</span>
+      <v-flex class="text-center mb-2">
+        <span class="display-2">{{ user.balance }} </span>
+        <span class="headline">SAT</span>
         <h3>
           {{ ((user.balance / 100000000) * rate).toFixed(2) }} CAD @
           <span class="yellow--text">{{ rate }}</span> per BTC
@@ -59,14 +59,15 @@
           rows="1"
           hide-details
           autofocus
-        ></v-textarea>
+        />
         <div class="mx-auto">
           <v-btn
             class="mr-2"
             v-if="user.fbtoken"
             @click="$router.push('/contacts')"
           >
-            <v-icon class="mr-1">person</v-icon><span>Address Book</span>
+            <v-icon class="mr-1">person</v-icon>
+            <span>Address Book</span>
           </v-btn>
         </div>
       </div>
@@ -74,15 +75,15 @@
         <v-layout wrap>
           <v-flex>
             <div class="body-1 gray--text">Recipient Address</div>
-            <v-divider></v-divider>
+            <v-divider />
           </v-flex>
-          <v-flex xs12
-            ><code class="black--text mt-2">{{ address }}</code></v-flex
-          >
-          <v-flex v-if="scannedBalance"
-            ><span class="display-1">&nbsp;{{ scannedBalance }} </span
-            ><span>SAT</span></v-flex
-          >
+          <v-flex xs12>
+            <code class="black--text mt-2">{{ address }}</code>
+          </v-flex>
+          <v-flex v-if="scannedBalance">
+            <span class="display-1">&nbsp;{{ scannedBalance }} </span>
+            <span>SAT</span>
+          </v-flex>
         </v-layout>
       </v-card>
       <v-card class="elevation-1 pa-2 my-4 text-center" v-if="payuser">
@@ -112,15 +113,13 @@
         </v-list-item>
         <v-list-item>
           <v-list-item-title>Recipient</v-list-item-title>
-          <v-list-item-subtitle>{{
-            payobj.payeeNodeKey
-          }}</v-list-item-subtitle>
+          <v-list-item-subtitle>{{ payobj.payeeNodeKey }}</v-list-item-subtitle>
         </v-list-item>
         <v-list-item>
           <v-list-item-title>Date</v-list-item-title>
-          <v-list-item-subtitle>{{
-            payobj.timestampString | format
-          }}</v-list-item-subtitle>
+          <v-list-item-subtitle>
+            {{ payobj.timestampString | format }}
+          </v-list-item-subtitle>
         </v-list-item>
       </v-list>
       <div>
