@@ -1,7 +1,7 @@
 <template>
-  <div class="d-flex">
+  <div>
     <h2 class="text-center">Send {{ total }} Satoshis</h2>
-    <v-card class="pa-3 text-center">
+    <v-card class="pa-3 text-center mb-2">
       <div class="code" v-if="showcode">{{ copytext }}</div>
       <canvas
         id="qr"
@@ -9,16 +9,18 @@
         width="100"
         height="100"
         @click="fullscreen"
-        class="w-100"
+        class="w-100 d-block mx-auto mb-2"
       />
-      <v-btn @click.native="showcode = !showcode">
-        <v-icon>code</v-icon><span>{{ code }}</span>
-      </v-btn>
-      <v-btn @click.native="copy">
-        <v-icon>content_copy</v-icon><span>Copy</span>
-      </v-btn>
+      <div>
+        <v-btn @click.native="showcode = !showcode" class="mr-2">
+          <v-icon>code</v-icon><span>{{ code }}</span>
+        </v-btn>
+        <v-btn @click.native="copy">
+          <v-icon>content_copy</v-icon><span>Copy</span>
+        </v-btn>
+      </div>
     </v-card>
-    <v-btn @click="clear">
+    <v-btn @click="clear" class="mb-2">
       <v-icon>arrow_back</v-icon><span>Go Back</span>
     </v-btn>
   </div>
@@ -35,7 +37,7 @@ export default {
       type: Function,
     },
     total: {
-      type: Number,
+      type: String,
     },
   },
 

@@ -24,7 +24,7 @@
         </v-list-item>
       </template>
     </v-list>
-    <v-alert class="black--text" value="true" v-else color="yellow"
+    <v-alert class="black--text" v-else color="yellow"
       ><span>None of your friends are using CoinOS</span></v-alert
     >
   </div>

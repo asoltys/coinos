@@ -5,28 +5,32 @@
       <Received v-if="received" :received="received" :rate="rate" />
       <Request v-else :total="total" :copytext="copytext" :clear="clear" />
     </template>
-    <div class="d-flex" v-else>
-      <numpad
-        class="col-8"
-        :currency="currency"
-        :amount="parseFloat(amount)"
-        @update="a => (amount = a)"
-        @toggle="toggle"
-      />
-      <tippad
-        class="col-4"
-        :amount="parseFloat(amount)"
-        @update="t => (tip = t)"
-      />
+    <div v-else>
+      <div class="d-flex">
+        <numpad
+          class="col-8"
+          :currency="currency"
+          :amount="parseFloat(amount)"
+          @update="a => (amount = a)"
+          @toggle="toggle"
+        />
+        <tippad
+          class="col-4"
+          :amount="parseFloat(amount)"
+          @update="t => (tip = t)"
+        />
+      </div>
+
+      <v-btn class="mr-2" @click="bitcoin" :disabled="total <= 0">
+        <img class="mr-1" src="../assets/bitcoin.png" width="30px" />
+        <span>Bitcoin</span>
+      </v-btn>
+
+      <v-btn class="mr-0" @click="lightning" :disabled="total <= 0">
+        <flash fillColor="yellow"></flash>
+        <span>Lightning</span>
+      </v-btn>
     </div>
-    <v-btn class="mr-2" @click="bitcoin" :disabled="total <= 0">
-      <img class="mr-1" src="../assets/bitcoin.png" width="30px" />
-      <span>Bitcoin</span>
-    </v-btn>
-    <v-btn class="mr-0" @click="lightning" :disabled="total <= 0">
-      <flash fillColor="yellow"></flash>
-      <span>Lightning</span>
-    </v-btn>
   </div>
 </template>
 

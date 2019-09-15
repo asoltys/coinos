@@ -16,25 +16,15 @@
         </h3>
       </div>
     </v-flex>
-    <v-flex xs12>
-      <v-card>
-        <v-container class="request">
-          <v-layout wrap>
-            <v-flex class="text-center" id="canvas-container" xs12>
-              <canvas id="qr" @click="fullscreen"></canvas>
-            </v-flex>
-            <v-flex class="text-center" xs12>
-              <div>
-                <code class="black--text mt-2">{{ user.address }}</code>
-              </div>
-              <v-btn @click="copy" class="mt-2">
-                <v-icon class="mr-1">content_copy</v-icon><span>Copy</span>
-              </v-btn>
-            </v-flex>
-          </v-layout>
-        </v-container>
-      </v-card>
-    </v-flex>
+    <v-card class="pa-4 mb-2">
+      <canvas id="qr" @click="fullscreen"></canvas>
+      <div>
+        <code class="black--text mt-2">{{ user.address }}</code>
+      </div>
+      <v-btn @click="copy" class="mt-2">
+        <v-icon class="mr-1">content_copy</v-icon><span>Copy</span>
+      </v-btn>
+    </v-card>
     <div class="mx-auto">
       <v-btn
         class="mr-2"
@@ -233,7 +223,4 @@ code
 
 .arrow
   margin 8px 0
-
-.request
-  padding 8 0
 </style>

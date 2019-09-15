@@ -1,6 +1,6 @@
 <template>
   <v-card>
-    <v-alert class="headline" value="true" color="success">
+    <v-alert class="headline" color="success">
       Payment Received!
     </v-alert>
     <v-list>

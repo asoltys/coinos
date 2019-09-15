@@ -53,8 +53,8 @@
               </template>
             </v-list>
           </template>
-          <v-alert class="black--text" value="true" v-else color="yellow"
-            >No payments found in the given time period</v-alert
+          <v-alert class="black--text" v-else color="yellow">
+            No payments found in the given time period</v-alert
           >
         </v-flex>
       </v-layout>

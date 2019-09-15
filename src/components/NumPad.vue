@@ -1,5 +1,5 @@
 <template>
-  <div class="numpad" @keyup="keyup">
+  <div class="numpad mr-2 pl-0" @keyup="keyup">
     <div class="mb-2">
       <span class="display-1">{{ amount.toFixed(decimals) }}</span>
       <v-btn
@@ -11,7 +11,7 @@
     </div>
     <div class="d-flex" v-for="i in buttons.length / 3" :key="i">
       <v-btn
-        class="col-4 ma-1 numpad-button"
+        class="col-4 my-1 ml-0 mr-2 numpad-button"
         v-for="j in 3"
         :key="j"
         @click="update(buttons[j + 3 * i - 4])"
@@ -100,8 +100,8 @@ export default {
 
 <style lang="stylus" scoped>
 .toggle
-  margin-top -14px
-  max-height 30px
+  margin-top -16px
+  max-height 28px
   min-width 0
 
 .numpad-button

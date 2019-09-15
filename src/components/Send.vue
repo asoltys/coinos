@@ -12,9 +12,7 @@
       </v-flex>
     </v-layout>
     <v-card v-if="payment">
-      <v-alert class="headline" value="true" color="success"
-        >Payment Sent!</v-alert
-      >
+      <v-alert class="headline" color="success">Payment Sent!</v-alert>
       <v-list>
         <v-list-item v-if="payment.txid">
           <v-list-item-content>
@@ -123,7 +121,7 @@
         </v-list-item>
       </v-list>
       <div>
-        <v-btn @click="back">
+        <v-btn @click="back" class="mr-2">
           <v-icon>arrow_back</v-icon><span>Go Back</span>
         </v-btn>
         <v-btn v-if="!loading && to" color="green" dark @click="sendPayment">
