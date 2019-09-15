@@ -13,10 +13,12 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 export default {
   props: { payuser: { type: String } },
 
   computed: {
+    ...mapGetters(['friends']),
     friend() {
       return this.friends.find(f => f.id === this.payuser);
     },

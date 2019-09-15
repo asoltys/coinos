@@ -1,8 +1,8 @@
 <template>
   <div class="tippad text-right" style="direction: rtl">
-    <div class="mb-2">
-      <span class="display-1">{{ tip }}</span>
-      +
+    <div class="mb-2" style="white-space: nowrap">
+      <span class="display-1">{{ tip }}</span
+      >+
     </div>
     <v-btn
       v-for="i in percents"

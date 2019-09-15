@@ -1,21 +1,6 @@
 <template>
   <div class="text-center">
-    <v-flex class="mb-2" v-if="!isNaN(animatedBalance)">
-      <span class="display-2 font-weight-black">{{ animatedBalance }} </span>
-      <span class="headline">SAT</span>
-      <h3>
-        {{ ((animatedBalance / 100000000) * animatedRate).toFixed(2) }} CAD @
-        <span class="font-weight-black yellow--text">{{ animatedRate }}</span>
-        per BTC
-      </h3>
-      <div class="yellow--text text--lighten-3" v-if="user.pending">
-        <span class="display-2">{{ animatedPending }} </span>
-        <span class="headline">pending</span>
-        <h3>
-          {{ ((animatedPending / 100000000) * animatedRate).toFixed(2) }} CAD
-        </h3>
-      </div>
-    </v-flex>
+    <balance />
     <v-card class="pa-4 mb-2">
       <canvas id="qr" @click="fullscreen"></canvas>
       <div>
@@ -27,13 +12,13 @@
     </v-card>
     <div class="mx-auto">
       <v-btn
-        class="mr-2"
         v-if="user.fbtoken"
+        class="mr-2 mb-2"
         @click="$router.push('/contacts')"
       >
         <v-icon class="mr-1">person</v-icon><span>Address Book</span>
       </v-btn>
-      <v-btn v-if="user.limit > 0" @click="$router.push('/buy')">
+      <v-btn v-if="user.limit > 0" class="mb-2" @click="$router.push('/buy')">
         <v-icon class="mr-1">credit_card</v-icon><span>Add Funds</span>
       </v-btn>
     </div>
@@ -43,9 +28,10 @@
 <script>
 import qr from 'qrcode';
 import { mapGetters, mapActions } from 'vuex';
-import { TweenLite } from 'gsap';
+import Balance from './Balance';
 
 export default {
+  components: { Balance },
   props: {
     username: {
       type: String,
@@ -67,9 +53,6 @@ export default {
 
   data() {
     return {
-      tweenedBalance: null,
-      tweenedPending: null,
-      tweenedRate: null,
       full: false,
       playing: false,
       received: 0,
@@ -79,39 +62,6 @@ export default {
 
   computed: {
     ...mapGetters(['fbtoken', 'rate', 'user', 'verified']),
-    animatedBalance() {
-      return parseInt(this.tweenedBalance).toFixed(0);
-    },
-    animatedPending() {
-      return parseInt(this.tweenedPending).toFixed(0);
-    },
-    animatedRate() {
-      return parseFloat(this.tweenedRate).toFixed(2);
-    },
-  },
-
-  watch: {
-    rate(rate) {
-      let tweenedRate = rate;
-      TweenLite.to(this.$data, 0.5, { tweenedRate });
-    },
-
-    user: {
-      handler(user) {
-        let tweenedBalance = user.balance;
-        let tweenedPending = user.pending;
-
-        if (user.pending === 0) user.pending = null;
-
-        TweenLite.to(this, 0.5, { tweenedBalance });
-        TweenLite.to(this, 0.5, { tweenedPending });
-
-        if (!this.tweenedBalance) this.tweenedBalance = 0;
-
-        this.drawQR();
-      },
-      deep: true,
-    },
   },
 
   methods: {
@@ -194,10 +144,6 @@ export default {
         token: this.token,
       });
     }
-
-    this.tweenedBalance = this.user.balance;
-    this.tweenedPending = this.user.pending;
-    this.tweenedRate = this.rate;
   },
 };
 </script>

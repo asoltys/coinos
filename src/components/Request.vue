@@ -1,15 +1,17 @@
 <template>
   <div>
-    <h2 class="text-center">Send {{ total }} Satoshis</h2>
+    <h1 class="text-center font-weight-black">
+      Please send {{ total }} satoshi
+    </h1>
     <v-card class="pa-3 text-center mb-2">
-      <div class="code" v-if="showcode">{{ copytext }}</div>
+      <div v-if="showcode" class="code mb-2">{{ copytext }}</div>
       <canvas
         id="qr"
         v-show="!showcode"
         width="100"
         height="100"
         @click="fullscreen"
-        class="w-100 d-block mx-auto mb-2"
+        class="w-100 mx-auto mb-2"
       />
       <div>
         <v-btn @click.native="showcode = !showcode" class="mr-2">

@@ -38,8 +38,8 @@
             v-model="form.password"
             type="password"
           />
-          <v-btn class="mr-2" type="submit">Sign in</v-btn>
-          <v-btn class="mr-2" @click="$router.push('/register')"
+          <v-btn class="mr-2 mb-2" type="submit">Sign in</v-btn>
+          <v-btn class="mr-2 mb-2" @click="$router.push('/register')"
             >Register</v-btn
           >
           <v-btn

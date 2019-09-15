@@ -17,22 +17,20 @@
             hide-details
             autofocus
           />
-          <div class="mx-auto">
-            <v-btn
-              class="mr-2"
-              v-if="user.fbtoken"
-              @click="$router.push('/contacts')"
-            >
-              <v-icon class="mr-1">person</v-icon>
-              <span>Address Book</span>
-            </v-btn>
-          </div>
+          <v-btn
+            class="mr-2 mb-2"
+            v-if="user.fbtoken"
+            @click="$router.push('/contacts')"
+          >
+            <v-icon class="mr-1">person</v-icon>
+            <span>Address Book</span>
+          </v-btn>
         </div>
         <recipient v-bind="{ payuser, scannedBalance }" />
         <send-to-user v-bind="{ payuser }" />
         <template v-if="address || payuser">
           <numpad
-            class="mt-4"
+            class="mb-2"
             :currency="currency"
             :amount="parseFloat(display)"
             @update="updateAmount"
