@@ -174,8 +174,8 @@ export default new Vuex.Store({
       });
 
       s.on('invoice', data => {
-        commit('received', data.value.low);
-        dispatch('snack', `Received ${data.value.low} satoshi`);
+        commit('received', data.value);
+        dispatch('snack', `Received ${data.value} satoshi`);
       });
 
       s.on('rate', rate => commit('rate', rate));

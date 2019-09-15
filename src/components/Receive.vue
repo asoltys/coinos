@@ -2,8 +2,8 @@
   <div>
     <v-progress-linear v-if="loading" indeterminate />
     <template v-else-if="generated">
-      <Received v-if="received" :received="received" :rate="rate" />
-      <Request v-else :total="total" :copytext="copytext" :clear="clear" />
+      <Received v-if="received" v-bind="{ rate, received }" @clear="clear" />
+      <Request v-else v-bind="{ copytext, total }" @clear="clear" />
     </template>
     <div v-else>
       <div class="d-flex">

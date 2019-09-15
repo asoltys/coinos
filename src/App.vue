@@ -15,8 +15,6 @@
             class="ma-4"
             v-if="error"
             color="error"
-            v-model="error"
-            value="error"
             dismissible
             transition="scale-transition"
             >{{ error }}</v-alert
@@ -25,7 +23,7 @@
         </v-container>
       </transition>
     </v-content>
-    <bottom-nav />
+    <bottom-nav v-if="user" />
   </v-app>
 </template>
 

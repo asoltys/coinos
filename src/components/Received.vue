@@ -16,7 +16,7 @@
       </v-list-item>
     </v-list>
     <v-card-actions>
-      <v-btn @click="clear">
+      <v-btn @click="$emit('clear')">
         <v-icon>arrow_back</v-icon><span>Go Back</span>
       </v-btn>
     </v-card-actions>
@@ -26,12 +26,8 @@
 <script>
 export default {
   props: {
-    received: {
-      type: String,
-    },
-    rate: {
-      type: Number,
-    },
+    received: { type: String },
+    rate: { type: Number },
   },
 };
 </script>
