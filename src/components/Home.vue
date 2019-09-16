@@ -125,6 +125,15 @@ export default {
     },
   },
 
+  watch: {
+    user: {
+      handler() {
+        this.drawQR();
+      },
+      deep: true,
+    },
+  },
+
   mounted() {
     this.max();
     this.drawQR();

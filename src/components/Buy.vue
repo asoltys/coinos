@@ -1,21 +1,25 @@
 <template>
-  <form action="/api/payment" method="post">
-    <v-radio-group name="amount" label="Amount" v-model="product.amount">
-      <v-radio
-        v-for="i in items"
-        :label="i.text"
-        :value="i.value"
-        :key="i.value"
-      ></v-radio>
-    </v-radio-group>
-    <stripe-checkout
-      :stripe-key="stripe"
-      :product="product"
-      button="Buy Bitcoin / Dump Dollars"
-      button-class="v-btn"
-      on-success="broadcast"
-    ></stripe-checkout>
-  </form>
+  <v-card class="text-center pa-4">
+    <form action="/api/payment" method="post">
+      <v-radio-group name="amount" label="Amount" v-model="product.amount">
+        <v-radio
+          class="d-block"
+          v-for="i in items"
+          :label="i.text"
+          :value="i.value"
+          :key="i.value"
+        />
+        <v-text-field class="mt-4" label="Custom" v-model="amount" autofocus />
+      </v-radio-group>
+      <stripe-checkout
+        :stripe-key="stripe"
+        :product="product"
+        button="Buy"
+        button-class="v-btn pa-4 success"
+        on-success="broadcast"
+      />
+    </form>
+  </v-card>
 </template>
 
 <script>
@@ -27,6 +31,7 @@ export default {
 
   data() {
     return {
+      amount: null,
       product: {
         name: 'Bitcoin',
         description: 'Currency of the future',
@@ -35,6 +40,14 @@ export default {
       items: [],
       stripe: process.env.VUE_APP_STRIPE,
     };
+  },
+
+  watch: {
+    amount: {
+      handler(v) {
+        this.product.amount = v * 100;
+      },
+    },
   },
 
   computed: {

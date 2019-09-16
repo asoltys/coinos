@@ -62,8 +62,6 @@ export default {
         TweenLite.to(this, 0.5, { tweenedPending });
 
         if (!this.tweenedBalance) this.tweenedBalance = 0;
-
-        this.drawQR();
       },
       deep: true,
     },
