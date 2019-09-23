@@ -43,14 +43,14 @@
             >Register</v-btn
           >
           <v-btn
-            class="mr-2"
+            class="mr-2 mb-2"
             v-if="native()"
             color="#4267b2"
             @click="facebookConnect"
           >
             Facebook Login
           </v-btn>
-          <v-btn v-else color="#4267b2">
+          <v-btn v-else color="#4267b2" class="mb-2">
             <fb-signin-button
               :params="fbSignInParams"
               @success="onSignInSuccess"
