@@ -14,23 +14,19 @@ Axios.defaults.baseURL = process.env.VUE_APP_BASEURL;
 
 Vue.use(FBSignInButton);
 Vue.use(VueAxios, Axios);
-/* eslint-disable no-new */
-let app = new Vue({
-  components: { App },
-  el: '#app',
-  template: '<app/>',
+
+const app = new Vue({
+  render: h => h(App),
   router,
   apolloProvider: createProvider(),
   vuetify,
   store,
-});
+}).$mount('#app');
 
 new Vue({
-  components: { CamControls },
-  el: '#camcontrols',
-  template: '<cam-controls/>',
+  render: h => h(CamControls),
   store,
-});
+}).$mount('#camcontrols');
 
 if (window.location.protocol !== 'file:') {
   window.fbAsyncInit = function() {

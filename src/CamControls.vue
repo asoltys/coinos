@@ -1,8 +1,10 @@
-<template lang="pug">
-  #camcontrols
-    #crosshair
-    #controls
-      #cancel(@click='cancel') Stop
+<template>
+  <div id="camcontrols">
+    <div id="crosshair"></div>
+    <div id="controls">
+      <div id="cancel" @click="cancel">Stop</div>
+    </div>
+  </div>
 </template>
 
 <style scoped lang="stylus">
