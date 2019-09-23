@@ -26,7 +26,7 @@
             <span>Address Book</span>
           </v-btn>
         </div>
-        <recipient v-bind="{ payuser, scannedBalance }" />
+        <recipient v-bind="{ address, scannedBalance }" />
         <send-to-user v-bind="{ payuser }" />
         <template v-if="address || payuser">
           <numpad
