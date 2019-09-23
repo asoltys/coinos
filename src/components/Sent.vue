@@ -45,6 +45,7 @@ export default {
   computed: {
     total() {
       let p = this.payment;
+
       if (p) {
         if (p.payment_route) {
           let amt = p.payment_route.total_amt;
@@ -52,7 +53,7 @@ export default {
           return amt;
         }
 
-        return p.amount.low;
+        return p.amount;
       }
       return 0;
     },
