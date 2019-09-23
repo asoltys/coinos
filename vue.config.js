@@ -6,7 +6,7 @@ module.exports = IS_PRODUCTION
   : {
       pluginOptions: {
         webpackBundleAnalyzer: {
-          openAnalyzer: true,
+          openAnalyzer: false,
         },
       },
       runtimeCompiler: true,
