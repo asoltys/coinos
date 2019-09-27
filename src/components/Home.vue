@@ -10,18 +10,6 @@
         <v-icon class="mr-1">content_copy</v-icon><span>Copy</span>
       </v-btn>
     </v-card>
-    <div class="mx-auto">
-      <v-btn
-        v-if="user.fbtoken"
-        class="mr-2 mb-2"
-        @click="$router.push('/contacts')"
-      >
-        <v-icon class="mr-1">person</v-icon><span>Address Book</span>
-      </v-btn>
-      <v-btn v-if="user.limit > 0" class="mb-2" @click="$router.push('/buy')">
-        <v-icon class="mr-1">credit_card</v-icon><span>Add Funds</span>
-      </v-btn>
-    </div>
   </div>
 </template>
 
@@ -61,7 +49,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['fbtoken', 'rate', 'user', 'verified']),
+    ...mapGetters(['rate', 'user', 'verified']),
   },
 
   methods: {

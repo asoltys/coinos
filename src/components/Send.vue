@@ -17,14 +17,6 @@
             hide-details
             autofocus
           />
-          <v-btn
-            class="mr-2 mb-2"
-            v-if="user.fbtoken"
-            @click="$router.push('/contacts')"
-          >
-            <v-icon class="mr-1">person</v-icon>
-            <span>Address Book</span>
-          </v-btn>
         </div>
         <recipient v-bind="{ address, scannedBalance }" />
         <send-to-user v-bind="{ payuser }" />

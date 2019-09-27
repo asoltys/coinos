@@ -92,21 +92,6 @@ export default new Vuex.Store({
       router.push('/home');
     },
 
-    async facebookLogin({ commit, dispatch }, data) {
-      let { accessToken, userID } = data.authResponse;
-      let res;
-
-      switch (data.status) {
-        case 'connected':
-          res = await Vue.axios.post('/facebookLogin', { accessToken, userID });
-          commit('user', res.data.user);
-          commit('token', res.data.token);
-          await dispatch('init');
-          router.push('/home');
-          break;
-      }
-    },
-
     async logout({ commit, state }) {
       document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
       window.sessionStorage.removeItem('token');
@@ -119,18 +104,6 @@ export default new Vuex.Store({
     async verify({ dispatch }, data) {
       let res = await Vue.axios.get(`/verify/${data.email}/${data.token}`);
       if (res.data) dispatch('snack', 'Your email has been verified');
-    },
-
-    async buy({ state, dispatch }, { amount, token }) {
-      try {
-        let sat = ((100000000 * amount) / 100 / state.rate).toFixed(0);
-        await Vue.axios.post('/buy', { amount, token, sat });
-        router.push('/home');
-        dispatch('snack', `Bought ${sat} satoshis`);
-      } catch (e) {
-        l('error charging credit card', e);
-        return;
-      }
     },
 
     async setupSockets({ commit, state, dispatch }) {

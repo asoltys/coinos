@@ -42,22 +42,6 @@
           <v-btn class="mr-2 mb-2" @click="$router.push('/register')"
             >Register</v-btn
           >
-          <v-btn
-            class="mr-2 mb-2"
-            v-if="native()"
-            color="#4267b2"
-            @click="facebookConnect"
-          >
-            Facebook Login
-          </v-btn>
-          <v-btn v-else color="#4267b2" class="mb-2">
-            <fb-signin-button
-              :params="fbSignInParams"
-              @success="onSignInSuccess"
-              @error="onSignInError"
-              >Facebook Login</fb-signin-button
-            >
-          </v-btn>
         </v-form>
       </v-flex>
     </v-layout>
@@ -77,10 +61,6 @@ export default {
 
   data() {
     return {
-      fbSignInParams: {
-        scope: 'email,user_friends',
-        return_scopes: true,
-      },
       loggingIn: false,
       form: {
         username: '',
@@ -93,37 +73,11 @@ export default {
   computed: mapGetters(['error', 'user', 'initializing']),
 
   methods: {
-    ...mapActions(['login', 'facebookLogin']),
+    ...mapActions(['login']),
 
     download() {
       window.location =
         'https://play.google.com/store/apps/details?id=io.cordova.coinos';
-    },
-
-    onSignInSuccess(res) {
-      if (res.status === 'connected') {
-        let i = setInterval(() => {
-          this.loggingIn = true;
-          clearInterval(i);
-        }, 3000);
-        let j = setInterval(() => {
-          this.loggingIn = false;
-          clearInterval(j);
-        }, 60000);
-      }
-      this.facebookLogin(res);
-    },
-
-    onSignInError(error) {
-      console.log('Facebook login failed', error);
-    },
-
-    facebookConnect() {
-      window.facebookConnectPlugin.login(
-        this.fbSignInParams.scope.split(','),
-        this.onSignInSuccess,
-        this.onSignInError
-      );
     },
 
     native() {
@@ -160,9 +114,4 @@ export default {
 <style lang="stylus" scoped>
 .v-text-field
   font-size 18px
-
-.fb-signin-button
-  display: inline-block;
-  padding: 4px 8px;
-  border-radius: 3px;
 </style>
