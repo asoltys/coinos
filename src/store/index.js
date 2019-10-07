@@ -29,6 +29,7 @@ const state = {
   payreq: '',
   payuser: '',
   rate: 0,
+  rates: null,
   received: 0,
   scan: '',
   scanning: false,
@@ -178,7 +179,10 @@ export default new Vuex.Store({
         dispatch('snack', `Received ${data.value} satoshi`);
       });
 
-      s.on('rate', rate => commit('rate', rate));
+      s.on('rates', rates => {
+        commit('rates', rates);
+        commit('rate', rates[state.user.currency]);
+      });
       s.on('user', user => commit('user', user));
 
       return new Promise((resolve, reject) => {

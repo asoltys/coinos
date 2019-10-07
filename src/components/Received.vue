@@ -9,7 +9,7 @@
         <v-list-item-subtitle>{{ received }}</v-list-item-subtitle>
       </v-list-item>
       <v-list-item>
-        <v-list-item-title>CAD</v-list-item-title>
+        <v-list-item-title>{{ currency }}</v-list-item-title>
         <v-list-item-subtitle>{{
           ((received / 100000000) * rate).toFixed(2)
         }}</v-list-item-subtitle>
@@ -26,7 +26,8 @@
 <script>
 export default {
   props: {
-    received: { type: String },
+    currency: { type: String },
+    received: { type: Number },
     rate: { type: Number },
   },
 };

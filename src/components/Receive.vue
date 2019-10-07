@@ -2,7 +2,11 @@
   <div>
     <v-progress-linear v-if="loading" indeterminate />
     <template v-else-if="generated">
-      <Received v-if="received" v-bind="{ rate, received }" @clear="clear" />
+      <Received
+        v-if="received"
+        v-bind="{ currency: user.currency, rate, received }"
+        @clear="clear"
+      />
       <Request v-else v-bind="{ copytext, total }" @clear="clear" />
     </template>
     <div v-else>
