@@ -63,7 +63,7 @@
           </v-flex>
           <v-flex xs4>
             <v-text-field
-              label="Total CAD"
+              :label="`Total ${user.currency}`"
               v-model="fiattotal"
               readonly
             ></v-text-field>
@@ -91,7 +91,8 @@
                   ></v-list-item-subtitle
                 >
                 <v-list-item-subtitle :class="color(payment)">
-                  <span>{{ payment.fiat | abs | twodec }} CAD</span
+                  <span
+                    >{{ payment.fiat | abs | twodec }} {{ user.currency }}</span
                   ><small v-if="payment.tip">
                     (+{{ payment.tip }})</small
                   ></v-list-item-subtitle
@@ -172,7 +173,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['loading', 'payments']),
+    ...mapGetters(['loading', 'payments', 'user']),
 
     preset: {
       get() {

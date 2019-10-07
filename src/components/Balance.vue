@@ -3,7 +3,9 @@
     <span class="display-2 font-weight-black">{{ animatedBalance }} </span>
     <span class="headline">SAT</span>
     <h3>
-      {{ ((animatedBalance / 100000000) * animatedRate).toFixed(2) }} CAD @
+      {{ ((animatedBalance / 100000000) * animatedRate).toFixed(2) }}
+      {{ user.currency }}
+      @
       <span class="font-weight-black yellow--text">{{ animatedRate }}</span>
       per BTC
     </h3>
@@ -11,7 +13,8 @@
       <span class="display-2">{{ animatedPending }} </span>
       <span class="headline">pending</span>
       <h3>
-        {{ ((animatedPending / 100000000) * animatedRate).toFixed(2) }} CAD
+        {{ ((animatedPending / 100000000) * animatedRate).toFixed(2) }}
+        {{ user.currency }}
       </h3>
     </div>
   </div>

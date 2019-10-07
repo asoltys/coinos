@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1 class="text-center font-weight-black">
-      Please send {{ total }} satoshi
+      Please send {{ amount }} satoshi
     </h1>
     <v-card class="pa-3 text-center mb-2">
       <div v-if="showcode" class="code mb-2">{{ copytext }}</div>
@@ -47,6 +47,7 @@ export default {
     return {
       full: false,
       showcode: false,
+      amount: 0,
     };
   },
 
@@ -103,6 +104,10 @@ export default {
 
       this.snack('Copied to Clipboard');
     },
+  },
+
+  mounted() {
+    this.amount = this.total;
   },
 };
 </script>
