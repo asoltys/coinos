@@ -3,7 +3,7 @@
     <span class="display-2 font-weight-black">{{ animatedBalance }} </span>
     <span class="headline">SAT</span>
     <h3>
-      {{ fiat | format }} CAD @
+      {{ fiat | format }} {{ user.currency }} @
       <span class="font-weight-black yellow--text">{{
         animatedRate | format
       }}</span>
@@ -12,7 +12,7 @@
     <div class="yellow--text text--lighten-3" v-if="user.pending">
       <span class="display-2">{{ animatedPending }} </span>
       <span class="headline">pending</span>
-      <h3>{{}} CAD</h3>
+      <h3>{{ pendingFiat | format }} {{ user.currency }}</h3>
     </div>
   </div>
 </template>
