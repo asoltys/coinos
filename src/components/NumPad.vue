@@ -1,7 +1,7 @@
 <template>
   <div class="numpad mr-2 pl-0" @keyup="keyup">
     <div class="mb-2">
-      <span class="display-1">{{ amount.toFixed(decimals) }}</span>
+      <span class="display-1">{{ amount | format(decimals) }}</span>
       <v-btn
         class="toggle black--text ml-2"
         color="yellow"
@@ -36,6 +36,15 @@ export default {
     currency: {
       type: String,
       default: 'CAD',
+    },
+  },
+
+  filters: {
+    format(n, d) {
+      return parseFloat(n).toLocaleString('en-US', {
+        minimumFractionDigits: d,
+        maximumFractionDigits: d,
+      });
     },
   },
 
@@ -78,7 +87,7 @@ export default {
       if (m === '<') {
         amount =
           Math.floor(this.divisor * (parseFloat(amount) / 10)) / this.divisor;
-      } else if (amount < 10000000) {
+      } else {
         amount = 10 * amount + parseFloat(m) / this.divisor;
       }
 

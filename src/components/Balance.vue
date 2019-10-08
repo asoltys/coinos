@@ -3,19 +3,16 @@
     <span class="display-2 font-weight-black">{{ animatedBalance }} </span>
     <span class="headline">SAT</span>
     <h3>
-      {{ ((animatedBalance / 100000000) * animatedRate).toFixed(2) }}
-      {{ user.currency }}
-      @
-      <span class="font-weight-black yellow--text">{{ animatedRate }}</span>
+      {{ fiat | format }} CAD @
+      <span class="font-weight-black yellow--text">{{
+        animatedRate | format
+      }}</span>
       per BTC
     </h3>
     <div class="yellow--text text--lighten-3" v-if="user.pending">
       <span class="display-2">{{ animatedPending }} </span>
       <span class="headline">pending</span>
-      <h3>
-        {{ ((animatedPending / 100000000) * animatedRate).toFixed(2) }}
-        {{ user.currency }}
-      </h3>
+      <h3>{{}} CAD</h3>
     </div>
   </div>
 </template>
@@ -35,8 +32,23 @@ export default {
     };
   },
 
+  filters: {
+    format(n) {
+      return parseFloat(n).toLocaleString('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+    },
+  },
+
   computed: {
     ...mapGetters(['rate', 'user']),
+    fiat() {
+      return (this.animatedBalance / 100000000) * this.animatedRate;
+    },
+    pendingFiat() {
+      return (this.animatedPending / 100000000) * this.animatedRate;
+    },
     animatedBalance() {
       return parseInt(this.tweenedBalance).toFixed(0);
     },
