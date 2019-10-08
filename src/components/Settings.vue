@@ -105,7 +105,7 @@
         </v-layout>
 
         <v-autocomplete
-          :items="Object.keys(rates)"
+          :items="Object.keys(rates).sort()"
           v-model="form.currency"
           name="currency"
         ></v-autocomplete>
