@@ -1,41 +1,61 @@
 <template>
   <v-card class="mb-2">
     <v-alert class="headline" color="success">Payment Sent!</v-alert>
-    <v-list>
-      <v-list-item v-if="payment.txid">
-        <v-list-item-content>
-          <v-list-item-title>Transaction ID</v-list-item-title>
-          <v-list-item-subtitle>{{ payment.txid }} </v-list-item-subtitle>
-        </v-list-item-content>
-        <v-list-item-action>
-          <v-flex class="text-right">
-            <v-btn class="mr-1" small icon ripple @click="copy(payment.txid)">
-              <v-icon small>content_copy</v-icon>
-            </v-btn>
-            <v-btn small icon ripple @click="link(payment.txid)">
-              <v-icon small>open_in_new</v-icon>
-            </v-btn>
-          </v-flex>
-        </v-list-item-action>
-      </v-list-item>
-      <v-list-item>
-        <v-list-item-title>Amount</v-list-item-title>
-        <v-list-item-subtitle>{{ total }}</v-list-item-subtitle>
-      </v-list-item>
-      <v-list-item>
-        <v-list-item-title>Fees</v-list-item-title>
-        <v-list-item-subtitle>{{ fees || 0 }}</v-list-item-subtitle>
-      </v-list-item>
-    </v-list>
-    <v-card-actions>
+    <div class="pa-4" v-if="payment.txid">
+      <div class="d-flex mb-2">
+        <div>
+          <b>Transaction ID</b>
+          <div style="word-break: break-word">{{ payment.txid }}</div>
+        </div>
+        <div class="ml-auto d-flex">
+          <v-btn class="mr-1" small icon ripple @click="copy(payment.txid)">
+            <v-icon small>content_copy</v-icon>
+          </v-btn>
+          <v-btn small icon ripple @click="link(payment.txid)">
+            <v-icon small>open_in_new</v-icon>
+          </v-btn>
+        </div>
+      </div>
+
+      <div class="mb-2">
+        <b>Amount</b>
+        <div class="d-flex justify-space-between">
+          <div>
+            <span class="display-1">{{ total }}</span> SAT
+          </div>
+          <div>
+            <span class="yellow--text"
+              ><span class="display-1">{{ fiat(total) }}</span>
+              {{ user.currency }}</span
+            >
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-2">
+        <b>Fees</b>
+        <div class="d-flex justify-space-between">
+          <div>
+            <span class="display-1">{{ fees || 0 }}</span> SAT
+          </div>
+          <div>
+            <span class="yellow--text"
+              ><span class="display-1">{{ fiat(fees) }}</span>
+              {{ user.currency }}</span
+            >
+          </div>
+        </div>
+      </div>
+
       <v-btn @click="back">
         <v-icon class="mr-2">arrow_back</v-icon><span>Send Another</span>
       </v-btn>
-    </v-card-actions>
+    </div>
   </v-card>
 </template>
 
 <script>
+import { mapGetters, mapActions } from 'vuex';
 export default {
   props: {
     back: { type: Function },
@@ -43,6 +63,8 @@ export default {
   },
 
   computed: {
+    ...mapGetters(['rate', 'user']),
+
     total() {
       let p = this.payment;
 
@@ -69,11 +91,16 @@ export default {
   },
 
   methods: {
+    fiat(n) {
+      return ((n * this.rate) / 100000000).toFixed(2);
+    },
+
+    ...mapActions(['snack']),
     link(tx) {
       let bs = 'https://blockstream.info';
       if (
         process.env.NODE_ENV !== 'production' ||
-        window.location.href.contains('test')
+        window.location.href.includes('test')
       )
         bs += '/testnet';
       window.location = `${bs}/tx/${tx}`;
