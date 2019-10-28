@@ -1,8 +1,8 @@
 <template>
   <v-card class="mb-2">
     <v-alert class="headline" color="success">Payment Sent!</v-alert>
-    <div class="pa-4" v-if="payment.txid">
-      <div class="d-flex mb-2">
+    <div class="pa-4">
+      <div class="d-flex mb-2" v-if="payment.txid">
         <div>
           <b>Transaction ID</b>
           <div style="word-break: break-word">{{ payment.txid }}</div>
@@ -83,7 +83,7 @@ export default {
     fees() {
       let p = this.payment;
       if (p) {
-        if (p.payment_route) return p.payment_route.total_fees;
+        if (p.payment_route) return p.payment_route.total_fees || 0;
         return p.fees;
       }
       return 0;

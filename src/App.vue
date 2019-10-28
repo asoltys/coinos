@@ -10,7 +10,7 @@
     </v-content>
     <v-content v-show="!scanning">
       <transition name="fade" mode="out-in" appear>
-        <v-container class="mr-3">
+        <v-container class="mr-3" style="margin-bottom: 50px !important">
           <v-alert
             class="ma-4"
             v-if="error"
@@ -88,7 +88,7 @@ export default {
       display block
     .landscape
       display none
-    #app
+    #app, #footer
       max-width 768px
 
   @media all and (orientation:landscape) and (max-width: 1024px)
@@ -96,7 +96,7 @@ export default {
       display none
     .landscape
       display block
-    #app
+    #app, #footer
       max-width 1024px
 
 .input-group--focused label

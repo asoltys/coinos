@@ -1,36 +1,38 @@
 <template>
-  <v-bottom-navigation
-    class="d-flex justify-space-around"
-    height="60"
-    background-color="#212121"
-    dark
-  >
-    <v-btn class="flex-grow-1" text @click="$router.push('/home')">
-      <span>Home</span>
-      <v-icon>home</v-icon>
-    </v-btn>
-    <v-btn class="flex-grow-1" text @click="$router.push('/payments')">
-      <span>Payments</span>
-      <v-icon>assignment </v-icon>
-    </v-btn>
-    <v-btn class="flex-grow-1" text @click="scan">
-      <span>Scan</span>
-      <v-icon>camera_alt</v-icon>
-    </v-btn>
-    <v-btn class="flex-grow-1" text @click="$router.push('/receive?refresh')">
-      <span>Receive</span>
-      <arrow-left />
-    </v-btn>
-    <v-btn
-      class="flex-grow-1"
-      v-if="user && !user.readonly"
-      text
-      @click="$router.push('/send?refresh')"
+  <div id="footer">
+    <v-bottom-navigation
+      class="d-flex justify-space-around text-center"
+      height="60"
+      background-color="#212121"
+      dark
     >
-      <span>Send</span>
-      <send></send>
-    </v-btn>
-  </v-bottom-navigation>
+      <v-btn class="flex-grow-1" text @click="$router.push('/home')">
+        <span>Home</span>
+        <v-icon>home</v-icon>
+      </v-btn>
+      <v-btn class="flex-grow-1" text @click="$router.push('/payments')">
+        <span>Payments</span>
+        <v-icon>assignment </v-icon>
+      </v-btn>
+      <v-btn class="flex-grow-1" text @click="scan">
+        <span>Scan</span>
+        <v-icon>camera_alt</v-icon>
+      </v-btn>
+      <v-btn class="flex-grow-1" text @click="$router.push('/receive?refresh')">
+        <span>Receive</span>
+        <arrow-left />
+      </v-btn>
+      <v-btn
+        class="flex-grow-1"
+        v-if="user && !user.readonly"
+        text
+        @click="$router.push('/send?refresh')"
+      >
+        <span>Send</span>
+        <send></send>
+      </v-btn>
+    </v-bottom-navigation>
+  </div>
 </template>
 
 <script>
@@ -54,6 +56,10 @@ export default {
 </script>
 
 <style lang="stylus">
+#footer {
+ position: fixed; bottom: 0; padding: 0; width: 100%;
+}
+
 .v-bottom-navigation .v-btn
   height 60px !important
 </style>
