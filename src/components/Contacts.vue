@@ -2,21 +2,17 @@
   <div>
     <v-progress-linear v-if="loading" indeterminate></v-progress-linear>
     <v-list v-else-if="friends.length">
-      <template v-for="(friend, i) in friends">
+      <template v-for="(friend, i) in [...friends].sort((a, b) => a.name.localeCompare(b.name))">
         <v-list-item @click="send(friend)" :key="i">
           <v-list-item-content>
-            <v-layout>
-              <v-flex class="my-auto">
-                <v-avatar class="mr-2" size="40"
-                  ><img :src="friend.pic"
-                /></v-avatar>
-              </v-flex>
-              <v-flex class="my-auto">
-                <v-list-item-title
-                  ><span>{{ friend.name }}</span></v-list-item-title
-                >
-              </v-flex>
-            </v-layout>
+            <div class="d-flex">
+              <v-avatar class="mr-2" size="40">
+                <img :src="friend.pic" />
+              </v-avatar>
+              <div class="mr-auto my-auto">
+                {{ friend.name }}
+              </div>
+            </div>
           </v-list-item-content>
           <v-list-item-action>
             <v-btn class="pay px-2" @click="send(friend)">Send</v-btn>
