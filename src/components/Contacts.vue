@@ -2,7 +2,11 @@
   <div>
     <v-progress-linear v-if="loading" indeterminate></v-progress-linear>
     <v-list v-else-if="friends.length">
-      <template v-for="(friend, i) in [...friends].sort((a, b) => a.name.localeCompare(b.name))">
+      <template
+        v-for="(friend, i) in [...friends].sort((a, b) =>
+          a.name.localeCompare(b.name)
+        )"
+      >
         <v-list-item @click="send(friend)" :key="i">
           <v-list-item-content>
             <div class="d-flex">

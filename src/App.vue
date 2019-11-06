@@ -5,7 +5,7 @@
     <v-content v-show="scanning">
       <div class="text-center" v-if="webscanning">
         <qrcode-stream class="mt-4" @decode="handleScan"></qrcode-stream>
-        <v-btn @click="handleScan" style="margin-bottom: 30px">Cancel</v-btn>
+        <v-btn @click="handleScan" class="my-2">Cancel</v-btn>
       </div>
     </v-content>
     <v-content v-show="!scanning">
