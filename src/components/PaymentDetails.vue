@@ -1,12 +1,5 @@
 <template>
   <v-card class="elevation-1 my-2 pa-4" v-if="payobj">
-    <div class="d-flex mb-2">
-      <div class="display-1">Invoice</div>
-      <div class="ml-auto my-auto">
-        <span class="font-weight-bold">Dated:</span>
-        {{ payobj.timestampString | format }}
-      </div>
-    </div>
     <div class="text-center font-weight-bold">Pay</div>
     <div class="d-flex justify-center">
       <div class="mr-2">

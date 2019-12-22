@@ -1,6 +1,8 @@
 <template>
   <v-card class="mb-2">
-    <v-alert class="headline" color="success">Payment Sent!</v-alert>
+    <v-alert class="headline black--text text-center" color="yellow"
+      >Sent!</v-alert
+    >
     <div class="pa-4">
       <div class="d-flex mb-2" v-if="payment.txid">
         <div>
@@ -17,8 +19,7 @@
         </div>
       </div>
 
-      <div class="mb-2">
-        <b>Amount</b>
+      <div class="mb-2 text-center">
         <div>
           <span class="display-1">{{ total }}</span>
           SAT
@@ -29,11 +30,9 @@
         </div>
       </div>
 
-      <div class="mb-2">
-        <b>Fee</b>
+      <div class="mb-4 text-center">
         <div>
-          <span class="display-1">{{ fees || 0 }}</span>
-          SAT
+          <span class="display-1">Fees: {{ fees || 0 }}</span> SAT
           <span class="ml-2 yellow--text">
             <span class="display-1">{{ fiat(fees) }}</span>
             {{ user.currency }}

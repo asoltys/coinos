@@ -4,7 +4,7 @@
       Payment Received!
     </v-alert>
     <div class="w-100 text-center">
-      <flash-icon fillColor="yellow" size="100" />
+      <flash-icon fillColor="yellow" size="100" title="Lightning" />
     </div>
     <div class="d-flex justify-center">
       <div class="mr-2">

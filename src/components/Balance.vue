@@ -3,7 +3,10 @@
     <span class="display-2 font-weight-black">{{ animatedBalance }} </span>
     <span class="headline">SAT</span>
     <h3>
-      {{ fiat | format }} {{ user.currency }} @
+      <span class="yellow--text">
+        <span class="display-1">{{ fiat | format }}</span> {{ user.currency }}
+      </span>
+      @
       <span class="font-weight-black yellow--text">{{
         animatedRate | format
       }}</span>
