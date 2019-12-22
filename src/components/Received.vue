@@ -1,20 +1,22 @@
 <template>
   <v-card>
-    <v-alert class="headline" color="success">
+    <v-alert class="headline text-center black--text" color="yellow">
       Payment Received!
     </v-alert>
-    <v-list>
-      <v-list-item>
-        <v-list-item-title>Satoshis</v-list-item-title>
-        <v-list-item-subtitle>{{ received }}</v-list-item-subtitle>
-      </v-list-item>
-      <v-list-item>
-        <v-list-item-title>{{ currency }}</v-list-item-title>
-        <v-list-item-subtitle>{{
-          ((received / 100000000) * rate).toFixed(2)
-        }}</v-list-item-subtitle>
-      </v-list-item>
-    </v-list>
+    <div class="w-100 text-center">
+      <flash-icon fillColor="yellow" size="100" />
+    </div>
+    <div class="d-flex justify-center">
+      <div class="mr-2">
+        <span class="display-1">{{ received }}</span> SAT
+      </div>
+      <div>
+        <span class="yellow--text">
+          <span class="display-1">{{ fiat }}</span>
+          {{ currency }}
+        </span>
+      </div>
+    </div>
     <v-card-actions>
       <v-btn @click="$emit('clear')">
         <v-icon>arrow_back</v-icon><span>Go Back</span>
@@ -24,11 +26,21 @@
 </template>
 
 <script>
+import FlashIcon from 'vue-material-design-icons/Flash';
+
 export default {
+  components: { FlashIcon },
+
   props: {
     currency: { type: String },
     received: { type: Number },
     rate: { type: Number },
+  },
+
+  computed: {
+    fiat() {
+      return ((this.received / 100000000) * this.rate).toFixed(2);
+    },
   },
 };
 </script>

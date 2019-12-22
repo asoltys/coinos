@@ -89,11 +89,6 @@ export default {
   },
 
   computed: {
-    conversion() {
-      if (this.fiat) return this.rate;
-      return parseFloat(1 / this.rate).toFixed(6);
-    },
-
     ...mapGetters([
       'address',
       'amount',

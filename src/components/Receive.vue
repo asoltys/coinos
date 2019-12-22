@@ -88,11 +88,6 @@ export default {
       if (this.fiat) return this.user.currency;
       return 'sat';
     },
-
-    conversion() {
-      if (this.fiat) return this.rate;
-      return parseFloat(1 / this.rate).toFixed(6);
-    },
   },
 
   methods: {

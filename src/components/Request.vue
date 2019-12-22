@@ -1,8 +1,17 @@
 <template>
   <div>
-    <h1 class="text-center font-weight-black">
-      Please send {{ amount }} satoshi
-    </h1>
+    <h1 class="text-center font-weight-black">Please Pay</h1>
+    <div class="d-flex justify-center mb-2">
+      <div class="mr-2">
+        <span class="display-1">{{ amount }}</span> SAT
+      </div>
+      <div>
+        <span class="yellow--text">
+          <span class="display-1">{{ fiat }}</span>
+          {{ user.currency }}
+        </span>
+      </div>
+    </div>
     <v-card class="pa-3 text-center mb-2">
       <div v-if="showcode" class="code mb-2">{{ copytext }}</div>
       <canvas
@@ -29,7 +38,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 export default {
   props: {
     copytext: {
@@ -52,6 +61,10 @@ export default {
   },
 
   computed: {
+    ...mapGetters(['rate', 'user']),
+    fiat() {
+      return ((this.amount * this.rate) / 100000000).toFixed(2);
+    },
     code() {
       return this.showcode ? 'Show QR' : 'Show Code';
     },

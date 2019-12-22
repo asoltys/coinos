@@ -19,31 +19,25 @@
 
       <div class="mb-2">
         <b>Amount</b>
-        <div class="d-flex justify-space-between">
-          <div>
-            <span class="display-1">{{ total }}</span> SAT
-          </div>
-          <div>
-            <span class="yellow--text"
-              ><span class="display-1">{{ fiat(total) }}</span>
-              {{ user.currency }}</span
-            >
-          </div>
+        <div>
+          <span class="display-1">{{ total }}</span>
+          SAT
+          <span class="ml-2 yellow--text">
+            <span class="display-1">{{ fiat(total) }}</span>
+            {{ user.currency }}
+          </span>
         </div>
       </div>
 
       <div class="mb-2">
-        <b>Fees</b>
-        <div class="d-flex justify-space-between">
-          <div>
-            <span class="display-1">{{ fees || 0 }}</span> SAT
-          </div>
-          <div>
-            <span class="yellow--text"
-              ><span class="display-1">{{ fiat(fees) }}</span>
-              {{ user.currency }}</span
-            >
-          </div>
+        <b>Fee</b>
+        <div>
+          <span class="display-1">{{ fees || 0 }}</span>
+          SAT
+          <span class="ml-2 yellow--text">
+            <span class="display-1">{{ fiat(fees) }}</span>
+            {{ user.currency }}
+          </span>
         </div>
       </div>
 
