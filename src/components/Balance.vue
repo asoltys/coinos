@@ -1,5 +1,5 @@
 <template>
-  <div class="mb-2 text-center">
+  <div v-if="!isNaN(animatedBalance)" class="mb-2 text-center">
     <span class="display-2 font-weight-black">{{ animatedBalance }} </span>
     <span class="headline">SAT</span>
     <h3>
