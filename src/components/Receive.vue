@@ -17,6 +17,7 @@
           :amount="parseFloat(amount)"
           @update="a => (amount = a)"
           @toggle="toggle"
+          @lightning="lightning"
         />
         <tippad
           class="col-4"
@@ -103,10 +104,6 @@ export default {
       else this.amount = (this.amount * 100000000) / this.rate;
     },
 
-    timeout(ms) {
-      return new Promise(resolve => setTimeout(resolve, ms));
-    },
-
     bitcoin() {
       let { address } = this.user;
       let { tip, total } = this;
@@ -167,10 +164,8 @@ export default {
 
     async clear() {
       this.generated = false;
-      this.$store.commit('loading', true);
+      this.$store.commit('error', '');
       this.$store.commit('received', 0);
-      await this.timeout(50);
-      this.$nextTick(() => this.$store.commit('loading', false));
     },
 
     checkRefresh() {

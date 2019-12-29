@@ -1,11 +1,17 @@
 <template>
-  <div class="numpad mr-2 pl-0" @keyup="keyup">
-    <div class="mb-2">
-      <span class="display-1">{{ amount | format(decimals) }}</span>
+  <div class="numpad mr-2 pl-0" @keyup.prevent="keyup">
+    <div class="d-flex mb-2">
+      <input
+        class="display-1"
+        v-model="inputAmount"
+        @change.prevent="parseAmount"
+        @focus="e => e.target.select()"
+        @keyup.enter="$emit('lightning')"
+      />
       <v-btn
-        class="toggle black--text ml-2"
+        class="toggle black--text ml-2 mt-auto"
         color="yellow"
-        @click="$emit('toggle')"
+        @click.prevent="$emit('toggle')"
         >{{ currency }}</v-btn
       >
     </div>
@@ -50,6 +56,7 @@ export default {
 
   data() {
     return {
+      inputAmount: 0,
       buttons: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '<', '0', 'C'],
       codes: Array.from(Array(10), (_, x) => x + 48),
     };
@@ -65,6 +72,17 @@ export default {
   },
 
   methods: {
+    parseAmount(e) {
+      if (this.currency === 'sat') {
+        this.inputAmount = parseInt(e.target.value);
+      } else {
+        this.inputAmount = parseFloat(e.target.value).toFixed(2);
+      }
+
+      if (isNaN(this.inputAmount)) this.inputAmount = 0;
+      this.$emit('update', this.inputAmount);
+    },
+
     id(n) {
       let prefix = 'button-';
       if (n === '<') return prefix + 'lt';
@@ -72,11 +90,13 @@ export default {
     },
 
     keyup(e) {
+      console.log(e);
+      if (e.target.nodeName === 'INPUT') return;
       let key = e.keyCode;
       if (key > 57) key -= 48;
       let n = this.codes.indexOf(key).toString();
       if (key === 8) n = '<';
-      if (key === 46 || key === 13) n = 'C';
+      if (key === 46) n = 'C';
       if (n < 0) return;
       this.update(n);
     },
@@ -93,7 +113,15 @@ export default {
 
       if (m === 'C') amount = 0;
       amount = amount.toFixed(this.decimals);
+      this.inputAmount = amount;
       this.$emit('update', amount);
+    },
+  },
+
+  watch: {
+    amount(v) {
+      if (this.currency === 'sat') this.inputAmount = parseInt(v);
+      else this.inputAmount = parseFloat(v).toFixed(2);
     },
   },
 
@@ -104,10 +132,17 @@ export default {
   destroyed: function() {
     document.removeEventListener('keyup', this.keyup);
   },
+
+  mounted() {
+    this.inputAmount = this.amount;
+  },
 };
 </script>
 
 <style lang="stylus" scoped>
+input
+  cursor pointer
+
 .toggle
   margin-top -16px
   max-height 28px
