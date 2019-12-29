@@ -10,21 +10,14 @@
       <Request v-else v-bind="{ copytext, total }" @clear="clear" />
     </template>
     <div v-else>
-      <div class="d-flex">
-        <numpad
-          class="col-8"
-          :currency="currency"
-          :amount="parseFloat(amount)"
-          @update="a => (amount = a)"
-          @toggle="toggle"
-          @lightning="lightning"
-        />
-        <tippad
-          class="col-4"
-          :amount="parseFloat(amount)"
-          @update="t => (tip = t)"
-        />
-      </div>
+      <numpad
+        class="mr-4 mb-2"
+        :currency="currency"
+        :amount="parseFloat(amount)"
+        @update="a => (amount = a)"
+        @toggle="toggle"
+        @lightning="lightning"
+      />
 
       <v-btn class="mr-2" @click="bitcoin" :disabled="total <= 0">
         <img class="mr-1" src="../assets/bitcoin.png" width="30px" />
@@ -44,14 +37,13 @@ import qr from 'qrcode';
 import Numpad from './NumPad';
 import Received from './Received';
 import Request from './Request';
-import Tippad from './TipPad';
 import { mapGetters, mapActions } from 'vuex';
 import Flash from 'vue-material-design-icons/Flash';
 
 const f = parseFloat;
 
 export default {
-  components: { Flash, Numpad, Received, Request, Tippad },
+  components: { Flash, Numpad, Received, Request },
 
   filters: {},
 

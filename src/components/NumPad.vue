@@ -2,7 +2,7 @@
   <div class="numpad mr-2 pl-0" @keyup.prevent="keyup">
     <div class="d-flex mb-2">
       <input
-        class="display-1"
+        class="display-1 flex-grow-1"
         v-model="inputAmount"
         @change.prevent="parseAmount"
         @focus="e => e.target.select()"
