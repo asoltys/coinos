@@ -2,7 +2,7 @@
   <div class="numpad mr-2 pl-0" @keyup.prevent="keyup">
     <div class="d-flex mb-2">
       <input
-        class="display-1 flex-grow-1"
+        class="display-1"
         v-model="inputAmount"
         @change.prevent="parseAmount"
         @focus="e => e.target.select()"
@@ -141,6 +141,7 @@ export default {
 <style lang="stylus" scoped>
 input
   cursor pointer
+  width 100%
 
 .toggle
   margin-top -16px

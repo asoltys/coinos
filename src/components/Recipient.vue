@@ -20,7 +20,7 @@
 export default {
   props: {
     address: { type: String },
-    scannedBalance: { type: String },
+    scannedBalance: { type: Number },
   },
 };
 </script>

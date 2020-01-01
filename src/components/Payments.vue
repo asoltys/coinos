@@ -7,26 +7,26 @@
           v-for="{
             link,
             hash,
+            id,
             payobj,
             sign,
             color,
             fiat,
             amount,
             createdAt,
-            tip,
           } in filteredPayments"
-          :key="hash"
+          :key="id"
         >
           <v-expansion-panel-header
             ripple
-            class="justify-center justify-space-around"
+            class="justify-center justify-space-around flex-wrap"
           >
-            <div>
-              <span class="display-1">
+            <div style="white-space: nowrap;">
+              <span class="headline">
                 <span :class="color">{{ sign }}</span>
                 {{ amount | abs }}
               </span>
-              <span> SAT</span>&nbsp;
+              SAT
               <div>
                 <span class="yellow--text">
                   {{ sign }}{{ fiat | abs | twodec }}
@@ -34,18 +34,16 @@
                 </span>
               </div>
             </div>
-            <div class="text-right headline">{{ createdAt | format }}</div>
-
-            <small v-if="tip">(+{{ tip }})</small>
+            <div class="text-right subtitle-1" style="white-space: nowrap;">
+              {{ createdAt | format }}
+            </div>
           </v-expansion-panel-header>
           <v-expansion-panel-content>
-            <div>
-              {{ hash }}
-              <v-btn class="mt-2" v-if="link" @click="explore(link)">
-                <v-icon class="mr-1">open_in_new</v-icon><span>Blockchain</span>
-              </v-btn>
-              <pre>{{ payobj }}</pre>
-            </div>
+            <code class="black--text mb-2 py-2 text-center">{{ hash }}</code>
+            <v-btn class="mt-2" v-if="link" @click="explore(link)">
+              <v-icon class="mr-1">open_in_new</v-icon
+              ><span>View Blockchain</span>
+            </v-btn>
           </v-expansion-panel-content>
         </v-expansion-panel>
       </v-expansion-panels>
@@ -175,9 +173,13 @@ export default {
           if (!(o.hash.startsWith('ln') || o.hash.startsWith('txn')))
             o.link = `${bs}/tx/${o.hash}`;
           if (o.hash.startsWith('ln')) {
-            o.hash = bolt11
-              .decode(o.hash.toLowerCase())
-              .tags.find(t => t.tagName === 'payment_hash').data;
+            try {
+              o.hash = bolt11
+                .decode(o.hash.toLowerCase())
+                .tags.find(t => t.tagName === 'payment_hash').data;
+            } catch (e) {
+              console.log(e);
+            }
           }
 
           return o;
@@ -249,4 +251,9 @@ export default {
 
 .date-picker .v-btn
   width 100%
+
+code
+  width 100%
+  word-wrap break-word
+  font-size 0.9em
 </style>
