@@ -90,7 +90,6 @@ export default {
     },
 
     keyup(e) {
-      console.log(e);
       if (e.target.nodeName === 'INPUT') return;
       let key = e.keyCode;
       if (key > 57) key -= 48;

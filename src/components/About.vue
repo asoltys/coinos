@@ -8,16 +8,14 @@
           want to host your own node, report issues, or contribute to make it
           better.
         </p>
-        <v-card class="code text-center mb-4" :data-clipboard-text="node">
-          <h3 class="mb-4">Lightning Node Info</h3>
-          <canvas id="qr" class="d-block mx-auto mb-4" />
-          <v-chip class="body-2 font-weight-black d-block mb-4">{{
-            node
-          }}</v-chip>
-          <v-btn @click="copy" class="d-block mx-auto">
-            <v-icon class="mr-1">content_copy</v-icon><span>Copy</span>
-          </v-btn>
-        </v-card>
+        <h3 class="mb-4 text-center">Lightning Node Info</h3>
+        <canvas id="qr" class="d-block mx-auto mb-4" />
+        <div class="node px-4 py-1 mb-4 text-center caption font-weight-black" :data-clipboard-text="node">
+          {{ node }}
+        </div>
+        <v-btn @click="copy" class="d-block mx-auto">
+          <v-icon class="mr-1">content_copy</v-icon><span>Copy</span>
+        </v-btn>
       </v-card-text>
     </v-card>
   </div>
@@ -65,12 +63,10 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-code
-  max-width 400 !important
+.node
   word-wrap break-word
-
-.code
-  margin auto
-  background #333
-  padding 10px
+  background #212121
+  overflow auto
+  border-radius 50px
+  width auto
 </style>

@@ -2,115 +2,53 @@
   <div>
     <v-progress-linear v-if="loading" indeterminate></v-progress-linear>
     <template v-else>
-      <template>
-        <v-layout class="date-picker">
-          <v-flex xs4>
-            <v-date-picker
-              v-if="choosefrom"
-              v-model="fromstring"
-              color="secondary"
-              @input="choosefrom = false"
-            ></v-date-picker>
-            <v-btn
-              v-else
-              @click="
-                choosefrom = !choosefrom;
-                chooseto = false;
-              "
-              :color="choosefrom ? 'green' : ''"
-              small
-            >
-              <v-icon class="mr-1">event</v-icon><span>{{ from | short }}</span>
-            </v-btn>
-          </v-flex>
-          <v-flex class="ml-3 my-auto text-center" xs2>
-            <div class="subheading">to</div>
-          </v-flex>
-          <v-flex xs4>
-            <v-date-picker
-              v-if="chooseto"
-              v-model="tostring"
-              color="secondary"
-              @input="chooseto = false"
-            ></v-date-picker>
-            <v-btn
-              v-else
-              @click="
-                chooseto = !chooseto;
-                choosefrom = false;
-              "
-              :color="chooseto ? 'green' : ''"
-              small
-            >
-              <v-icon class="mr-1">event</v-icon><span>{{ to | short }}</span>
-            </v-btn>
-          </v-flex>
-        </v-layout>
-        <v-layout>
-          <v-flex xs12>
-            <v-select :items="Object.keys(presets)" v-model="preset"></v-select>
-          </v-flex>
-        </v-layout>
-      </template>
-      <template v-if="filteredPayments.length">
-        <v-layout>
-          <v-flex xs4>
-            <v-text-field
-              label="Total sat"
-              v-model="total"
-              readonly
-            ></v-text-field>
-          </v-flex>
-          <v-flex xs4>
-            <v-text-field
-              :label="`Total ${user.currency}`"
-              v-model="fiattotal"
-              readonly
-            ></v-text-field>
-          </v-flex>
-          <v-flex xs4>
-            <v-text-field
-              label="Total Tips"
-              v-model="tips"
-              readonly
-            ></v-text-field>
-          </v-flex>
-        </v-layout>
-        <v-list three-line subheader>
-          <template v-for="payment in filteredPayments">
-            <v-list-item
-              background="blue"
-              :key="payment.date"
-              @click="link(payment)"
-            >
-              <v-list-item-content>
-                <v-list-item-title>{{ payment.hash | trim }}</v-list-item-title>
-                <v-list-item-subtitle :class="color(payment)">
-                  <span
-                    >{{ payment.amount | abs }} sat</span
-                  ></v-list-item-subtitle
-                >
-                <v-list-item-subtitle :class="color(payment)">
-                  <span
-                    >{{ payment.fiat | abs | twodec }} {{ user.currency }}</span
-                  ><small v-if="payment.tip">
-                    (+{{ payment.tip }})</small
-                  ></v-list-item-subtitle
-                >
-              </v-list-item-content>
-              <v-list-item-action>
-                <v-list-item-action-text>{{
-                  payment.createdAt | format
-                }}</v-list-item-action-text>
-                <v-list-item-subtitle
-                  >balance: {{ payment.balance }}</v-list-item-subtitle
-                >
-                <v-layout></v-layout>
-              </v-list-item-action>
-            </v-list-item>
-          </template>
-        </v-list>
-      </template>
+      <v-expansion-panels v-if="filteredPayments.length" accordion>
+        <v-expansion-panel
+          v-for="{
+            link,
+            hash,
+            payobj,
+            sign,
+            color,
+            fiat,
+            amount,
+            createdAt,
+            tip,
+          } in filteredPayments"
+          :key="hash"
+        >
+          <v-expansion-panel-header
+            ripple
+            class="justify-center justify-space-around"
+          >
+            <div>
+              <span class="display-1">
+                <span :class="color">{{ sign }}</span>
+                {{ amount | abs }}
+              </span>
+              <span> SAT</span>&nbsp;
+              <div>
+                <span class="yellow--text">
+                  {{ sign }}{{ fiat | abs | twodec }}
+                  {{ user.currency }}
+                </span>
+              </div>
+            </div>
+            <div class="text-right headline">{{ createdAt | format }}</div>
+
+            <small v-if="tip">(+{{ tip }})</small>
+          </v-expansion-panel-header>
+          <v-expansion-panel-content>
+            <div>
+              {{ hash }}
+              <v-btn class="mt-2" v-if="link" @click="explore(link)">
+                <v-icon class="mr-1">open_in_new</v-icon><span>Blockchain</span>
+              </v-btn>
+              <pre>{{ payobj }}</pre>
+            </div>
+          </v-expansion-panel-content>
+        </v-expansion-panel>
+      </v-expansion-panels>
       <v-alert
         class="black--text"
         :value="!filteredPayments.length"
@@ -134,11 +72,19 @@ import {
   subYears,
 } from 'date-fns';
 import { mapGetters } from 'vuex';
+import bolt11 from 'bolt11';
+
+let bs = 'https://blockstream.info';
+if (
+  process.env.NODE_ENV !== 'production' ||
+  window.location.href.includes('test')
+)
+  bs += '/testnet';
 
 export default {
   filters: {
     abs: v => Math.abs(v),
-    format: d => format(d, 'YYYY-MM-DD HH:mm'),
+    format: d => format(d, 'MMM D HH:mm:ss'),
     short: d => format(d, 'MMM D, YYYY'),
     trim: s => (s.length > 20 ? s.substr(0, 20) + '...' : s),
     twodec: n => n.toFixed(2),
@@ -224,6 +170,16 @@ export default {
           o.tip = parseFloat(p.tip).toFixed(2);
           if (isNaN(o.tip) || o.tip <= 0) o.tip = null;
           if (o.tip) o.fiat -= o.tip;
+          o.color = o.amount < 0 ? 'red--text' : 'green--text';
+          o.sign = o.amount < 0 ? '-' : '+';
+          if (!(o.hash.startsWith('ln') || o.hash.startsWith('txn')))
+            o.link = `${bs}/tx/${o.hash}`;
+          if (o.hash.startsWith('ln')) {
+            o.hash = bolt11
+              .decode(o.hash.toLowerCase())
+              .tags.find(t => t.tagName === 'payment_hash').data;
+          }
+
           return o;
         })
         .sort((a, b) => {
@@ -270,18 +226,8 @@ export default {
   },
 
   methods: {
-    color(p) {
-      return p.amount < 0 ? 'sent' : 'received';
-    },
-    link(p) {
-      if (p.hash.startsWith('ln') || p.hash.startsWith('txn')) return;
-      let bs = 'https://blockstream.info';
-      if (
-        process.env.NODE_ENV !== 'production' ||
-        window.location.href.includes('test')
-      )
-        bs += '/testnet';
-      window.location = `${bs}/tx/${p.hash}`;
+    explore(link) {
+      window.location.href = link;
     },
   },
 

@@ -57,7 +57,7 @@ export default {
 
 <style lang="stylus">
 #footer {
- position: fixed; bottom: 0; padding: 0; width: 100%;
+ position: fixed; bottom: 0; padding: 0; width: 100%; z-index: 1;
 }
 
 .v-bottom-navigation .v-btn

@@ -4,21 +4,6 @@
       >Sent!</v-alert
     >
     <div class="pa-4">
-      <div class="d-flex mb-2" v-if="payment.txid">
-        <div>
-          <b>Transaction ID</b>
-          <div style="word-break: break-word">{{ payment.txid }}</div>
-        </div>
-        <div class="ml-auto d-flex">
-          <v-btn class="mr-1" small icon ripple @click="copy(payment.txid)">
-            <v-icon small>content_copy</v-icon>
-          </v-btn>
-          <v-btn small icon ripple @click="link(payment.txid)">
-            <v-icon small>open_in_new</v-icon>
-          </v-btn>
-        </div>
-      </div>
-
       <div class="mb-2 text-center">
         <div>
           <span class="display-1">{{ total }}</span>
@@ -32,7 +17,8 @@
 
       <div class="mb-4 text-center">
         <div>
-          <span class="display-1">Fees: {{ fees || 0 }}</span> SAT
+          <span class="headline orange--text">Fees: </span>
+          <span class="display-1">{{ fees || 0 }}</span> SAT
           <span class="ml-2 yellow--text">
             <span class="display-1">{{ fiat(fees) }}</span>
             {{ user.currency }}
@@ -40,8 +26,13 @@
         </div>
       </div>
 
-      <v-btn @click="back">
+      <pre v-if="details">{{ payment.txid }}</pre>
+
+      <v-btn @click="back" class="mr-2">
         <v-icon class="mr-2">arrow_back</v-icon><span>Send Another</span>
+      </v-btn>
+      <v-btn v-if="payment.txid" @click="link(payment.txid)">
+        <v-icon class="mr-2">open_in_new</v-icon><span>Blockchain</span>
       </v-btn>
     </div>
   </v-card>
@@ -53,6 +44,12 @@ export default {
   props: {
     back: { type: Function },
     payment: { type: Object },
+  },
+
+  data() {
+    return {
+      details: false,
+    };
   },
 
   computed: {
@@ -84,11 +81,16 @@ export default {
   },
 
   methods: {
+    ...mapActions(['snack']),
+
+    toggleDetails() {
+      this.details = !this.details;
+    },
+
     fiat(n) {
       return ((n * this.rate) / 100000000).toFixed(2);
     },
 
-    ...mapActions(['snack']),
     link(tx) {
       let bs = 'https://blockstream.info';
       if (

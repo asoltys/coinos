@@ -12,9 +12,12 @@
       }}</span>
       per BTC
     </h3>
-    <div class="yellow--text text--lighten-3" v-if="user.pending">
-      <span class="display-2">{{ animatedPending }} </span>
-      <span class="headline">pending</span>
+    <div
+      class="orange--text text--lighten-3"
+      v-if="user.pending && !isNaN(animatedPending)"
+    >
+      <span class="display-1 font-weight-black">{{ animatedPending }} </span>
+      <span class="headline">PENDING</span>
       <h3>{{ pendingFiat | format }} {{ user.currency }}</h3>
     </div>
   </div>

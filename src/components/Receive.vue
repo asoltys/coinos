@@ -4,7 +4,7 @@
     <template v-else-if="generated">
       <Received
         v-if="received"
-        v-bind="{ currency: user.currency, rate, received }"
+        v-bind="{ user, rate, received }"
         @clear="clear"
       />
       <Request v-else v-bind="{ copytext, total }" @clear="clear" />
