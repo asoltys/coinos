@@ -1,0 +1,16 @@
+{
+  "short_name": "CoinOS",
+  "name": "CoinOS",
+  "icons": [
+    {
+      "src": "/img/coinos-1024.png",
+      "type": "image/png",
+      "sizes": "1024x1024"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#000000",
+  "display": "standalone",
+  "scope": "/",
+  "theme_color": "#000000"
+}
