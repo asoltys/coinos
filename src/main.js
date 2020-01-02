@@ -58,6 +58,12 @@ if ('addEventListener' in document) {
   );
 }
 
+window.addEventListener('beforeinstallprompt', function(e) {
+  if (!window.matchMedia('(display-mode: standalone)').matches) {
+    window.deferredPrompt = e;
+  }
+});
+
 if (/iPad|iPhone|iPod|Android/.test(navigator.userAgent)) {
   var tag = document.createElement('script');
   tag.type = 'text/javascript';

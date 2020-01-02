@@ -3,7 +3,7 @@
   "name": "CoinOS",
   "icons": [
     {
-      "src": "/img/coinos-1024.png",
+      "src": "/coinos-1024.png",
       "type": "image/png",
       "sizes": "1024x1024"
     }

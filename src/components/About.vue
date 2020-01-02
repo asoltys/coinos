@@ -10,7 +10,10 @@
         </p>
         <h3 class="mb-4 text-center">Lightning Node Info</h3>
         <canvas id="qr" class="d-block mx-auto mb-4" />
-        <div class="node px-4 py-1 mb-4 text-center caption font-weight-black" :data-clipboard-text="node">
+        <div
+          class="node px-4 py-1 mb-4 text-center caption font-weight-black"
+          :data-clipboard-text="node"
+        >
           {{ node }}
         </div>
         <v-btn @click="copy" class="d-block mx-auto">

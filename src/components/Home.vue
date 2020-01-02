@@ -11,6 +11,9 @@
       </v-btn>
     </v-card>
     <div class="mx-auto">
+      <v-btn v-if="promptInstall" class="ad2hs-prompt mb-2 mr-1" @click="a2hs">
+        <v-icon class="mr-1">get_app</v-icon><span>Install</span>
+      </v-btn>
       <v-btn
         v-if="user.fbtoken"
         class="mr-2 mb-2"
@@ -62,10 +65,17 @@ export default {
 
   computed: {
     ...mapGetters(['fbtoken', 'rate', 'user', 'verified']),
+    promptInstall() {
+      return typeof window.deferredPrompt != 'undefined';
+    },
   },
 
   methods: {
     ...mapActions(['snack']),
+
+    a2hs() {
+      window.deferredPrompt.prompt(); // Wait for the user to respond to the prompt
+    },
 
     copy() {
       var textArea = document.createElement('textarea');
