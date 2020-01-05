@@ -1,8 +1,6 @@
-import apolloClient from '../apollo-client';
 import socketio from 'socket.io-client';
 import Vue from 'vue';
 import Vuex from 'vuex';
-import paymentsQuery from '../graphql/getPayments.gql';
 import bech32 from 'bech32';
 import bip21 from 'bip21';
 import bolt11 from 'bolt11';
@@ -25,6 +23,7 @@ const state = {
   loading: false,
   orders: [],
   payment: null,
+  payments: [],
   payobj: null,
   payreq: '',
   payuser: '',
@@ -37,7 +36,6 @@ const state = {
   snack: '',
   socket: null,
   token: null,
-  payments: [],
   user: {
     address: null,
     balance: null,
@@ -170,19 +168,19 @@ export default new Vuex.Store({
         dispatch('snack', 'Your phone number has been verified');
       });
 
-      s.on('block', () => {
-        dispatch('getPayments');
-      });
-
       s.on('invoice', data => {
         commit('received', data.value);
         dispatch('snack', `Received ${data.value} satoshi`);
       });
 
+      s.on('payment', p => { console.log(p); commit('payment', p) });
+      s.on('payments', p => commit('payments', p));
+
       s.on('rates', rates => {
         commit('rates', rates);
         commit('rate', rates[state.user.currency]);
       });
+
       s.on('user', user => commit('user', user));
 
       return new Promise((resolve, reject) => {
@@ -239,17 +237,6 @@ export default new Vuex.Store({
 
     async verifyPhone(_, params) {
       await Vue.axios.get(`/verifyPhone/${params.username}/${params.token}`);
-    },
-
-    async getPayments({ commit }) {
-      commit('loading', true);
-      let res = await apolloClient.query({
-        query: paymentsQuery,
-        fetchPolicy: 'network-only',
-      });
-      commit('loading', false);
-
-      commit('payments', res.data.payments);
     },
 
     async getFriends({ commit }) {
@@ -428,6 +415,9 @@ export default new Vuex.Store({
   },
   mutations: {
     ...make.mutations(state),
+    payment(s, v) {
+      s.payments.push(v);
+    },
     error(s, v) {
       s.error = v;
       if (v && v.toString().includes('502 Bad'))
@@ -439,6 +429,7 @@ export default new Vuex.Store({
       s.token = v;
     },
     user(s, v) {
+      if (v && v.payments && v.payments.length) s.payments = v.payments;
       Vue.set(s, 'user', v);
     },
   },

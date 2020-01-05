@@ -1,10 +1,14 @@
 <template>
   <div>
-    <v-progress-linear v-if="loading" indeterminate></v-progress-linear>
+    <v-progress-linear
+      v-if="initializing || loading"
+      indeterminate
+    ></v-progress-linear>
     <template v-else>
-      <v-expansion-panels v-if="filteredPayments.length" accordion>
+      <v-expansion-panels v-if="filteredPayments().length" accordion>
         <v-expansion-panel
           v-for="{
+            confirmed,
             link,
             hash,
             id,
@@ -14,7 +18,7 @@
             fiat,
             amount,
             createdAt,
-          } in filteredPayments"
+          } in filteredPayments()"
           :key="id"
         >
           <v-expansion-panel-header
@@ -35,6 +39,10 @@
               </div>
             </div>
             <div class="text-right subtitle-1" style="white-space: nowrap;">
+              <v-chip v-if="!confirmed" color="red" class="mr-2">
+                <v-icon class="mr-1">warning</v-icon>
+                <span class="d-none d-sm-inline">unconfirmed</span>
+              </v-chip>
               {{ createdAt | format }}
             </div>
           </v-expansion-panel-header>
@@ -49,26 +57,18 @@
       </v-expansion-panels>
       <v-alert
         class="black--text"
-        :value="!filteredPayments.length"
+        :value="!filteredPayments().length"
         v-else
         color="yellow"
-        >No payments found in the given time period</v-alert
       >
+        No payments found in the given time period
+      </v-alert>
     </template>
   </div>
 </template>
 
 <script>
-import {
-  format,
-  parse,
-  isBefore,
-  isSameDay,
-  isWithinRange,
-  subWeeks,
-  subMonths,
-  subYears,
-} from 'date-fns';
+import { format, parse, isBefore, isWithinRange } from 'date-fns';
 import { mapGetters } from 'vuex';
 import bolt11 from 'bolt11';
 
@@ -88,82 +88,18 @@ export default {
     twodec: n => n.toFixed(2),
   },
 
-  data() {
-    return {
-      presets: {
-        'Last Year': {
-          from: subYears(Date.now(), 1),
-          to: Date.now(),
-        },
-        'Last Month': {
-          from: subMonths(Date.now(), 1),
-          to: Date.now(),
-        },
-        'Last Week': {
-          from: subWeeks(Date.now(), 1),
-          to: Date.now(),
-        },
-        Custom: {
-          from: null,
-          to: null,
-        },
-      },
-      choosefrom: false,
-      chooseto: false,
-      currency: 'CAD',
-      from: subYears(Date.now(), 1),
-      to: parse(Date.now()),
-    };
+  computed: {
+    ...mapGetters(['initializing', 'loading', 'payments', 'user']),
   },
 
-  computed: {
-    ...mapGetters(['loading', 'payments', 'user']),
-
-    preset: {
-      get() {
-        let preset = 'Custom';
-        let { from, to } = this;
-        Object.keys(this.presets).map(k => {
-          let p = this.presets[k];
-          if (isSameDay(p.from, from) && isSameDay(p.to, to)) {
-            preset = k;
-          }
-        });
-
-        return preset;
-      },
-      set(v) {
-        if (v === 'Custom') return;
-        this.from = this.presets[v].from;
-        this.to = this.presets[v].to;
-      },
-    },
-
-    fromstring: {
-      get() {
-        return format(this.from, 'YYYY-MM-DD');
-      },
-      set(v) {
-        this.from = parse(v);
-      },
-    },
-
-    tostring: {
-      get() {
-        return format(this.to, 'YYYY-MM-DD');
-      },
-      set(v) {
-        this.to = parse(v);
-      },
-    },
-
+  methods: {
     filteredPayments() {
       if (!this.payments.length) return [];
-      this.$nextTick(() => this.$emit('mask'));
       let balance = 0;
-      return this.payments
+      let rv = this.payments
         .map(p => {
           let o = JSON.parse(JSON.stringify(p));
+          console.log(o);
           o.fiat = ((p.amount * p.rate) / 100000000).toFixed(2);
           o.tip = parseFloat(p.tip).toFixed(2);
           if (isNaN(o.tip) || o.tip <= 0) o.tip = null;
@@ -181,60 +117,26 @@ export default {
               console.log(e);
             }
           }
-
           return o;
         })
-        .sort((a, b) => {
-          if (isBefore(parse(a.createdAt), parse(b.createdAt))) {
-            return -1;
-          }
-          return 1;
-        })
+        .sort((a, b) =>
+          isBefore(parse(a.createdAt), parse(b.createdAt)) ? -1 : 1
+        )
         .map(p => {
           balance += parseFloat(p.amount);
           p.balance = balance;
           return p;
         })
-        .filter(p => {
-          return (
-            isWithinRange(parse(p.createdAt), this.from, this.to) &&
-            (p.amount < 0 || p.received)
-          );
-        })
+        .filter(p => p.amount < 0 || p.received)
         .reverse();
+
+      console.log(rv);
+      return rv;
     },
 
-    fiattotal() {
-      return this.filteredPayments
-        .reduce((a, b) => a + parseFloat(b.fiat), 0)
-        .toFixed(2);
-    },
-
-    total() {
-      return this.filteredPayments.reduce(
-        (a, b) => a + parseFloat(b.amount),
-        0
-      );
-    },
-
-    tips() {
-      return this.filteredPayments
-        .reduce((a, b) => {
-          if (!parseFloat(b.tip)) return a;
-          return a + parseFloat(b.tip);
-        }, 0)
-        .toFixed(2);
-    },
-  },
-
-  methods: {
     explore(link) {
       window.location.href = link;
     },
-  },
-
-  mounted() {
-    this.$store.dispatch('getPayments');
   },
 };
 </script>
@@ -256,4 +158,7 @@ code
   width 100%
   word-wrap break-word
   font-size 0.9em
+
+.v-chip
+  cursor pointer
 </style>

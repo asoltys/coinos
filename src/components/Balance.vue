@@ -2,7 +2,7 @@
   <div v-if="!isNaN(animatedBalance)" class="mb-2 text-center">
     <span class="display-2 font-weight-black">{{ animatedBalance }} </span>
     <span class="headline">SAT</span>
-    <h3>
+    <h3 v-if="!isNaN(animatedRate)">
       <span class="yellow--text">
         <span class="display-1">{{ fiat | format }}</span> {{ user.currency }}
       </span>

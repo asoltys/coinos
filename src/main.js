@@ -7,7 +7,6 @@ import router from './router';
 import store from './store';
 import FastClick from 'fastclick';
 import FBSignInButton from 'vue-facebook-signin-button';
-import { createProvider } from './vue-apollo';
 import vuetify from './plugins/vuetify';
 
 Axios.defaults.baseURL = process.env.VUE_APP_BASEURL;
@@ -18,7 +17,6 @@ Vue.use(VueAxios, Axios);
 const app = new Vue({
   render: h => h(App),
   router,
-  apolloProvider: createProvider(),
   vuetify,
   store,
 }).$mount('#app');
