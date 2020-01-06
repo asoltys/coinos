@@ -5,56 +5,67 @@
       indeterminate
     ></v-progress-linear>
     <template v-else>
-      <v-expansion-panels v-if="filteredPayments().length" accordion>
-        <v-expansion-panel
-          v-for="{
-            confirmed,
-            link,
-            hash,
-            id,
-            payobj,
-            sign,
-            color,
-            fiat,
-            amount,
-            createdAt,
-          } in filteredPayments()"
-          :key="id"
-        >
-          <v-expansion-panel-header
-            ripple
-            class="justify-center justify-space-around flex-wrap"
+      <div v-if="filteredPayments().length">
+        <v-expansion-panels accordion>
+          <v-expansion-panel
+            v-for="{
+              confirmed,
+              link,
+              hash,
+              id,
+              payobj,
+              sign,
+              color,
+              fiat,
+              amount,
+              createdAt,
+            } in filteredPayments()"
+            :key="id"
           >
-            <div style="white-space: nowrap;">
-              <span class="headline">
-                <span :class="color">{{ sign }}</span>
-                {{ amount | abs }}
-              </span>
-              SAT
-              <div>
-                <span class="yellow--text">
-                  {{ sign }}{{ fiat | abs | twodec }}
-                  {{ user.currency }}
+            <v-expansion-panel-header
+              ripple
+              class="justify-center justify-space-around flex-wrap"
+            >
+              <div style="white-space: nowrap;">
+                <span class="headline">
+                  <span :class="color">{{ sign }}</span>
+                  {{ amount | abs }}
                 </span>
+                SAT
+                <div>
+                  <span class="yellow--text">
+                    {{ sign }}{{ fiat | abs | twodec }}
+                    {{ user.currency }}
+                  </span>
+                </div>
               </div>
-            </div>
-            <div class="text-right subtitle-1" style="white-space: nowrap;">
-              <v-chip v-if="!confirmed" color="red" class="mr-2">
-                <v-icon class="mr-1">warning</v-icon>
-                <span class="d-none d-sm-inline">unconfirmed</span>
-              </v-chip>
-              {{ createdAt | format }}
-            </div>
-          </v-expansion-panel-header>
-          <v-expansion-panel-content>
-            <code class="black--text mb-2 py-2 text-center">{{ hash }}</code>
-            <v-btn class="mt-2" v-if="link" @click="explore(link)">
-              <v-icon class="mr-1">open_in_new</v-icon
-              ><span>View Blockchain</span>
-            </v-btn>
-          </v-expansion-panel-content>
-        </v-expansion-panel>
-      </v-expansion-panels>
+              <div class="text-right subtitle-1" style="white-space: nowrap;">
+                <v-chip v-if="!confirmed" color="red" class="mr-2">
+                  <v-icon class="mr-1">warning</v-icon>
+                  <span class="d-none d-sm-inline">unconfirmed</span>
+                </v-chip>
+                {{ createdAt | format }}
+              </div>
+            </v-expansion-panel-header>
+            <v-expansion-panel-content>
+              <code class="black--text mb-2 py-2 text-center">{{ hash }}</code>
+              <v-btn class="mt-2" v-if="link" @click="explore(link)">
+                <v-icon class="mr-1">open_in_new</v-icon
+                ><span>View Blockchain</span>
+              </v-btn>
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+        </v-expansion-panels>
+        <div class="d-flex">
+          <v-btn
+            class="my-4 mx-auto"
+            v-if="filteredPayments().length === 20 && !loaded"
+            @click="more"
+          >
+            <v-icon class="mr-1">get_app</v-icon><span>Load More</span>
+          </v-btn>
+        </div>
+      </div>
       <v-alert
         class="black--text"
         :value="!filteredPayments().length"
@@ -68,8 +79,9 @@
 </template>
 
 <script>
-import { format, parse, isBefore, isWithinRange } from 'date-fns';
+import { format, parse, isBefore } from 'date-fns';
 import { mapGetters } from 'vuex';
+import { call } from 'vuex-pathify';
 import bolt11 from 'bolt11';
 
 let bs = 'https://blockstream.info';
@@ -88,18 +100,28 @@ export default {
     twodec: n => n.toFixed(2),
   },
 
+  data() {
+    return { loaded: false };
+  },
+
   computed: {
     ...mapGetters(['initializing', 'loading', 'payments', 'user']),
   },
 
   methods: {
+    loadPayments: call('loadPayments'),
+
+    more() {
+      this.loadPayments();
+      this.loaded = true;
+    },
+
     filteredPayments() {
       if (!this.payments.length) return [];
       let balance = 0;
-      let rv = this.payments
+      return this.payments
         .map(p => {
           let o = JSON.parse(JSON.stringify(p));
-          console.log(o);
           o.fiat = ((p.amount * p.rate) / 100000000).toFixed(2);
           o.tip = parseFloat(p.tip).toFixed(2);
           if (isNaN(o.tip) || o.tip <= 0) o.tip = null;
@@ -129,9 +151,6 @@ export default {
         })
         .filter(p => p.amount < 0 || p.received)
         .reverse();
-
-      console.log(rv);
-      return rv;
     },
 
     explore(link) {

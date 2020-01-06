@@ -132,6 +132,14 @@ export default new Vuex.Store({
       }
     },
 
+    async loadPayments({ commit }) {
+      try {
+        const { data: payments } = await Vue.axios.get('/payments');
+      } catch (e) {
+        l(e);
+      }
+    },
+
     async setupSockets({ commit, state, dispatch }) {
       if (state.socket) return;
       let s = socketio(process.env.VUE_APP_SOCKETIO, {
@@ -173,10 +181,11 @@ export default new Vuex.Store({
         dispatch('snack', `Received ${data.value} satoshi`);
       });
 
-      s.on('payment', p => { console.log(p); commit('payment', p) });
+      s.on('payment', p => commit('addPayment', p));
       s.on('payments', p => commit('payments', p));
 
       s.on('rates', rates => {
+        if (!rates) return;
         commit('rates', rates);
         commit('rate', rates[state.user.currency]);
       });
@@ -415,7 +424,7 @@ export default new Vuex.Store({
   },
   mutations: {
     ...make.mutations(state),
-    payment(s, v) {
+    addPayment(s, v) {
       s.payments.push(v);
     },
     error(s, v) {
@@ -429,8 +438,8 @@ export default new Vuex.Store({
       s.token = v;
     },
     user(s, v) {
-      if (v && v.payments && v.payments.length) s.payments = v.payments;
-      Vue.set(s, 'user', v);
+      if (v && v.payments) s.payments = v.payments;
+      s.user = v;
     },
   },
   getters: make.getters(state),

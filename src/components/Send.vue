@@ -106,7 +106,7 @@ export default {
     ]),
 
     currency() {
-      if (this.fiat) return this.user.currency;
+      if (this.fiat && this.user) return this.user.currency;
       return 'sat';
     },
 

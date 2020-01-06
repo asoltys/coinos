@@ -10,11 +10,10 @@
         </p>
         <h3 class="mb-4 text-center">Lightning Node Info</h3>
         <canvas id="qr" class="d-block mx-auto mb-4" />
-        <div
-          class="node px-4 py-1 mb-4 text-center caption font-weight-black"
-          :data-clipboard-text="node"
-        >
-          {{ node }}
+        <div class="text-center my-4">
+          <code class="black--text" :data-clipboard-text="node">{{
+            node
+          }}</code>
         </div>
         <v-btn @click="copy" class="d-block mx-auto">
           <v-icon class="mr-1">content_copy</v-icon><span>Copy</span>
@@ -66,10 +65,8 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.node
+.v-application code
+  max-width 100%
   word-wrap break-word
-  background #212121
-  overflow auto
-  border-radius 50px
-  width auto
+  font-size 0.8em
 </style>
