@@ -59,7 +59,7 @@
         <div class="d-flex">
           <v-btn
             class="my-4 mx-auto"
-            v-if="filteredPayments().length === 20 && !loaded"
+            v-if="payments.length === 20 && !loaded"
             @click="more"
           >
             <v-icon class="mr-1">get_app</v-icon><span>Load More</span>
