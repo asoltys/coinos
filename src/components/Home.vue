@@ -11,7 +11,7 @@
       </v-btn>
     </v-card>
     <div class="mx-auto">
-      <v-btn v-if="promptInstall" class="ad2hs-prompt mb-2 mr-1" @click="a2hs">
+      <v-btn v-if="promptInstall" class="mb-2 mr-1" @click="install">
         <v-icon class="mr-1">get_app</v-icon><span>Install</span>
       </v-btn>
       <v-btn
@@ -32,6 +32,7 @@
 import qr from 'qrcode';
 import { mapGetters, mapActions } from 'vuex';
 import Balance from './Balance';
+import Window from '../window.js';
 
 export default {
   components: { Balance },
@@ -57,24 +58,26 @@ export default {
   data() {
     return {
       full: false,
-      playing: false,
-      received: 0,
-      funding_amt: 0,
+      installed: false,
     };
   },
 
   computed: {
     ...mapGetters(['fbtoken', 'rate', 'user', 'verified']),
+    prompt() {
+      return Window.prompt;
+    },
     promptInstall() {
-      return typeof window.deferredPrompt != 'undefined';
+      return this.prompt && !this.installed;
     },
   },
 
   methods: {
     ...mapActions(['snack']),
 
-    a2hs() {
-      window.deferredPrompt.prompt(); // Wait for the user to respond to the prompt
+    async install() {
+      const { outcome } = await this.prompt.prompt();
+      if (outcome === 'accepted') this.installed = true;
     },
 
     copy() {
@@ -129,10 +132,6 @@ export default {
       document.querySelector('body').appendChild(canvas);
       this.full = true;
     },
-
-    max() {
-      this.funding_amt = this.user.balance;
-    },
   },
 
   watch: {
@@ -145,7 +144,6 @@ export default {
   },
 
   mounted() {
-    this.max();
     this.drawQR();
   },
 

@@ -8,6 +8,7 @@ import store from './store';
 import FastClick from 'fastclick';
 import FBSignInButton from 'vue-facebook-signin-button';
 import vuetify from './plugins/vuetify';
+import Window from './window.js'
 
 Axios.defaults.baseURL = process.env.VUE_APP_BASEURL;
 
@@ -56,11 +57,6 @@ if ('addEventListener' in document) {
   );
 }
 
-window.addEventListener('beforeinstallprompt', function(e) {
-  if (!window.matchMedia('(display-mode: standalone)').matches) {
-    window.deferredPrompt = e;
-  }
-});
 
 if (/iPad|iPhone|iPod|Android/.test(navigator.userAgent)) {
   var tag = document.createElement('script');
