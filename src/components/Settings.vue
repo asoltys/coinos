@@ -104,11 +104,8 @@
           ></v-text-field>
         </v-layout>
 
-        <v-autocomplete
-          :items="Object.keys(rates).sort()"
-          v-model="form.currency"
-          name="currency"
-        ></v-autocomplete>
+        <set-pin @pin="pin" />
+
         <v-switch
           label="Two-Factor Authentication"
           v-model="form.twofa"
@@ -123,19 +120,21 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 import validator from 'email-validator';
+import SetPin from './SetPin';
 
 export default {
+  components: { SetPin },
   data() {
     return {
+      initialized: false,
+      code: '',
+      dialog: false,
       form: {
         currency: '',
         email: '',
-        password: '',
-        passconfirm: '',
         phone: '',
         phoneCode: '',
         pin: '',
-        pinconfirm: '',
         notify: 'Email',
         twofa: false,
       },
@@ -147,6 +146,9 @@ export default {
   computed: mapGetters(['rates', 'user']),
 
   methods: {
+    pin(pin) {
+      this.form.pin = pin;
+    },
     updatePhone() {
       this.form.phoneCode = '';
     },
@@ -194,10 +196,20 @@ export default {
     ]),
   },
 
+  watch: {
+    user(user) {
+      if (!this.initialized)
+        Object.keys(user)
+          .filter(key => key in this.form && user[key])
+          .forEach(key => (this.form[key] = user[key]));
+    },
+  },
+
   mounted() {
-    Object.keys(this.user)
-      .filter(key => key in this.form && this.user[key])
-      .forEach(key => (this.form[key] = this.user[key]));
+    let { user } = this;
+    Object.keys(user)
+      .filter(key => key in this.form && user[key])
+      .forEach(key => (this.form[key] = user[key]));
   },
 };
 </script>

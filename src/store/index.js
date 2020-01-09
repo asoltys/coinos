@@ -27,6 +27,7 @@ const state = {
   payobj: null,
   payreq: '',
   payuser: '',
+  pin: '',
   rate: 0,
   rates: null,
   received: 0,
@@ -132,12 +133,8 @@ export default new Vuex.Store({
       }
     },
 
-    async loadPayments({ commit }) {
-      try {
-        const { data: payments } = await Vue.axios.get('/payments');
-      } catch (e) {
-        l(e);
-      }
+    async loadPayments() {
+      Vue.axios.get('/payments');
     },
 
     async setupSockets({ commit, state, dispatch }) {
@@ -228,6 +225,7 @@ export default new Vuex.Store({
     },
 
     async updateUser({ commit }, user) {
+      console.log('updating', user.pin);
       let res = await Vue.axios.post('/user', user);
       commit('user', res.data);
     },

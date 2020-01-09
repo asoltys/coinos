@@ -10153,6 +10153,13 @@ vue-material-design-icons@^3.3.1:
   resolved "https://registry.yarnpkg.com/vue-material-design-icons/-/vue-material-design-icons-3.3.1.tgz#d136131ff18de16e1495affe21e862ca2f4a94ec"
   integrity sha512-ugIhVp1A/n+u4+hd4oXPSwpKmd1PemwhquQ/NwUt0/SRFGvA4gCC47e20ZZq/06Jp37mQ88p15tjBE20I+uAkw==
 
+vue-pincode-input@^0.0.4:
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/vue-pincode-input/-/vue-pincode-input-0.0.4.tgz#a3d42b5afddc48f815cb624ac55e203e3fdcfc4c"
+  integrity sha512-5XcqWI+Zz+F3+8ocLafY4xYi/mvarc8wZd24c4AM09qNqeEM+jK7gVdNk9AzfAJG9wlP1Ou8W0yzUilw91YKHg==
+  dependencies:
+    core-js "^2.6.5"
+
 vue-qrcode-reader@^2.0.1:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/vue-qrcode-reader/-/vue-qrcode-reader-2.0.2.tgz#786387dd7c1399c1aafbf55dde31646bbe38abfc"
