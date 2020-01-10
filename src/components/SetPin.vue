@@ -1,16 +1,23 @@
 <template>
   <div>
-    <v-btn @click.stop="open">
-      Set PIN
-    </v-btn>
+    <v-btn @click.stop="open"> {{ user.pin ? 'Change' : 'Set' }} PIN </v-btn>
     <v-dialog v-model="dialog" width="500" @click:outside="close">
       <v-card>
         <v-card-title class="headline" primary-title>
-          {{ confirming ? 'Confirm' : 'Set' }} PIN
+          {{
+            user.pin
+              ? user.pin === pin
+                ? confirming
+                  ? 'Confirm'
+                  : 'Set'
+                : 'Old'
+              : 'New'
+          }}
+          PIN
         </v-card-title>
 
         <v-card-text>
-          <v-alert v-if="mismatch" color="red">PIN mismatch</v-alert>
+          <v-alert v-if="error" color="red">{{ error }}</v-alert>
         </v-card-text>
 
         <v-card-text class="text-center">
@@ -18,29 +25,38 @@
 
           <div v-else>
             <pincode-input
-              v-if="confirming"
+              v-if="user.pin && user.pin !== pin"
               class="mx-auto yellow--text"
-              v-model="verifyPin"
+              v-model="oldPin"
               placeholder="0"
               :length="6"
-              @keyup="handleverifyPin"
-              ref="verifyPin"
-              :key="verifyPinKey"
-              :autofocus="false"
+              ref="oldPin"
+              :key="oldPinKey"
             />
-            <pincode-input
-              v-if="!confirming"
-              class="mx-auto yellow--text"
-              v-model="newPin"
-              placeholder="0"
-              :length="6"
-              ref="newPin"
-              :key="newPinKey"
-            />
+            <template v-else>
+              <pincode-input
+                v-if="confirming"
+                class="mx-auto yellow--text"
+                v-model="verifyPin"
+                placeholder="0"
+                :length="6"
+                ref="verifyPin"
+                :key="verifyPinKey"
+              />
+              <pincode-input
+                v-else
+                class="mx-auto yellow--text"
+                v-model="newPin"
+                placeholder="0"
+                :length="6"
+                ref="newPin"
+                :key="newPinKey"
+              />
 
-            <p class="mt-2">
-              This PIN will be required to send outgoing payments
-            </p>
+              <p class="mt-2">
+                This PIN will be required to send outgoing payments
+              </p>
+            </template>
           </div>
         </v-card-text>
 
@@ -53,6 +69,14 @@
             Done
           </v-btn>
           <v-btn v-else-if="confirming" color="primary" text @click="submit">
+            Ok
+          </v-btn>
+          <v-btn
+            v-else-if="user.pin && user.pin !== pin"
+            color="primary"
+            text
+            @click="submitOldPin"
+          >
             Ok
           </v-btn>
           <v-btn v-else color="primary" text @click="startConfirming">
@@ -75,16 +99,28 @@ export default {
       confirming: false,
       newPin: '',
       verifyPin: '',
-      mismatch: false,
+      oldPin: '',
+      error: false,
       success: false,
       newPinKey: 'a',
       verifyPinKey: 'b',
+      oldPinKey: 'c',
     };
   },
   computed: {
+    pin: sync('pin'),
     user: sync('user'),
   },
   methods: {
+    submitOldPin() {
+      if (this.oldPin === this.user.pin) {
+        this.pin = this.oldPin;
+        this.error = '';
+      } else {
+        this.error = 'Wrong PIN, try again';
+        this.clear();
+      }
+    },
     open() {
       this.dialog = true;
       this.$nextTick(() => {
@@ -100,24 +136,26 @@ export default {
     submit() {
       if (this.verifyPin === this.newPin) {
         this.$emit('pin', this.verifyPin);
-        this.mismatch = false;
+        this.error = '';
         this.success = true;
       } else {
-        this.mismatch = true;
+        this.error = 'PIN mismatch';
         this.clear();
       }
     },
     close() {
       this.clear();
       this.success = false;
-      this.mismatch = false;
+      this.error = '';
       this.$nextTick(() => (this.dialog = false));
     },
     clear() {
       this.newPinKey += 'a';
       this.verifyPinKey += 'b';
+      this.oldPinKey += 'c';
       this.newPin = '';
       this.verifyPin = '';
+      this.oldPin = '';
       this.confirming = false;
     },
   },
