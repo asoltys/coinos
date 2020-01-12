@@ -1,8 +1,12 @@
 <template>
   <v-app-bar absolute app dark color="black" fixed>
-    <v-toolbar-title dark @click="$router.push('/home')"
-      ><img class="logo" src="../assets/coinos_logo.png"
-    /></v-toolbar-title>
+    <v-toolbar-title
+      dark
+      @click="$router.push('/home')"
+      class="display-2"
+      style="cursor: pointer"
+      >coin<span class="yellow--text">os</span></v-toolbar-title
+    >
     <v-spacer></v-spacer>
     <v-btn icon @click="$router.push('/about')">
       <flash-icon fillColor="yellow" title="About CoinOS"></flash-icon>
