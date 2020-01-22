@@ -5,7 +5,11 @@ import bech32 from 'bech32';
 import bip21 from 'bip21';
 import bolt11 from 'bolt11';
 import router from '../router';
-import { address as addr, networks, Transaction } from 'bitcoinjs-lib';
+import {
+  address as BitcoinAddress,
+  networks,
+  Transaction,
+} from 'bitcoinjs-lib';
 import pathify, { make } from 'vuex-pathify';
 Vue.use(Vuex);
 
@@ -111,6 +115,7 @@ export default new Vuex.Store({
       document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
       window.sessionStorage.removeItem('token');
       commit('token', null);
+      commit('pin', null);
       commit('user', null);
       if (state.socket) state.socket.disconnect();
       commit('socket', null);
@@ -154,7 +159,7 @@ export default new Vuex.Store({
             ) {
               network = networks.regtest;
             }
-            let address = addr.fromOutputScript(o.script, network);
+            let address = BitcoinAddress.fromOutputScript(o.script, network);
             if (address === state.user.address) {
               commit('received', o.value);
               dispatch('snack', `Received ${o.value} satoshi`);
@@ -225,7 +230,6 @@ export default new Vuex.Store({
     },
 
     async updateUser({ commit }, user) {
-      console.log('updating', user.pin);
       let res = await Vue.axios.post('/user', user);
       commit('user', res.data);
     },
@@ -293,11 +297,25 @@ export default new Vuex.Store({
           l(e);
         }
       } else if (address) {
-        try {
-          let res = await Vue.axios.post('/sendCoins', { address, amount });
-          commit('payment', res.data);
-        } catch (e) {
-          commit('error', e.response.data);
+        if (
+          address.startsWith('Az') ||
+          address.startsWith('lq1') ||
+          address.startsWith('VJL') ||
+          address.startsWith('VT')
+        ) {
+          try {
+            let res = await Vue.axios.post('/sendLiquid', { address, amount });
+            commit('payment', res.data);
+          } catch (e) {
+            commit('error', e.response.data);
+          }
+        } else {
+          try {
+            let res = await Vue.axios.post('/sendCoins', { address, amount });
+            commit('payment', res.data);
+          } catch (e) {
+            commit('error', e.response.data);
+          }
         }
       }
 
@@ -371,8 +389,18 @@ export default new Vuex.Store({
         /**/
       }
 
+      let url;
       try {
-        let url = bip21.decode(text);
+        url = bip21.decode(text);
+      } catch (e) {
+        try {
+          url = bip21.decode(text, 'liquid');
+        } catch (e) {
+          /**/
+        }
+      }
+
+      if (url) {
         commit('address', url.address);
 
         if (url.options.amount)
@@ -387,12 +415,10 @@ export default new Vuex.Store({
 
         router.push({ name: 'send', params: { keep: true } });
         return;
-      } catch (e) {
-        /**/
       }
 
       try {
-        addr.fromBase58Check(text);
+        BitcoinAddress.fromBase58Check(text);
         commit('address', text);
         try {
           let res = await Vue.axios.get(`/balance/${text}`);
@@ -404,6 +430,18 @@ export default new Vuex.Store({
         return;
       } catch (e) {
         /**/
+      }
+
+      // Liquid
+      if (
+        text.startsWith('Az') ||
+        text.startsWith('lq1') ||
+        text.startsWith('VJL') ||
+        text.startsWith('VT')
+      ) {
+        commit('address', text);
+        router.push({ name: 'send', params: { keep: true } });
+        return;
       }
 
       try {

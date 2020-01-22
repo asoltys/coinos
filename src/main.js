@@ -8,7 +8,6 @@ import store from './store';
 import FastClick from 'fastclick';
 import FBSignInButton from 'vue-facebook-signin-button';
 import vuetify from './plugins/vuetify';
-import Window from './window.js'
 
 Axios.defaults.baseURL = process.env.VUE_APP_BASEURL;
 
@@ -31,9 +30,9 @@ if (window.location.protocol !== 'file:') {
   window.fbAsyncInit = function() {
     window.FB.init({
       appId: process.env.VUE_APP_FACEBOOK,
-      cookie: true,
+      cookie: false,
       xfbml: true,
-      version: 'v3.2',
+      version: 'v5.0',
     });
   };
   (function(d, s, id) {
@@ -56,7 +55,6 @@ if ('addEventListener' in document) {
     false
   );
 }
-
 
 if (/iPad|iPhone|iPod|Android/.test(navigator.userAgent)) {
   var tag = document.createElement('script');

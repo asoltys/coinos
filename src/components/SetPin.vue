@@ -5,11 +5,11 @@
       <v-card>
         <v-card-title class="headline" primary-title>
           {{
-            user.pin
-              ? user.pin === pin
-                ? confirming
-                  ? 'Confirm'
-                  : 'Set'
+            confirming
+              ? 'Confirm'
+              : user.pin
+              ? user.pin === pin || success
+                ? 'Set'
                 : 'Old'
               : 'New'
           }}
@@ -25,7 +25,7 @@
 
           <div v-else>
             <pincode-input
-              v-if="user.pin && user.pin !== pin"
+              v-if="pinRequired"
               class="mx-auto yellow--text"
               v-model="oldPin"
               placeholder="0"
@@ -33,7 +33,7 @@
               ref="oldPin"
               :key="oldPinKey"
             />
-            <template v-else>
+            <div v-show="!pinRequired">
               <pincode-input
                 v-if="confirming"
                 class="mx-auto yellow--text"
@@ -56,7 +56,7 @@
               <p class="mt-2">
                 This PIN will be required to send outgoing payments
               </p>
-            </template>
+            </div>
           </div>
         </v-card-text>
 
@@ -72,7 +72,7 @@
             Ok
           </v-btn>
           <v-btn
-            v-else-if="user.pin && user.pin !== pin"
+            v-else-if="pinRequired"
             color="primary"
             text
             @click="submitOldPin"
@@ -90,7 +90,7 @@
 
 <script>
 import PincodeInput from 'vue-pincode-input';
-import { sync } from 'vuex-pathify';
+import { call, sync } from 'vuex-pathify';
 export default {
   components: { PincodeInput },
   data() {
@@ -108,10 +108,14 @@ export default {
     };
   },
   computed: {
+    pinRequired() {
+      return this.user.pin && this.user.pin !== this.pin;
+    },
     pin: sync('pin'),
     user: sync('user'),
   },
   methods: {
+    updateUser: call('updateUser'),
     submitOldPin() {
       if (this.oldPin === this.user.pin) {
         this.pin = this.oldPin;
@@ -138,12 +142,15 @@ export default {
         this.$emit('pin', this.verifyPin);
         this.error = '';
         this.success = true;
+        this.user.pin = this.verifyPin;
+        this.updateUser(this.user);
       } else {
         this.error = 'PIN mismatch';
         this.clear();
       }
     },
     close() {
+      this.pin = '';
       this.clear();
       this.success = false;
       this.error = '';

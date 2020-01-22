@@ -24,9 +24,14 @@
         <span>Bitcoin</span>
       </v-btn>
 
-      <v-btn class="mr-0" @click="lightning" :disabled="total <= 0">
+      <v-btn class="mr-2" @click="lightning" :disabled="total <= 0">
         <flash fillColor="yellow"></flash>
         <span>Lightning</span>
+      </v-btn>
+
+      <v-btn class="mr-0" @click="liquid" :disabled="total <= 0">
+        <water fillColor="#00aaee"></water>
+        <span>Liquid</span>
       </v-btn>
     </div>
   </div>
@@ -39,11 +44,12 @@ import Received from './Received';
 import Request from './Request';
 import { mapGetters, mapActions } from 'vuex';
 import Flash from 'vue-material-design-icons/Flash';
+import Water from 'vue-material-design-icons/Water';
 
 const f = parseFloat;
 
 export default {
-  components: { Flash, Numpad, Received, Request },
+  components: { Flash, Numpad, Received, Request, Water },
 
   filters: {},
 
@@ -116,6 +122,36 @@ export default {
 
           this.bitreq = `bitcoin:${this.user.address}?amount=${this.total /
             100000000}`;
+          qr.toCanvas(canvas, this.bitreq, e => {
+            if (e) console.log(e);
+          });
+
+          canvas.style.width = '35vh';
+          canvas.style.height = '35vh';
+        });
+      });
+    },
+
+    liquid() {
+      let { confidential: address } = this.user;
+      let { tip, total } = this;
+      let amount = total;
+      console.log(this.user.liquid);
+
+      this.$store.commit('loading', true);
+      this.$store.commit('received', 0);
+
+      this.generated = true;
+
+      this.$nextTick(async () => {
+        await this.addInvoice({ amount, tip, address });
+
+        this.$store.commit('loading', false);
+        this.$nextTick(() => {
+          let canvas = document.getElementById('qr');
+          if (!canvas) return;
+
+          this.bitreq = `liquid:${address}?amount=${this.total / 100000000}`;
           qr.toCanvas(canvas, this.bitreq, e => {
             if (e) console.log(e);
           });
