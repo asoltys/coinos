@@ -20,6 +20,12 @@
         </v-btn>
       </v-card-text>
     </v-card>
+    <h2>Privacy Policy</h2>
+    <p>
+      CoinOS stores your username, a hash of your password, and your payment
+      history. If you login with Facebook, we access your friends list in order
+      to populate your address book.
+    </p>
   </div>
 </template>
 

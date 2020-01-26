@@ -5,11 +5,7 @@ import bech32 from 'bech32';
 import bip21 from 'bip21';
 import bolt11 from 'bolt11';
 import router from '../router';
-import {
-  address as BitcoinAddress,
-  networks,
-  Transaction,
-} from 'bitcoinjs-lib';
+import { address as BitcoinAddress } from 'bitcoinjs-lib';
 import pathify, { make } from 'vuex-pathify';
 Vue.use(Vuex);
 
@@ -149,27 +145,6 @@ export default new Vuex.Store({
       });
       commit('socket', s);
 
-      s.on('tx', data => {
-        Transaction.fromHex(data).outs.map(o => {
-          try {
-            let network = networks.bitcoin;
-            if (
-              process.env.NODE_ENV !== 'production' ||
-              window.location.href.includes('test')
-            ) {
-              network = networks.regtest;
-            }
-            let address = BitcoinAddress.fromOutputScript(o.script, network);
-            if (address === state.user.address) {
-              commit('received', o.value);
-              dispatch('snack', `Received ${o.value} satoshi`);
-            }
-          } catch (e) {
-            l(e);
-          }
-        });
-      });
-
       s.on('emailVerified', () => {
         dispatch('snack', 'Your email has been verified');
       });
@@ -179,7 +154,6 @@ export default new Vuex.Store({
       });
 
       s.on('invoice', data => {
-        commit('received', data.value);
         dispatch('snack', `Received ${data.value} satoshi`);
       });
 
@@ -389,12 +363,13 @@ export default new Vuex.Store({
         /**/
       }
 
-      let url;
+      let url, liquid;
       try {
         url = bip21.decode(text);
       } catch (e) {
         try {
           url = bip21.decode(text, 'liquid');
+          liquid = true;
         } catch (e) {
           /**/
         }
@@ -406,11 +381,13 @@ export default new Vuex.Store({
         if (url.options.amount)
           commit('amount', (url.options.amount * 100000000).toFixed(0));
 
-        try {
-          let res = await Vue.axios.get(`/balance/${url.address}`);
-          commit('scannedBalance', res.data.final_balance);
-        } catch (e) {
-          /**/
+        if (!liquid) {
+          try {
+            let res = await Vue.axios.get(`/balance/${url.address}`);
+            commit('scannedBalance', res.data.final_balance);
+          } catch (e) {
+            /**/
+          }
         }
 
         router.push({ name: 'send', params: { keep: true } });
@@ -461,6 +438,7 @@ export default new Vuex.Store({
   mutations: {
     ...make.mutations(state),
     addPayment(s, v) {
+      s.received = v.amount;
       s.payments.push(v);
     },
     error(s, v) {
