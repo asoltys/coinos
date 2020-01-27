@@ -108,28 +108,32 @@ export default {
     },
 
     fullscreen() {
-      let canvas = document.getElementById('qr');
-
       if (this.full) {
-        canvas.style.position = 'relative';
-        canvas.style.width = '25vh';
-        canvas.style.height = '25vh';
-        canvas.style.left = 0;
-        document.querySelector('#canvas-container').appendChild(canvas);
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+          document.mozCancelFullScreen();
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+          document.msExitFullscreen();
+        }
         this.full = false;
         return;
       }
 
-      canvas.style.position = 'absolute';
-      canvas.style.top = 0;
-      canvas.style.left =
-        window.innerWidth / 2 -
-        Math.min(window.innerWidth, window.innerHeight) / 2 +
-        'px';
-      canvas.style.width = canvas.style.height =
-        Math.min(window.innerWidth, window.innerHeight) + 'px';
-      canvas.style.zIndex = 9999;
-      document.querySelector('body').appendChild(canvas);
+      let elem = document.getElementById('qr');
+
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+      } else if (elem.mozRequestFullScreen) {
+        elem.mozRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
+      } else if (elem.webkitRequestFullscreen) {
+        elem.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+      } else if (elem.msRequestFullscreen) {
+        elem.msRequestFullscreen();
+      }
+
       this.full = true;
     },
   },

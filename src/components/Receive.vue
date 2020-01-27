@@ -113,8 +113,6 @@ export default {
       this.generated = true;
 
       this.$nextTick(async () => {
-        await this.addInvoice({ amount, tip, address });
-
         this.$store.commit('loading', false);
         this.$nextTick(() => {
           let canvas = document.getElementById('qr');
@@ -136,7 +134,6 @@ export default {
       let { confidential: address } = this.user;
       let { tip, total } = this;
       let amount = total;
-      console.log(this.user.liquid);
 
       this.$store.commit('loading', true);
       this.$store.commit('received', 0);
@@ -144,8 +141,6 @@ export default {
       this.generated = true;
 
       this.$nextTick(async () => {
-        await this.addInvoice({ amount, tip, address });
-
         this.$store.commit('loading', false);
         this.$nextTick(() => {
           let canvas = document.getElementById('qr');
