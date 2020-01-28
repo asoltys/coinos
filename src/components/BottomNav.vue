@@ -6,21 +6,17 @@
       background-color="#212121"
       dark
     >
-      <v-btn class="flex-grow-1" text @click="$router.push('/home')">
-        <span>Home</span>
-        <v-icon>home</v-icon>
-      </v-btn>
-      <v-btn class="flex-grow-1" text @click="$router.push('/payments')">
+      <v-btn class="flex-grow-1" text @click="home">
         <span>Payments</span>
-        <v-icon>assignment </v-icon>
+        <v-icon>line_weight</v-icon>
+      </v-btn>
+      <v-btn class="flex-grow-1" text @click="$router.push('/receive?refresh')">
+        <span>Receive</span>
+        <v-icon class="mr-1">get_app</v-icon>
       </v-btn>
       <v-btn class="flex-grow-1" text @click="scan">
         <span>Scan</span>
         <v-icon>camera_alt</v-icon>
-      </v-btn>
-      <v-btn class="flex-grow-1" text @click="$router.push('/receive?refresh')">
-        <span>Receive</span>
-        <arrow-left />
       </v-btn>
       <v-btn
         class="flex-grow-1"
@@ -31,21 +27,28 @@
         <span>Send</span>
         <send></send>
       </v-btn>
+      <v-btn class="flex-grow-1" text @click="$router.push('/settings')">
+        <span>Settings</span>
+        <v-icon>settings</v-icon>
+      </v-btn>
     </v-bottom-navigation>
   </div>
 </template>
 
 <script>
 import Send from 'vue-material-design-icons/Send';
-import ArrowLeft from 'vue-material-design-icons/ArrowLeftBold';
 import { mapActions, mapGetters } from 'vuex';
 
 export default {
-  components: { ArrowLeft, Send },
+  components: { Send },
 
   computed: mapGetters(['user']),
 
   methods: {
+    home() {
+      this.$router.push('/home');
+      window.scrollTo(0, 0);
+    },
     native() {
       return typeof window.cordova !== 'undefined';
     },

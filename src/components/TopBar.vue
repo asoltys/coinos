@@ -8,9 +8,6 @@
       >coin<span class="yellow--text">os</span></v-toolbar-title
     >
     <v-spacer></v-spacer>
-    <v-btn icon @click="$router.push('/about')">
-      <flash-icon fillColor="yellow" title="About CoinOS"></flash-icon>
-    </v-btn>
     <v-menu class="ml-2" v-if="user && user.name" offset-y nudge-bottom="1">
       <template v-slot:activator="{ on }">
         <v-btn v-on="on">
@@ -18,10 +15,18 @@
             <img :src="user.pic" />
           </v-avatar>
           <v-icon v-else>person</v-icon>
-          <span class="d-none d-sm-inline">{{ user.name }}</span>
+          <span class="d-none d-sm-inline">{{
+            user.fbtoken ? user.name : user.username
+          }}</span>
         </v-btn>
       </template>
       <v-card tile class="mx-auto menu" max-width="400">
+        <v-list-item @click="$router.push('/about')">
+          <v-list-item-action>
+            <v-icon>help</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>About</v-list-item-content>
+        </v-list-item>
         <v-list-item @click="$router.push('/settings')">
           <v-list-item-action>
             <v-icon>settings</v-icon>
@@ -36,16 +41,18 @@
         </v-list-item>
       </v-card>
     </v-menu>
+    <v-btn icon v-else @click="$router.push('/about')">
+      <v-icon>help</v-icon>
+    </v-btn>
   </v-app-bar>
 </template>
 
 <script>
-import FlashIcon from 'vue-material-design-icons/Flash';
 import PowerSettingsIcon from 'vue-material-design-icons/PowerSettings';
 import { mapGetters } from 'vuex';
 
 export default {
-  components: { FlashIcon, PowerSettingsIcon },
+  components: { PowerSettingsIcon },
   computed: mapGetters(['user']),
 };
 </script>

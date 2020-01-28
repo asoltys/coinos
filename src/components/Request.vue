@@ -1,19 +1,22 @@
 <template>
   <div>
-    <h1 class="text-center font-weight-black">Please Pay</h1>
-    <div class="d-flex justify-center mb-2">
-      <div class="mr-2">
-        <span class="display-1">{{ amount }}</span> SAT
-      </div>
-      <div>
-        <span class="yellow--text">
-          <span class="display-1">{{ fiat }}</span>
-          {{ user.currency }}
-        </span>
+    <div v-if="amount > 0">
+      <h1 class="text-center font-weight-black">Requesting</h1>
+      <div class="d-flex justify-center mb-2">
+        <div class="mr-2">
+          <span class="display-1">{{ amount }}</span> SAT
+        </div>
+        <div>
+          <span class="yellow--text">
+            <span class="display-1">{{ fiat }}</span>
+            {{ user.currency }}
+          </span>
+        </div>
       </div>
     </div>
+    <h1 v-else class="text-center font-weight-black">Receiving Address</h1>
     <v-card class="pa-3 text-center mb-2">
-      <div v-if="showcode" class="code mb-2">{{ copytext }}</div>
+      <div v-if="showcode" class="code mb-4">{{ copytext }}</div>
       <canvas
         id="qr"
         v-show="!showcode"
@@ -22,9 +25,20 @@
         @click="fullscreen"
         class="w-100 mx-auto mb-2"
       />
+      <div class="mb-2" v-if="!(amount > 0)">
+        <code class="black--text mb-2" :data-clipboard-text="node">{{
+          copytext
+        }}</code>
+      </div>
       <div>
-        <v-btn @click.native="showcode = !showcode" class="mr-2">
-          <v-icon>code</v-icon><span>{{ code }}</span>
+        <v-btn
+          v-if="amount > 0"
+          @click.native="showcode = !showcode"
+          class="mr-2"
+        >
+          <v-icon v-if="showcode">crop_free</v-icon>
+          <v-icon v-else>code</v-icon>
+          <span>{{ code }}</span>
         </v-btn>
         <v-btn @click.native="copy">
           <v-icon>content_copy</v-icon><span>Copy</span>
@@ -133,4 +147,9 @@ export default {
   background #333
   word-wrap break-word
   padding 15px
+
+.v-application code
+  max-width 100%
+  word-wrap break-word
+  font-size 0.8em
 </style>

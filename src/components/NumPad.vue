@@ -56,7 +56,7 @@ export default {
 
   data() {
     return {
-      inputAmount: 0,
+      inputAmount: '_',
       buttons: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '<', '0', 'C'],
       codes: Array.from(Array(10), (_, x) => x + 48),
     };
@@ -79,7 +79,8 @@ export default {
         this.inputAmount = parseFloat(e.target.value).toFixed(2);
       }
 
-      if (isNaN(this.inputAmount)) this.inputAmount = 0;
+      if (isNaN(this.inputAmount) || parseFloat(this.inputAmount) === 0)
+        this.inputAmount = '_';
       this.$emit('update', this.inputAmount);
     },
 
@@ -113,6 +114,7 @@ export default {
       if (m === 'C') amount = 0;
       amount = amount.toFixed(this.decimals);
       this.inputAmount = amount;
+      if (parseFloat(this.inputAmount) === 0) this.inputAmount = '';
       this.$emit('update', amount);
     },
   },
@@ -121,6 +123,7 @@ export default {
     amount(v) {
       if (this.currency === 'sat') this.inputAmount = parseInt(v);
       else this.inputAmount = parseFloat(v).toFixed(2);
+      if (parseFloat(v) === 0) this.inputAmount = '_';
     },
   },
 
@@ -134,6 +137,7 @@ export default {
 
   mounted() {
     this.inputAmount = this.amount;
+    if (parseFloat(this.inputAmount) === 0) this.inputAmount = '_';
   },
 };
 </script>

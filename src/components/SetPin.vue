@@ -1,6 +1,9 @@
 <template>
   <div>
-    <v-btn @click.stop="open"> {{ user.pin ? 'Change' : 'Set' }} PIN </v-btn>
+    <v-btn @click.stop="open">
+      <v-icon class="mr-1 yellow--text">dialpad</v-icon>
+      {{ user.pin ? 'Change' : 'Set' }} PIN
+    </v-btn>
     <v-dialog v-model="dialog" width="500" @click:outside="close">
       <v-card>
         <v-card-title class="headline" primary-title>

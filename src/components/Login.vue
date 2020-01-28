@@ -25,40 +25,60 @@
           transition="scale-transition"
           >You've logged out
         </v-alert>
-        <v-form @submit="submit">
-          <v-text-field
-            label="Username"
-            v-model="form.username"
-            autofocus
-            dark
-            autocapitalize="none"
-          />
-          <v-text-field
-            label="Password"
-            v-model="form.password"
-            type="password"
-          />
-          <v-btn class="mr-2 mb-2" type="submit">Sign in</v-btn>
-          <v-btn class="mr-2 mb-2" @click="$router.push('/register')"
-            >Register</v-btn
-          >
+        <div class="text-center">
+          <h2>
+            Send and receive bitcoin
+          </h2>
+          <p style="display: inline-flex" class="mb-0">
+            Now with <water fillColor="#00aaee" :size="24" class="" />
+            <a href="https://blockstream.com/liquid/" style="color: #00aaee"
+              >Liquid</a
+            >&nbsp; and <flash fillColor="yellow" :size="24" />
+            <a href="http://lightning.network/">Lightning</a>!
+          </p>
+        </div>
+        <v-divider class="mb-2 mt-0" />
+        <div class="text-center mb-2 d-flex flex-wrap justify-center">
           <v-btn
-            class="mr-2 mb-2"
             v-if="native()"
             color="#4267b2"
             @click="facebookConnect"
+            class="mb-2 mr-2"
           >
-            Facebook Login
+            Sign in with Facebook
           </v-btn>
-          <v-btn v-else color="#4267b2" class="mb-2">
+          <v-btn v-else color="#4267b2" class="mb-2 mr-2">
             <fb-signin-button
               :params="fbSignInParams"
               @success="onSignInSuccess"
               @error="onSignInError"
-              >Facebook Login</fb-signin-button
+              >Sign in with Facebook</fb-signin-button
             >
           </v-btn>
-        </v-form>
+          <v-btn @click="createUser">Create Account</v-btn>
+        </div>
+        <v-divider class="mb-2" />
+        <v-card>
+          <v-card-text>
+            <v-form @submit="submit" class="mt-4">
+              <v-text-field
+                label="Username"
+                v-model="form.username"
+                autofocus
+                dark
+                autocapitalize="none"
+              />
+              <v-text-field
+                label="Password"
+                v-model="form.password"
+                type="password"
+              />
+
+              <v-btn class="mr-2 mb-2" type="submit">Sign in</v-btn>
+              <v-btn class="mr-2 mb-2" type="submit">Forgot password</v-btn>
+            </v-form>
+          </v-card-text>
+        </v-card>
       </v-flex>
     </v-layout>
   </v-container>
@@ -66,8 +86,12 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
+import Flash from 'vue-material-design-icons/Flash';
+import Water from 'vue-material-design-icons/Water';
 
 export default {
+  components: { Flash, Water },
+
   props: {
     logout: {
       type: Boolean,
@@ -93,7 +117,7 @@ export default {
   computed: mapGetters(['error', 'user', 'initializing']),
 
   methods: {
-    ...mapActions(['login', 'facebookLogin']),
+    ...mapActions(['login', 'facebookLogin', 'createUser']),
 
     download() {
       window.location =
@@ -158,11 +182,13 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
+a
+  text-decoration none
+
 .v-text-field
   font-size 18px
 
 .fb-signin-button
-  display: inline-block;
   padding: 4px 8px;
   border-radius: 3px;
 </style>

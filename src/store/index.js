@@ -10,6 +10,15 @@ import pathify, { make } from 'vuex-pathify';
 Vue.use(Vuex);
 
 pathify.options.mapping = 'simple';
+const generatePassword = () => {
+  let length = 8,
+    charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
+    retVal = '';
+  for (let i = 0, n = charset.length; i < length; ++i) {
+    retVal += charset.charAt(Math.floor(Math.random() * n));
+  }
+  return retVal;
+};
 
 const l = console.log;
 const state = {
@@ -108,6 +117,7 @@ export default new Vuex.Store({
     },
 
     async logout({ commit, state }) {
+      l('logging out');
       document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
       window.sessionStorage.removeItem('token');
       commit('token', null);
@@ -115,6 +125,7 @@ export default new Vuex.Store({
       commit('user', null);
       if (state.socket) state.socket.disconnect();
       commit('socket', null);
+      router.push('/');
     },
 
     async verify({ dispatch }, data) {
@@ -189,11 +200,10 @@ export default new Vuex.Store({
       });
     },
 
-    async createUser({ commit, dispatch }, user) {
-      if (user.password !== user.passconfirm) {
-        commit('error', "passwords don't match");
-        return;
-      }
+    async createUser({ commit, dispatch }, user = {}) {
+      user.password = generatePassword();
+      user.passconfirm = user.password;
+      user.username = 'Guest-' + user.password;
 
       try {
         await Vue.axios.post('/register', user);
@@ -203,9 +213,14 @@ export default new Vuex.Store({
       }
     },
 
-    async updateUser({ commit }, user) {
-      let res = await Vue.axios.post('/user', user);
-      commit('user', res.data);
+    async updateUser({ commit, dispatch, state }, user) {
+      try {
+        let res = await Vue.axios.post('/user', user);
+        if (state.user.username !== user.username) dispatch('logout');
+        else commit('user', res.data);
+      } catch (e) {
+        commit('error', e.response.data);
+      }
     },
 
     async requestEmail(_, email) {

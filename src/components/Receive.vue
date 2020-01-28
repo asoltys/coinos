@@ -19,20 +19,26 @@
         @lightning="lightning"
       />
 
-      <v-btn class="mr-2" @click="bitcoin" :disabled="total <= 0">
-        <img class="mr-1" src="../assets/bitcoin.png" width="30px" />
-        <span>Bitcoin</span>
-      </v-btn>
+      <div class="d-flex flex-wrap">
+        <v-btn class="flex-grow-1 mb-2 mr-2" @click="bitcoin">
+          <img class="mr-1" src="../assets/bitcoin.png" width="30px" />
+          <span>Bitcoin</span>
+        </v-btn>
 
-      <v-btn class="mr-2" @click="lightning" :disabled="total <= 0">
-        <flash fillColor="yellow"></flash>
-        <span>Lightning</span>
-      </v-btn>
+        <v-btn
+          class="flex-grow-1 mb-2 mr-2"
+          @click="lightning"
+          :disabled="total <= 0"
+        >
+          <flash fillColor="yellow"></flash>
+          <span>Lightning</span>
+        </v-btn>
 
-      <v-btn class="mr-0" @click="liquid" :disabled="total <= 0">
-        <water fillColor="#00aaee"></water>
-        <span>Liquid</span>
-      </v-btn>
+        <v-btn class="flex-grow-1 mr-0" @click="liquid">
+          <water fillColor="#00aaee"></water>
+          <span>Liquid</span>
+        </v-btn>
+      </div>
     </div>
   </div>
 </template>
@@ -103,10 +109,6 @@ export default {
     },
 
     bitcoin() {
-      let { address } = this.user;
-      let { tip, total } = this;
-      let amount = total;
-
       this.$store.commit('loading', true);
       this.$store.commit('received', 0);
 
@@ -116,10 +118,13 @@ export default {
         this.$store.commit('loading', false);
         this.$nextTick(() => {
           let canvas = document.getElementById('qr');
+          let { address } = this.user;
           if (!canvas) return;
 
-          this.bitreq = `bitcoin:${this.user.address}?amount=${this.total /
-            100000000}`;
+          this.bitreq =
+            this.total > 0
+              ? `bitcoin:${address}?amount=${this.total / 100000000}`
+              : address;
           qr.toCanvas(canvas, this.bitreq, e => {
             if (e) console.log(e);
           });
@@ -132,8 +137,6 @@ export default {
 
     liquid() {
       let { confidential: address } = this.user;
-      let { tip, total } = this;
-      let amount = total;
 
       this.$store.commit('loading', true);
       this.$store.commit('received', 0);
@@ -146,7 +149,10 @@ export default {
           let canvas = document.getElementById('qr');
           if (!canvas) return;
 
-          this.bitreq = `liquid:${address}?amount=${this.total / 100000000}`;
+          this.bitreq =
+            this.total > 0
+              ? `liquid:${address}?amount=${this.total / 100000000}`
+              : address;
           qr.toCanvas(canvas, this.bitreq, e => {
             if (e) console.log(e);
           });

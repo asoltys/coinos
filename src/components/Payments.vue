@@ -59,21 +59,13 @@
         <div class="d-flex">
           <v-btn
             class="my-4 mx-auto"
-            v-if="payments.length === 20 && !loaded"
+            v-if="payments.length === 12 && !loaded"
             @click="more"
           >
             <v-icon class="mr-1">get_app</v-icon><span>Load More</span>
           </v-btn>
         </div>
       </div>
-      <v-alert
-        class="black--text"
-        :value="!filteredPayments().length"
-        v-else
-        color="yellow"
-      >
-        No payments found in the given time period
-      </v-alert>
     </template>
   </div>
 </template>

@@ -1,44 +1,98 @@
 <template>
-  <v-form @submit="submit">
+  <div>
     <v-alert
-      class="black--text mb-4"
-      color="yellow"
+      class="mb-4"
+      color="info"
       icon="info"
       v-model="verifyingEmail"
       dismissible
       transition="scale-transition"
       >An email has been sent with a link for you to click on</v-alert
     >
+    <v-card class="mb-2">
+      <v-card-title>Security</v-card-title>
+      <v-card-text>
+        <div class="d-flex flex-wrap justify-center">
+          <v-btn @click="changePassword" class="mr-2 mb-2">
+            <v-icon class="mr-1 yellow--text">lock</v-icon>
+            <span>Set Password</span>
+          </v-btn>
+          <div class="mr-2 mb-2">
+            <set-pin @pin="pin" />
+          </div>
+          <v-btn @click="twofa">
+            <v-icon class="mr-1 yellow--text">stay_current_portrait</v-icon>
+            Setup 2FA
+          </v-btn>
+        </div>
+        <div v-if="set2fa">
+          <h1>Coming soon</h1>
+        </div>
+        <div v-if="changingPassword" class="mb-2">
+          <v-text-field
+            label="Current Password"
+            v-model="form.newpassword"
+            type="password"
+          />
+          <v-text-field
+            label="New Password"
+            v-model="form.password"
+            type="password"
+          />
+          <v-text-field
+            label="Confirm Password"
+            v-model="form.passconfirm"
+            type="password"
+          />
+          <div class="text-right">
+            <v-btn @click="submit">
+              <v-icon class="mr-1 yellow--text">check</v-icon>
+              <span>Save</span>
+            </v-btn>
+          </div>
+        </div>
+      </v-card-text>
+    </v-card>
     <v-card>
       <v-card-text>
-        <v-text-field label="Email" v-model="form.email" type="text">
-          <template slot="append"
-            ><span
-              class="green--text"
-              v-if="user.emailVerified && form.email === user.email"
-            >
-              <v-icon class="mr-1" color="green">info</v-icon
-              ><span>Verified</span></span
-            ><span class="yellow--text" v-else-if="validate(form.email)">
-              <v-icon class="mr-1" color="yellow">warning</v-icon
-              ><span>Not Verified</span></span
-            ><span class="red--text" v-else>
-              <v-icon class="mr-1" color="red">error</v-icon
-              ><span>Not Valid</span></span
-            ></template
-          >
-        </v-text-field>
-        <v-btn
-          v-if="
-            (form.email != user.email || !user.emailVerified) &&
-              validate(form.email)
-          "
-          @click="challengeEmail"
-          >Verify</v-btn
-        >
-        <v-layout>
+        <v-form @keyup.native.enter="submit">
+          <v-text-field label="Username" v-model="form.username" type="text" />
           <v-text-field
-            label="Phone"
+            label="Email (optional)"
+            v-model="form.email"
+            type="text"
+          >
+            <template slot="append"
+              ><span
+                class="green--text"
+                v-if="user.emailVerified && form.email === user.email"
+              >
+                <v-icon class="mr-1" color="green">info</v-icon
+                ><span>Verified</span></span
+              ><span class="yellow--text" v-else-if="validate(form.email)">
+                <v-icon class="mr-1" color="yellow">warning</v-icon
+                ><span>Not Verified</span></span
+              ><span class="red--text" v-else-if="form.email">
+                <v-icon class="mr-1" color="red">error</v-icon
+                ><span>Not Valid</span></span
+              ></template
+            >
+          </v-text-field>
+          <div class="text-center">
+            <v-btn
+              v-if="
+                (form.email != user.email || !user.emailVerified) &&
+                  validate(form.email)
+              "
+              class="mb-2"
+              @click="challengeEmail"
+            >
+              <v-icon class="mr-1 yellow--text">email</v-icon
+              ><span>Send Email</span></v-btn
+            >
+          </div>
+          <v-text-field
+            label="Phone (optional)"
             v-model="form.phone"
             type="text"
             mask="phone"
@@ -60,26 +114,31 @@
                 <v-icon class="mr-1" color="yellow">warning</v-icon
                 ><span>Not Verified</span></span
               >
-              <span class="red--text" v-else>
+              <span class="red--text" v-else-if="form.phone">
                 <v-icon class="mr-1" color="red">error</v-icon
                 ><span>Not Valid</span></span
               >
             </template>
           </v-text-field>
-          <v-btn
-            v-if="
-              form.phone.length === 10 &&
-                (!user.phoneVerified || user.phoneVerified === '0')
-            "
-            @click="challengePhone"
-            >Verify</v-btn
-          >
-        </v-layout>
-        <v-layout>
+          <div class="text-center">
+            <v-btn
+              class="mb-2"
+              v-if="
+                form.phone.length === 10 &&
+                  (!user.phoneVerified ||
+                    user.phoneVerified === '0' ||
+                    user.phone !== form.phone)
+              "
+              @click="challengePhone"
+            >
+              <v-icon class="mr-1 yellow--text">sms</v-icon
+              ><span>Send Code</span>
+            </v-btn>
+          </div>
           <v-alert
-            class="black--text mb-4"
+            class="mb-4"
             v-if="!user.phoneVerified"
-            color="yellow"
+            color="info"
             icon="info"
             v-model="verifyingPhone"
             dismissible
@@ -87,49 +146,60 @@
             >A 6 digit code will be texted to your phone. Enter it
             below:</v-alert
           >
-        </v-layout>
-        <v-layout
-          v-if="
-            verifyingPhone &&
-              form.phone.length === 10 &&
-              !(user.phoneVerified && user.phone === form.phone)
-          "
-        >
-          <v-text-field
-            label="Code"
-            v-model="form.phoneCode"
-            ref="phoneCode"
-            type="text"
-            @keyup="checkCode"
-          ></v-text-field>
-        </v-layout>
+          <div
+            v-if="
+              verifyingPhone &&
+                form.phone.length === 10 &&
+                !(user.phoneVerified && user.phone === form.phone)
+            "
+          >
+            <v-text-field
+              label="Code"
+              v-model="form.phoneCode"
+              ref="phoneCode"
+              type="text"
+              @keyup="checkCode"
+            ></v-text-field>
+          </div>
 
-        <set-pin @pin="pin" />
-
-        <v-switch
-          label="Two-Factor Authentication"
-          v-model="form.twofa"
-          :disabled="!(user.emailVerified && user.phoneVerified)"
-        ></v-switch>
-        <v-btn @click="save">Save Settings</v-btn>
+          <div class="text-right">
+            <v-btn @click="submit">
+              <v-icon class="mr-1 yellow--text">check</v-icon>
+              <span>Save</span>
+            </v-btn>
+          </div>
+        </v-form>
       </v-card-text>
     </v-card>
-  </v-form>
+    <div class="text-center mt-2">
+      <v-btn v-if="promptInstall" class="mb-2 mr-1" @click="install">
+        <v-icon class="mr-1">stay_current_portrait</v-icon
+        ><span>Install App</span>
+      </v-btn>
+    </div>
+  </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
 import validator from 'email-validator';
 import SetPin from './SetPin';
+import Window from '../window.js';
 
 export default {
   components: { SetPin },
   data() {
     return {
+      installed: false,
+      changingPassword: false,
+      set2fa: false,
       initialized: false,
       code: '',
       dialog: false,
       form: {
+        username: '',
+        password: '',
+        passconfirm: '',
         currency: '',
         email: '',
         phone: '',
@@ -143,19 +213,30 @@ export default {
     };
   },
 
-  computed: mapGetters(['rates', 'user']),
+  computed: mapGetters(['error', 'rates', 'user']),
 
   methods: {
+    async install() {
+      const { outcome } = await this.prompt.prompt();
+      if (outcome === 'accepted') this.installed = true;
+    },
+    prompt() {
+      return Window.prompt;
+    },
+    promptInstall() {
+      return this.prompt && !this.installed;
+    },
+    twofa() {
+      this.set2fa = !this.set2fa;
+    },
+    changePassword() {
+      this.changingPassword = !this.changingPassword;
+    },
     pin(pin) {
       this.form.pin = pin;
     },
     updatePhone() {
       this.form.phoneCode = '';
-    },
-
-    save() {
-      this.submit();
-      this.$router.push('/home');
     },
 
     checkCode() {
@@ -198,10 +279,12 @@ export default {
 
   watch: {
     user(user) {
-      if (!this.initialized)
+      if (!this.initialized) {
         Object.keys(user)
           .filter(key => key in this.form && user[key])
           .forEach(key => (this.form[key] = user[key]));
+        delete this.form['password'];
+      }
     },
   },
 
@@ -210,6 +293,7 @@ export default {
     Object.keys(user)
       .filter(key => key in this.form && user[key])
       .forEach(key => (this.form[key] = user[key]));
+    delete this.form['password'];
   },
 };
 </script>
