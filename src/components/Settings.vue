@@ -325,7 +325,11 @@ export default {
           .filter(key => key in this.form && user[key])
           .forEach(key => (this.form[key] = user[key]));
         this.form['password'] = '';
-        if (user.currencies) this.form.currencies = JSON.parse(user.currencies);
+        try {
+          this.form.currencies = JSON.parse(user.currencies);
+        } catch (e) {
+          /**/
+        }
       }
     },
   },
@@ -336,7 +340,11 @@ export default {
       .filter(key => key in this.form && user[key])
       .forEach(key => (this.form[key] = user[key]));
     this.form['password'] = '';
-    if (user.currencies) this.form.currencies = JSON.parse(user.currencies);
+    try {
+      this.form.currencies = JSON.parse(user.currencies);
+    } catch (e) {
+      /**/
+    }
   },
 };
 </script>
