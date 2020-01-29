@@ -116,8 +116,17 @@ export default new Vuex.Store({
       }
     },
 
+    async currency({ commit, dispatch, state }) {
+      const { user } = state;
+      const currencies = JSON.parse(user.currencies);
+      let i = currencies.findIndex(c => c === user.currency) + 1;
+      if (i === currencies.length) (i = 0);
+      user.currency = currencies[i];
+      commit('user', user);
+      dispatch('updateUser', user);
+    },
+
     async logout({ commit, state }) {
-      l('logging out');
       document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
       window.sessionStorage.removeItem('token');
       commit('token', null);

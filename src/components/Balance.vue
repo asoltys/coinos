@@ -4,7 +4,8 @@
     <span class="headline">SAT</span>
     <h3 v-if="!isNaN(animatedRate)">
       <span class="yellow--text">
-        <span class="display-1">{{ fiat | format }}</span> {{ user.currency }}
+        <span class="display-1">{{ fiat | format }}</span>
+        <span @click="currency" style="cursor: pointer">&nbsp;{{ user.currency }}</span>
       </span>
       @
       <span class="font-weight-black yellow--text">{{
@@ -26,6 +27,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import { TweenLite } from 'gsap';
+import { call } from 'vuex-pathify';
 
 export default {
   props: { payobj: { type: Object } },
@@ -64,6 +66,10 @@ export default {
     animatedRate() {
       return parseFloat(this.tweenedRate).toFixed(2);
     },
+  },
+
+  methods: {
+    currency: call('currency'),
   },
 
   watch: {

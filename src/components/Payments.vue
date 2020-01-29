@@ -9,6 +9,7 @@
         <v-expansion-panels accordion>
           <v-expansion-panel
             v-for="{
+              currency,
               confirmed,
               link,
               hash,
@@ -34,8 +35,8 @@
                 SAT
                 <div>
                   <span class="yellow--text">
-                    {{ sign }}{{ fiat | abs | twodec }}
-                    {{ user.currency }}
+                    {{ fiat | abs | twodec }}
+                    {{ currency }}
                   </span>
                 </div>
               </div>
