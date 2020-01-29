@@ -27,18 +27,18 @@
         </v-alert>
         <div class="text-center">
           <h2>
-            Send and receive bitcoin
+            Send and receive <span class="yellow--text">bitcoin</span>
           </h2>
           <p style="display: inline-flex" class="mb-0">
-            Now with <water fillColor="#00aaee" :size="24" class="" />
-            <a href="https://blockstream.com/liquid/" style="color: #00aaee"
+            with <water fillColor="#06ddff" :size="24" class="" />
+            <a href="https://blockstream.com/liquid/" style="color: #06ddff"
               >Liquid</a
             >&nbsp; and <flash fillColor="yellow" :size="24" />
             <a href="http://lightning.network/">Lightning</a>!
           </p>
         </div>
         <v-divider class="mb-2 mt-0" />
-        <div class="text-center mb-2 d-flex flex-wrap justify-center">
+        <div class="text-center my-2 d-flex flex-wrap justify-center">
           <v-btn
             v-if="native()"
             color="#4267b2"
@@ -47,7 +47,7 @@
           >
             Sign in with Facebook
           </v-btn>
-          <v-btn v-else color="#4267b2" class="mb-2 mr-2">
+          <v-btn v-else color="#4267b2" class="my-2 my-sm-0 mr-sm-2">
             <fb-signin-button
               :params="fbSignInParams"
               @success="onSignInSuccess"
@@ -55,7 +55,7 @@
               >Sign in with Facebook</fb-signin-button
             >
           </v-btn>
-          <v-btn @click="createUser">Create Account</v-btn>
+          <v-btn @click="createUser" class="mb-2 mb-sm-0">Create Account</v-btn>
         </div>
         <v-divider class="mb-2" />
         <v-card>
@@ -191,4 +191,8 @@ a
 .fb-signin-button
   padding: 4px 8px;
   border-radius: 3px;
+
+@media (max-width: 600px)
+  .v-btn
+    width 100%
 </style>

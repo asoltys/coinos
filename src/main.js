@@ -2,7 +2,6 @@ import Vue from 'vue';
 import VueAxios from 'vue-axios';
 import Axios from 'axios';
 import App from './App';
-import CamControls from './CamControls';
 import router from './router';
 import store from './store';
 import FastClick from 'fastclick';
@@ -20,11 +19,6 @@ const app = new Vue({
   vuetify,
   store,
 }).$mount('#app');
-
-new Vue({
-  render: h => h(CamControls),
-  store,
-}).$mount('#camcontrols');
 
 if (window.location.protocol !== 'file:') {
   window.fbAsyncInit = function() {

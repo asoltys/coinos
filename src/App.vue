@@ -20,6 +20,18 @@
             >{{ error }}</v-alert
           >
           <router-view :key="$route.path"></router-view>
+          <div class="text-center pa-4">
+            <v-btn
+              v-if="
+                ['/', '/settings', '/about'].includes($route.path) && promptInstall
+              "
+              class="mb-2 mr-1"
+              @click="install"
+            >
+              <v-icon class="mr-1" color="green">stay_current_portrait</v-icon
+              ><span>Install App</span>
+            </v-btn>
+          </div>
         </v-container>
       </transition>
     </v-content>
@@ -34,12 +46,27 @@ import SnackBar from './components/SnackBar';
 import TopBar from './components/TopBar';
 import { mapGetters } from 'vuex';
 import { QrcodeStream } from 'vue-qrcode-reader';
+import Window from './window.js';
 
 export default {
   components: { BottomNav, SnackBar, TopBar, QrcodeStream },
 
+  data() {
+    return {
+      installed: false,
+    };
+  },
+
   computed: {
     ...mapGetters(['loading', 'scanning', 'user']),
+
+    prompt() {
+      return Window.prompt;
+    },
+
+    promptInstall() {
+      return this.prompt && !this.installed;
+    },
 
     webscanning() {
       return this.scanning && !window.QRScanner;
@@ -63,6 +90,11 @@ export default {
 
   methods: {
     ...mapActions(['init', 'handleScan']),
+
+    async install() {
+      const { outcome } = await this.prompt.prompt();
+      if (outcome === 'accepted') this.installed = true;
+    },
 
     addEvent(object, type, callback) {
       if (object == null || typeof object == 'undefined') return;

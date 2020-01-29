@@ -2,24 +2,29 @@
   <div>
     <v-alert
       class="mb-4"
-      color="info"
+      color="success"
       icon="info"
-      v-model="verifyingEmail"
+      v-model="success"
       dismissible
       transition="scale-transition"
-      >An email has been sent with a link for you to click on</v-alert
+      >Settings saved successfully</v-alert
     >
     <v-card class="mb-2">
       <v-card-title>Security</v-card-title>
       <v-card-text>
         <div class="d-flex flex-wrap justify-center">
-          <v-btn @click="changePassword" class="mr-2 mb-2">
+          <v-btn @click="changePassword" class="mr-sm-2 mb-2">
             <v-icon class="mr-1 yellow--text">lock</v-icon>
             <span>Set Password</span>
           </v-btn>
-          <div class="mr-2 mb-2">
-            <set-pin @pin="pin" />
-          </div>
+          <v-btn
+            @click.stop="showPinDialog = !showPinDialog"
+            class="mr-sm-2 mb-2"
+          >
+            <v-icon class="mr-1 yellow--text">dialpad</v-icon>
+            {{ user.pin ? 'Change' : 'Set' }} PIN
+          </v-btn>
+          <set-pin @pin="pin" :showPinDialog="showPinDialog" />
           <v-btn @click="twofa">
             <v-icon class="mr-1 yellow--text">stay_current_portrait</v-icon>
             Setup 2FA
@@ -56,6 +61,15 @@
     <v-card>
       <v-card-text>
         <v-form @keyup.native.enter="submit">
+          <v-alert
+            class="mb-4"
+            color="info"
+            icon="info"
+            v-model="verifyingEmail"
+            dismissible
+            transition="scale-transition"
+            >An email has been sent with a link for you to click on</v-alert
+          >
           <v-text-field label="Username" v-model="form.username" type="text" />
           <v-text-field
             label="Email (optional)"
@@ -88,7 +102,7 @@
               @click="challengeEmail"
             >
               <v-icon class="mr-1 yellow--text">email</v-icon
-              ><span>Send Email</span></v-btn
+              ><span>Confirm Email</span></v-btn
             >
           </div>
           <v-text-field
@@ -132,7 +146,7 @@
               @click="challengePhone"
             >
               <v-icon class="mr-1 yellow--text">sms</v-icon
-              ><span>Send Code</span>
+              ><span>Confirm Phone</span>
             </v-btn>
           </div>
           <v-alert
@@ -162,6 +176,32 @@
             ></v-text-field>
           </div>
 
+          <v-combobox
+            v-model="form.currencies"
+            :items="currencies"
+            chips
+            label="Currencies"
+            multiple
+            @change="oy"
+            :menu-props="{
+              maxHeight: 200,
+              closeOnClick: true,
+              closeOnContentClick: true,
+            }"
+          >
+            <template v-slot:selection="{ attrs, item, select, selected }">
+              <v-chip
+                v-bind="attrs"
+                :input-value="selected"
+                close
+                @click="select"
+                @click:close="remove(item)"
+              >
+                <strong>{{ item }}</strong>
+              </v-chip>
+            </template>
+          </v-combobox>
+
           <div class="text-right">
             <v-btn @click="submit">
               <v-icon class="mr-1 yellow--text">check</v-icon>
@@ -171,12 +211,6 @@
         </v-form>
       </v-card-text>
     </v-card>
-    <div class="text-center mt-2">
-      <v-btn v-if="promptInstall" class="mb-2 mr-1" @click="install">
-        <v-icon class="mr-1">stay_current_portrait</v-icon
-        ><span>Install App</span>
-      </v-btn>
-    </div>
   </div>
 </template>
 
@@ -184,13 +218,13 @@
 import { mapActions, mapGetters } from 'vuex';
 import validator from 'email-validator';
 import SetPin from './SetPin';
-import Window from '../window.js';
 
 export default {
   components: { SetPin },
   data() {
     return {
-      installed: false,
+      showPinDialog: false,
+      success: false,
       changingPassword: false,
       set2fa: false,
       initialized: false,
@@ -201,6 +235,7 @@ export default {
         password: '',
         passconfirm: '',
         currency: '',
+        currencies: '',
         email: '',
         phone: '',
         phoneCode: '',
@@ -213,18 +248,22 @@ export default {
     };
   },
 
-  computed: mapGetters(['error', 'rates', 'user']),
+  computed: {
+    ...mapGetters(['error', 'rates', 'user']),
+    currencies() {
+      return this.rates ? Object.keys(this.rates).sort() : [];
+    },
+  },
 
   methods: {
-    async install() {
-      const { outcome } = await this.prompt.prompt();
-      if (outcome === 'accepted') this.installed = true;
+    oy() {
+      this.form.currencies = this.form.currencies.filter(c =>
+        this.currencies.includes(c)
+      );
     },
-    prompt() {
-      return Window.prompt;
-    },
-    promptInstall() {
-      return this.prompt && !this.installed;
+    remove(item) {
+      this.form.currencies.splice(this.form.currencies.indexOf(item), 1);
+      this.form.currencies = [...this.form.currencies];
     },
     twofa() {
       this.set2fa = !this.set2fa;
@@ -267,6 +306,8 @@ export default {
     submit(e) {
       if (e) e.preventDefault();
       this.updateUser(this.form);
+      this.success = true;
+      setTimeout(() => (this.success = false), 5000);
     },
 
     ...mapActions([
@@ -283,7 +324,8 @@ export default {
         Object.keys(user)
           .filter(key => key in this.form && user[key])
           .forEach(key => (this.form[key] = user[key]));
-        delete this.form['password'];
+        this.form['password'] = '';
+        if (user.currencies) this.form.currencies = JSON.parse(user.currencies);
       }
     },
   },
@@ -293,7 +335,14 @@ export default {
     Object.keys(user)
       .filter(key => key in this.form && user[key])
       .forEach(key => (this.form[key] = user[key]));
-    delete this.form['password'];
+    this.form['password'] = '';
+    if (user.currencies) this.form.currencies = JSON.parse(user.currencies);
   },
 };
 </script>
+
+<style lang="stylus" scoped>
+@media (max-width: 600px)
+  .v-btn
+    width 100%
+</style>

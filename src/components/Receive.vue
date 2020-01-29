@@ -19,7 +19,7 @@
         @lightning="lightning"
       />
 
-      <div class="d-flex flex-wrap">
+      <div class="d-flex flex-wrap buttons">
         <v-btn class="flex-grow-1 mb-2 mr-2" @click="bitcoin">
           <img class="mr-1" src="../assets/bitcoin.png" width="30px" />
           <span>Bitcoin</span>
@@ -233,4 +233,8 @@ canvas
 
 .total
   vertical-
+
+@media (max-width: 600px)
+  .buttons .v-btn
+    width 100%
 </style>

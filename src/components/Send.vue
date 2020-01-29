@@ -182,3 +182,9 @@ export default {
   },
 };
 </script>
+
+<style lang="stylus" scoped>
+@media (max-width: 600px)
+  .v-btn
+    width 100%
+</style>

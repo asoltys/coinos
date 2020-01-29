@@ -1,94 +1,79 @@
 <template>
-  <div>
-    <v-btn @click.stop="open">
-      <v-icon class="mr-1 yellow--text">dialpad</v-icon>
-      {{ user.pin ? 'Change' : 'Set' }} PIN
-    </v-btn>
-    <v-dialog v-model="dialog" width="500" @click:outside="close">
-      <v-card>
-        <v-card-title class="headline" primary-title>
-          {{
-            confirming
-              ? 'Confirm'
-              : user.pin
-              ? user.pin === pin || success
-                ? 'Set'
-                : 'Old'
-              : 'New'
-          }}
-          PIN
-        </v-card-title>
+  <v-dialog v-model="dialog" width="500" @click:outside="close">
+    <v-card>
+      <v-card-title class="headline" primary-title>
+        {{ state }} PIN
+      </v-card-title>
 
-        <v-card-text>
-          <v-alert v-if="error" color="red">{{ error }}</v-alert>
-        </v-card-text>
+      <v-card-text>
+        <v-alert v-if="error" color="red">{{ error }}</v-alert>
+      </v-card-text>
 
-        <v-card-text class="text-center">
-          <v-alert v-if="success" color="green">PIN Set Successfully!</v-alert>
+      <v-card-text class="text-center">
+        <v-alert v-if="success" color="green">PIN Set Successfully!</v-alert>
 
-          <div v-else>
+        <div v-else>
+          <pincode-input
+            v-if="pinRequired"
+            class="mx-auto yellow--text"
+            v-model="oldPin"
+            placeholder="0"
+            :length="6"
+            ref="oldPin"
+            :key="oldPinKey"
+          />
+          <div v-show="!pinRequired">
             <pincode-input
-              v-if="pinRequired"
+              v-if="confirming"
               class="mx-auto yellow--text"
-              v-model="oldPin"
+              v-model="verifyPin"
               placeholder="0"
               :length="6"
-              ref="oldPin"
-              :key="oldPinKey"
+              ref="verifyPin"
+              :key="verifyPinKey"
             />
-            <div v-show="!pinRequired">
-              <pincode-input
-                v-if="confirming"
-                class="mx-auto yellow--text"
-                v-model="verifyPin"
-                placeholder="0"
-                :length="6"
-                ref="verifyPin"
-                :key="verifyPinKey"
-              />
-              <pincode-input
-                v-else
-                class="mx-auto yellow--text"
-                v-model="newPin"
-                placeholder="0"
-                :length="6"
-                ref="newPin"
-                :key="newPinKey"
-              />
+            <pincode-input
+              v-else
+              class="mx-auto yellow--text"
+              v-model="newPin"
+              placeholder="0"
+              :length="6"
+              ref="newPin"
+              :key="newPinKey"
+            />
 
-              <p class="mt-2">
-                This PIN will be required to send outgoing payments
-              </p>
-            </div>
+            <p class="mt-2">
+              This PIN will be required to send outgoing payments
+            </p>
           </div>
-        </v-card-text>
+        </div>
+      </v-card-text>
 
-        <v-card-actions>
-          <v-btn v-if="!success" color="red" text @click="close">
-            Cancel
-          </v-btn>
-          <v-spacer></v-spacer>
-          <v-btn v-if="success" color="primary" text @click="close">
-            Done
-          </v-btn>
-          <v-btn v-else-if="confirming" color="primary" text @click="submit">
-            Ok
-          </v-btn>
-          <v-btn
-            v-else-if="pinRequired"
-            color="primary"
-            text
-            @click="submitOldPin"
-          >
-            Ok
-          </v-btn>
-          <v-btn v-else color="primary" text @click="startConfirming">
-            Ok
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-  </div>
+      <v-card-actions>
+        <v-btn v-if="!success" color="red" text @click="close">
+          Cancel
+        </v-btn>
+        <v-spacer></v-spacer>
+        <v-btn v-if="success" color="primary" text @click="close">
+          Done
+        </v-btn>
+        <v-btn v-else-if="confirming" color="primary" text @click="submit">
+          Ok
+        </v-btn>
+        <v-btn
+          v-else-if="pinRequired"
+          color="primary"
+          text
+          @click="submitOldPin"
+        >
+          Ok
+        </v-btn>
+        <v-btn v-else color="primary" text @click="startConfirming">
+          Ok
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script>
@@ -96,6 +81,7 @@ import PincodeInput from 'vue-pincode-input';
 import { call, sync } from 'vuex-pathify';
 export default {
   components: { PincodeInput },
+  props: { showPinDialog: { type: Boolean } },
   data() {
     return {
       dialog: false,
@@ -111,6 +97,16 @@ export default {
     };
   },
   computed: {
+    state() {
+      const { confirming, user, pin, success } = this;
+      return confirming
+        ? 'Confirm'
+        : user.pin
+        ? user.pin === pin || success
+          ? 'Set'
+          : 'Old'
+        : 'New';
+    },
     pinRequired() {
       return this.user.pin && this.user.pin !== this.pin;
     },
@@ -170,6 +166,9 @@ export default {
     },
   },
   watch: {
+    showPinDialog() {
+      this.dialog = true;
+    },
     newPin(v) {
       if (v.length === 6) this.startConfirming();
     },

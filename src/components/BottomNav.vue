@@ -25,7 +25,7 @@
         @click="$router.push('/send?refresh')"
       >
         <span>Send</span>
-        <send></send>
+        <send />
       </v-btn>
       <v-btn class="flex-grow-1" text @click="$router.push('/settings')">
         <span>Settings</span>
