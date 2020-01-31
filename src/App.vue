@@ -12,7 +12,7 @@
       <transition name="fade" mode="out-in" appear>
         <v-container class="mr-3" style="margin-bottom: 50px !important">
           <v-alert
-            class="ma-4"
+            class="mb-2"
             v-if="error"
             color="error"
             dismissible
@@ -23,7 +23,8 @@
           <div class="text-center pa-4">
             <v-btn
               v-if="
-                ['/', '/settings', '/about'].includes($route.path) && promptInstall
+                ['/', '/settings', '/about'].includes($route.path) &&
+                  promptInstall
               "
               class="mb-2 mr-1"
               @click="install"

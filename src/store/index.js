@@ -116,13 +116,14 @@ export default new Vuex.Store({
       }
     },
 
-    async currency({ commit, dispatch, state }) {
+    async shiftCurrency({ commit, dispatch, state }) {
       const { user } = state;
-      const currencies = JSON.parse(user.currencies);
+      let { currencies } = user;
+      if (!Array.isArray(currencies)) currencies = JSON.parse(user.currencies);
       let i = currencies.findIndex(c => c === user.currency) + 1;
-      if (i === currencies.length) (i = 0);
+      if (i === currencies.length) i = 0;
       user.currency = currencies[i];
-      commit('user', user);
+      commit('rate', state.rates[user.currency]);
       dispatch('updateUser', user);
     },
 

@@ -15,7 +15,7 @@
         <div class="d-flex flex-wrap justify-center">
           <v-btn @click="changePassword" class="mr-sm-2 mb-2">
             <v-icon class="mr-1 yellow--text">lock</v-icon>
-            <span>Set Password</span>
+            <span>Change Password</span>
           </v-btn>
           <v-btn
             @click.stop="showPinDialog = !showPinDialog"
@@ -34,27 +34,24 @@
           <h1>Coming soon</h1>
         </div>
         <div v-if="changingPassword" class="mb-2">
-          <v-text-field
-            label="Current Password"
-            v-model="form.newpassword"
-            type="password"
-          />
-          <v-text-field
-            label="New Password"
-            v-model="form.password"
-            type="password"
-          />
-          <v-text-field
-            label="Confirm Password"
-            v-model="form.passconfirm"
-            type="password"
-          />
-          <div class="text-right">
-            <v-btn @click="submit">
-              <v-icon class="mr-1 yellow--text">check</v-icon>
-              <span>Save</span>
-            </v-btn>
-          </div>
+          <v-form @keyup.native.enter="submit">
+            <v-text-field
+              label="New Password"
+              v-model="form.password"
+              type="password"
+            />
+            <v-text-field
+              label="Confirm Password"
+              v-model="form.passconfirm"
+              type="password"
+            />
+            <div class="text-right">
+              <v-btn @click="submit">
+                <v-icon class="mr-1 yellow--text">check</v-icon>
+                <span>Save</span>
+              </v-btn>
+            </div>
+          </v-form>
         </div>
       </v-card-text>
     </v-card>
@@ -305,9 +302,14 @@ export default {
 
     submit(e) {
       if (e) e.preventDefault();
-      this.updateUser(this.form);
-      this.success = true;
-      setTimeout(() => (this.success = false), 5000);
+      if (!this.form.password || this.form.password === this.form.passconfirm) {
+        this.updateUser(this.form);
+        this.success = true;
+        setTimeout(() => (this.success = false), 5000);
+        this.$store.commit('error', '');
+      } else {
+        this.$store.commit('error', "Passwords don't match");
+      }
     },
 
     ...mapActions([
@@ -325,6 +327,7 @@ export default {
           .filter(key => key in this.form && user[key])
           .forEach(key => (this.form[key] = user[key]));
         this.form['password'] = '';
+        this.form['passconfirm'] = '';
         try {
           this.form.currencies = JSON.parse(user.currencies);
         } catch (e) {
@@ -340,6 +343,7 @@ export default {
       .filter(key => key in this.form && user[key])
       .forEach(key => (this.form[key] = user[key]));
     this.form['password'] = '';
+    this.form['passconfirm'] = '';
     try {
       this.form.currencies = JSON.parse(user.currencies);
     } catch (e) {

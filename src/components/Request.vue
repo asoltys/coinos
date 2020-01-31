@@ -26,7 +26,7 @@
         class="w-100 mx-auto mb-2"
       />
       <div class="mb-2" v-if="!(amount > 0)">
-        <code class="black--text mb-2" :data-clipboard-text="node">{{
+        <code class="black--text mb-2" :data-clipboard-text="copytext">{{
           copytext
         }}</code>
       </div>
@@ -68,6 +68,7 @@ export default {
 
   data() {
     return {
+      fixedRate: 0,
       full: false,
       showcode: false,
       amount: 0,
@@ -77,7 +78,7 @@ export default {
   computed: {
     ...mapGetters(['rate', 'user']),
     fiat() {
-      return ((this.amount * this.rate) / 100000000).toFixed(2);
+      return ((this.amount * this.fixedRate) / 100000000).toFixed(2);
     },
     code() {
       return this.showcode ? 'Show QR' : 'Show Code';
@@ -135,6 +136,7 @@ export default {
 
   mounted() {
     this.amount = this.total;
+    this.fixedRate = this.rate;
   },
 };
 </script>

@@ -35,7 +35,7 @@
             :amount="parseFloat(display)"
             @update="updateAmount"
             @toggle="toggle"
-          ></numpad>
+          />
         </template>
         <payment-details :payobj="payobj" />
         <div>

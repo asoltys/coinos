@@ -4,14 +4,13 @@
       <input
         class="display-1"
         v-model="inputAmount"
-        @change.prevent="parseAmount"
         @focus="e => e.target.select()"
         @keyup.enter="$emit('lightning')"
       />
       <v-btn
         class="toggle black--text ml-2 mt-auto"
         color="yellow"
-        @click.prevent="$emit('toggle')"
+        @click.prevent="toggle"
         >{{ currency }}</v-btn
       >
     </div>
@@ -33,21 +32,14 @@
 </template>
 
 <script>
-export default {
-  props: {
-    amount: {
-      type: Number,
-      default: 0,
-    },
-    currency: {
-      type: String,
-      default: 'CAD',
-    },
-  },
+import { get, call } from 'vuex-pathify';
+const f = parseFloat;
+const SATS = 100000000;
 
+export default {
   filters: {
     format(n, d) {
-      return parseFloat(n).toLocaleString('en-US', {
+      return f(n).toLocaleString('en-US', {
         minimumFractionDigits: d,
         maximumFractionDigits: d,
       });
@@ -56,6 +48,8 @@ export default {
 
   data() {
     return {
+      amount: 0,
+      fiat: false,
       inputAmount: '_',
       buttons: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '<', '0', 'C'],
       codes: Array.from(Array(10), (_, x) => x + 48),
@@ -63,8 +57,13 @@ export default {
   },
 
   computed: {
+    currency() {
+      return this.fiat ? this.user.currency : 'sat';
+    },
+    rate: get('rate'),
+    user: get('user'),
     decimals() {
-      return this.currency === 'sat' ? 0 : 2;
+      return this.fiat ? 2 : 0;
     },
     divisor() {
       return 10 ** this.decimals;
@@ -72,17 +71,7 @@ export default {
   },
 
   methods: {
-    parseAmount(e) {
-      if (this.currency === 'sat') {
-        this.inputAmount = parseInt(e.target.value);
-      } else {
-        this.inputAmount = parseFloat(e.target.value).toFixed(2);
-      }
-
-      if (isNaN(this.inputAmount) || parseFloat(this.inputAmount) === 0)
-        this.inputAmount = '_';
-      this.$emit('update', this.inputAmount);
-    },
+    shiftCurrency: call('shiftCurrency'),
 
     id(n) {
       let prefix = 'button-';
@@ -101,29 +90,52 @@ export default {
       this.update(n);
     },
 
+    async toggle() {
+      let { currency, currencies } = this.user;
+      if (!currency) return;
+      if (!Array.isArray(currencies)) currencies = JSON.parse(currencies);
+      let index = currencies.findIndex(c => c === currency);
+
+      if (this.fiat) {
+        if (index === currencies.length - 1) this.fiat = false;
+        await this.shiftCurrency();
+        this.$nextTick(() => {
+          if (this.fiat)
+            this.inputAmount = ((this.amount / SATS) * this.rate).toFixed(2);
+          else this.inputAmount = this.amount.toFixed(0);
+        });
+      } else {
+        this.inputAmount = ((this.amount / SATS) * this.rate).toFixed(2);
+        this.fiat = true;
+      }
+    },
+
     update(m) {
-      let amount = parseFloat(this.amount);
+      let amount = f(this.inputAmount);
+      if (isNaN(amount)) amount = 0;
 
       if (m === '<') {
-        amount =
-          Math.floor(this.divisor * (parseFloat(amount) / 10)) / this.divisor;
+        amount = Math.floor(this.divisor * (f(amount) / 10)) / this.divisor;
       } else {
-        amount = 10 * amount + parseFloat(m) / this.divisor;
+        amount = 10 * amount + f(m) / this.divisor;
       }
 
       if (m === 'C') amount = 0;
-      amount = amount.toFixed(this.decimals);
-      this.inputAmount = amount;
-      if (parseFloat(this.inputAmount) === 0) this.inputAmount = '';
-      this.$emit('update', amount);
+      if (this.fiat) this.amount = parseInt((amount * SATS) / this.rate);
+      else this.amount = amount;
+      this.inputAmount = amount.toFixed(this.decimals);
+      if (f(this.inputAmount) === 0) this.inputAmount = '_';
+      this.$emit('update', this.amount);
     },
   },
 
   watch: {
-    amount(v) {
-      if (this.currency === 'sat') this.inputAmount = parseInt(v);
-      else this.inputAmount = parseFloat(v).toFixed(2);
-      if (parseFloat(v) === 0) this.inputAmount = '_';
+    inputAmount(v) {
+      if (this.fiat) this.amount = parseInt((v * SATS) / this.rate);
+      else this.amount = v;
+      if (f(this.inputAmount) === 0) this.inputAmount = '_';
+      if (isNaN(this.amount)) this.amount = 0;
+      this.$emit('update', this.amount);
     },
   },
 
@@ -137,7 +149,7 @@ export default {
 
   mounted() {
     this.inputAmount = this.amount;
-    if (parseFloat(this.inputAmount) === 0) this.inputAmount = '_';
+    if (f(this.inputAmount) === 0) this.inputAmount = '_';
   },
 };
 </script>

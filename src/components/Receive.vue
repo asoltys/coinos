@@ -12,10 +12,7 @@
     <div v-else>
       <numpad
         class="mr-4 mb-2"
-        :currency="currency"
-        :amount="parseFloat(amount)"
-        @update="a => (amount = a)"
-        @toggle="toggle"
+        @update="a => (total = a)"
         @lightning="lightning"
       />
 
@@ -52,8 +49,6 @@ import { mapGetters, mapActions } from 'vuex';
 import Flash from 'vue-material-design-icons/Flash';
 import Water from 'vue-material-design-icons/Water';
 
-const f = parseFloat;
-
 export default {
   components: { Flash, Numpad, Received, Request, Water },
 
@@ -66,10 +61,11 @@ export default {
       amount: 0,
       full: false,
       tip: 0,
+      total: 0,
       generated: false,
       showcode: false,
       finished: false,
-      fiat: true,
+      fiat: false,
       bitreq: '',
     };
   },
@@ -83,29 +79,13 @@ export default {
     copytext() {
       return this.bitreq || this.payreq;
     },
-    total() {
-      let total = f(this.amount) + f(this.tip);
-      if (this.fiat) total /= this.rate;
-      return (total * this.tosat).toFixed(0);
-    },
-
-    currency() {
-      if (this.fiat) return this.user.currency;
-      return 'sat';
-    },
   },
 
   methods: {
-    ...mapActions(['addInvoice', 'snack', 'clearPayment']),
+    ...mapActions(['addInvoice', 'snack', 'clearPayment', 'shiftCurrency']),
 
     portrait() {
       return window.innerHeight > window.innerWidth;
-    },
-
-    toggle() {
-      this.fiat = !this.fiat;
-      if (this.fiat) this.amount = (this.amount / 100000000) * this.rate;
-      else this.amount = (this.amount * 100000000) / this.rate;
     },
 
     bitcoin() {
@@ -202,7 +182,6 @@ export default {
         this.$router.replace(this.$route.path);
       } else {
         this.clear();
-        this.amount = 0;
         this.generated = false;
       }
     },
@@ -216,6 +195,7 @@ export default {
   mounted() {
     this.clear();
     this.checkRefresh();
+    if (this.user.currency) this.fiat = true;
   },
 };
 </script>

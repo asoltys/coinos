@@ -26,9 +26,7 @@
           >You've logged out
         </v-alert>
         <div class="text-center">
-          <h2>
-            Send and receive <span class="yellow--text">bitcoin</span>
-          </h2>
+          <h2>Send and receive <span class="yellow--text">bitcoin</span></h2>
           <p style="display: inline-flex" class="mb-0">
             with <water fillColor="#06ddff" :size="24" class="" />
             <a href="https://blockstream.com/liquid/" style="color: #06ddff"

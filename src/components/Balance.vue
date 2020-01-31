@@ -2,16 +2,23 @@
   <div v-if="!isNaN(animatedBalance)" class="mb-2 text-center">
     <span class="display-2 font-weight-black">{{ animatedBalance }} </span>
     <span class="headline">SAT</span>
-    <h3 v-if="!isNaN(animatedRate)">
-      <span class="yellow--text">
-        <span class="display-1">{{ fiat | format }}</span>
-        <span @click="currency" style="cursor: pointer">&nbsp;{{ user.currency }}</span>
-      </span>
-      @
-      <span class="font-weight-black yellow--text">{{
-        animatedRate | format
-      }}</span>
-      per BTC
+    <h3 v-if="!isNaN(animatedRate)" class="d-flex flex-wrap justify-center">
+      <div class="fiat yellow--text display-1">{{ fiat | format }}</div>
+      <v-btn
+        class="toggle black--text mx-1"
+        color="yellow"
+        @click="shiftCurrency"
+        >{{ user.currency }}</v-btn
+      >
+      <div class="rate">
+        <span>
+          @
+          <span class="font-weight-black yellow--text">{{
+            animatedRate | format
+          }}</span>
+          / BTC
+        </span>
+      </div>
     </h3>
     <div
       class="orange--text text--lighten-3"
@@ -69,7 +76,7 @@ export default {
   },
 
   methods: {
-    currency: call('currency'),
+    shiftCurrency: call('shiftCurrency'),
   },
 
   watch: {
@@ -101,3 +108,15 @@ export default {
   },
 };
 </script>
+
+<style lang="stylus" scoped>
+.fiat
+  margin-top -6px
+
+.rate
+  margin-top 2px
+
+.toggle
+  max-height 28px
+  min-width 0
+</style>
