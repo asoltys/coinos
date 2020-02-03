@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import { get, call } from 'vuex-pathify';
+import { get, call, sync } from 'vuex-pathify';
 const f = parseFloat;
 const SATS = 100000000;
 
@@ -48,8 +48,7 @@ export default {
 
   data() {
     return {
-      amount: 0,
-      fiat: false,
+      sats: 0,
       inputAmount: '_',
       buttons: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '<', '0', 'C'],
       codes: Array.from(Array(10), (_, x) => x + 48),
@@ -60,6 +59,8 @@ export default {
     currency() {
       return this.fiat ? this.user.currency : 'sat';
     },
+    amount: sync('amount'),
+    fiat: sync('fiat'),
     rate: get('rate'),
     user: get('user'),
     decimals() {
@@ -95,6 +96,7 @@ export default {
       if (!currency) return;
       if (!Array.isArray(currencies)) currencies = JSON.parse(currencies);
       let index = currencies.findIndex(c => c === currency);
+      console.log(index, this.fiat, this.amount);
 
       if (this.fiat) {
         if (index === currencies.length - 1) this.fiat = false;
@@ -121,21 +123,10 @@ export default {
       }
 
       if (m === 'C') amount = 0;
-      if (this.fiat) this.amount = parseInt((amount * SATS) / this.rate);
-      else this.amount = amount;
       this.inputAmount = amount.toFixed(this.decimals);
-      if (f(this.inputAmount) === 0) this.inputAmount = '_';
-      this.$emit('update', this.amount);
-    },
-  },
-
-  watch: {
-    inputAmount(v) {
-      if (this.fiat) this.amount = parseInt((v * SATS) / this.rate);
-      else this.amount = v;
-      if (f(this.inputAmount) === 0) this.inputAmount = '_';
-      if (isNaN(this.amount)) this.amount = 0;
-      this.$emit('update', this.amount);
+      if (this.fiat)
+        this.amount = parseInt(((amount * SATS) / this.rate).toFixed(8));
+      else this.amount = parseInt(amount);
     },
   },
 
@@ -149,6 +140,8 @@ export default {
 
   mounted() {
     this.inputAmount = this.amount;
+    if (this.fiat)
+      this.inputAmount = ((this.amount / SATS) * this.rate).toFixed(2);
     if (f(this.inputAmount) === 0) this.inputAmount = '_';
   },
 };

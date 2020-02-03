@@ -29,13 +29,7 @@
         <recipient v-bind="{ address, scannedBalance }" />
         <send-to-user v-bind="{ payuser }" />
         <template v-if="address || payuser">
-          <numpad
-            class="mb-2"
-            :currency="currency"
-            :amount="parseFloat(display)"
-            @update="updateAmount"
-            @toggle="toggle"
-          />
+          <numpad class="mb-2" />
         </template>
         <payment-details :payobj="payobj" />
         <div>
@@ -84,7 +78,6 @@ export default {
   data() {
     return {
       fiat: false,
-      display: 0,
     };
   },
 
@@ -105,11 +98,6 @@ export default {
       'scannedBalance',
     ]),
 
-    currency() {
-      if (this.fiat && this.user) return this.user.currency;
-      return 'sat';
-    },
-
     to: {
       get() {
         if (this.payreq) return this.payreq;
@@ -124,13 +112,6 @@ export default {
     },
   },
 
-  watch: {
-    amount(v) {
-      if (this.fiat) this.display = ((v / 100000000) * this.rate).toFixed(2);
-      else this.display = v;
-    },
-  },
-
   methods: {
     ...mapActions(['sendPayment', 'clearPayment', 'snack']),
 
@@ -139,35 +120,12 @@ export default {
       if (this.$route.query.refresh !== undefined) {
         this.$router.replace(this.$route.path);
       }
-
-      this.updateAmount(this.amount);
-    },
-
-    updateAmount(v) {
-      if (this.fiat) {
-        this.$store.commit('amount', ((v * 100000000) / this.rate).toFixed(0));
-        this.display = ((v / 100000000) * this.rate).toFixed(2);
-      } else {
-        this.$store.commit('amount', v);
-        this.display = v;
-      }
     },
 
     back() {
-      this.display = 0;
       if (this.payreq || this.address) return this.clearPayment();
       if (this.payuser) return this.$router.push('/contacts');
       return this.$router.push('/home');
-    },
-
-    maxamount() {
-      this.amount = this.user.balance;
-    },
-
-    toggle() {
-      this.fiat = !this.fiat;
-      if (this.fiat) this.display = (this.display / 100000000) * this.rate;
-      else this.display = (this.display * 100000000) / this.rate;
     },
   },
 

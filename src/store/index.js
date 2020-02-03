@@ -27,6 +27,7 @@ const state = {
   channels: [],
   error: '',
   fees: 0,
+  fiat: false,
   friends: [],
   initializing: false,
   loading: false,
@@ -404,9 +405,9 @@ export default new Vuex.Store({
         commit('address', url.address);
 
         if (url.options.amount)
-          commit('amount', (url.options.amount * 100000000).toFixed(0));
+          commit('amount', parseInt((url.options.amount * 100000000).toFixed(0)));
 
-        if (!liquid) {
+        if (!liquid && process.env.NODE_ENV === 'production') {
           try {
             let res = await Vue.axios.get(`/balance/${url.address}`);
             commit('scannedBalance', res.data.final_balance);
@@ -422,11 +423,13 @@ export default new Vuex.Store({
       try {
         BitcoinAddress.fromBase58Check(text);
         commit('address', text);
-        try {
-          let res = await Vue.axios.get(`/balance/${text}`);
-          commit('scannedBalance', res.data.final_balance);
-        } catch (e) {
-          /**/
+        if (!liquid && process.env.NODE_ENV === 'production') {
+          try {
+            let res = await Vue.axios.get(`/balance/${text}`);
+            commit('scannedBalance', res.data.final_balance);
+          } catch (e) {
+            /**/
+          }
         }
         router.push({ name: 'send', params: { keep: true } });
         return;
@@ -463,6 +466,7 @@ export default new Vuex.Store({
   mutations: {
     ...make.mutations(state),
     addPayment(s, v) {
+      s.amount = 0;
       s.received = v.amount;
       s.payments.push(v);
     },

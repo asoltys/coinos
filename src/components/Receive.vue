@@ -7,14 +7,10 @@
         v-bind="{ user, rate, received }"
         @clear="clear"
       />
-      <Request v-else v-bind="{ copytext, total }" @clear="clear" />
+      <Request v-else v-bind="{ copytext }" @clear="clear" />
     </template>
     <div v-else>
-      <numpad
-        class="mr-4 mb-2"
-        @update="a => (total = a)"
-        @lightning="lightning"
-      />
+      <numpad class="mr-4 mb-2" @lightning="lightning" />
 
       <div class="d-flex flex-wrap buttons">
         <v-btn class="flex-grow-1 mb-2 mr-2" @click="bitcoin">
@@ -25,7 +21,7 @@
         <v-btn
           class="flex-grow-1 mb-2 mr-2"
           @click="lightning"
-          :disabled="total <= 0"
+          :disabled="amount <= 0"
         >
           <flash fillColor="yellow"></flash>
           <span>Lightning</span>
@@ -58,20 +54,17 @@ export default {
     return {
       message: '',
       about: '',
-      amount: 0,
       full: false,
       tip: 0,
-      total: 0,
       generated: false,
       showcode: false,
       finished: false,
-      fiat: false,
       bitreq: '',
     };
   },
 
   computed: {
-    ...mapGetters(['loading', 'user', 'payreq', 'rate', 'received']),
+    ...mapGetters(['amount', 'loading', 'user', 'payreq', 'rate', 'received']),
 
     tosat() {
       return this.currency === 'sat' ? 1 : 100000000;
@@ -102,8 +95,8 @@ export default {
           if (!canvas) return;
 
           this.bitreq =
-            this.total > 0
-              ? `bitcoin:${address}?amount=${this.total / 100000000}`
+            this.amount > 0
+              ? `bitcoin:${address}?amount=${this.amount / 100000000}`
               : address;
           qr.toCanvas(canvas, this.bitreq, e => {
             if (e) console.log(e);
@@ -130,8 +123,8 @@ export default {
           if (!canvas) return;
 
           this.bitreq =
-            this.total > 0
-              ? `liquid:${address}?amount=${this.total / 100000000}`
+            this.amount > 0
+              ? `liquid:${address}?amount=${this.amount / 100000000}`
               : address;
           qr.toCanvas(canvas, this.bitreq, e => {
             if (e) console.log(e);
@@ -150,7 +143,7 @@ export default {
       this.$store.commit('received', 0);
       this.$nextTick(async () => {
         try {
-          await this.addInvoice({ amount: this.total, tip: this.tip });
+          await this.addInvoice({ amount: this.amount, tip: this.tip });
           this.$store.commit('loading', false);
           this.$nextTick(() => {
             let canvas = document.getElementById('qr');
@@ -182,7 +175,6 @@ export default {
         this.$router.replace(this.$route.path);
       } else {
         this.clear();
-        this.generated = false;
       }
     },
   },
@@ -195,7 +187,6 @@ export default {
   mounted() {
     this.clear();
     this.checkRefresh();
-    if (this.user.currency) this.fiat = true;
   },
 };
 </script>
@@ -210,9 +201,6 @@ canvas
 
 .v-btn.subheading
   width 100%
-
-.total
-  vertical-
 
 @media (max-width: 600px)
   .buttons .v-btn

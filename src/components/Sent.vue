@@ -10,7 +10,7 @@
           SAT
           <span class="ml-2 yellow--text">
             <span class="display-1">{{ fiat(total) }}</span>
-            {{ user.currency }}
+            {{ payment.currency }}
           </span>
         </div>
       </div>
@@ -18,10 +18,10 @@
       <div class="mb-4 text-center">
         <div>
           <span class="headline orange--text">Fees: </span>
-          <span class="display-1">{{ fees || 0 }}</span> SAT
+          <span class="display-1">{{ payment.fee || 0 }}</span> SAT
           <span class="ml-2 yellow--text">
-            <span class="display-1">{{ fiat(fees) }}</span>
-            {{ user.currency }}
+            <span class="display-1">{{ fiat(payment.fee) }}</span>
+            {{ payment.currency }}
           </span>
         </div>
       </div>
@@ -54,29 +54,8 @@ export default {
 
   computed: {
     ...mapGetters(['rate', 'user']),
-
     total() {
-      let p = this.payment;
-
-      if (p) {
-        if (p.payment_route) {
-          let amt = p.payment_route.total_amt;
-          if (p.payment_route.total_fees) amt -= p.payment_route.total_fees;
-          return amt;
-        }
-
-        return p.amount;
-      }
-      return 0;
-    },
-
-    fees() {
-      let p = this.payment;
-      if (p) {
-        if (p.payment_route) return p.payment_route.total_fees || 0;
-        return p.fees;
-      }
-      return 0;
+      return Math.abs(this.payment.amount) - this.payment.fee;
     },
   },
 
@@ -88,7 +67,8 @@ export default {
     },
 
     fiat(n) {
-      return ((n * this.rate) / 100000000).toFixed(2);
+      if (!n || isNaN(n)) return '0.00';
+      return ((n * this.payment.rate) / 100000000).toFixed(2);
     },
 
     link(tx) {

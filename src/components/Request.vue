@@ -71,12 +71,11 @@ export default {
       fixedRate: 0,
       full: false,
       showcode: false,
-      amount: 0,
     };
   },
 
   computed: {
-    ...mapGetters(['rate', 'user']),
+    ...mapGetters(['amount', 'rate', 'user']),
     fiat() {
       return ((this.amount * this.fixedRate) / 100000000).toFixed(2);
     },
@@ -135,7 +134,6 @@ export default {
   },
 
   mounted() {
-    this.amount = this.total;
     this.fixedRate = this.rate;
   },
 };
