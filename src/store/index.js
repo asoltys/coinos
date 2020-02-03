@@ -405,7 +405,10 @@ export default new Vuex.Store({
         commit('address', url.address);
 
         if (url.options.amount)
-          commit('amount', parseInt((url.options.amount * 100000000).toFixed(0)));
+          commit(
+            'amount',
+            parseInt((url.options.amount * 100000000).toFixed(0))
+          );
 
         if (!liquid && process.env.NODE_ENV === 'production') {
           try {
