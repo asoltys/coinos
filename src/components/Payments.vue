@@ -19,7 +19,7 @@
               color,
               fiat,
               amount,
-              createdAt,
+              updatedAt,
             } in filteredPayments()"
             :key="id"
           >
@@ -45,7 +45,7 @@
                   <v-icon class="mr-1">warning</v-icon>
                   <span class="d-none d-sm-inline">unconfirmed</span>
                 </v-chip>
-                {{ createdAt | format }}
+                {{ updatedAt | format }}
               </div>
             </v-expansion-panel-header>
             <v-expansion-panel-content>
