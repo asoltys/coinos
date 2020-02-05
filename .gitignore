@@ -23,3 +23,5 @@ yarn-error.log*
 *.sln
 *.sw?
 cordova
+deploy.sh
+.yarn
