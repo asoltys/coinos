@@ -300,13 +300,17 @@ export default {
       this.$nextTick(() => this.$refs.phoneCode.focus());
     },
 
-    submit(e) {
+    async submit(e) {
       if (e) e.preventDefault();
       if (!this.form.password || this.form.password === this.form.passconfirm) {
-        this.updateUser(this.form);
-        this.success = true;
-        setTimeout(() => (this.success = false), 5000);
-        this.$store.commit('error', '');
+        let res = await this.updateUser(this.form);
+        console.log("result", res);
+        if (res) {
+          this.success = true;
+          window.scrollTo(0, 0);
+          setTimeout(() => (this.success = false), 5000);
+          this.$store.commit('error', '');
+        }
       } else {
         this.$store.commit('error', "Passwords don't match");
       }

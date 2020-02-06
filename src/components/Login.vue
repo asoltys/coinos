@@ -39,15 +39,7 @@
         </div>
         <v-divider class="mb-2 mt-0" />
         <div class="text-center my-2 d-flex flex-wrap justify-center">
-          <v-btn
-            v-if="native()"
-            color="#4267b2"
-            @click="facebookConnect"
-            class="mb-2 mr-2"
-          >
-            Sign in with Facebook
-          </v-btn>
-          <v-btn v-else color="#4267b2" class="my-2 my-sm-0 mr-sm-2">
+          <v-btn color="#4267b2" class="my-2 my-sm-0 mr-sm-2">
             <fb-signin-button
               :params="fbSignInParams"
               @success="onSignInSuccess"
@@ -76,9 +68,6 @@
 
               <v-btn class="mr-2 mb-2" type="submit">Sign in</v-btn>
             </v-form>
-            <v-btn class="mr-2 mb-2" @click="$router.push('/forgot')"
-              >Forgot password</v-btn
-            >
           </v-card-text>
         </v-card>
       </v-flex>
@@ -121,11 +110,6 @@ export default {
   methods: {
     ...mapActions(['login', 'facebookLogin', 'createUser']),
 
-    download() {
-      window.location =
-        'https://play.google.com/store/apps/details?id=io.cordova.coinos';
-    },
-
     onSignInSuccess(res) {
       if (res.status === 'connected') {
         let i = setInterval(() => {
@@ -142,18 +126,6 @@ export default {
 
     onSignInError(error) {
       console.log('Facebook login failed', error);
-    },
-
-    facebookConnect() {
-      window.facebookConnectPlugin.login(
-        this.fbSignInParams.scope.split(','),
-        this.onSignInSuccess,
-        this.onSignInError
-      );
-    },
-
-    native() {
-      return window.location.protocol === 'file:';
     },
 
     submit(e) {

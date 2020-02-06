@@ -233,8 +233,10 @@ export default new Vuex.Store({
         let res = await Vue.axios.post('/user', user);
         if (state.user.username !== user.username) dispatch('logout');
         else commit('user', res.data);
+        return true;
       } catch (e) {
         commit('error', e.response.data);
+        return false;
       }
     },
 

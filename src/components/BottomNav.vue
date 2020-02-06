@@ -49,9 +49,6 @@ export default {
       this.$router.push('/home');
       window.scrollTo(0, 0);
     },
-    native() {
-      return typeof window.cordova !== 'undefined';
-    },
 
     ...mapActions(['scan']),
   },

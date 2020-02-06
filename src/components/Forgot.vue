@@ -1,14 +1,12 @@
 <template>
   <v-container v-if="!initializing">
     <v-alert
-      class="black--text mb-4"
-      color="yellow"
+      color="success"
       icon="info"
-      v-model="showlogout"
-      value="showlogout"
+      v-model="submitted"
       dismissible
       transition="scale-transition"
-      >You've logged out
+      >Link sent
     </v-alert>
     <h2>Forgot Your Password?</h2>
     <p>
@@ -16,7 +14,7 @@
     </p>
     <v-card>
       <v-card-text>
-        <v-form @submit="submit()" class="mt-4">
+        <v-form @submit.prevent="submit()" class="mt-4">
           <v-text-field
             label="Email"
             v-model="email"
