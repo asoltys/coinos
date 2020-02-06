@@ -30,9 +30,9 @@
           <p style="display: inline-flex" class="mb-0">
             with <water fillColor="#06ddff" :size="24" class="" />
             <a href="https://blockstream.com/liquid/" style="color: #06ddff"
-              >Liquid</a
-            >&nbsp; and <flash fillColor="yellow" :size="24" />
-            <a href="http://lightning.network/">Lightning</a>!
+              >Liquid</a> 
+            <span class="ml-1">and</span> <flash fillColor="yellow" :size="24" />
+            <a href="http://lightning.network/">Lightning</a>
           </p>
         </div>
         <v-divider class="mb-2 mt-0" />
@@ -193,4 +193,5 @@ a
 @media (max-width: 600px)
   .v-btn
     width 100%
+    height 70px !important
 </style>
