@@ -151,5 +151,5 @@ export default {
 @media (max-width: 600px)
   .v-btn
     width 100%
-    height 70px !important
+    height 62px !important
 </style>
