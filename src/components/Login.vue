@@ -30,8 +30,10 @@
           <p style="display: inline-flex" class="mb-0">
             with <water fillColor="#06ddff" :size="24" class="" />
             <a href="https://blockstream.com/liquid/" style="color: #06ddff"
-              >Liquid</a> 
-            <span class="ml-1">and</span> <flash fillColor="yellow" :size="24" />
+              >Liquid</a
+            >
+            <span class="ml-1">and</span>
+            <flash fillColor="yellow" :size="24" />
             <a href="http://lightning.network/">Lightning</a>
           </p>
         </div>
@@ -58,7 +60,7 @@
         <v-divider class="mb-2" />
         <v-card>
           <v-card-text>
-            <v-form @submit="submit" class="mt-4">
+            <v-form @submit.prevent="submit" class="mt-4">
               <v-text-field
                 label="Username"
                 v-model="form.username"
@@ -73,8 +75,10 @@
               />
 
               <v-btn class="mr-2 mb-2" type="submit">Sign in</v-btn>
-              <v-btn class="mr-2 mb-2" type="submit">Forgot password</v-btn>
             </v-form>
+            <v-btn class="mr-2 mb-2" @click="$router.push('/forgot')"
+              >Forgot password</v-btn
+            >
           </v-card-text>
         </v-card>
       </v-flex>
@@ -153,7 +157,6 @@ export default {
     },
 
     submit(e) {
-      e.preventDefault();
       let i = setInterval(() => {
         this.loggingIn = true;
         clearInterval(i);

@@ -11,6 +11,7 @@ import Buy from '../components/Buy';
 import Market from '../components/Market';
 import Contacts from '../components/Contacts';
 import Settings from '../components/Settings';
+import Forgot from '../components/Forgot';
 
 const routes = [
   { path: '/', component: Login, props: { logout: false } },
@@ -26,6 +27,7 @@ const routes = [
   { path: '/contacts', component: Contacts },
   { path: '/about', component: About },
   { path: '/settings', component: Settings },
+  { path: '/forgot', component: Forgot },
   { path: '/logout', component: Login, props: { logout: true } },
   {
     path: '/verifyEmail/:username/:token',

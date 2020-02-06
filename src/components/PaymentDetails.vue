@@ -14,7 +14,7 @@
     </div>
     <div class="text-center font-weight-bold">to</div>
     <div class="code my-2 text-center">
-        {{ payobj.payeeNodeKey }}
+      {{ payobj.payeeNodeKey }}
     </div>
   </v-card>
 </template>

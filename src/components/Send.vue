@@ -33,7 +33,13 @@
         </template>
         <payment-details :payobj="payobj" />
         <div class="d-flex flex-wrap">
-          <v-btn class="order-first order-sm-last mb-2 flex-grow-1" v-if="!loading && to" color="green" dark @click="sendPayment">
+          <v-btn
+            class="order-first order-sm-last mb-2 flex-grow-1"
+            v-if="!loading && to"
+            color="green"
+            dark
+            @click="sendPayment"
+          >
             <v-icon class="mr-1">send</v-icon><span>Pay</span>
           </v-btn>
           <v-btn @click="back" class="mr-2 flex-grow-1">

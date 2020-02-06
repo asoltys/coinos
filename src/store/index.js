@@ -74,7 +74,7 @@ export default new Vuex.Store({
         await dispatch('setupSockets');
       }
 
-      const publicpaths = ['/', '/login', '/about', '/register'];
+      const publicpaths = ['/', '/login', '/about', '/register', '/forgot'];
       if (
         !(
           publicpaths.includes(router.currentRoute.path) ||
@@ -137,6 +137,10 @@ export default new Vuex.Store({
       if (state.socket) state.socket.disconnect();
       commit('socket', null);
       router.push('/');
+    },
+
+    async forgot({ commit, state }, email) {
+      Vue.axios.post(`/forgot`, email);
     },
 
     async verify({ dispatch }, data) {

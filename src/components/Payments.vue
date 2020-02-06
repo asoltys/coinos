@@ -56,22 +56,26 @@
                   <flash v-if="asset === 'LNBTC'" fillColor="yellow" />
                   <water v-else-if="asset === 'LBTC'" fillColor="#00aaee" />
                   <img v-else src="../assets/bitcoin.png" width="24px" />
-              </div>
-              <code class="black--text my-4 py-2 text-center">{{ hash }}</code>
-              <div class="d-flex justify-center">
-                <v-btn class="mt-2 mr-2" @click.native="() => copy(hash)">
-                  <v-icon class="mr-1">content_copy</v-icon
-                  ><span>Copy</span>
-                </v-btn>
-                <v-btn class="mt-2" v-if="link" @click="explore(link)">
-                  <v-icon class="mr-1">open_in_new</v-icon
-                  ><span>Explore</span>
-                </v-btn>
-              </div>
-              <div v-if="1 === 2">
-                <strong>Notes</strong>
-                <p>This was a very lovely transaction I most enjoyed it thank you very much!</p>
-              </div>
+                </div>
+                <code class="black--text my-4 py-2 text-center">{{
+                  hash
+                }}</code>
+                <div class="d-flex justify-center">
+                  <v-btn class="mt-2 mr-2" @click.native="() => copy(hash)">
+                    <v-icon class="mr-1">content_copy</v-icon><span>Copy</span>
+                  </v-btn>
+                  <v-btn class="mt-2" v-if="link" @click="explore(link)">
+                    <v-icon class="mr-1">open_in_new</v-icon
+                    ><span>Explore</span>
+                  </v-btn>
+                </div>
+                <div v-if="1 === 2">
+                  <strong>Notes</strong>
+                  <p>
+                    This was a very lovely transaction I most enjoyed it thank
+                    you very much!
+                  </p>
+                </div>
               </v-card>
             </v-expansion-panel-content>
           </v-expansion-panel>
@@ -97,7 +101,7 @@ import { call } from 'vuex-pathify';
 import bolt11 from 'bolt11';
 import Water from 'vue-material-design-icons/Water';
 import Flash from 'vue-material-design-icons/Flash';
-import colors from 'vuetify/lib/util/colors'
+import colors from 'vuetify/lib/util/colors';
 
 let bs = 'https://blockstream.info';
 if (
@@ -165,10 +169,8 @@ export default {
           if (o.tip) o.fiat -= o.tip;
           o.color = o.amount < 0 ? 'red--text' : 'green--text';
           o.sign = o.amount < 0 ? '-' : '+';
-          if (o.asset === 'BTC')
-            o.link = `${bs}/tx/${o.hash}`;
-          if (o.asset === 'LBTC')
-            o.link = `${bs}/liquid/tx/${o.hash}`;
+          if (o.asset === 'BTC') o.link = `${bs}/tx/${o.hash}`;
+          if (o.asset === 'LBTC') o.link = `${bs}/liquid/tx/${o.hash}`;
           if (o.asset === 'LNBTC') {
             try {
               o.hash = bolt11
@@ -193,7 +195,7 @@ export default {
     },
 
     explore(link) {
-      window.open(link,'_blank');
+      window.open(link, '_blank');
     },
   },
 };
