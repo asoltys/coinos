@@ -11,7 +11,7 @@ export default new Vuetify({
       dark: {
         primary: colors.yellow,
         secondary: '#333',
-        accent: '#ff0',
+        accent: colors.yellow,
         error: '#b71c1c',
       },
     },

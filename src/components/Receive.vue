@@ -205,4 +205,5 @@ canvas
 @media (max-width: 600px)
   .buttons .v-btn
     width 100%
+    height 70px !important
 </style>

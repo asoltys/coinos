@@ -13,10 +13,8 @@
       </div>
     </div>
     <div class="text-center font-weight-bold">to</div>
-    <div class="my-2 text-center">
-      <v-chip class="body-2 font-weight-black d-block mb-4">
+    <div class="code my-2 text-center">
         {{ payobj.payeeNodeKey }}
-      </v-chip>
     </div>
   </v-card>
 </template>
@@ -41,3 +39,12 @@ export default {
   },
 };
 </script>
+
+<style lang="stylus" scoped>
+.code
+  margin auto
+  background #333
+  word-wrap break-word
+  padding 15px
+  font-weight bold
+</style>

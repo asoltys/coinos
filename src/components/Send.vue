@@ -32,12 +32,12 @@
           <numpad class="mb-2" />
         </template>
         <payment-details :payobj="payobj" />
-        <div>
-          <v-btn @click="back" class="mr-2">
-            <v-icon>arrow_back</v-icon><span>Go Back</span>
-          </v-btn>
-          <v-btn v-if="!loading && to" color="green" dark @click="sendPayment">
+        <div class="d-flex flex-wrap">
+          <v-btn class="order-first order-sm-last mb-2 flex-grow-1" v-if="!loading && to" color="green" dark @click="sendPayment">
             <v-icon class="mr-1">send</v-icon><span>Pay</span>
+          </v-btn>
+          <v-btn @click="back" class="mr-2 flex-grow-1">
+            <v-icon>arrow_back</v-icon><span>Go Back</span>
           </v-btn>
         </div>
       </template>
@@ -145,4 +145,5 @@ export default {
 @media (max-width: 600px)
   .v-btn
     width 100%
+    height 70px !important
 </style>

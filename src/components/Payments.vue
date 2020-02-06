@@ -8,8 +8,8 @@
       <div v-if="filteredPayments().length">
         <v-expansion-panels accordion>
           <v-expansion-panel
-            style="background: #444"
             v-for="{
+              asset,
               currency,
               confirmed,
               link,
@@ -20,6 +20,7 @@
               color,
               fiat,
               amount,
+              createdAt,
               updatedAt,
             } in filteredPayments()"
             :key="id"
@@ -49,12 +50,29 @@
                 {{ updatedAt | format }}
               </div>
             </v-expansion-panel-header>
-            <v-expansion-panel-content>
-              <code class="black--text mb-2 py-2 text-center">{{ hash }}</code>
-              <v-btn class="mt-2" v-if="link" @click="explore(link)">
-                <v-icon class="mr-1">open_in_new</v-icon
-                ><span>View Blockchain</span>
-              </v-btn>
+            <v-expansion-panel-content class="text-left">
+              <v-card class="pa-4" style="background: #333">
+                <div class="text-center">
+                  <flash v-if="asset === 'LNBTC'" fillColor="yellow" />
+                  <water v-else-if="asset === 'LBTC'" fillColor="#00aaee" />
+                  <img v-else src="../assets/bitcoin.png" width="24px" />
+              </div>
+              <code class="black--text my-4 py-2 text-center">{{ hash }}</code>
+              <div class="d-flex justify-center">
+                <v-btn class="mt-2 mr-2" @click.native="() => copy(hash)">
+                  <v-icon class="mr-1">content_copy</v-icon
+                  ><span>Copy</span>
+                </v-btn>
+                <v-btn class="mt-2" v-if="link" @click="explore(link)">
+                  <v-icon class="mr-1">open_in_new</v-icon
+                  ><span>Explore</span>
+                </v-btn>
+              </div>
+              <div v-if="1 === 2">
+                <strong>Notes</strong>
+                <p>This was a very lovely transaction I most enjoyed it thank you very much!</p>
+              </div>
+              </v-card>
             </v-expansion-panel-content>
           </v-expansion-panel>
         </v-expansion-panels>
@@ -77,6 +95,9 @@ import { format, parse, isBefore } from 'date-fns';
 import { mapGetters } from 'vuex';
 import { call } from 'vuex-pathify';
 import bolt11 from 'bolt11';
+import Water from 'vue-material-design-icons/Water';
+import Flash from 'vue-material-design-icons/Flash';
+import colors from 'vuetify/lib/util/colors'
 
 let bs = 'https://blockstream.info';
 if (
@@ -86,6 +107,8 @@ if (
   bs += '/testnet';
 
 export default {
+  components: { Flash, Water },
+
   filters: {
     abs: v => Math.abs(v),
     format: d => format(d, 'MMM D HH:mm:ss'),
@@ -95,7 +118,10 @@ export default {
   },
 
   data() {
-    return { loaded: false };
+    return {
+      copytext: '',
+      loaded: false,
+    };
   },
 
   computed: {
@@ -103,6 +129,23 @@ export default {
   },
 
   methods: {
+    copy(text) {
+      var textArea = document.createElement('textarea');
+      textArea.style.position = 'fixed';
+      textArea.value = text;
+
+      document.body.appendChild(textArea);
+
+      textArea.focus();
+      textArea.select();
+
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+
+      this.snack('Copied to Clipboard');
+    },
+
+    snack: call('snack'),
     loadPayments: call('loadPayments'),
 
     more() {
@@ -122,9 +165,11 @@ export default {
           if (o.tip) o.fiat -= o.tip;
           o.color = o.amount < 0 ? 'red--text' : 'green--text';
           o.sign = o.amount < 0 ? '-' : '+';
-          if (!(o.hash.startsWith('ln') || o.hash.startsWith('txn')))
+          if (o.asset === 'BTC')
             o.link = `${bs}/tx/${o.hash}`;
-          if (o.hash.startsWith('ln')) {
+          if (o.asset === 'LBTC')
+            o.link = `${bs}/liquid/tx/${o.hash}`;
+          if (o.asset === 'LNBTC') {
             try {
               o.hash = bolt11
                 .decode(o.hash.toLowerCase())
@@ -148,7 +193,7 @@ export default {
     },
 
     explore(link) {
-      window.location.href = link;
+      window.open(link,'_blank');
     },
   },
 };
