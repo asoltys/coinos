@@ -1,5 +1,5 @@
 <template>
-  <v-app dark id="app">
+  <v-app id="app">
     <top-bar />
     <snack-bar />
     <v-content v-show="scanning">
@@ -8,7 +8,7 @@
         <v-btn @click="handleScan" class="my-2">Cancel</v-btn>
       </div>
     </v-content>
-    <v-content v-show="!scanning">
+    <v-content v-show="!scanning" style="background: #333">
       <transition name="fade" mode="out-in" appear>
         <v-container class="mr-3" style="margin-bottom: 50px !important">
           <v-alert

@@ -3765,7 +3765,7 @@ __metadata:
     vue-router: ^3.0.7
     vue-stripe: ^0.1.52
     vue-template-compiler: ^2.6.10
-    vuetify: ^2.2.1
+    vuetify: ^2.2.10
     vuetify-loader: ^1.2.2
     vuex: ^3.1.1
     vuex-pathify: ^1.2.4
@@ -13593,7 +13593,7 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
-"vuetify@npm:^2.2.1":
+"vuetify@npm:^2.2.10":
   version: 2.2.10
   resolution: "vuetify@npm:2.2.10"
   peerDependencies:

@@ -8,6 +8,7 @@
       <div v-if="filteredPayments().length">
         <v-expansion-panels accordion>
           <v-expansion-panel
+            style="background: #444"
             v-for="{
               currency,
               confirmed,
