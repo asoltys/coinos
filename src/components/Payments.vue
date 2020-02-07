@@ -60,7 +60,7 @@
                 </div>
                 <code class="black--text my-4 py-2 text-center">{{ hash }}</code>
                 <div class="d-flex justify-center">
-                  <v-btn class="mt-2 mr-2" @click.native="() => copy(hash)">
+                  <v-btn v-if="!hash.includes('Welcome')" class="mt-2 mr-2" @click.native="() => copy(hash)">
                     <v-icon class="mr-1">content_copy</v-icon><span>Copy</span>
                   </v-btn>
                   <v-btn class="mt-2" v-if="link" @click="explore(link)">

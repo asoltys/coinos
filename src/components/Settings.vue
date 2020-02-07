@@ -176,8 +176,9 @@ export default {
       if (!this.form.password || this.form.password === this.form.passconfirm) {
         this.saving = true;
         let res = await this.updateUser(this.form);
+        this.$nextTick(() => this.saving = false);
+
         if (res) {
-          this.$nextTick(() => this.saving = false);
           this.success = true;
           this.changingPassword = false;
           window.scrollTo(0, 0);
