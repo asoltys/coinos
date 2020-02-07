@@ -40,6 +40,7 @@
               label="New Password"
               v-model="form.password"
               type="password"
+              ref="password"
             />
             <v-text-field
               label="Confirm Password"
@@ -69,110 +70,6 @@
             >An email has been sent with a link for you to click on</v-alert
           >
           <v-text-field label="Username" v-model="form.username" type="text" />
-          <v-text-field
-            label="Email (optional)"
-            v-model="form.email"
-            type="text"
-          >
-            <template slot="append"
-              ><span
-                class="green--text"
-                v-if="user.emailVerified && form.email === user.email"
-              >
-                <v-icon class="mr-1" color="green">info</v-icon
-                ><span>Verified</span></span
-              ><span class="yellow--text" v-else-if="validate(form.email)">
-                <v-icon class="mr-1" color="yellow">warning</v-icon
-                ><span>Not Verified</span></span
-              ><span class="red--text" v-else-if="form.email">
-                <v-icon class="mr-1" color="red">error</v-icon
-                ><span>Not Valid</span></span
-              ></template
-            >
-          </v-text-field>
-          <div class="text-center">
-            <v-btn
-              v-if="
-                (form.email != user.email || !user.emailVerified) &&
-                  validate(form.email)
-              "
-              class="mb-2"
-              @click="challengeEmail"
-            >
-              <v-icon class="mr-1 yellow--text">email</v-icon
-              ><span>Confirm Email</span></v-btn
-            >
-          </div>
-          <v-text-field
-            label="Phone (optional)"
-            v-model="form.phone"
-            type="text"
-            mask="phone"
-            @change="updatePhone"
-          >
-            <template slot="append">
-              <span
-                class="green--text"
-                v-if="
-                  user.phoneVerified &&
-                    user.phoneVerified !== '0' &&
-                    form.phone === user.phone
-                "
-              >
-                <v-icon class="mr-1" color="green">info</v-icon
-                ><span>Verified</span></span
-              >
-              <span class="yellow--text" v-else-if="form.phone.length === 10">
-                <v-icon class="mr-1" color="yellow">warning</v-icon
-                ><span>Not Verified</span></span
-              >
-              <span class="red--text" v-else-if="form.phone">
-                <v-icon class="mr-1" color="red">error</v-icon
-                ><span>Not Valid</span></span
-              >
-            </template>
-          </v-text-field>
-          <div class="text-center">
-            <v-btn
-              class="mb-2"
-              v-if="
-                form.phone.length === 10 &&
-                  (!user.phoneVerified ||
-                    user.phoneVerified === '0' ||
-                    user.phone !== form.phone)
-              "
-              @click="challengePhone"
-            >
-              <v-icon class="mr-1 yellow--text">sms</v-icon
-              ><span>Confirm Phone</span>
-            </v-btn>
-          </div>
-          <v-alert
-            class="mb-4"
-            v-if="!user.phoneVerified"
-            color="info"
-            icon="info"
-            v-model="verifyingPhone"
-            dismissible
-            transition="scale-transition"
-            >A 6 digit code will be texted to your phone. Enter it
-            below:</v-alert
-          >
-          <div
-            v-if="
-              verifyingPhone &&
-                form.phone.length === 10 &&
-                !(user.phoneVerified && user.phone === form.phone)
-            "
-          >
-            <v-text-field
-              label="Code"
-              v-model="form.phoneCode"
-              ref="phoneCode"
-              type="text"
-              @keyup="checkCode"
-            ></v-text-field>
-          </div>
 
           <v-combobox
             v-model="form.currencies"
@@ -180,7 +77,7 @@
             chips
             label="Currencies"
             multiple
-            @change="oy"
+            @change="filterCurrencies"
             :menu-props="{
               maxHeight: 200,
               closeOnClick: true,
@@ -255,7 +152,7 @@ export default {
   },
 
   methods: {
-    oy() {
+    filterCurrencies() {
       this.form.currencies = this.form.currencies.filter(c =>
         this.currencies.includes(c)
       );
@@ -269,39 +166,11 @@ export default {
     },
     changePassword() {
       this.changingPassword = !this.changingPassword;
+      this.$nextTick(() => this.$refs.password.focus());
     },
     pin(pin) {
       this.form.pin = pin;
     },
-    updatePhone() {
-      this.form.phoneCode = '';
-    },
-
-    checkCode() {
-      if (this.form.phoneCode && this.form.phoneCode.length === 6)
-        this.verifyPhone({
-          username: this.user.username,
-          token: this.form.phoneCode,
-        });
-    },
-
-    validate(email) {
-      return validator.validate(email);
-    },
-
-    challengeEmail() {
-      this.verifyingEmail = true;
-      this.submit();
-      this.requestEmail(this.form.email);
-    },
-
-    challengePhone() {
-      this.verifyingPhone = true;
-      this.submit();
-      this.requestPhone(this.form.phone);
-      this.$nextTick(() => this.$refs.phoneCode.focus());
-    },
-
     async submit(e) {
       if (e) e.preventDefault();
       if (!this.form.password || this.form.password === this.form.passconfirm) {
@@ -320,12 +189,7 @@ export default {
       }
     },
 
-    ...mapActions([
-      'updateUser',
-      'requestEmail',
-      'requestPhone',
-      'verifyPhone',
-    ]),
+    ...mapActions(['updateUser']),
   },
 
   watch: {

@@ -1,8 +1,8 @@
 <template>
   <div v-if="user.username" class="text-center">
     <balance />
-    <payments v-if="user.balance > 100" />
-    <div v-else class="mx-auto mt-4">
+    <payments />
+    <div v-if="user.balance <= 100" class="mx-auto mt-4">
       <v-btn class="mb-2 mr-1" @click="$router.push('/receive')">
         <v-icon class="mr-1">get_app</v-icon><span>Receive Funds</span>
       </v-btn>
