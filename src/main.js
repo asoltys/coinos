@@ -7,11 +7,13 @@ import store from './store';
 import FastClick from 'fastclick';
 import FBSignInButton from 'vue-facebook-signin-button';
 import vuetify from './plugins/vuetify';
+import Go from './plugins/go';
 
 Axios.defaults.baseURL = process.env.VUE_APP_BASEURL;
 
 Vue.use(FBSignInButton);
 Vue.use(VueAxios, Axios);
+Vue.use(Go);
 
 const app = new Vue({
   render: h => h(App),

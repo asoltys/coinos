@@ -55,12 +55,10 @@
                 <div class="text-center">
                   <flash v-if="asset === 'LNBTC'" fillColor="yellow" />
                   <water v-else-if="asset === 'LBTC'" fillColor="#00aaee" />
-                  <v-icon v-else-if="asset === 'GIFT'">card_giftcard</v-icon>
+                  <v-icon v-else-if="asset === 'GIFT'" color="yellow">card_giftcard</v-icon>
                   <img v-else src="../assets/bitcoin.png" width="24px" />
                 </div>
-                <code class="black--text my-4 py-2 text-center">{{
-                  hash
-                }}</code>
+                <code class="black--text my-4 py-2 text-center">{{ hash }}</code>
                 <div class="d-flex justify-center">
                   <v-btn class="mt-2 mr-2" @click.native="() => copy(hash)">
                     <v-icon class="mr-1">content_copy</v-icon><span>Copy</span>
@@ -219,6 +217,7 @@ code
   width 100%
   word-wrap break-word
   font-size 0.9em
+  padding 5px
 
 .v-chip
   cursor pointer

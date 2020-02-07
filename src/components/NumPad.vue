@@ -158,11 +158,7 @@ input
   min-width 0
 
 .numpad-button
-  height 50px !important
-
-@media (max-width: 600px)
-  .numpad-button
-    height 10vh !important
-    font-size 18px
-    font-weight bolder
+  height 10vh !important
+  font-size 18px
+  font-weight bolder
 </style>

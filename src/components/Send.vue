@@ -17,14 +17,19 @@
             hide-details
             autofocus
           />
+        <div v-if="!to" class="d-flex flex-wrap">
           <v-btn
-            class="mr-2 mb-2"
+            class="mr-2 mb-2 flex-grow-1"
             v-if="user.fbtoken"
             @click="$router.push('/contacts')"
           >
             <v-icon class="mr-1">person</v-icon>
             <span>Address Book</span>
           </v-btn>
+          <v-btn @click="back" class="mr-2 flex-grow-1">
+            <v-icon>arrow_back</v-icon><span>Go Back</span>
+          </v-btn>
+          </div>
         </div>
         <recipient v-bind="{ address, scannedBalance }" />
         <send-to-user v-bind="{ payuser }" />
@@ -32,10 +37,12 @@
           <numpad class="mb-2" />
         </template>
         <payment-details :payobj="payobj" />
-        <div class="d-flex flex-wrap">
+        <div 
+                  
+            v-if="!loading && to"
+                  class="d-flex flex-wrap">
           <v-btn
             class="order-first order-sm-last mb-2 flex-grow-1"
-            v-if="!loading && to"
             color="green"
             dark
             @click="sendPayment"

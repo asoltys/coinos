@@ -2,7 +2,7 @@
   <v-app-bar absolute app dark color="black" fixed>
     <v-toolbar-title
       dark
-      @click="$router.push('/home')"
+      @click="$go('/home')"
       class="display-2"
       style="cursor: pointer"
       >coin<span class="yellow--text">os</span></v-toolbar-title
@@ -21,19 +21,19 @@
         </v-btn>
       </template>
       <v-card tile class="mx-auto menu" max-width="400">
-        <v-list-item @click="$router.push('/about')">
+        <v-list-item @click="$go('/about')">
           <v-list-item-action>
             <v-icon>help</v-icon>
           </v-list-item-action>
           <v-list-item-content>About</v-list-item-content>
         </v-list-item>
-        <v-list-item @click="$router.push('/settings')">
+        <v-list-item @click="$go('/settings')">
           <v-list-item-action>
             <v-icon>settings</v-icon>
           </v-list-item-action>
           <v-list-item-content>Settings</v-list-item-content>
         </v-list-item>
-        <v-list-item @click="$router.push('/logout')">
+        <v-list-item @click="$go('/logout')">
           <v-list-item-action>
             <power-settings-icon title="Logout" />
           </v-list-item-action>
@@ -41,7 +41,7 @@
         </v-list-item>
       </v-card>
     </v-menu>
-    <v-btn icon v-else @click="$router.push('/about')">
+    <v-btn icon v-else @click="$go('/about')">
       <v-icon>help</v-icon>
     </v-btn>
   </v-app-bar>
@@ -54,13 +54,20 @@ import { mapGetters } from 'vuex';
 export default {
   components: { PowerSettingsIcon },
   computed: mapGetters(['user']),
+  methods: {
+    goHome() {
+      this.$go('/home')
+        .then()
+        .catch(() => {});
+    },
+  },
 };
 </script>
 
 <style lang="stylus" scoped>
 @media (max-width: 400px)
   .username
-    max-width 100px 
-    overflow: hidden 
+    max-width 100px
+    overflow: hidden
     text-overflow: ellipsis
 </style>

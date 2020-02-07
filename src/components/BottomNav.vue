@@ -10,7 +10,7 @@
         <span>Payments</span>
         <v-icon>line_weight</v-icon>
       </v-btn>
-      <v-btn class="flex-grow-1" text @click="$router.push('/receive?refresh')">
+      <v-btn class="flex-grow-1" text @click="$go('/receive?refresh')">
         <span>Receive</span>
         <v-icon class="mr-1">get_app</v-icon>
       </v-btn>
@@ -22,12 +22,12 @@
         class="flex-grow-1"
         v-if="user && !user.readonly"
         text
-        @click="$router.push('/send?refresh')"
+        @click="$go('/send?refresh')"
       >
         <span>Send</span>
         <send />
       </v-btn>
-      <v-btn class="flex-grow-1" text @click="$router.push('/settings')">
+      <v-btn class="flex-grow-1" text @click="$go('/settings')">
         <span>Settings</span>
         <v-icon>settings</v-icon>
       </v-btn>
@@ -46,7 +46,7 @@ export default {
 
   methods: {
     home() {
-      this.$router.push('/home');
+      this.$go('/home');
       window.scrollTo(0, 0);
     },
 

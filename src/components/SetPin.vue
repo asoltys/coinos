@@ -21,6 +21,7 @@
             :length="6"
             ref="oldPin"
             :key="oldPinKey"
+            @keyup.prevent="keyup"
           />
           <div v-show="!pinRequired">
             <pincode-input
@@ -114,6 +115,9 @@ export default {
     user: sync('user'),
   },
   methods: {
+    keyup() {
+      console.log('oy');
+    }, 
     updateUser: call('updateUser'),
     submitOldPin() {
       if (this.oldPin === this.user.pin) {
