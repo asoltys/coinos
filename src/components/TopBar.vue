@@ -15,7 +15,7 @@
             <img :src="user.pic" />
           </v-avatar>
           <v-icon v-else>person</v-icon>
-          <span class="d-none d-sm-inline">{{
+          <span class="username">{{
             user.fbtoken ? user.name : user.username
           }}</span>
         </v-btn>
@@ -56,3 +56,11 @@ export default {
   computed: mapGetters(['user']),
 };
 </script>
+
+<style lang="stylus" scoped>
+@media (max-width: 400px)
+  .username
+    max-width 100px 
+    overflow: hidden 
+    text-overflow: ellipsis
+</style>

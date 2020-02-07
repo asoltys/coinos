@@ -1,5 +1,6 @@
 <template>
   <div>
+    <v-progress-linear v-if="saving" indeterminate />
     <v-alert
       class="mb-4"
       color="success"
@@ -15,7 +16,7 @@
         <div class="d-flex flex-wrap justify-center">
           <v-btn @click="changePassword" class="mr-sm-2 mb-2">
             <v-icon class="mr-1 yellow--text">lock</v-icon>
-            <span>Change Password</span>
+            <span>{{ user.password ? 'Change' : 'Set' }} Password</span>
           </v-btn>
           <v-btn
             @click.stop="showPinDialog = !showPinDialog"
@@ -220,6 +221,7 @@ export default {
   components: { SetPin },
   data() {
     return {
+      saving: false,
       showPinDialog: false,
       success: false,
       changingPassword: false,
@@ -303,10 +305,12 @@ export default {
     async submit(e) {
       if (e) e.preventDefault();
       if (!this.form.password || this.form.password === this.form.passconfirm) {
+        this.saving = true;
         let res = await this.updateUser(this.form);
-        console.log("result", res);
         if (res) {
+          this.$nextTick(() => this.saving = false);
           this.success = true;
+          this.changingPassword = false;
           window.scrollTo(0, 0);
           setTimeout(() => (this.success = false), 5000);
           this.$store.commit('error', '');

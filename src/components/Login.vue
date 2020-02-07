@@ -39,7 +39,8 @@
         </div>
         <v-divider class="mb-2 mt-0" />
         <div class="text-center my-2 d-flex flex-wrap justify-center">
-          <v-btn color="#4267b2" class="my-2 my-sm-0 mr-sm-2">
+          <v-btn @click="createUser" class="my-2 my-sm-0 mr-0 mr-sm-2">Create New Account</v-btn>
+          <v-btn color="#4267b2" class="mb-2 mb-sm-0">
             <fb-signin-button
               :params="fbSignInParams"
               @success="onSignInSuccess"
@@ -47,7 +48,6 @@
               >Sign in with Facebook</fb-signin-button
             >
           </v-btn>
-          <v-btn @click="createUser" class="mb-2 mb-sm-0">Create Account</v-btn>
         </div>
         <v-divider class="mb-2" />
         <v-card>

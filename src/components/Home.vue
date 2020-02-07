@@ -1,11 +1,10 @@
 <template>
   <div v-if="user.username" class="text-center">
     <balance />
-    <payments v-if="user.balance > 0" />
+    <payments v-if="user.balance > 100" />
     <div v-else class="mx-auto mt-4">
-      <p>Your account is empty</p>
       <v-btn class="mb-2 mr-1" @click="$router.push('/receive')">
-        <v-icon class="mr-1">get_app</v-icon><span>Add Funds</span>
+        <v-icon class="mr-1">get_app</v-icon><span>Receive Funds</span>
       </v-btn>
     </div>
     <div

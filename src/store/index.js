@@ -216,9 +216,7 @@ export default new Vuex.Store({
     },
 
     async createUser({ commit, dispatch }, user = {}) {
-      user.password = generatePassword();
-      user.passconfirm = user.password;
-      user.username = 'Guest-' + user.password;
+      user.username = 'Guest-' + generatePassword();
 
       try {
         await Vue.axios.post('/register', user);
