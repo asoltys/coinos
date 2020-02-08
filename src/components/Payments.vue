@@ -45,7 +45,7 @@
               <div class="text-right subtitle-1" style="white-space: nowrap;">
                 <v-chip v-if="!confirmed" color="red" class="mr-2">
                   <v-icon class="mr-1">warning</v-icon>
-                  <span class="d-none d-sm-inline">unconfirmed</span>
+                  <span class="d-none d-sm-inline" title="UNCONFIRMED">UNCONFIRMED</span>
                 </v-chip>
                 {{ updatedAt | format }}
               </div>

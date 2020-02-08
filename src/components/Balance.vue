@@ -21,12 +21,11 @@
       </div>
     </h3>
     <div
-      class="orange--text text--lighten-3"
+                class="red--text"
       v-if="user.pending && !isNaN(animatedPending)"
     >
       <span class="display-1 font-weight-black">{{ animatedPending }} </span>
-      <span class="headline">PENDING</span>
-      <h3>{{ pendingFiat | format }} {{ user.currency }}</h3>
+      <span class="headline">UNCONFIRMED</span>
     </div>
   </div>
 </template>

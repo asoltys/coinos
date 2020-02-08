@@ -229,11 +229,8 @@ export default new Vuex.Store({
     async updateUser({ commit, dispatch, state }, user) {
       try {
         let res = await Vue.axios.post('/user', user);
-        if (state.user.username !== user.username) {
-          dispatch('snack', 'Username changed, please sign in again');
-          setTimeout(() => dispatch('logout'), 5000);
-        }
-        else commit('user', res.data);
+        commit('user', res.data.user);
+        if (res.data.token) commit('token', res.data.token);
         return true;
       } catch (e) {
         commit('error', e.response.data);
