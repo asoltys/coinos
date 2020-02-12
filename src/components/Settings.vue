@@ -28,11 +28,58 @@
           <set-pin @pin="pin" :showPinDialog="showPinDialog" />
           <v-btn @click="twofa">
             <v-icon class="mr-1 yellow--text">stay_current_portrait</v-icon>
-            Setup 2FA
+            {{ user.twofa ? "Disable" : "Setup" }} 2FA
           </v-btn>
         </div>
         <div v-if="set2fa">
-          <h1>Coming soon</h1>
+          <v-card class="pa-3 text-center mb-2">
+            <v-alert
+              class="mb-4"
+              color="error"
+              icon="info"
+              v-model="twofaFail"
+              dismissible
+              transition="scale-transition"
+              >Invalid token, try again</v-alert
+            >
+            <div v-if="user.twofa">
+                  <pincode-input
+                  class="mx-auto yellow--text mb-2 d-block"
+                  v-model="token"
+                  :key="tokenKey"
+                  placeholder="0"
+                  :length="6"
+                  />
+            <v-btn @click="disable">
+              <v-icon class="mr-1 red--text">cancel</v-icon>
+              <span>Disable</span>
+            </v-btn>
+            </div>
+            <div v-else>
+              <canvas
+                id="qr"
+                width="100"
+                height="100"
+                @click="fullscreen"
+                class="w-100 mx-auto mb-2"
+              />
+                <div class="mb-2">
+                <code
+                class="black--text"
+                :data-clipboard-text="user.otpsecret"
+                >{{ user.otpsecret }}</code
+              >
+              </div>
+
+                  <pincode-input
+                  class="mx-auto yellow--text mb-2 d-block"
+                  v-model="token"
+                  :key="tokenKey"
+                  placeholder="0"
+                  :length="6"
+                  />
+            </div>
+          </v-card>
         </div>
         <div v-if="changingPassword" class="mb-2">
           <v-form @keyup.native.enter="submit">
@@ -113,11 +160,17 @@
 import { mapActions, mapGetters } from 'vuex';
 import validator from 'email-validator';
 import SetPin from './SetPin';
+import qr from 'qrcode';
+import PincodeInput from 'vue-pincode-input';
 
 export default {
-  components: { SetPin },
+  components: { SetPin, PincodeInput },
   data() {
     return {
+      tokenKey: 'a',
+      twofaFail: false,
+      token: '',
+      full: false,
       saving: false,
       showPinDialog: false,
       success: false,
@@ -152,6 +205,59 @@ export default {
   },
 
   methods: {
+    clear() {
+      this.tokenKey += 'a';
+      this.token = '';
+    },
+    async disable() {
+      try {
+        this.twofaFail = false;
+        await this.disable2fa(this.token);
+        this.twofa();
+      } catch (e) {
+        this.twofaFail = true;
+      }
+      this.clear();
+    },
+    async enable() {
+      try {
+        this.twofaFail = false;
+        await this.enable2fa(this.token);
+        this.twofa();
+      } catch (e) {
+        this.twofaFail = true;
+      }
+      this.clear();
+    },
+    fullscreen() {
+      if (this.full) {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+          document.mozCancelFullScreen();
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+          document.msExitFullscreen();
+        }
+        this.full = false;
+        return;
+      }
+
+      let elem = document.getElementById('qr');
+
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+      } else if (elem.mozRequestFullScreen) {
+        elem.mozRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
+      } else if (elem.webkitRequestFullscreen) {
+        elem.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+      } else if (elem.msRequestFullscreen) {
+        elem.msRequestFullscreen();
+      }
+
+      this.full = true;
+    },
     filterCurrencies() {
       this.form.currencies = this.form.currencies.filter(c =>
         this.currencies.includes(c)
@@ -163,10 +269,23 @@ export default {
     },
     twofa() {
       this.set2fa = !this.set2fa;
+      this.$nextTick(() => {
+        let canvas = document.getElementById('qr');
+        let { otpsecret, username } = this.user;
+        let uri = `otpauth://totp/CoinOS:${username}?secret=${otpsecret}&period=30&digits=6&algorithm=SHA1&issuer=CoinOS`;
+        if (!canvas) return;
+
+        qr.toCanvas(canvas, uri, e => {
+          if (e) console.log(e);
+        });
+      });
     },
     changePassword() {
       this.changingPassword = !this.changingPassword;
-      this.$nextTick(() => this.$refs.password.focus());
+      this.$nextTick(() => {
+        this.$refs.password.focus();
+        window.scrollTo(0, this.$refs.password.offsetTop);
+      });
     },
     pin(pin) {
       this.form.pin = pin;
@@ -176,7 +295,7 @@ export default {
       if (!this.form.password || this.form.password === this.form.passconfirm) {
         this.saving = true;
         let res = await this.updateUser(this.form);
-        this.$nextTick(() => this.saving = false);
+        this.$nextTick(() => (this.saving = false));
 
         if (res) {
           this.success = true;
@@ -190,10 +309,13 @@ export default {
       }
     },
 
-    ...mapActions(['updateUser']),
+    ...mapActions(['updateUser', 'enable2fa', 'disable2fa', 'getOtpSecret']),
   },
 
   watch: {
+    token(v) {
+      if (!this.user.twofa && v.length === 6) this.enable();
+    },
     user(user) {
       if (!this.initialized) {
         Object.keys(user)
@@ -222,6 +344,7 @@ export default {
     } catch (e) {
       /**/
     }
+    this.getOtpSecret();
   },
 };
 </script>
@@ -231,4 +354,11 @@ export default {
   .v-btn
     width 100%
     height 62px !important
+
+canvas
+  position relative
+  display block
+  height 100%
+  margin-left auto
+  margin-right auto
 </style>

@@ -115,9 +115,6 @@ export default {
     user: sync('user'),
   },
   methods: {
-    keyup() {
-      console.log('oy');
-    }, 
     updateUser: call('updateUser'),
     submitOldPin() {
       if (this.oldPin === this.user.pin) {

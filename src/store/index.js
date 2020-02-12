@@ -99,7 +99,7 @@ export default new Vuex.Store({
       }
 
       await dispatch('init');
-      router.push('/home');
+      if (router.currentRoute.path !== '/home') router.push('/home');
     },
 
     async facebookLogin({ commit, dispatch }, data) {
@@ -115,6 +115,18 @@ export default new Vuex.Store({
           router.push('/home');
           break;
       }
+    },
+
+    async getOtpSecret(_, token) {
+      Vue.axios.get('/otpsecret');
+    },
+
+    async enable2fa(_, token) {
+      const res = await Vue.axios.post('/2fa', { token });
+    },
+
+    async disable2fa(_, token) {
+      const res = await Vue.axios.post('/disable2fa', { token });
     },
 
     async shiftCurrency({ commit, dispatch, state }) {
@@ -192,6 +204,7 @@ export default new Vuex.Store({
         commit('rate', rates[state.user.currency]);
       });
 
+      s.on('otpsecret', otpsecret => commit('user', { ...state.user, otpsecret }));
       s.on('user', user => commit('user', user));
 
       return new Promise((resolve, reject) => {

@@ -36,7 +36,7 @@
         </v-container>
       </transition>
     </v-content>
-    <bottom-nav v-if="user" />
+    <bottom-nav v-if="user && user.address" />
   </v-app>
 </template>
 

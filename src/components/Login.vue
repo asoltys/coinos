@@ -56,7 +56,6 @@
               <v-text-field
                 label="Username"
                 v-model="form.username"
-                autofocus
                 dark
                 autocapitalize="none"
               />
