@@ -116,7 +116,7 @@
             transition="scale-transition"
             >An email has been sent with a link for you to click on</v-alert
           >
-          <v-text-field label="Username" v-model="form.username" type="text" />
+          <v-text-field v-if="!user.fbtoken" label="Username" v-model="form.username" type="text" />
 
           <v-combobox
             v-model="form.currencies"

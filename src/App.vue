@@ -19,6 +19,7 @@
             transition="scale-transition"
             >{{ error }}</v-alert
           >
+          <two-fa />
           <router-view :key="$route.path"></router-view>
           <div class="text-center pa-4">
             <v-btn
@@ -48,9 +49,10 @@ import TopBar from './components/TopBar';
 import { mapGetters } from 'vuex';
 import { QrcodeStream } from 'vue-qrcode-reader';
 import Window from './window.js';
+import TwoFa from './components/TwoFa';
 
 export default {
-  components: { BottomNav, SnackBar, TopBar, QrcodeStream },
+  components: { BottomNav, SnackBar, TopBar, TwoFa, QrcodeStream },
 
   data() {
     return {

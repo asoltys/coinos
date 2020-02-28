@@ -38,15 +38,18 @@ const state = {
   payreq: '',
   payuser: '',
   pin: '',
+  prompt2fa: false,
   rate: 0,
   rates: null,
   received: 0,
+  route: null,
   scan: '',
   scanning: false,
   scannedBalance: null,
   snack: '',
   socket: null,
   token: null,
+  twofa: '',
   user: {
     address: null,
     balance: null,
@@ -102,18 +105,29 @@ export default new Vuex.Store({
       if (router.currentRoute.path !== '/home') router.push('/home');
     },
 
-    async facebookLogin({ commit, dispatch }, data) {
+    async facebookLogin({ commit, state, dispatch }, data) {
       let { accessToken, userID } = data.authResponse;
+      let { twofa } = state;
       let res;
 
       switch (data.status) {
         case 'connected':
-          res = await Vue.axios.post('/facebookLogin', { accessToken, userID });
-          commit('user', res.data.user);
-          commit('token', res.data.token);
-          await dispatch('init');
-          router.push('/home');
-          break;
+          try {
+            res = await Vue.axios.post('/facebookLogin', {
+              accessToken,
+              userID,
+              twofa,
+            });
+            commit('user', res.data.user);
+            commit('token', res.data.token);
+            await dispatch('init');
+            router.push('/home');
+            break;
+          } catch (e) {
+            if (e.response.data.startsWith('2fa')) {
+              commit('prompt2fa', true);
+            }
+          }
       }
     },
 
@@ -204,7 +218,9 @@ export default new Vuex.Store({
         commit('rate', rates[state.user.currency]);
       });
 
-      s.on('otpsecret', otpsecret => commit('user', { ...state.user, otpsecret }));
+      s.on('otpsecret', otpsecret =>
+        commit('user', { ...state.user, otpsecret })
+      );
       s.on('user', user => commit('user', user));
 
       return new Promise((resolve, reject) => {
@@ -296,11 +312,12 @@ export default new Vuex.Store({
       commit('loading', true);
       commit('error', null);
 
-      let { address, amount, payreq, payuser } = getters;
+      let { address, amount, payreq, payuser, route } = getters;
 
       if (payreq) {
         try {
-          let res = await Vue.axios.post('/sendPayment', { payreq });
+          l(payreq);
+          let res = await Vue.axios.post('/sendPayment', { payreq, route });
           commit('payment', res.data);
         } catch (e) {
           commit('error', e.response.data);
@@ -397,13 +414,16 @@ export default new Vuex.Store({
 
       try {
         if (text.slice(0, 10) === 'lightning:') text = text.slice(10);
-        let payobj = bolt11.decode(text.toLowerCase());
+        let payreq = text.toLowerCase();
+        let payobj = bolt11.decode(payreq);
+        let res = await Vue.axios.post('/queryRoutes', { payreq });
+        if (res.data.routes.length) commit('route', res.data.routes[0]);
         router.push({ name: 'send', params: { keep: true } });
         commit('payobj', payobj);
         commit('payreq', text);
         return;
       } catch (e) {
-        /**/
+        l(e);
       }
 
       let url, liquid;

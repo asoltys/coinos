@@ -1,18 +1,5 @@
 <template>
   <v-container v-if="!initializing">
-    <v-dialog :value="loggingIn && !error" max-width="350">
-      <v-card>
-        <v-card-title class="subheading">Approval Required</v-card-title>
-        <v-card-text>
-          <v-layout>
-            <img class="mr-2 logo" src="../assets/authy.png" />
-            <span>
-              Use the Authy app on your phone to approve the login request
-            </span>
-          </v-layout>
-        </v-card-text>
-      </v-card>
-    </v-dialog>
     <v-layout>
       <v-flex>
         <v-alert
@@ -110,16 +97,6 @@ export default {
     ...mapActions(['login', 'facebookLogin', 'createUser']),
 
     onSignInSuccess(res) {
-      if (res.status === 'connected') {
-        let i = setInterval(() => {
-          this.loggingIn = true;
-          clearInterval(i);
-        }, 3000);
-        let j = setInterval(() => {
-          this.loggingIn = false;
-          clearInterval(j);
-        }, 60000);
-      }
       this.facebookLogin(res);
     },
 
@@ -128,14 +105,6 @@ export default {
     },
 
     submit(e) {
-      let i = setInterval(() => {
-        this.loggingIn = true;
-        clearInterval(i);
-      }, 3000);
-      let j = setInterval(() => {
-        this.loggingIn = false;
-        clearInterval(j);
-      }, 60000);
       this.login(this.form);
       this.showlogout = false;
     },

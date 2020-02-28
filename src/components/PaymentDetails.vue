@@ -7,7 +7,17 @@
       </div>
       <div>
         <span class="yellow--text">
-          <span class="display-1">{{ fiat }}</span>
+          <span class="display-1">{{ fiat(payobj.satoshis) }}</span>
+          {{ user.currency }}
+        </span>
+      </div>
+    </div>
+    <div class="text-center">
+      <div>
+        <span class="headline grey--text">+ Fee: </span>
+        <span class="headline">{{fee}}</span> SAT
+        <span class="ml-2 yellow--text">
+          <span class="headline">{{ fiat(fee) }}</span>
           {{ user.currency }}
         </span>
       </div>
@@ -32,11 +42,17 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['rate', 'user']),
-    fiat() {
-      return ((this.payobj.satoshis * this.rate) / 100000000).toFixed(2);
+    ...mapGetters(['rate', 'route', 'user']),
+    fee() {
+      return this.route.total_amt - parseInt(this.payobj.satoshis);
     },
   },
+
+  methods: {
+    fiat(n) {
+      return ((n * this.rate) / 100000000).toFixed(2);
+    },
+  } 
 };
 </script>
 
