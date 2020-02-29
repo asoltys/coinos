@@ -90,14 +90,17 @@ export default new Vuex.Store({
       commit('initializing', false);
     },
 
-    async login({ commit, dispatch }, user) {
+    async login({ commit, dispatch, state }, user) {
+      commit('user', user);
+      user.token = state.twofa;
       try {
         let res = await Vue.axios.post('/login', user);
 
         commit('user', res.data.user);
         commit('token', res.data.token);
       } catch (e) {
-        commit('error', 'Login failed');
+        if (e.response.data.startsWith('2fa')) commit('prompt2fa', true);
+        else commit('error', 'Login failed');
         return;
       }
 
@@ -106,18 +109,16 @@ export default new Vuex.Store({
     },
 
     async facebookLogin({ commit, state, dispatch }, data) {
-      let { accessToken, userID } = data.authResponse;
-      let { twofa } = state;
       let res;
 
       switch (data.status) {
         case 'connected':
+          let user = data; 
+          user.authResponse.token = state.twofa;
+          commit('user', user);
+
           try {
-            res = await Vue.axios.post('/facebookLogin', {
-              accessToken,
-              userID,
-              twofa,
-            });
+            res = await Vue.axios.post('/facebookLogin', user.authResponse);
             commit('user', res.data.user);
             commit('token', res.data.token);
             await dispatch('init');

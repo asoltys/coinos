@@ -27,6 +27,7 @@ if (window.location.protocol !== 'file:') {
     window.FB.init({
       appId: process.env.VUE_APP_FACEBOOK,
       cookie: false,
+      status: true,
       xfbml: true,
       version: 'v5.0',
     });

@@ -65,6 +65,7 @@
 import { mapActions, mapGetters } from 'vuex';
 import Flash from 'vue-material-design-icons/Flash';
 import Water from 'vue-material-design-icons/Water';
+import { sync } from 'vuex-pathify';
 
 export default {
   components: { Flash, Water },
@@ -91,7 +92,10 @@ export default {
     };
   },
 
-  computed: mapGetters(['error', 'user', 'initializing']),
+  computed: {
+    twofa: sync('twofa'),
+    ...mapGetters(['error', 'user', 'initializing']),
+  }, 
 
   methods: {
     ...mapActions(['login', 'facebookLogin', 'createUser']),

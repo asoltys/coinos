@@ -28,7 +28,7 @@
           <set-pin @pin="pin" :showPinDialog="showPinDialog" />
           <v-btn @click="twofa">
             <v-icon class="mr-1 yellow--text">stay_current_portrait</v-icon>
-            {{ user.twofa ? "Disable" : "Setup" }} 2FA
+            {{ user.twofa ? 'Disable' : 'Setup' }} 2FA
           </v-btn>
         </div>
         <div v-if="set2fa">
@@ -43,17 +43,19 @@
               >Invalid token, try again</v-alert
             >
             <div v-if="user.twofa">
-                  <pincode-input
-                  class="mx-auto yellow--text mb-2 d-block"
-                  v-model="token"
-                  :key="tokenKey"
-                  placeholder="0"
-                  :length="6"
-                  />
-            <v-btn @click="disable">
-              <v-icon class="mr-1 red--text">cancel</v-icon>
-              <span>Disable</span>
-            </v-btn>
+              <label class="font-weight-bold">Enter Code to Disable</label>
+
+              <pincode-input
+                class="mx-auto yellow--text mb-2 d-block"
+                v-model="token"
+                :key="tokenKey"
+                placeholder="0"
+                :length="6"
+              />
+              <v-btn @click="disable">
+                <v-icon class="mr-1 red--text">cancel</v-icon>
+                <span>Disable</span>
+              </v-btn>
             </div>
             <div v-else>
               <canvas
@@ -63,21 +65,23 @@
                 @click="fullscreen"
                 class="w-100 mx-auto mb-2"
               />
-                <div class="mb-2">
+              <div class="mb-2">
                 <code
-                class="black--text"
-                :data-clipboard-text="user.otpsecret"
-                >{{ user.otpsecret }}</code
-              >
+                  class="black--text"
+                  :data-clipboard-text="user.otpsecret"
+                  >{{ user.otpsecret }}</code
+                >
               </div>
 
-                  <pincode-input
-                  class="mx-auto yellow--text mb-2 d-block"
-                  v-model="token"
-                  :key="tokenKey"
-                  placeholder="0"
-                  :length="6"
-                  />
+              <label class="font-weight-bold">Enter Code to Enable</label>
+
+              <pincode-input
+                class="mx-auto yellow--text mb-2 d-block"
+                v-model="token"
+                :key="tokenKey"
+                placeholder="0"
+                :length="6"
+              />
             </div>
           </v-card>
         </div>
@@ -116,7 +120,12 @@
             transition="scale-transition"
             >An email has been sent with a link for you to click on</v-alert
           >
-          <v-text-field v-if="!user.fbtoken" label="Username" v-model="form.username" type="text" />
+          <v-text-field
+            v-if="!user.fbtoken"
+            label="Username"
+            v-model="form.username"
+            type="text"
+          />
 
           <v-combobox
             v-model="form.currencies"
