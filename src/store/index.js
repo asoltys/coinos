@@ -20,7 +20,10 @@ const generatePassword = () => {
   return retVal;
 };
 
+
 const l = console.log;
+const go = path => (router.currentRoute.path === path) || router.push(path);
+
 const state = {
   address: '',
   amount: 0,
@@ -84,7 +87,7 @@ export default new Vuex.Store({
           (state.user && state.user.address)
         )
       ) {
-        router.push('/');
+        go('/');
       }
 
       commit('initializing', false);
@@ -105,7 +108,7 @@ export default new Vuex.Store({
       }
 
       await dispatch('init');
-      if (router.currentRoute.path !== '/home') router.push('/home');
+      if (router.currentRoute.path !== '/home') go('/home');
     },
 
     async facebookLogin({ commit, state, dispatch }, data) {
@@ -122,7 +125,7 @@ export default new Vuex.Store({
             commit('user', res.data.user);
             commit('token', res.data.token);
             await dispatch('init');
-            router.push('/home');
+            go('/home');
             break;
           } catch (e) {
             if (e.response.data.startsWith('2fa')) {
@@ -163,7 +166,7 @@ export default new Vuex.Store({
       commit('user', null);
       if (state.socket) state.socket.disconnect();
       commit('socket', null);
-      router.push('/');
+      go('/');
     },
 
     async forgot({ commit, state }, email) {
@@ -179,7 +182,7 @@ export default new Vuex.Store({
       try {
         let sat = ((100000000 * amount) / 100 / state.rate).toFixed(0);
         await Vue.axios.post('/buy', { amount, token, sat });
-        router.push('/home');
+        go('/home');
         dispatch('snack', `Bought ${sat} satoshis`);
       } catch (e) {
         l('error charging credit card', e);
@@ -233,7 +236,7 @@ export default new Vuex.Store({
                 router.currentRoute.path === '/login' ||
                 router.currentRoute.path === '/'
               ) {
-                router.push('/home');
+                go('/home');
               }
             }
             resolve();
@@ -457,7 +460,7 @@ export default new Vuex.Store({
           }
         }
 
-        router.push({ name: 'send', params: { keep: true } });
+        go({ name: 'send', params: { keep: true } });
         return;
       }
 
@@ -472,7 +475,7 @@ export default new Vuex.Store({
             /**/
           }
         }
-        router.push({ name: 'send', params: { keep: true } });
+        go({ name: 'send', params: { keep: true } });
         return;
       } catch (e) {
         /**/
@@ -486,14 +489,14 @@ export default new Vuex.Store({
         text.startsWith('VT')
       ) {
         commit('address', text);
-        router.push({ name: 'send', params: { keep: true } });
+        go({ name: 'send', params: { keep: true } });
         return;
       }
 
       try {
         bech32.decode(text);
         commit('address', text);
-        router.push({ name: 'send', params: { keep: true } });
+        go({ name: 'send', params: { keep: true } });
         return;
       } catch (e) {
         /**/
