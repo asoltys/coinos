@@ -17,7 +17,7 @@
 
       <div class="mb-4 text-center">
         <div>
-          <span class="headline orange--text">Fees: </span>
+          <span class="headline grey--text">Fee: </span>
           <span class="display-1">{{ payment.fee || 0 }}</span> SAT
           <span class="ml-2 yellow--text">
             <span class="display-1">{{ fiat(payment.fee) }}</span>

@@ -209,11 +209,11 @@ export default new Vuex.Store({
         dispatch('snack', 'Your phone number has been verified');
       });
 
-      s.on('invoice', data => {
-        dispatch('snack', `Received ${data.value} satoshi`);
+      s.on('payment', p => {
+        if (p.amount > 0) dispatch('snack', `Received ${p.amount} satoshi`);
+        commit('addPayment', p)
       });
 
-      s.on('payment', p => commit('addPayment', p));
       s.on('payments', p => commit('payments', p));
 
       s.on('rates', rates => {

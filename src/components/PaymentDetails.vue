@@ -14,12 +14,8 @@
     </div>
     <div class="text-center">
       <div>
-        <span class="headline grey--text">+ Fee: </span>
+        <span class="headline grey--text">+ Routing Fee: </span>
         <span class="headline">{{fee}}</span> SAT
-        <span class="ml-2 yellow--text">
-          <span class="headline">{{ fiat(fee) }}</span>
-          {{ user.currency }}
-        </span>
       </div>
     </div>
     <div class="text-center font-weight-bold">to</div>
