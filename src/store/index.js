@@ -20,21 +20,28 @@ const generatePassword = () => {
   return retVal;
 };
 
+const isLiquid = address =>
+  address.startsWith('Az') ||
+  address.startsWith('lq1') ||
+  address.startsWith('VJL') ||
+  address.startsWith('VT');
 
 const l = console.log;
-const go = path => (router.currentRoute.path === path) || router.push(path);
+const go = path => router.currentRoute.path === path || router.push(path);
 
 const state = {
   address: '',
   amount: 0,
   channels: [],
+  confTarget: null,
   error: '',
-  fees: 0,
+  feeRate: null,
   fiat: false,
   friends: [],
   initializing: false,
   loading: false,
   orders: [],
+  mode: null,
   payment: null,
   payments: [],
   payobj: null,
@@ -52,6 +59,7 @@ const state = {
   snack: '',
   socket: null,
   token: null,
+  tx: null,
   twofa: '',
   user: {
     address: null,
@@ -116,7 +124,7 @@ export default new Vuex.Store({
 
       switch (data.status) {
         case 'connected':
-          let user = data; 
+          let user = data;
           user.authResponse.token = state.twofa;
           commit('user', user);
 
@@ -211,7 +219,7 @@ export default new Vuex.Store({
 
       s.on('payment', p => {
         if (p.amount > 0) dispatch('snack', `Received ${p.amount} satoshi`);
-        commit('addPayment', p)
+        commit('addPayment', p);
       });
 
       s.on('payments', p => commit('payments', p));
@@ -312,11 +320,60 @@ export default new Vuex.Store({
       commit('peers', res.data.peers);
     },
 
+    async estimateFee({ commit, getters }) {
+      commit('error', null);
+
+      let {
+        address,
+        amount,
+        feeRate,
+        confTarget,
+        mode,
+      } = getters;
+
+      if (address) {
+        if (isLiquid(address)) {
+          try {
+            let res = await Vue.axios.post('/estimateLiquidFee', {
+              address,
+              amount,
+              feeRate,
+              confTarget,
+              mode,
+            });
+            commit('tx', res.data.tx);
+          } catch (e) {
+            commit('error', e.response.data);
+          }
+        } else {
+          try {
+            let res = await Vue.axios.post('/estimateBitcoinFee', {
+              address,
+              amount,
+              feeRate,
+              confTarget,
+              mode,
+            });
+            commit('tx', res.data.tx);
+          } catch (e) {
+            commit('error', e.response.data);
+          }
+        }
+      }
+    },
+
     async sendPayment({ commit, getters }) {
       commit('loading', true);
       commit('error', null);
 
-      let { address, amount, payreq, payuser, route } = getters;
+      let {
+        address,
+        amount,
+        tx,
+        payreq,
+        payuser,
+        route,
+      } = getters;
 
       if (payreq) {
         try {
@@ -335,21 +392,18 @@ export default new Vuex.Store({
           l(e);
         }
       } else if (address) {
-        if (
-          address.startsWith('Az') ||
-          address.startsWith('lq1') ||
-          address.startsWith('VJL') ||
-          address.startsWith('VT')
-        ) {
+        if (!tx) await dispatch('estimateFee');
+
+        if (isLiquid(address)) {
           try {
-            let res = await Vue.axios.post('/sendLiquid', { address, amount });
+            let res = await Vue.axios.post('/sendLiquid', { tx });
             commit('payment', res.data);
           } catch (e) {
             commit('error', e.response.data);
           }
         } else {
           try {
-            let res = await Vue.axios.post('/sendCoins', { address, amount });
+            let res = await Vue.axios.post('/sendCoins', { tx });
             commit('payment', res.data);
           } catch (e) {
             commit('error', e.response.data);
@@ -361,6 +415,7 @@ export default new Vuex.Store({
     },
 
     async clearPayment({ commit }) {
+      commit('fee', 0);
       commit('loading', false);
       commit('payreq', '');
       commit('address', '');

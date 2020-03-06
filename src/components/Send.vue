@@ -40,7 +40,8 @@
         <div 
                   
             v-if="!loading && to"
-                  class="d-flex flex-wrap">
+                  >
+          <div class="d-flex flex-wrap">
           <v-btn
             class="order-first order-sm-last mb-2 flex-grow-1"
             color="green"
@@ -52,6 +53,7 @@
           <v-btn @click="back" class="mr-2 flex-grow-1">
             <v-icon>arrow_back</v-icon><span>Go Back</span>
           </v-btn>
+          </div>
         </div>
       </template>
     </template>
@@ -98,7 +100,7 @@ export default {
     ...mapGetters([
       'address',
       'amount',
-      'fees',
+      'fee',
       'friends',
       'balance',
       'loading',
