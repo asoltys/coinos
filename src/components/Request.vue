@@ -40,7 +40,7 @@
           <v-icon v-else>code</v-icon>
           <span>{{ code }}</span>
         </v-btn>
-        <v-btn @click.native="copy">
+        <v-btn @click.native="() => copy(copytext)">
           <v-icon>content_copy</v-icon><span>Copy</span>
         </v-btn>
       </div>
@@ -53,7 +53,10 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
+import Copy from '../mixins/Copy';
+
 export default {
+  mixins: [Copy],
   props: {
     copytext: {
       type: String,
@@ -114,22 +117,6 @@ export default {
       }
 
       this.full = true;
-    },
-
-    copy() {
-      var textArea = document.createElement('textarea');
-      textArea.style.position = 'fixed';
-      textArea.value = this.copytext;
-
-      document.body.appendChild(textArea);
-
-      textArea.focus();
-      textArea.select();
-
-      document.execCommand('copy');
-      document.body.removeChild(textArea);
-
-      this.snack('Copied to Clipboard');
     },
   },
 

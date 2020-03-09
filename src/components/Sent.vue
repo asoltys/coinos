@@ -80,22 +80,6 @@ export default {
         bs += '/testnet';
       window.location = `${bs}/tx/${tx}`;
     },
-
-    copy(tx) {
-      var textArea = document.createElement('textarea');
-      textArea.style.position = 'fixed';
-      textArea.value = tx;
-
-      document.body.appendChild(textArea);
-
-      textArea.focus();
-      textArea.select();
-
-      document.execCommand('copy');
-      document.body.removeChild(textArea);
-
-      this.snack('Copied to Clipboard');
-    },
   },
 };
 </script>

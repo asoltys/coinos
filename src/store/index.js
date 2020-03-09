@@ -27,7 +27,9 @@ const isLiquid = address =>
   address.startsWith('VT');
 
 const l = console.log;
-const go = path => router.currentRoute.path === path || router.push(path);
+const go = path => {
+  path === router.currentRoute.path || path.name === router.currentRoute.path.substr(1) || router.push(path);
+} 
 
 const state = {
   address: '',
@@ -36,12 +38,14 @@ const state = {
   confTarget: null,
   error: '',
   feeRate: null,
+  feePolicy: 'auto',
   fiat: false,
   friends: [],
   initializing: false,
   loading: false,
+  loadingFee: false,
   orders: [],
-  mode: null,
+  mode: "ECONOMICAL",
   payment: null,
   payments: [],
   payobj: null,
@@ -322,47 +326,44 @@ export default new Vuex.Store({
 
     async estimateFee({ commit, getters }) {
       commit('error', null);
+      commit('loadingFee', true);
 
       let {
         address,
         amount,
         feeRate,
+        feePolicy,
         confTarget,
         mode,
       } = getters;
 
+      let params = { address, amount };
+
+      if (feePolicy === 'auto') params = { confTarget, mode, ...params };
+      else params = { feeRate, ...params };
+
       if (address) {
         if (isLiquid(address)) {
           try {
-            let res = await Vue.axios.post('/estimateLiquidFee', {
-              address,
-              amount,
-              feeRate,
-              confTarget,
-              mode,
-            });
+            let res = await Vue.axios.post('/estimateLiquidFee', params);
             commit('tx', res.data.tx);
           } catch (e) {
             commit('error', e.response.data);
           }
         } else {
           try {
-            let res = await Vue.axios.post('/estimateBitcoinFee', {
-              address,
-              amount,
-              feeRate,
-              confTarget,
-              mode,
-            });
+            let res = await Vue.axios.post('/estimateBitcoinFee', params);
             commit('tx', res.data.tx);
           } catch (e) {
             commit('error', e.response.data);
           }
         }
       }
+
+      commit('loadingFee', false);
     },
 
-    async sendPayment({ commit, getters }) {
+    async sendPayment({ commit, dispatch, getters }) {
       commit('loading', true);
       commit('error', null);
 
@@ -377,7 +378,6 @@ export default new Vuex.Store({
 
       if (payreq) {
         try {
-          l(payreq);
           let res = await Vue.axios.post('/sendPayment', { payreq, route });
           commit('payment', res.data);
         } catch (e) {
@@ -389,21 +389,23 @@ export default new Vuex.Store({
           commit('payment', res.data);
         } catch (e) {
           commit('error', e.response.data);
-          l(e);
         }
       } else if (address) {
         if (!tx) await dispatch('estimateFee');
+        tx = getters.tx;
+        if (!tx) return commit('loading', false);
 
         if (isLiquid(address)) {
           try {
-            let res = await Vue.axios.post('/sendLiquid', { tx });
+            let res = await Vue.axios.post('/sendLiquid', { address, tx });
             commit('payment', res.data);
           } catch (e) {
             commit('error', e.response.data);
           }
         } else {
           try {
-            let res = await Vue.axios.post('/sendCoins', { tx });
+            let res = await Vue.axios.post('/sendCoins', { address, tx });
+            l(res);
             commit('payment', res.data);
           } catch (e) {
             commit('error', e.response.data);
@@ -415,7 +417,7 @@ export default new Vuex.Store({
     },
 
     async clearPayment({ commit }) {
-      commit('fee', 0);
+      commit('tx', null);
       commit('loading', false);
       commit('payreq', '');
       commit('address', '');
@@ -467,9 +469,10 @@ export default new Vuex.Store({
       }
     },
 
-    async handleScan({ commit, dispatch }, text) {
+    async handleScan({ commit, dispatch, getters }, text) {
       await dispatch('clearPayment');
       commit('scanning', false);
+      let { tx } = getters;
 
       try {
         if (text.slice(0, 10) === 'lightning:') text = text.slice(10);
@@ -477,13 +480,11 @@ export default new Vuex.Store({
         let payobj = bolt11.decode(payreq);
         let res = await Vue.axios.post('/queryRoutes', { payreq });
         if (res.data.routes.length) commit('route', res.data.routes[0]);
-        router.push({ name: 'send', params: { keep: true } });
+        go({ name: 'send', params: { keep: true } });
         commit('payobj', payobj);
         commit('payreq', text);
         return;
-      } catch (e) {
-        l(e);
-      }
+      } catch (e) { /**/ }
 
       let url, liquid;
       try {
@@ -506,15 +507,7 @@ export default new Vuex.Store({
             parseInt((url.options.amount * 100000000).toFixed(0))
           );
 
-        if (!liquid && process.env.NODE_ENV === 'production') {
-          try {
-            let res = await Vue.axios.get(`/balance/${url.address}`);
-            commit('scannedBalance', res.data.final_balance);
-          } catch (e) {
-            /**/
-          }
-        }
-
+        if (!tx) await dispatch('estimateFee');
         go({ name: 'send', params: { keep: true } });
         return;
       }

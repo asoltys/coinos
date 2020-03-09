@@ -10,7 +10,7 @@
       <Request v-else v-bind="{ copytext }" @clear="clear" />
     </template>
     <div v-else>
-      <numpad class="mr-4 mb-2" @lightning="lightning" />
+      <numpad class="mr-4 mb-2" @done="lightning" />
 
       <div class="d-flex flex-wrap buttons">
         <v-btn class="flex-grow-1 mb-2 mr-2" @click="bitcoin">

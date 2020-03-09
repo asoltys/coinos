@@ -17,42 +17,51 @@
             hide-details
             autofocus
           />
-        <div v-if="!to" class="d-flex flex-wrap">
-          <v-btn
-            class="mr-2 mb-2 flex-grow-1"
-            v-if="user.fbtoken"
-            @click="$router.push('/contacts')"
-          >
-            <v-icon class="mr-1">person</v-icon>
-            <span>Address Book</span>
-          </v-btn>
-          <v-btn @click="back" class="mr-2 flex-grow-1">
-            <v-icon>arrow_back</v-icon><span>Go Back</span>
-          </v-btn>
+          <div v-if="!to" class="d-flex flex-wrap">
+            <v-btn
+              class="mr-2 mb-2 flex-grow-1"
+              v-if="user.fbtoken"
+              @click="$router.push('/contacts')"
+            >
+              <v-icon class="mr-1">person</v-icon>
+              <span>Address Book</span>
+            </v-btn>
+            <v-btn @click="back" class="mr-2 flex-grow-1">
+              <v-icon>arrow_back</v-icon><span>Go Back</span>
+            </v-btn>
           </div>
         </div>
-        <recipient v-bind="{ address, scannedBalance }" />
-        <send-to-user v-bind="{ payuser }" />
-        <template v-if="address || payuser">
-          <numpad class="mb-2" />
-        </template>
-        <payment-details :payobj="payobj" />
-        <div 
-                  
-            v-if="!loading && to"
-                  >
-          <div class="d-flex flex-wrap">
+        <template v-else-if="editingAmount">
+          <numpad class="mb-2" @done="stopEditingAmount" />
+          <div class="d-flex">
           <v-btn
-            class="order-first order-sm-last mb-2 flex-grow-1"
-            color="green"
+                  class="black--text flex-grow-1"
+            color="primary"
             dark
-            @click="sendPayment"
+            @click="stopEditingAmount"
           >
-            <v-icon class="mr-1">send</v-icon><span>Pay</span>
+            <v-icon class="mr-1">check</v-icon><span>Set Amount</span>
           </v-btn>
-          <v-btn @click="back" class="mr-2 flex-grow-1">
-            <v-icon>arrow_back</v-icon><span>Go Back</span>
-          </v-btn>
+          </div>
+        </template>
+        <div v-else>
+          <send-to-user v-bind="{ payuser }" />
+          <recipient v-bind="{ address, amount, scannedBalance }" @editingAmount="startEditingAmount" />
+          <payment-details :payobj="payobj" />
+          <div v-if="!loading && to">
+            <div class="d-flex flex-wrap">
+              <v-btn
+                class="order-first order-sm-last mb-2 flex-grow-1"
+                color="green"
+                dark
+                @click="sendPayment"
+              >
+                <v-icon class="mr-1">send</v-icon><span>Pay</span>
+              </v-btn>
+              <v-btn @click="back" class="mr-2 flex-grow-1">
+                <v-icon>arrow_back</v-icon><span>Go Back</span>
+              </v-btn>
+            </div>
           </div>
         </div>
       </template>
@@ -92,6 +101,7 @@ export default {
 
   data() {
     return {
+      editingAmount: false,
       fiat: false,
     };
   },
@@ -100,7 +110,6 @@ export default {
     ...mapGetters([
       'address',
       'amount',
-      'fee',
       'friends',
       'balance',
       'loading',
@@ -128,7 +137,10 @@ export default {
   },
 
   methods: {
-    ...mapActions(['sendPayment', 'clearPayment', 'snack']),
+    ...mapActions(['estimateFee', 'sendPayment', 'clearPayment', 'snack']),
+
+    startEditingAmount() { this.editingAmount = true; },
+    stopEditingAmount() { this.editingAmount = false; this.estimateFee() },
 
     init() {
       if (!this.keep) this.clearPayment();

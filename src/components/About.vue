@@ -15,7 +15,7 @@
             node
           }}</code>
         </div>
-        <v-btn @click="copy" class="d-block mx-auto">
+        <v-btn @click="() => copy(node)" class="d-block mx-auto">
           <v-icon class="mr-1">content_copy</v-icon><span>Copy</span>
         </v-btn>
       </v-card-text>
@@ -33,15 +33,17 @@
 <script>
 import qr from 'qrcode';
 import { mapActions } from 'vuex';
+import Copy from '../mixins/Copy';
 
 const node =
   '02868e12f320073cad0c2959c42559fbcfd1aa326fcb943492ed7f02c9820aa399@coinos.io:9735';
 
 export default {
+  mixins: [Copy],
   data() {
     return { node };
   },
-
+  
   mounted() {
     let canvas = document.getElementById('qr');
     if (!canvas) return;
@@ -52,21 +54,6 @@ export default {
 
   methods: {
     ...mapActions(['snack']),
-    copy() {
-      var textArea = document.createElement('textarea');
-      textArea.style.position = 'fixed';
-      textArea.value = node;
-
-      document.body.appendChild(textArea);
-
-      textArea.focus();
-      textArea.select();
-
-      document.execCommand('copy');
-      document.body.removeChild(textArea);
-
-      this.snack('Copied to Clipboard');
-    },
   },
 };
 </script>

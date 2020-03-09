@@ -5,7 +5,7 @@
         class="display-1"
         v-model="inputAmount"
         @focus="e => e.target.select()"
-        @keyup.enter="$emit('lightning')"
+        @keyup.enter="done"
       />
       <v-btn
         class="toggle black--text ml-2 mt-auto"
@@ -72,6 +72,13 @@ export default {
   },
 
   methods: {
+    done(e) {
+      let amount = e.target.value;
+      if (this.fiat)
+        this.amount = parseInt(((amount * SATS) / this.rate).toFixed(8));
+      else this.amount = parseInt(amount);
+      this.$emit("done");
+    },
     shiftCurrency: call('shiftCurrency'),
 
     id(n) {
@@ -96,7 +103,6 @@ export default {
       if (!currency) return;
       if (!Array.isArray(currencies)) currencies = JSON.parse(currencies);
       let index = currencies.findIndex(c => c === currency);
-      console.log(index, this.fiat, this.amount);
 
       if (this.fiat) {
         if (index === currencies.length - 1) this.fiat = false;
