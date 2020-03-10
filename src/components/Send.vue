@@ -15,9 +15,15 @@
             auto-grow
             rows="1"
             hide-details
-            autofocus
-          />
-          <div v-if="!to" class="d-flex flex-wrap">
+          >
+            <template v-slot:append>
+              <v-btn class="mr-2 mb-2 flex-grow-1" @click="paste">
+                <v-icon class="mr-1">assignment</v-icon>
+                <span>Paste</span>
+              </v-btn>
+            </template>
+          </v-textarea>
+          <div class="d-flex flex-wrap">
             <v-btn
               class="mr-2 mb-2 flex-grow-1"
               v-if="user.fbtoken"
@@ -34,19 +40,22 @@
         <template v-else-if="editingAmount">
           <numpad class="mb-2" @done="stopEditingAmount" />
           <div class="d-flex">
-          <v-btn
-                  class="black--text flex-grow-1"
-            color="primary"
-            dark
-            @click="stopEditingAmount"
-          >
-            <v-icon class="mr-1">check</v-icon><span>Done</span>
-          </v-btn>
+            <v-btn
+              class="black--text flex-grow-1"
+              color="primary"
+              dark
+              @click="stopEditingAmount"
+            >
+              <v-icon class="mr-1">check</v-icon><span>Done</span>
+            </v-btn>
           </div>
         </template>
         <div v-else>
           <send-to-user v-bind="{ payuser }" />
-          <recipient v-bind="{ address, amount, scannedBalance }" @editingAmount="startEditingAmount" />
+          <recipient
+            v-bind="{ address, amount, scannedBalance }"
+            @editingAmount="startEditingAmount"
+          />
           <payment-details :payobj="payobj" />
           <div v-if="!loading && to">
             <div class="d-flex flex-wrap">
@@ -103,6 +112,7 @@ export default {
     return {
       editingAmount: false,
       fiat: false,
+      pasted: null,
     };
   },
 
@@ -110,7 +120,6 @@ export default {
     ...mapGetters([
       'address',
       'amount',
-      'friends',
       'balance',
       'loading',
       'user',
@@ -127,20 +136,33 @@ export default {
         if (this.payreq) return this.payreq;
         if (this.address) return this.address;
         if (this.payuser) return this.payuser;
-        return null;
+        return this.pasted;
       },
       set(v) {
         if (!v) v = '';
-        this.$store.dispatch('handleScan', v.trim());
+        this.handleScan(v.trim());
       },
     },
   },
 
   methods: {
-    ...mapActions(['estimateFee', 'sendPayment', 'clearPayment', 'snack']),
+    ...mapActions(['handleScan', 'estimateFee', 'sendPayment', 'clearPayment', 'snack']),
 
-    startEditingAmount() { this.editingAmount = true; },
-    stopEditingAmount() { this.editingAmount = false; this.estimateFee() },
+    paste() {
+      this.to = null;
+      this.$nextTick(async () => {
+        this.pasted = await navigator.clipboard.readText();
+        this.handleScan(this.pasted);
+      });
+    },
+
+    startEditingAmount() {
+      this.editingAmount = true;
+    },
+    stopEditingAmount() {
+      this.editingAmount = false;
+      this.estimateFee();
+    },
 
     init() {
       if (!this.keep) this.clearPayment();

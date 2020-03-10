@@ -3,7 +3,7 @@
     <balance />
     <v-card>
       <v-alert
-        v-if="user.pending"
+        v-if="!payments[payments.length - 1].confirmed"
         class="headline text-center black--text"
         color="orange lighten-2"
       >
@@ -34,20 +34,19 @@
 
 <script>
 import Balance from './Balance';
+import { get } from 'vuex-pathify';
 
 export default {
   components: { Balance },
-
-  props: {
-    user: { type: Object },
-    received: { type: Number },
-    rate: { type: Number },
-  },
 
   computed: {
     fiat() {
       return ((this.received / 100000000) * this.rate).toFixed(2);
     },
+    payments: get('payments'),
+    rate: get('rate'),
+    received: get('received'),
+    user: get('user'),
   },
 };
 </script>
