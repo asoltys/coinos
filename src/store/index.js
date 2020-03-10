@@ -33,19 +33,17 @@ const go = path => {
 
 const state = {
   address: '',
+  addressType: 'bitcoin',
   amount: 0,
   channels: [],
-  confTarget: null,
   error: '',
   feeRate: null,
-  feePolicy: 'auto',
   fiat: false,
   friends: [],
   initializing: false,
   loading: false,
   loadingFee: false,
   orders: [],
-  mode: "ECONOMICAL",
   payment: null,
   payments: [],
   payobj: null,
@@ -332,15 +330,9 @@ export default new Vuex.Store({
         address,
         amount,
         feeRate,
-        feePolicy,
-        confTarget,
-        mode,
       } = getters;
 
-      let params = { address, amount };
-
-      if (feePolicy === 'auto') params = { confTarget, mode, ...params };
-      else params = { feeRate, ...params };
+      let params = { address, amount, feeRate };
 
       if (address) {
         if (isLiquid(address)) {
@@ -486,13 +478,14 @@ export default new Vuex.Store({
         return;
       } catch (e) { /**/ }
 
-      let url, liquid;
+      let url;
       try {
         url = bip21.decode(text);
+        commit('addressType', 'bitcoin');
       } catch (e) {
         try {
           url = bip21.decode(text, 'liquid');
-          liquid = true;
+          commit('addressType', 'liquid');
         } catch (e) {
           /**/
         }
@@ -515,14 +508,7 @@ export default new Vuex.Store({
       try {
         BitcoinAddress.fromBase58Check(text);
         commit('address', text);
-        if (!liquid && process.env.NODE_ENV === 'production') {
-          try {
-            let res = await Vue.axios.get(`/balance/${text}`);
-            commit('scannedBalance', res.data.final_balance);
-          } catch (e) {
-            /**/
-          }
-        }
+        commit('addressType', 'bitcoin');
         go({ name: 'send', params: { keep: true } });
         return;
       } catch (e) {
@@ -537,6 +523,7 @@ export default new Vuex.Store({
         text.startsWith('VT')
       ) {
         commit('address', text);
+        commit('addressType', 'liquid');
         go({ name: 'send', params: { keep: true } });
         return;
       }
@@ -544,6 +531,7 @@ export default new Vuex.Store({
       try {
         bech32.decode(text);
         commit('address', text);
+        commit('addressType', 'bitcoin');
         go({ name: 'send', params: { keep: true } });
         return;
       } catch (e) {

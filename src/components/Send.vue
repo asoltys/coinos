@@ -40,7 +40,7 @@
             dark
             @click="stopEditingAmount"
           >
-            <v-icon class="mr-1">check</v-icon><span>Set Amount</span>
+            <v-icon class="mr-1">check</v-icon><span>Done</span>
           </v-btn>
           </div>
         </template>

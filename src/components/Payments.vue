@@ -104,11 +104,6 @@ import colors from 'vuetify/lib/util/colors';
 import Copy from '../mixins/Copy';
 
 let bs = 'https://blockstream.info';
-if (
-  process.env.NODE_ENV !== 'production' ||
-  window.location.href.includes('test')
-)
-  bs += '/testnet';
 
 export default {
   components: { Flash, Water },

@@ -9,12 +9,14 @@
       auto-grow
     >
       <template v-slot:append>
+        <v-btn @click="setAddress" class="ml-1" icon>
+          <v-icon class="mr-1">clear</v-icon>
+        </v-btn>
+        <v-btn @click="explore" class="ml-1" icon>
+          <v-icon class="mr-1">open_in_new</v-icon>
+        </v-btn>
         <v-btn @click="() => copy(address)" class="ml-1" icon>
           <v-icon class="mr-1">content_copy</v-icon>
-        </v-btn>
-        <v-btn @click="setAddress" class="ml-1" icon>
-          <v-icon v-if="editingAddress" class="mr-1">lock</v-icon>
-          <v-icon v-else class="mr-1">lock_open</v-icon>
         </v-btn>
       </template>
     </v-textarea>
@@ -25,10 +27,10 @@
         </v-btn>
       </template>
     </v-text-field>
-    <v-text-field :loading="loadingFee" label="Fee" v-model="fee" readonly suffix="sats">
+    <v-text-field :loading="loadingFee" label="Fee" v-model="fee" readonly suffix="sats" @click="setFee">
       <template v-slot:append>
-        <v-btn @click="setFee" class="ml-1" icon>
-          <v-icon class="mr-1">edit</v-icon>
+        <v-btn icon @click="() => copy(fee)" class="ml-1" text>
+          <v-icon class="mr-1">content_copy</v-icon>
         </v-btn>
       </template>
     </v-text-field>
@@ -42,6 +44,7 @@ import SetFee from './SetFee';
 import Copy from '../mixins/Copy';
 
 const SATS = 100000000;
+const bs = 'https://blockstream.info';
 
 export default {
   components: { SetFee },
@@ -57,6 +60,7 @@ export default {
   },
   computed: {
     address: sync('address'),
+    addressType: sync('addressType'),
     confTarget: sync('confTarget'),
     fee() {
       if (this.tx) return parseInt(this.tx.fee * SATS);
@@ -68,12 +72,18 @@ export default {
     tx: get('tx'),
   },
   methods: {
+    explore() {
+      this.$nextTick(function() {
+        if (this.addressType === 'bitcoin') window.open(`${bs}/address/${this.address}`);
+        else window.open(`${bs}/liquid/address/${this.address}`);
+      });
+    },
     snack: call('snack'),
     select(e) {
       if (!e.target.readOnly) e.target.select();
     },
     setAddress(e) {
-      this.editingAddress = !this.editingAddress;
+      this.address = '';
     },
     setAmount() {
       this.$emit('editingAmount');

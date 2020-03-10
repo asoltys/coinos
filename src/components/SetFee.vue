@@ -6,36 +6,13 @@
       </v-card-title>
 
       <v-card-text>
-        <div v-if="feePolicy === 'auto'">
-          <v-text-field
-            @focus="select"
-            label="Confirmation Target"
-            v-model="confTarget"
-            type="number"
-            suffix="blocks"
-          />
-          <v-select
-            :items="['ECONOMICAL', 'CONSERVATIVE']"
-            filled
-            v-model="mode"
-            label="Estimate Mode"
-          />
-            <v-btn color="secondary" @click="feePolicy = 'manual'">
-              Custom Fee Rate
-            </v-btn>
-        </div> 
-        <div v-else>
-          <v-text-field
-            @focus="select"
-            label="Fee Rate"
-            v-model="feeRate"
-            type="number"
-            suffix="sats/byte"
-          />
-          <v-btn color="secondary" @click="feePolicy = 'auto'">
-            Confirmation Target
-          </v-btn>
-        </div>
+        <v-text-field
+          @focus="select"
+          label="Fee Rate"
+          v-model="feeRate"
+          type="number"
+          suffix="sats/byte"
+        />
       </v-card-text>
 
       <v-card-actions>
@@ -58,10 +35,7 @@ export default {
     };
   },
   computed: {
-    confTarget: sync('confTarget'),
     feeRate: sync('feeRate'),
-    mode: sync('mode'),
-    feePolicy: sync('feePolicy'),
   },
   methods: {
     estimateFee: call('estimateFee'),
