@@ -15,15 +15,13 @@
             auto-grow
             rows="1"
             hide-details
-          >
-            <template v-slot:append>
-              <v-btn class="mr-2 mb-2 flex-grow-1" @click="paste">
-                <v-icon class="mr-1">assignment</v-icon>
-                <span>Paste</span>
-              </v-btn>
-            </template>
-          </v-textarea>
+            ref="to"
+          />
           <div class="d-flex flex-wrap">
+            <v-btn class="mr-2 mb-2 flex-grow-1" @click="paste">
+              <v-icon class="mr-1">assignment</v-icon>
+              <span>Paste</span>
+            </v-btn>
             <v-btn
               class="mr-2 mb-2 flex-grow-1"
               v-if="user.fbtoken"
@@ -186,6 +184,8 @@ export default {
   mounted() {
     this.init();
     this.$store.commit('payuser', this.$route.query.payuser);
+    const vw = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+    if (vw > 600) this.$refs.to.focus();
   },
 };
 </script>

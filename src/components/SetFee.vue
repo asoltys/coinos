@@ -12,6 +12,7 @@
           v-model="feeRate"
           type="number"
           suffix="sats/byte"
+          @keyup.enter="close"
         />
       </v-card-text>
 
