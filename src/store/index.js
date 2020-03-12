@@ -348,7 +348,6 @@ export default new Vuex.Store({
         } else {
           try {
             let res = await Vue.axios.post('/bitcoin/send', { address, tx });
-            l(res);
             commit('payment', res.data);
           } catch (e) {
             commit('error', e.response.data);

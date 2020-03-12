@@ -2,7 +2,7 @@
   <v-dialog v-model="dialog" width="500" @click:outside="close">
     <v-card>
       <v-card-title class="headline" primary-title>
-        Fee Policy
+        Fee Rate
       </v-card-title>
 
       <v-card-text>
@@ -11,7 +11,7 @@
           label="Fee Rate"
           v-model="feeRate"
           type="number"
-          suffix="sats/byte"
+          suffix="sat/byte"
           @keyup.enter="close"
         />
       </v-card-text>

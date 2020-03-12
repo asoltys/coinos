@@ -9,7 +9,7 @@
       auto-grow
     >
       <template v-slot:append>
-        <v-btn @click="setAddress" class="ml-1" icon>
+        <v-btn @click="$emit('back')" class="ml-1" icon>
           <v-icon class="mr-1">clear</v-icon>
         </v-btn>
         <v-btn @click="explore" class="ml-1" icon>
@@ -20,14 +20,14 @@
         </v-btn>
       </template>
     </v-textarea>
-    <v-text-field class="amount" label="Amount" v-model="amount" readonly suffix="sats" @click="setAmount">
+    <v-text-field class="amount" label="Amount" v-model="amount" readonly suffix="sat" @click="setAmount">
       <template v-slot:append>
         <v-btn icon @click="() => copy(amount)" class="ml-1" text>
           <v-icon class="mr-1">content_copy</v-icon>
         </v-btn>
       </template>
     </v-text-field>
-    <v-text-field :loading="loadingFee" label="Fee" v-model="fee" readonly suffix="sats" @click="setFee">
+    <v-text-field :loading="loadingFee" label="Fee" v-model="fee" readonly suffix="sat" @click="setFee">
       <template v-slot:append>
         <v-btn icon @click="() => copy(fee)" class="ml-1" text>
           <v-icon class="mr-1">content_copy</v-icon>
@@ -81,9 +81,6 @@ export default {
     snack: call('snack'),
     select(e) {
       if (!e.target.readOnly) e.target.select();
-    },
-    setAddress(e) {
-      this.address = '';
     },
     setAmount() {
       this.$emit('editingAmount');

@@ -15,7 +15,7 @@
             auto-grow
             rows="1"
             hide-details
-            ref="to"
+            @keyup="() => handleScan(to)"
           />
           <div class="d-flex flex-wrap">
             <v-btn class="mr-2 mb-2 flex-grow-1" @click="paste">
@@ -53,6 +53,7 @@
           <recipient
             v-bind="{ address, amount, scannedBalance }"
             @editingAmount="startEditingAmount"
+            @back="back"
           />
           <payment-details :payobj="payobj" />
           <div v-if="!loading && to">
@@ -110,7 +111,7 @@ export default {
     return {
       editingAmount: false,
       fiat: false,
-      pasted: null,
+      to: '',
     };
   },
 
@@ -128,30 +129,14 @@ export default {
       'rate',
       'scannedBalance',
     ]),
-
-    to: {
-      get() {
-        if (this.payreq) return this.payreq;
-        if (this.address) return this.address;
-        if (this.payuser) return this.payuser;
-        return this.pasted;
-      },
-      set(v) {
-        if (!v) v = '';
-        this.handleScan(v.trim());
-      },
-    },
   },
 
   methods: {
     ...mapActions(['handleScan', 'estimateFee', 'sendPayment', 'clearPayment', 'snack']),
 
-    paste() {
-      this.to = null;
-      this.$nextTick(async () => {
-        this.pasted = await navigator.clipboard.readText();
-        this.handleScan(this.pasted);
-      });
+    async paste() {
+      this.to = await navigator.clipboard.readText();
+      this.handleScan(this.to);
     },
 
     startEditingAmount() {
@@ -170,6 +155,7 @@ export default {
     },
 
     back() {
+      this.to = '';
       if (this.payreq || this.address) return this.clearPayment();
       if (this.payuser) return this.$router.push('/contacts');
       return this.$router.push('/home');
@@ -185,7 +171,7 @@ export default {
     this.init();
     this.$store.commit('payuser', this.$route.query.payuser);
     const vw = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-    if (vw > 600) this.$refs.to.focus();
+    if (vw > 600 && this.$refs.to) this.$refs.to.focus();
   },
 };
 </script>
