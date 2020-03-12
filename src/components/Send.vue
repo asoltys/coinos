@@ -56,7 +56,7 @@
             @back="back"
           />
           <payment-details :payobj="payobj" />
-          <div v-if="!loading && to">
+          <div v-if="!loading">
             <div class="d-flex flex-wrap">
               <v-btn
                 class="order-first order-sm-last mb-2 flex-grow-1"
