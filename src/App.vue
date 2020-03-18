@@ -174,4 +174,14 @@ body
 @media only screen and (min-width: 960px)
   .container
     max-width 1000px !important
+
+@media print
+  .v-btn, header, #footer
+    display none !important
+  
+  .v-card
+    box-shadow none
+
+  *
+    color black !important
 </style>
