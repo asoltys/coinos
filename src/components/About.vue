@@ -5,50 +5,77 @@
         <p>
           Coinos is a bitcoin wallet app developed by
           <a href="https://adamsoltys.com/">Adam Soltys</a>. You can
-          <a href="https://github.com/asoltys/coinos.io"
-            >install and host it yourself</a
-          >
-          on your own server and connect it to your bitcoin and lightning nodes
-          if you want full control of your funds. Or, simply create an account here at 
-          <a href="https://coinos.io">coinos.io</a>, a free, public server that you can
-          begin using right away without providing any personal information.
+          <a href="https://github.com/asoltys/coinos.io">install</a> and host it
+          yourself and connect it to your own bitcoin and lightning nodes if you
+          want full control of your funds. Or,
+          <a @click="createUser">create a free account</a>
+          here that you can begin using right away without providing any
+          personal information.
         </p>
 
         <div v-if="more">
-        <p>
-          My aim with this app is to provide a user-friendly interface to send and
-          receive bitcoin payments for both individuals wanting a day-to-day
-          spending wallet and merchants seeking to receive payments in an
-          in-person retail setting. Coinos is <a href="https://en.wikipedia.org/wiki/Responsive_web_design">responsive</a> and <a href="https://en.wikipedia.org/wiki/Progressive_web_application">progressive</a> so it can be installed
-          on any platform, mobile or desktop, and launched as an app for a
-          full-screen experience or accessed as a website within a
-          browser.
-        </p>
+          <p>
+            We aim to provide a user-friendly interface to send and receive
+            bitcoin payments for both individuals wanting a day-to-day spending
+            wallet and merchants seeking to receive payments in a retail
+            environment. Coinos is
+            <a href="https://en.wikipedia.org/wiki/Responsive_web_design"
+              >responsive</a
+            >
+            and
+            <a href="https://en.wikipedia.org/wiki/Progressive_web_application"
+              >progressive</a
+            >
+            so it can be installed on any platform, mobile or desktop, and
+            launched as an app for a full-screen experience, or simply accessed
+            as a website within a browser.
+          </p>
 
-        <p>
-        Accounts can be funded with <a href="https://bitcoin.org">bitcoin</a>, <a href="https://blockstream.com/liquid/">liquid</a> or
-        <a href="http://lightning.network/">lightning</a> payments. Outgoing payments can be sent using any of the
-          above methods as well. Coinos acts as a kind of access
-          control layer, giving users the ability to spend and receive from all three 
-          networks with a single unified balance with their spending power limited by how much they've deposited or received.
-        </p>
+          <p>
+            Accounts can be funded with
+            <a href="https://bitcoin.org">bitcoin</a>,
+            <a href="https://blockstream.com/liquid/">liquid</a> or
+            <a href="http://lightning.network/">lightning</a> payments. Outgoing
+            payments can be sent using any of the above methods as well. Coinos
+            keeps track of a single, combined balance for each user across all
+            three networks, granting them spending power on any and all of our
+            backend full nodes according to how much they've deposited or
+            received.
+          </p>
 
-        <p>
-          Users of our hosted server will enjoy a streamlined experience with one-click account creation
-          because they don’t need to worry about server setup, software
-          installation, blockchain synchronization, establishing and managing
-          payment channels or account configuration of any kind.
-        </p>
+          <p>
+            User accounts, balances and payment history are stored in a
+            <a href="https://mariadb.org/">relational database</a>. Exchange
+            rates are fetched from
+            <a href="https://binance.com/">Binance</a> and
+            <a href="https://fixer.io/">Fixer</a>.
+          </p>
 
-        <p>
-        User accounts, balances and payment history in coinos are stored in a <a href="https://mariadb.org/">relational database</a>.
-          Exchange rates are fetched from
-          <a href="https://binance.com/">Binance</a> and
-          <a href="https://fixer.io/">Fixer</a>.
-        </p>
+          <p>
+            Users of our server enjoy a streamlined experience with one-click
+            account creation and no KYC. They don’t need to worry about software
+            installation, blockchain synchronization, server setup, channel
+            management or account configuration of any kind.
+          </p>
+
+          <p>
+            Those of you who prefer to self-host and maintain full custody of
+            your funds are encouraged to do so following the
+            <a href="https://github.com/asoltys/coinos-server"
+              >instructions on Github</a
+            >. You may decide to run another public instance or to limit access
+            to friends, family, or others in your circle of trust, offering the
+            same kind of experience but to people who would prefer to trust you
+            rather than me. Be your own bank!
+          </p>
         </div>
-        <v-btn @click="more = true" v-if="!more" class="d-block mx-auto black--text mb-2" color="yellow">
-          <v-icon class="mr-1">expand_less</v-icon>
+        <v-btn
+          @click="more = true"
+          v-if="!more"
+          class="d-block mx-auto black--text mb-2"
+          color="yellow"
+        >
+          <v-icon class="mr-1">expand_more</v-icon>
           <span>Learn More</span>
         </v-btn>
       </v-card-text>
@@ -101,7 +128,7 @@ export default {
   },
 
   methods: {
-    ...mapActions(['snack']),
+    ...mapActions(['createUser', 'snack']),
   },
 };
 </script>
