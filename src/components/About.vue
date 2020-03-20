@@ -4,12 +4,11 @@
       <v-card-text class="white--text body-1">
         <p>
           Coinos is a bitcoin wallet app. You can
-          <a href="https://github.com/asoltys/coinos">install</a> it on your
-          own server and connect it to your bitcoin and lightning nodes if you
-          want full control of your funds, or,
+          <a href="https://github.com/asoltys/coinos">run</a> it on your own
+          server and connect it to your bitcoin and lightning nodes if you want
+          full control of your funds or
           <a @click="createUser">create a free account</a>
-          here that you can begin using right away without providing any
-          personal information.
+          here that you can begin using right away.
         </p>
 
         <div v-if="more">
@@ -29,23 +28,22 @@
           </p>
 
           <p>
-            Funds can be deposited/received via the
+            Funds can be deposited via the
             <a href="https://bitcoin.org">bitcoin</a>,
             <a href="https://blockstream.com/liquid/">liquid</a> or
             <a href="http://lightning.network/">lightning</a> networks. Outgoing
-            payments/withdrawals can be made using any of the above methods as
-            well. Coinos keeps track of a single unified balance for each user
-            that determines their spending power across all three networks.
+            payments can be made using any of the above methods as well. Coinos
+            keeps track of a single unified balance for each user that
+            determines their spending power across all three networks.
           </p>
 
           <p>
-            Users of the free, hosted instance here don’t need to worry about
+            Using the free hosted instance here saves you worrying about
             software installation, blockchain synchronization, server admin,
-            channel management or account configuration. They can create an
-            account with one click and begin sending and receiving payments
-            immediately. This may be the way to go if you're trying things out
-            or want to use the app for small retail payments up to a few hundred
-            dollars.
+            channel management or account configuration. This is the way to go
+            if you're just trying things out or want to use the app for small
+            payments in amounts that you're comfortable trusting me with or
+            losing altogether.
           </p>
 
           <p>
@@ -53,25 +51,35 @@
             custody of your funds, there are
             <a href="https://github.com/asoltys/coinos-server"
               >instructions on Github</a
-            >. You can then offer the same simple and friendly interface to
-            people in your circle of trust or even the public if you dare. Go
-            ahead, be your own bank!
+            >
+            to get you started. You can consider offering coinos as an interface
+            to your nodes to people you trust or even the public if you dare. My
+            hope is to make it easy for anyone with a bit of technical know-how
+            to be a custodial wallet provider. You may want to check your local
+            regulations beforehand or consider hosting your instance as an
+            <a href="https://community.torproject.org/onion-services/"
+              >onion service</a
+            >.
           </p>
 
           <p>
             Coinos is a labour of love developed by
             <a href="https://adamsoltys.com/">Adam Soltys</a>. It's a perennial
-            work in progress and should be treated as such. Here be dragons. Do
-            not store more money in your account than you can afford to lose,
-            and don't give access to your own nodes if you're storing a lot of
-            funds there or unless you're capable of reviewing the code and
-            satisfying yourself that it's safe. This is alpha software that has
-            not been vetted or audited very widely and I'm not making any
-            guarantees about it's security and will not be held responsible for
-            loss of funds.
+            work in progress and should be treated as such. Here be dragons.
+            Don't store more money in your account than you can afford to lose
+            or run coinos on your own server unless you're capable of reviewing
+            the code and satisfying yourself that it's safe. This is alpha
+            software that hasn't been vetted or audited very widely and I'm not
+            making any guarantees about its security. I will not be held
+            responsible for any loss of funds.
           </p>
 
-          <p>If you're a business owner with a retail storefront and are interested in using coinos to receive payments I would love to <a href="mailto:asoltys@gmail.com">hear from you</a> and would be glad to support you in that.</p>
+          <p>
+            If you're a business owner with a retail storefront and are
+            interested in using coinos to receive payments I would love to
+            <a href="mailto:asoltys@gmail.com">hear from you</a> and would be
+            glad to support you in that.
+          </p>
         </div>
         <v-btn
           @click="more = true"
