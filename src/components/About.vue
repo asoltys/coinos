@@ -4,7 +4,7 @@
       <v-card-text class="white--text body-1">
         <p>
           Coinos is a bitcoin wallet app. You can
-          <a href="https://github.com/asoltys/coinos.io">install</a> it on your
+          <a href="https://github.com/asoltys/coinos">install</a> it on your
           own server and connect it to your bitcoin and lightning nodes if you
           want full control of your funds, or,
           <a @click="createUser">create a free account</a>
