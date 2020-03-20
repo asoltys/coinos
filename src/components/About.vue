@@ -3,11 +3,10 @@
     <v-card class="mb-2">
       <v-card-text class="white--text body-1">
         <p>
-          Coinos is a bitcoin wallet app developed by
-          <a href="https://adamsoltys.com/">Adam Soltys</a>. You can
-          <a href="https://github.com/asoltys/coinos.io">install</a> and host it
-          yourself and connect it to your own bitcoin and lightning nodes if you
-          want full control of your funds. Or,
+          Coinos is a bitcoin wallet app. You can
+          <a href="https://github.com/asoltys/coinos.io">install</a> it on your
+          own server and connect it to your bitcoin and lightning nodes if you
+          want full control of your funds, or,
           <a @click="createUser">create a free account</a>
           here that you can begin using right away without providing any
           personal information.
@@ -15,59 +14,64 @@
 
         <div v-if="more">
           <p>
-            We aim to provide a user-friendly interface to send and receive
-            bitcoin payments for both individuals wanting a day-to-day spending
-            wallet and merchants seeking to receive payments in a retail
-            environment. Coinos is
-            <a href="https://en.wikipedia.org/wiki/Responsive_web_design"
-              >responsive</a
-            >
-            and
-            <a href="https://en.wikipedia.org/wiki/Progressive_web_application"
-              >progressive</a
-            >
-            so it can be installed on any platform, mobile or desktop, and
-            launched as an app for a full-screen experience, or simply accessed
-            as a website within a browser.
+            Coinos is suitable for individuals wanting a day-to-day spending
+            wallet and merchants seeking to receive and track payments in a
+            retail environment. It can be installed on any platform, mobile or
+            desktop, and launched as an app in full-screen mode, or accessed as
+            a website within a browser.
           </p>
 
           <p>
-            Accounts can be funded with
-            <a href="https://bitcoin.org">bitcoin</a>,
-            <a href="https://blockstream.com/liquid/">liquid</a> or
-            <a href="http://lightning.network/">lightning</a> payments. Outgoing
-            payments can be sent using any of the above methods as well. Coinos
-            keeps track of a single, combined balance for each user across all
-            three networks, granting them spending power on any and all of our
-            backend full nodes according to how much they've deposited or
-            received.
-          </p>
-
-          <p>
-            User accounts, balances and payment history are stored in a
-            <a href="https://mariadb.org/">relational database</a>. Exchange
-            rates are fetched from
-            <a href="https://binance.com/">Binance</a> and
+            The bitcoin to US dollar exchange rate is streamed every second from
+            <a href="https://binance.com/">Binance</a> and converted to other
+            currencies using FX rates fetched once a day from
             <a href="https://fixer.io/">Fixer</a>.
           </p>
 
           <p>
-            Users of our server enjoy a streamlined experience with one-click
-            account creation and no KYC. They don’t need to worry about software
-            installation, blockchain synchronization, server setup, channel
-            management or account configuration of any kind.
+            Funds can be deposited/received via the
+            <a href="https://bitcoin.org">bitcoin</a>,
+            <a href="https://blockstream.com/liquid/">liquid</a> or
+            <a href="http://lightning.network/">lightning</a> networks. Outgoing
+            payments/withdrawals can be made using any of the above methods as
+            well. Coinos keeps track of a single unified balance for each user
+            that determines their spending power across all three networks.
           </p>
 
           <p>
-            Those of you who prefer to self-host and maintain full custody of
-            your funds are encouraged to do so following the
+            Users of the free, hosted instance here don’t need to worry about
+            software installation, blockchain synchronization, server admin,
+            channel management or account configuration. They can create an
+            account with one click and begin sending and receiving payments
+            immediately. This may be the way to go if you're trying things out
+            or want to use the app for small retail payments up to a few hundred
+            dollars.
+          </p>
+
+          <p>
+            If you're interested in hosting your own node and maintaining full
+            custody of your funds, there are
             <a href="https://github.com/asoltys/coinos-server"
               >instructions on Github</a
-            >. You may decide to run another public instance or to limit access
-            to friends, family, or others in your circle of trust, offering the
-            same kind of experience but to people who would prefer to trust you
-            rather than me. Be your own bank!
+            >. You can then offer the same simple and friendly interface to
+            people in your circle of trust or even the public if you dare. Go
+            ahead, be your own bank!
           </p>
+
+          <p>
+            Coinos is a labour of love developed by
+            <a href="https://adamsoltys.com/">Adam Soltys</a>. It's a perennial
+            work in progress and should be treated as such. Here be dragons. Do
+            not store more money in your account than you can afford to lose,
+            and don't give access to your own nodes if you're storing a lot of
+            funds there or unless you're capable of reviewing the code and
+            satisfying yourself that it's safe. This is alpha software that has
+            not been vetted or audited very widely and I'm not making any
+            guarantees about it's security and will not be held responsible for
+            loss of funds.
+          </p>
+
+          <p>If you're a business owner with a retail storefront and are interested in using coinos to receive payments I would love to <a href="mailto:asoltys@gmail.com">hear from you</a> and would be glad to support you in that.</p>
         </div>
         <v-btn
           @click="more = true"
