@@ -51,6 +51,7 @@
         </template>
         <div v-else>
           <send-to-user v-bind="{ payuser }" />
+          <numpad v-if="payuser" class="mb-2" @done="stopEditingAmount" />
           <recipient
             v-bind="{ address, amount, scannedBalance }"
             @editingAmount="startEditingAmount"
