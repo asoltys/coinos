@@ -39,11 +39,10 @@
 
           <p>
             Using the free hosted instance here saves you worrying about
-            software installation, blockchain synchronization, server admin,
-            channel management or account configuration. This is the way to go
-            if you're just trying things out or want to use the app for small
-            payments in amounts that you're comfortable trusting me with or
-            losing altogether.
+            software installation, blockchain synchronization, server admin and
+            channel management. This is the way to go if you're just trying
+            things out or want to use the app for small payments in amounts that
+            you're comfortable trusting me with.
           </p>
 
           <p>
@@ -63,15 +62,14 @@
           </p>
 
           <p>
-            Coinos is a labour of love developed by
-            <a href="https://adamsoltys.com/">Adam Soltys</a>. It's a perennial
-            work in progress and should be treated as such. Here be dragons.
-            Don't store more money in your account than you can afford to lose
-            or run coinos on your own server unless you're capable of reviewing
-            the code and satisfying yourself that it's safe. This is alpha
-            software that hasn't been vetted or audited very widely and I'm not
-            making any guarantees about its security. I will not be held
-            responsible for any loss of funds.
+            Coinos is developed by
+            <a href="https://adamsoltys.com/">Adam Soltys</a>. Don't store more
+            money in your account than you can afford to lose or run coinos on
+            your own server unless you're capable of reviewing the code and
+            satisfying yourself that it's safe. The code that hasn't audited and
+            I can't make any guarantees about its security. I will not be held
+            responsible for any loss of funds resulting from the use of this
+            software.
           </p>
 
           <p>

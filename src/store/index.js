@@ -359,6 +359,7 @@ export default new Vuex.Store({
     },
 
     async clearPayment({ commit }) {
+      commit('feeRate', null);
       commit('tx', null);
       commit('loading', false);
       commit('payreq', '');
