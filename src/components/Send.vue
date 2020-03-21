@@ -150,6 +150,7 @@ export default {
     },
 
     init() {
+      this.to = '';
       if (!this.keep) this.clearPayment();
       if (this.$route.query.refresh !== undefined) {
         this.$router.replace(this.$route.path);
@@ -173,7 +174,6 @@ export default {
     this.init();
     this.$store.commit('payuser', this.$route.query.payuser);
     const vw = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-    console.log(vw, this.$refs.to);
     if (vw > 600 && this.$refs.to) this.$refs.to.focus();
   },
 };
