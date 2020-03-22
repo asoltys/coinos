@@ -38,38 +38,37 @@
           </p>
 
           <p>
-            Using the free hosted instance here saves you worrying about
-            software installation, blockchain synchronization, server admin and
-            channel management. This is the way to go if you're just trying
-            things out or want to use the app for small payments in amounts that
-            you're comfortable trusting me with.
+            Users of this hosted coinos instance don't need to worry about
+            software installation, blockchain synchronization, server
+            administration or channel management. This is the way to go if
+            you're just trying things out or want to use the app for small
+            payments in amounts that you're comfortable trusting me with.
           </p>
 
           <p>
             If you're interested in hosting your own node and maintaining full
-            custody of your funds, there are
+            custody of your funds or using coinos to offer people user accounts
+            and easy web-based access to your own nodes, there are
             <a href="https://github.com/asoltys/coinos-server"
               >instructions on Github</a
             >
-            to get you started. You can consider offering coinos as an interface
-            to your nodes to people you trust or even the public if you dare. My
-            hope is to make it easy for anyone with a bit of technical know-how
-            to be a custodial wallet provider. You may want to check your local
-            regulations beforehand or consider hosting your instance as an
+            to get you started. You might consider hosting your instance as an
             <a href="https://community.torproject.org/onion-services/"
               >onion service</a
-            >.
+            >
+            on the Tor network.
           </p>
 
           <p>
             Coinos is developed by
-            <a href="https://adamsoltys.com/">Adam Soltys</a>. Don't store more
-            money in your account than you can afford to lose or run coinos on
-            your own server unless you're capable of reviewing the code and
-            satisfying yourself that it's safe. The code that hasn't audited and
-            I can't make any guarantees about its security. I will not be held
-            responsible for any loss of funds resulting from the use of this
-            software.
+            <a href="https://adamsoltys.com/">Adam Soltys</a>. I would caution
+            against storing more funds in your account here than you can afford
+            to lose. If you plan to host coinos on your own server and connect
+            it to your nodes, please consider reviewing the code and satisfying
+            yourself that it's safe before doing so. The code hasn't been
+            audited and I can't make any guarantees about its security. I will
+            not be held responsible for any loss of funds resulting from the use
+            of this software.
           </p>
 
           <p>
