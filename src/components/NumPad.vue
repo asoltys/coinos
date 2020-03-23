@@ -60,6 +60,7 @@ export default {
       return this.fiat ? this.user.currency : 'sat';
     },
     amount: sync('amount'),
+    fiatAmount: sync('fiatAmount'),
     fiat: sync('fiat'),
     rate: get('rate'),
     user: get('user'),
@@ -130,9 +131,14 @@ export default {
 
       if (m === 'C') amount = 0;
       this.inputAmount = amount.toFixed(this.decimals);
-      if (this.fiat)
+      if (this.fiat) {
+        this.fiatAmount = this.inputAmount;
         this.amount = parseInt(((amount * SATS) / this.rate).toFixed(8));
-      else this.amount = parseInt(amount);
+      }
+      else {
+        this.fiatAmount = ((amount / SATS) * this.rate).toFixed(2);
+        this.amount = parseInt(amount);
+      } 
     },
   },
 
@@ -147,7 +153,7 @@ export default {
   mounted() {
     this.inputAmount = this.amount;
     if (this.fiat)
-      this.inputAmount = ((this.amount / SATS) * this.rate).toFixed(2);
+      this.inputAmount = this.fiatAmount;
     if (f(this.inputAmount) === 0) this.inputAmount = '_';
   },
 };

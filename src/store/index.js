@@ -39,6 +39,7 @@ const state = {
   error: '',
   feeRate: null,
   fiat: false,
+  fiatAmount: 0,
   friends: [],
   initializing: false,
   loading: false,

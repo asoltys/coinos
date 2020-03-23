@@ -165,7 +165,7 @@ export default {
       this.finished = true;
     },
 
-    async clear() {
+    clear() {
       this.generated = false;
       this.$store.commit('error', '');
       this.$store.commit('received', 0);

@@ -8,7 +8,7 @@
         </div>
         <div>
           <span class="yellow--text">
-            <span class="display-1">{{ fiat }}</span>
+            <span class="display-1">{{ fiatAmount }}</span>
             {{ user.currency }}
           </span>
         </div>
@@ -68,17 +68,13 @@ export default {
 
   data() {
     return {
-      fixedRate: 0,
       full: false,
       showcode: false,
     };
   },
 
   computed: {
-    ...mapGetters(['amount', 'rate', 'user']),
-    fiat() {
-      return ((this.amount * this.fixedRate) / 100000000).toFixed(2);
-    },
+    ...mapGetters(['amount', 'fiatAmount', 'rate', 'user']),
     code() {
       return this.showcode ? 'Show QR' : 'Show Code';
     },
@@ -115,10 +111,6 @@ export default {
 
       this.full = true;
     },
-  },
-
-  mounted() {
-    this.fixedRate = this.rate;
   },
 };
 </script>
