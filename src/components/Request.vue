@@ -45,9 +45,6 @@
         </v-btn>
       </div>
     </v-card>
-    <v-btn @click="$emit('clear')" class="mb-2">
-      <v-icon>arrow_back</v-icon><span>Go Back</span>
-    </v-btn>
   </div>
 </template>
 

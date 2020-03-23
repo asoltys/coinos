@@ -2,8 +2,12 @@
   <div>
     <v-progress-linear v-if="loading" indeterminate />
     <template v-else-if="generated">
-      <Received v-if="received" @clear="clear" />
-      <Request v-else v-bind="{ copytext }" @clear="clear" />
+      <request v-if="received < amount" v-bind="{ copytext }" @clear="clear" />
+      <balance v-else />
+      <received v-if="received" @clear="clear" />
+      <v-btn @click="clear" class="mb-2">
+        <v-icon>arrow_back</v-icon><span>Go Back</span>
+      </v-btn>
     </template>
     <div v-else>
       <numpad class="mr-4 mb-2" @done="lightning" />
@@ -34,6 +38,7 @@
 
 <script>
 import qr from 'qrcode';
+import Balance from './Balance';
 import Numpad from './NumPad';
 import Received from './Received';
 import Request from './Request';
@@ -42,7 +47,7 @@ import Flash from 'vue-material-design-icons/Flash';
 import Water from 'vue-material-design-icons/Water';
 
 export default {
-  components: { Flash, Numpad, Received, Request, Water },
+  components: { Balance, Flash, Numpad, Received, Request, Water },
 
   filters: {},
 
