@@ -20,6 +20,7 @@
               color,
               fiat,
               amount,
+              tip,
               createdAt,
               updatedAt,
             } in filteredPayments()"
@@ -38,6 +39,7 @@
                 <div>
                   <span class="yellow--text">
                     {{ fiat | abs | twodec }}
+                    <span v-if="tip">(+{{ tip }})</span>
                     {{ currency }}
                   </span>
                 </div>
@@ -45,7 +47,9 @@
               <div class="text-right subtitle-1" style="white-space: nowrap;">
                 <v-chip v-if="!confirmed" color="red" class="mr-2">
                   <v-icon class="mr-1">warning</v-icon>
-                  <span class="d-none d-sm-inline" title="UNCONFIRMED">UNCONFIRMED</span>
+                  <span class="d-none d-sm-inline" title="UNCONFIRMED"
+                    >UNCONFIRMED</span
+                  >
                 </v-chip>
                 {{ updatedAt | format }}
               </div>
@@ -55,12 +59,20 @@
                 <div class="text-center">
                   <flash v-if="asset === 'LNBTC'" fillColor="yellow" />
                   <water v-else-if="asset === 'LBTC'" fillColor="#00aaee" />
-                  <v-icon v-else-if="asset === 'GIFT'" color="yellow">card_giftcard</v-icon>
+                  <v-icon v-else-if="asset === 'GIFT'" color="yellow"
+                    >card_giftcard</v-icon
+                  >
                   <img v-else src="../assets/bitcoin.png" width="24px" />
                 </div>
-                <code class="black--text my-4 py-2 text-center">{{ hash }}</code>
+                <code class="black--text my-4 py-2 text-center">{{
+                  hash
+                }}</code>
                 <div class="d-flex justify-center">
-                  <v-btn v-if="!hash.includes('Welcome')" class="mt-2 mr-2" @click="() => copy(hash)">
+                  <v-btn
+                    v-if="!hash.includes('Welcome')"
+                    class="mt-2 mr-2"
+                    @click="() => copy(hash)"
+                  >
                     <v-icon class="mr-1">content_copy</v-icon><span>Copy</span>
                   </v-btn>
                   <v-btn class="mt-2" v-if="link" @click="explore(link)">
@@ -104,6 +116,7 @@ import colors from 'vuetify/lib/util/colors';
 import Copy from '../mixins/Copy';
 
 let bs = 'https://blockstream.info';
+const SATS = 100000000;
 
 export default {
   components: { Flash, Water },
@@ -143,8 +156,9 @@ export default {
       return this.payments
         .map(p => {
           let o = JSON.parse(JSON.stringify(p));
-          o.fiat = ((p.amount * p.rate) / 100000000).toFixed(2);
-          o.tip = parseFloat(p.tip).toFixed(2);
+          o.amount = p.amount + p.tip;
+          o.fiat = ((p.amount * p.rate) / SATS).toFixed(2);
+          o.tip = parseFloat((p.tip * p.rate) / SATS).toFixed(2);
           if (isNaN(o.tip) || o.tip <= 0) o.tip = null;
           if (o.tip) o.fiat -= o.tip;
           o.color = o.amount < 0 ? 'red--text' : 'green--text';

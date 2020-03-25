@@ -3,7 +3,7 @@
     <balance />
     <payments />
     <div v-if="user.balance <= 100" class="mx-auto mt-4">
-      <v-btn class="mb-2 mr-1" @click="$router.push('/receive')">
+      <v-btn class="mb-2 mr-1 wide" @click="$router.push('/receive')">
         <v-icon class="mr-1">get_app</v-icon><span>Receive Funds</span>
       </v-btn>
     </div>
@@ -11,7 +11,7 @@
       v-if="user.balance > 0 && user.username.startsWith('Guest')"
       class="mx-auto mt-2"
     >
-      <v-btn class="mb-2 mr-1" @click="$router.push('/settings')">
+      <v-btn class="mb-2 mr-1 wide" @click="$router.push('/settings')">
         <v-icon class="mr-1 yellow--text">warning</v-icon
         ><span>Setup Account</span>
       </v-btn>

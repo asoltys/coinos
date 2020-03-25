@@ -37,6 +37,7 @@ const f = parseFloat;
 const SATS = 100000000;
 
 export default {
+  props: { initialAmount: { type: Number } },
   filters: {
     format(n, d) {
       return f(n).toLocaleString('en-US', {
@@ -48,7 +49,7 @@ export default {
 
   data() {
     return {
-      sats: 0,
+      amount: 0,
       inputAmount: '_',
       buttons: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '<', '0', 'C'],
       codes: Array.from(Array(10), (_, x) => x + 48),
@@ -59,7 +60,6 @@ export default {
     currency() {
       return this.fiat ? this.user.currency : 'sat';
     },
-    amount: sync('amount'),
     fiatAmount: sync('fiatAmount'),
     fiat: sync('fiat'),
     rate: get('rate'),
@@ -69,6 +69,12 @@ export default {
     },
     divisor() {
       return 10 ** this.decimals;
+    },
+  },
+
+  watch: {
+    inputAmount() {
+      this.$emit('input', this.amount);
     },
   },
 

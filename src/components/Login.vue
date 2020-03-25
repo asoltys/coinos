@@ -13,7 +13,7 @@
           >You've logged out
         </v-alert>
         <div class="text-center">
-          <h2>Send and receive <span class="yellow--text">bitcoin</span></h2>
+          <h2>Send and receive <a href="https://bitcoin.org/" class="yellow--text">bitcoin</a></h2>
           <p style="display: inline-flex" class="mb-0">
             with <water fillColor="#06ddff" :size="24" class="" />
             <a href="https://blockstream.com/liquid/" style="color: #06ddff"
@@ -26,8 +26,8 @@
         </div>
         <v-divider class="mb-2 mt-0" />
         <div class="text-center my-2 d-flex flex-wrap justify-center">
-          <v-btn @click="createUser" class="my-2 my-sm-0 mr-0 mr-sm-2">Create New Account</v-btn>
-          <v-btn color="#4267b2" class="mb-2 mb-sm-0">
+          <v-btn @click="createUser" class="my-2 my-sm-0 mr-0 mr-sm-2 wide">Create New Account</v-btn>
+          <v-btn color="#4267b2" class="mb-2 mb-sm-0 wide">
             <fb-signin-button
               :params="fbSignInParams"
               @success="onSignInSuccess"
@@ -52,7 +52,7 @@
                 type="password"
               />
 
-              <v-btn class="mr-2 mb-2" type="submit">Sign in</v-btn>
+              <v-btn class="mr-2 mb-2 wide" type="submit">Sign in</v-btn>
             </v-form>
           </v-card-text>
         </v-card>
@@ -136,9 +136,4 @@ a
 .fb-signin-button
   padding: 4px 8px;
   border-radius: 3px;
-
-@media (max-width: 600px)
-  .v-btn
-    width 100%
-    height 62px !important
 </style>

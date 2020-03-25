@@ -9,17 +9,9 @@ import { address as BitcoinAddress } from 'bitcoinjs-lib';
 import pathify, { make } from 'vuex-pathify';
 Vue.use(Vuex);
 
-pathify.options.mapping = 'simple';
-const generatePassword = () => {
-  let length = 8,
-    charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
-    retVal = '';
-  for (let i = 0, n = charset.length; i < length; ++i) {
-    retVal += charset.charAt(Math.floor(Math.random() * n));
-  }
-  return retVal;
-};
+const SATS = 100000000;
 
+pathify.options.mapping = 'simple';
 const isLiquid = address =>
   address.startsWith('Az') ||
   address.startsWith('lq1') ||
@@ -28,8 +20,10 @@ const isLiquid = address =>
 
 const l = console.log;
 const go = path => {
-  path === router.currentRoute.path || path.name === router.currentRoute.path.substr(1) || router.push(path);
-} 
+  path === router.currentRoute.path ||
+    path.name === router.currentRoute.path.substr(1) ||
+    router.push(path);
+};
 
 const state = {
   address: '',
@@ -44,6 +38,7 @@ const state = {
   initializing: false,
   loading: false,
   loadingFee: false,
+  method: null,
   orders: [],
   payment: null,
   payments: [],
@@ -61,6 +56,8 @@ const state = {
   scannedBalance: null,
   snack: '',
   socket: null,
+  text: '',
+  tip: 0,
   token: null,
   tx: null,
   twofa: '',
@@ -143,6 +140,32 @@ export default new Vuex.Store({
               commit('prompt2fa', true);
             }
           }
+      }
+    },
+
+    async generateRequest({ commit, state, dispatch }, method) {
+      const { amount, user, tip } = state;
+      
+      const text = address =>
+        amount > 0 ? `${method}:${address}?amount=${(amount + tip) / SATS}` : address;
+
+      let address;
+
+      if (method) commit('method', method);
+      else method = state.method;
+
+      switch (method) {
+        case 'bitcoin':
+          ({ address } = user);
+          commit('text', text(address));
+          break;
+        case 'liquid':
+          ({ confidential: address } = user);
+          commit('text', text(address));
+          break;
+        case 'lightning':
+          dispatch('addInvoice');
+          break;
       }
     },
 
@@ -239,7 +262,16 @@ export default new Vuex.Store({
     },
 
     async createUser({ commit, dispatch }, user = {}) {
-      user.username = 'Guest-' + generatePassword();
+      let length = 8,
+        charset =
+          'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
+        username = 'Guest-';
+
+      for (let i = 0, n = charset.length; i < length; ++i) {
+        username += charset.charAt(Math.floor(Math.random() * n));
+      }
+
+      user.username = username;
 
       try {
         await Vue.axios.post('/register', user);
@@ -278,11 +310,7 @@ export default new Vuex.Store({
       commit('error', null);
       commit('loadingFee', true);
 
-      let {
-        address,
-        amount,
-        feeRate,
-      } = getters;
+      let { address, amount, feeRate } = getters;
 
       let params = { address, amount, feeRate };
 
@@ -296,7 +324,7 @@ export default new Vuex.Store({
           }
         } else {
           try {
-            let res = await Vue.axios.post('/bitcoin/fee', params)
+            let res = await Vue.axios.post('/bitcoin/fee', params);
             commit('tx', res.data.tx);
           } catch (e) {
             commit('error', e.response.data);
@@ -311,14 +339,7 @@ export default new Vuex.Store({
       commit('loading', true);
       commit('error', null);
 
-      let {
-        address,
-        amount,
-        tx,
-        payreq,
-        payuser,
-        route,
-      } = getters;
+      let { address, amount, tx, payreq, payuser, route } = getters;
 
       if (payreq) {
         try {
@@ -329,7 +350,10 @@ export default new Vuex.Store({
         }
       } else if (payuser) {
         try {
-          let res = await Vue.axios.post('/lightning/user', { payuser, amount });
+          let res = await Vue.axios.post('/lightning/user', {
+            payuser,
+            amount,
+          });
           commit('payment', res.data);
         } catch (e) {
           commit('error', e.response.data);
@@ -361,6 +385,7 @@ export default new Vuex.Store({
 
     async clearPayment({ commit }) {
       commit('feeRate', null);
+      commit('tip', 0);
       commit('tx', null);
       commit('loading', false);
       commit('payreq', '');
@@ -372,11 +397,13 @@ export default new Vuex.Store({
       commit('error', null);
     },
 
-    async addInvoice({ commit }, { amount, tip, address }) {
-      let res;
+    async addInvoice({ commit, state }) {
+      const { amount, tip } = state;
       try {
-        res = await Vue.axios.post('/lightning/invoice', { amount, tip, address });
-        commit('payreq', res.data.payment_request);
+        let {
+          data: { payment_request },
+        } = await Vue.axios.post('/lightning/invoice', { amount, tip });
+        commit('text', payment_request);
       } catch (e) {
         commit('error', e.response.data);
       }
@@ -428,7 +455,9 @@ export default new Vuex.Store({
         commit('payobj', payobj);
         commit('payreq', text);
         return;
-      } catch (e) { /**/ }
+      } catch (e) {
+        /**/
+      }
 
       let url;
       try {
@@ -447,10 +476,7 @@ export default new Vuex.Store({
         commit('address', url.address);
 
         if (url.options.amount)
-          commit(
-            'amount',
-            parseInt((url.options.amount * 100000000).toFixed(0))
-          );
+          commit('amount', parseInt((url.options.amount * SATS).toFixed(0)));
 
         if (!tx) await dispatch('estimateFee');
         go({ name: 'send', params: { keep: true } });
@@ -502,7 +528,7 @@ export default new Vuex.Store({
       if (s.received >= s.amount) {
         s.amount = 0;
         s.fiatAmount = 0;
-      } 
+      }
       s.payments.push(v);
     },
     error(s, v) {

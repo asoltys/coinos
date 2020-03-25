@@ -37,7 +37,7 @@
           </div>
         </div>
         <template v-else-if="editingAmount">
-          <numpad class="mb-2" @done="stopEditingAmount" />
+          <numpad class="mb-2" @done="stopEditingAmount" :initialAmount="amount" />
           <div class="d-flex">
             <v-btn
               class="black--text flex-grow-1"

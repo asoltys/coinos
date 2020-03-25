@@ -12,7 +12,7 @@
       </v-alert>
       <div class="d-flex justify-center">
         <div class="mr-2">
-          <span class="display-1">{{ payment.amount }}</span> SAT
+          <span class="display-1">{{ payment.amount + payment.tip }}</span> SAT
         </div>
         <div>
           <span class="yellow--text">
@@ -27,10 +27,12 @@
 <script>
 import { get } from 'vuex-pathify';
 
+const SATS = 100000000;
+
 export default {
   computed: {
     fiat() {
-      return ((this.payment.amount / 100000000) * this.rate).toFixed(2);
+      return (((this.payment.amount + this.payment.tip) / SATS) * this.rate).toFixed(2);
     },
     payment() {
       return this.payments[this.payments.length - 1]

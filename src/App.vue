@@ -27,11 +27,11 @@
                 ['/', '/settings', '/about'].includes($route.path) &&
                   promptInstall
               "
-              class="mb-2 mr-1"
+              class="wide mb-2 mr-1"
               @click="install"
             >
               <v-icon class="mr-1" color="green">stay_current_portrait</v-icon
-              ><span>Install App</span>
+              ><span>Add to Home Screen</span>
             </v-btn>
           </div>
         </v-container>
@@ -184,4 +184,9 @@ body
 
   *
     color black !important
+
+@media (max-width: 600px)
+  .wide
+    width 100%
+    height 62px !important
 </style>
