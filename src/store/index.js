@@ -499,7 +499,10 @@ export default new Vuex.Store({
     ...make.mutations(state),
     addPayment(s, v) {
       s.received += parseInt(Math.abs(v.amount));
-      if (s.received >= s.amount) s.amount = 0;
+      if (s.received >= s.amount) {
+        s.amount = 0;
+        s.fiatAmount = 0;
+      } 
       s.payments.push(v);
     },
     error(s, v) {
