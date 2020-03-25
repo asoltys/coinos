@@ -90,6 +90,8 @@
       </v-card-text>
     </v-card>
 
+    <iframe width="100%" height="315" src="https://www.youtube.com/embed/KFGJKjnPF84" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
     <v-card>
       <v-card-text>
         <h3 class="mb-4 text-center">Lightning Node Info</h3>
