@@ -20,7 +20,10 @@
             >{{ error }}</v-alert
           >
           <two-fa />
-          <router-view :key="$route.path"></router-view>
+
+          <v-progress-linear v-if="!publicPath && initializing" indeterminate /> 
+          <router-view v-else :key="$route.path" />
+
           <div class="text-center pa-4">
             <v-btn
               v-if="
@@ -48,8 +51,9 @@ import SnackBar from './components/SnackBar';
 import TopBar from './components/TopBar';
 import { mapGetters } from 'vuex';
 import { QrcodeStream } from 'vue-qrcode-reader';
-import Window from './window.js';
+import Window from './window';
 import TwoFa from './components/TwoFa';
+import paths from './paths';
 
 export default {
   components: { BottomNav, SnackBar, TopBar, TwoFa, QrcodeStream },
@@ -61,7 +65,11 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['loading', 'scanning', 'user']),
+    ...mapGetters(['initializing', 'loading', 'scanning', 'user']),
+
+    publicPath() {
+      return paths.includes(this.$route.path);
+    },
 
     prompt() {
       return Window.prompt;

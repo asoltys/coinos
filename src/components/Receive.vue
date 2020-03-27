@@ -1,38 +1,36 @@
 <template>
   <div>
     <v-progress-linear v-if="loading" indeterminate />
-    <template v-else-if="text">
-      <request v-if="received < amount" @clear="clear" />
+    <template v-else-if="invoice.text">
+      <request v-if="invoice.received < invoice.amount" @clear="clearInvoice" />
       <balance v-else />
-      <received v-if="received" @clear="clear" />
-      <v-btn @click="clear" class="mb-2">
-        <v-icon>arrow_back</v-icon><span>Go Back</span>
-      </v-btn>
+      <received v-if="invoice.received" @clear="clearInvoice" />
     </template>
     <div v-else>
       <numpad
         class="mr-4 mb-2"
-        @done="() => generateRequest('lightning')"
-        :initialAmount="amount"
+        @done="() => addInvoice('lightning')"
         @input="updateAmount"
+        :initialAmount="invoice.amount"
+        :rate="rate"
       />
 
       <div class="d-flex flex-wrap buttons">
-        <v-btn class="flex-grow-1 mb-2 mr-2" @click="generateRequest('bitcoin')">
+        <v-btn class="flex-grow-1 mb-2 mr-2" @click="addInvoice('bitcoin')">
           <img class="mr-1" src="../assets/bitcoin.png" width="30px" />
           <span>Bitcoin</span>
         </v-btn>
 
         <v-btn
           class="flex-grow-1 mb-2 mr-2"
-          @click="generateRequest('lightning')"
-          :disabled="amount <= 0"
+          @click="addInvoice('lightning')"
+          :disabled="invoice.amount <= 0"
         >
           <flash fillColor="yellow" />
           <span>Lightning</span>
         </v-btn>
 
-        <v-btn class="flex-grow-1 mr-0" @click="generateRequest('liquid')">
+        <v-btn class="flex-grow-1 mr-0" @click="addInvoice('liquid')">
           <water fillColor="#00aaee" />
           <span>Liquid</span>
         </v-btn>
@@ -54,52 +52,27 @@ import { get, call, sync } from 'vuex-pathify';
 export default {
   components: { Balance, Flash, Numpad, Received, Request, Water },
 
-  filters: {},
-
-  data() {
-    return {
-      message: '',
-      about: '',
-      full: false,
-      generated: false,
-      showcode: false,
-      bitreq: '',
-    };
-  },
-
   computed: {
-    amount: sync('amount'),
+    invoice: sync('invoice'),
     loading: sync('loading'),
-    method: sync('method'),
-    received: sync('received'),
-    tip: sync('tip'),
-    user: get('user'),
-    payreq: get('payreq'),
     rate: get('rate'),
-    text: sync('text'),
+    received: sync('received'),
+    user: get('user'),
   },
 
   methods: {
-    ...mapActions(['addInvoice', 'snack', 'shiftCurrency']),
+    ...mapActions(['addInvoice', 'clearInvoice', 'snack', 'shiftCurrency']),
 
-    generateRequest: call('generateRequest'),
-
-    updateAmount(e) {
-      this.amount = e;
-    },
-
-    clear() {
-      this.error = '';
-      this.received = 0;
-      this.text = '';
-      this.tip = 0;
+    updateAmount(amount, fiatAmount) {
+      this.invoice.amount = amount;
+      this.invoice.fiatAmount = fiatAmount;
     },
 
     checkRefresh() {
       if (this.$route.query.refresh !== undefined) {
         this.$router.replace(this.$route.path);
       } else {
-        this.clear();
+        this.clearInvoice();
       }
     },
   },
@@ -110,7 +83,7 @@ export default {
   },
 
   mounted() {
-    this.clear();
+    this.clearInvoice();
     this.checkRefresh();
   },
 };

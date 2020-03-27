@@ -7,11 +7,13 @@ import bolt11 from 'bolt11';
 import router from '../router';
 import { address as BitcoinAddress } from 'bitcoinjs-lib';
 import pathify, { make } from 'vuex-pathify';
+import paths from '../paths';
 Vue.use(Vuex);
 
 const SATS = 100000000;
 
 pathify.options.mapping = 'simple';
+
 const isLiquid = address =>
   address.startsWith('Az') ||
   address.startsWith('lq1') ||
@@ -25,6 +27,18 @@ const go = path => {
     router.push(path);
 };
 
+const blankInvoice = JSON.stringify({
+  amount: 0,
+  currency: '',
+  fiatAmount: 0,
+  fiatTip: 0,
+  method: '',
+  rate: 0,
+  received: 0,
+  text: '',
+  tip: 0,
+});
+
 const state = {
   address: '',
   addressType: 'bitcoin',
@@ -32,13 +46,13 @@ const state = {
   channels: [],
   error: '',
   feeRate: null,
-  fiat: false,
+  fiat: true,
   fiatAmount: 0,
   friends: [],
+  invoice: JSON.parse(blankInvoice),
   initializing: false,
   loading: false,
   loadingFee: false,
-  method: null,
   orders: [],
   payment: null,
   payments: [],
@@ -72,7 +86,7 @@ export default new Vuex.Store({
   plugins: [pathify.plugin],
   state,
   actions: {
-    async init({ commit, dispatch, state }) {
+    async init({ commit, getters, dispatch, state }) {
       commit('initializing', true);
       commit('scanning', false);
       commit('error', '');
@@ -88,17 +102,17 @@ export default new Vuex.Store({
         await dispatch('setupSockets');
       }
 
-      const publicpaths = ['/', '/login', '/about', '/register', '/forgot'];
-      if (
-        !(
-          publicpaths.includes(router.currentRoute.path) ||
-          (state.user && state.user.address)
-        )
-      ) {
-        go('/');
-      }
+      const { path } = router.currentRoute;
+      const initialize = () => {
+        if (getters.user && getters.user.currency && getters.rate || paths.includes(path)) {
+          commit('initializing', false);
+        } else {
+          setTimeout(initialize, 500);
+          if (!getters.user && paths.includes(path)) go('/');
+        }
+      };
 
-      commit('initializing', false);
+      initialize();
     },
 
     async login({ commit, dispatch, state }, user) {
@@ -143,32 +157,6 @@ export default new Vuex.Store({
       }
     },
 
-    async generateRequest({ commit, state, dispatch }, method) {
-      const { amount, user, tip } = state;
-      
-      const text = address =>
-        amount > 0 ? `${method}:${address}?amount=${(amount + tip) / SATS}` : address;
-
-      let address;
-
-      if (method) commit('method', method);
-      else method = state.method;
-
-      switch (method) {
-        case 'bitcoin':
-          ({ address } = user);
-          commit('text', text(address));
-          break;
-        case 'liquid':
-          ({ confidential: address } = user);
-          commit('text', text(address));
-          break;
-        case 'lightning':
-          dispatch('addInvoice');
-          break;
-      }
-    },
-
     async getOtpSecret(_, token) {
       Vue.axios.get('/otpsecret');
     },
@@ -182,12 +170,19 @@ export default new Vuex.Store({
     },
 
     async shiftCurrency({ commit, dispatch, state }) {
-      const { user } = state;
+      const { invoice, user } = state;
       let { currencies } = user;
       if (!Array.isArray(currencies)) currencies = JSON.parse(user.currencies);
       let i = currencies.findIndex(c => c === user.currency) + 1;
       if (i === currencies.length) i = 0;
-      user.currency = currencies[i];
+
+      let currency = currencies[i];
+      let rate = state.rates[currency];
+
+      user.currency = currency;
+      invoice.currency = currency;
+      invoice.rate = rate;
+
       commit('rate', state.rates[user.currency]);
       dispatch('updateUser', user);
     },
@@ -207,7 +202,7 @@ export default new Vuex.Store({
       Vue.axios.get('/payments');
     },
 
-    async setupSockets({ commit, state, dispatch }) {
+    async setupSockets({ commit, getters, state, dispatch }) {
       if (state.socket) return;
       let s = socketio(process.env.VUE_APP_SOCKETIO, {
         query: { token: state.token },
@@ -238,7 +233,9 @@ export default new Vuex.Store({
       s.on('otpsecret', otpsecret =>
         commit('user', { ...state.user, otpsecret })
       );
-      s.on('user', user => commit('user', user));
+      s.on('user', user => {
+        commit('user', user);
+      });
 
       return new Promise((resolve, reject) => {
         s.on('connected', () => {
@@ -383,6 +380,13 @@ export default new Vuex.Store({
       commit('loading', false);
     },
 
+    async clearInvoice({ commit, state }) {
+      let invoice = JSON.parse(blankInvoice);
+      invoice.currency = state.user.currency;
+      invoice.rate = state.rate;
+      commit('invoice', invoice);
+    },
+
     async clearPayment({ commit }) {
       commit('feeRate', null);
       commit('tip', 0);
@@ -397,13 +401,45 @@ export default new Vuex.Store({
       commit('error', null);
     },
 
-    async addInvoice({ commit, state }) {
-      const { amount, tip } = state;
+    async addInvoice({ commit, state }, method) {
+      const { invoice, user } = state;
+      const { amount, tip } = invoice;
+
+      const url = address =>
+        amount > 0
+          ? `${method}:${address}?amount=${(amount + tip) / SATS}`
+          : address;
+
+      let address;
+
+      if (method) commit('invoice', { ...state.invoice, method });
+      else method = state.method;
+
+      switch (method) {
+        case 'bitcoin':
+          ({ address } = user);
+          invoice.text = url(address);
+          break;
+        case 'liquid':
+          ({ confidential: address } = user);
+          invoice.text = url(address);
+          break;
+        case 'lightning':
+          try {
+            let { data: text } = await Vue.axios.post(`/lightning/invoice`, {
+              amount,
+              tip,
+            });
+            invoice.text = text;
+          } catch (e) {
+            commit('error', e.response.data);
+          }
+          break;
+      }
+
       try {
-        let {
-          data: { payment_request },
-        } = await Vue.axios.post('/lightning/invoice', { amount, tip });
-        commit('text', payment_request);
+        await Vue.axios.post(`/invoice`, { invoice });
+        commit('invoice', invoice);
       } catch (e) {
         commit('error', e.response.data);
       }

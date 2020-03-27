@@ -1,12 +1,13 @@
 <template>
-  <v-card class="pb-4 mb-2">
-    <v-alert
-      v-if="!payment.confirmed"
-      class="headline text-center black--text"
-      color="orange lighten-2"
+  <div>
+    <v-card class="pb-4 mb-2">
+      <v-alert
+        v-if="!payment.confirmed"
+        class="headline text-center black--text"
+        color="orange lighten-2"
       >
-      Unconfirmed Payment Detected!
-    </v-alert>
+        Unconfirmed Payment Detected!
+      </v-alert>
       <v-alert v-else class="headline text-center black--text" color="yellow">
         Payment Received!
       </v-alert>
@@ -21,7 +22,11 @@
           </span>
         </div>
       </div>
-  </v-card>
+    </v-card>
+    <v-btn @click="$emit('clear')" class="mb-2">
+      <v-icon>arrow_back</v-icon><span>Go Back</span>
+    </v-btn>
+  </div>
 </template>
 
 <script>
@@ -32,10 +37,13 @@ const SATS = 100000000;
 export default {
   computed: {
     fiat() {
-      return (((this.payment.amount + this.payment.tip) / SATS) * this.rate).toFixed(2);
+      return (
+        ((this.payment.amount + this.payment.tip) / SATS) *
+        this.rate
+      ).toFixed(2);
     },
     payment() {
-      return this.payments[this.payments.length - 1]
+      return this.payments[this.payments.length - 1];
     },
     payments: get('payments'),
     rate: get('rate'),

@@ -1,7 +1,12 @@
 <template>
   <div class="tippad">
     <div v-if="custom">
-      <numpad :initialAmount="tip" @input="updateTip" @done="done" />
+      <numpad
+        :initialAmount="tip"
+        @input="updateTip"
+        :rate="invoice.rate"
+        :allowCurrencyToggle="false"
+      />
       <div class="d-flex my-2">
         <v-btn
           class="black--text flex-grow-1"
@@ -18,21 +23,24 @@
         <div class="flex-grow-1">{{ tip }} <span class="body-1">SAT</span></div>
         <div class="flex-grow-1">{{ percent }}%</div>
         <div class="flex-grow-1 yellow--text">
-          {{ fiatTip }} <span class="body-1">{{ user.currency }}</span>
+          {{ fiatTip }} <span class="body-1">{{ invoice.currency }}</span>
         </div>
       </div>
       <v-slider v-model="percent" min="0" :max="max" />
-      <v-btn
-        v-for="i in percents"
-        class="mb-2"
-        @click="select(i)"
-        :key="i"
-      >
+      <v-btn v-for="i in percents" class="mb-2" @click="select(i)" :key="i">
         <span>{{ i }}%</span>
       </v-btn>
       <v-btn class="mb-2" @click="custom = true">
         <span>Custom</span>
       </v-btn>
+      <v-btn class="mb-2" @click="select(0)">
+        <span>None</span>
+      </v-btn>
+      <div class="text-center">
+        <v-btn class="mb-2 black--text ok" color="yellow" @click="done">
+          <span>Ok</span>
+        </v-btn>
+      </div>
     </div>
   </div>
 </template>
@@ -47,7 +55,7 @@ export default {
   components: { Numpad },
 
   props: {
-    amount: {
+    initialTip: {
       type: Number,
       default: 0,
     },
@@ -55,49 +63,53 @@ export default {
 
   data() {
     return {
+      fiatTip: 0,
       percent: 0,
       percents: [10, 15, 20],
       custom: false,
+      customKey: '',
       max: 100,
       tip: 0,
     };
   },
 
   computed: {
-    rate: get('rate'),
-    user: get('user'),
-    fiatTip() {
-      return ((this.tip / SATS) * this.rate).toFixed(2);
-    },
+    invoice: get('invoice'),
   },
-  
+
   methods: {
-    updateTip(e) {
-      this.tip = e;
-    },
     done() {
       this.custom = false;
-      this.$nextTick(() => {
-        console.log(this.tip);
-        this.$emit('input', this.tip);
-      });
+      this.$emit('input', this.tip, this.fiatTip);
+    },
+    updateTip(tip, fiatTip) {
+      let percent = Math.round(tip / (this.amount * 0.01));
+      if (percent > this.max) this.max = percent;
+      this.tip = tip;
+      this.fiatTip = fiatTip;
     },
     select(i) {
       this.percent = i;
       this.max = 100;
       this.$nextTick(() => {
-        this.$emit('input', this.tip);
+        this.$emit('input', this.tip, this.fiatTip);
       });
     },
   },
 
   mounted() {
-    this.percent = 15;
+    if (this.initialTip) {
+      this.tip = this.initialTip;
+      let percent = Math.round(this.tip / (this.invoice.amount * 0.01));
+      if (percent > this.max) this.max = percent;
+      this.percent = percent;
+    } else this.percent = 15;
   },
 
   watch: {
     percent(v) {
-      this.tip = parseInt(v * this.amount * 0.01);
+      this.tip = Math.round(v * this.invoice.amount * 0.01);
+      this.fiatTip = ((this.tip / SATS) * this.invoice.rate).toFixed(2);
     },
   },
 };
@@ -107,4 +119,7 @@ export default {
 .v-btn
   width 100%
   height 62px !important
+
+.ok
+  width 50%
 </style>

@@ -37,7 +37,11 @@ const f = parseFloat;
 const SATS = 100000000;
 
 export default {
-  props: { initialAmount: { type: Number } },
+  props: {
+    initialAmount: { type: Number },
+    rate: { type: Number },
+    allowCurrencyToggle: { type: Boolean, default: true },
+  },
   filters: {
     format(n, d) {
       return f(n).toLocaleString('en-US', {
@@ -49,32 +53,39 @@ export default {
 
   data() {
     return {
-      amount: 0,
+      amount: this.initialAmount,
+      fiatAmount: ((this.initialAmount / SATS) * this.rate).toFixed(2),
       inputAmount: '_',
       buttons: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '<', '0', 'C'],
       codes: Array.from(Array(10), (_, x) => x + 48),
     };
   },
 
+  mounted() {
+    this.inputAmount =
+      this.fiat && this.fiatAmount
+        ? this.fiatAmount
+        : this.initialAmount || '_';
+  },
+
   computed: {
     currency() {
       return this.fiat ? this.user.currency : 'sat';
     },
-    fiatAmount: sync('fiatAmount'),
     fiat: sync('fiat'),
-    rate: get('rate'),
-    user: get('user'),
     decimals() {
       return this.fiat ? 2 : 0;
     },
     divisor() {
       return 10 ** this.decimals;
     },
+    globalRate: get('rate'),
+    user: get('user'),
   },
 
   watch: {
-    inputAmount() {
-      this.$emit('input', this.amount);
+    inputAmount(v) {
+      this.$emit('input', this.amount, this.fiatAmount);
     },
   },
 
@@ -84,7 +95,7 @@ export default {
       if (this.fiat)
         this.amount = parseInt(((amount * SATS) / this.rate).toFixed(8));
       else this.amount = parseInt(amount);
-      this.$emit("done");
+      this.$emit('done');
     },
     shiftCurrency: call('shiftCurrency'),
 
@@ -107,18 +118,24 @@ export default {
 
     async toggle() {
       let { currency, currencies } = this.user;
+
       if (!currency) return;
       if (!Array.isArray(currencies)) currencies = JSON.parse(currencies);
+
       let index = currencies.findIndex(c => c === currency);
 
       if (this.fiat) {
-        if (index === currencies.length - 1) this.fiat = false;
-        await this.shiftCurrency();
-        this.$nextTick(() => {
-          if (this.fiat)
-            this.inputAmount = ((this.amount / SATS) * this.rate).toFixed(2);
-          else this.inputAmount = this.amount.toFixed(0);
-        });
+          if (index === currencies.length - 1) this.fiat = false;
+          if (this.allowCurrencyToggle) {
+            await this.shiftCurrency();
+          } else {
+            this.fiat = false;
+          } 
+          this.$nextTick(() => {
+            if (this.fiat)
+              this.inputAmount = ((this.amount / SATS) * this.rate).toFixed(2);
+            else this.inputAmount = this.amount.toFixed(0);
+          });
       } else {
         this.inputAmount = ((this.amount / SATS) * this.rate).toFixed(2);
         this.fiat = true;
@@ -137,14 +154,14 @@ export default {
 
       if (m === 'C') amount = 0;
       this.inputAmount = amount.toFixed(this.decimals);
+
       if (this.fiat) {
         this.fiatAmount = this.inputAmount;
         this.amount = parseInt(((amount * SATS) / this.rate).toFixed(8));
-      }
-      else {
+      } else {
         this.fiatAmount = ((amount / SATS) * this.rate).toFixed(2);
         this.amount = parseInt(amount);
-      } 
+      }
     },
   },
 
@@ -154,13 +171,6 @@ export default {
 
   destroyed: function() {
     document.removeEventListener('keyup', this.keyup);
-  },
-
-  mounted() {
-    this.inputAmount = this.amount;
-    if (this.fiat)
-      this.inputAmount = this.fiatAmount;
-    if (f(this.inputAmount) === 0) this.inputAmount = '_';
   },
 };
 </script>

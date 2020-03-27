@@ -1,23 +1,22 @@
 <template>
   <div>
-    <tippad v-if="tipping" :amount="amount" @input="setTip" />
+    <tippad v-if="tipping" :initialTip="invoice.tip" @input="setTip" />
     <div v-else>
-      <div v-if="amount > 0">
+      <div v-if="invoice.amount > 0">
         <h1 class="text-center font-weight-black">Requesting</h1>
         <div class="d-flex justify-center mb-2">
           <div class="mr-2">
-            <span class="display-1">{{ amount + tip }}</span>
+            <span class="display-1">{{ invoice.amount }}</span>
             SAT
           </div>
           <div>
             <span class="yellow--text">
-              <span class="display-1">{{ fiatAmount }}</span>
-              <span v-if="tip">&nbsp;(+{{ fiatTip }})</span>
-              {{ user.currency }}
+              <span class="display-1">{{ invoice.fiatAmount }}</span>
+              <span v-if="invoice.tip">&nbsp;(+{{ invoice.fiatTip }})</span>
+              {{ invoice.currency }}
             </span>
           </div>
         </div>
-        <div></div>
       </div>
       <h1 v-else class="text-center font-weight-black">Receiving Address</h1>
       <v-card class="pa-3 text-center mb-2">
@@ -30,7 +29,7 @@
           @click="fullscreen"
           class="w-100 mx-auto mb-2"
         />
-        <div class="mb-2" v-if="!(amount > 0)">
+        <div class="mb-2" v-if="!(invoice.amount > 0)">
           <code class="black--text mb-2" :data-clipboard-text="text">{{
             text
           }}</code>
@@ -41,11 +40,11 @@
             class="mr-2 mb-2 mb-sm-0 black--text wide"
             color="yellow"
           >
-            <span v-if="tip"><v-icon>edit</v-icon><span>Edit Tip</span></span>
-            <span v-else><v-icon>add</v-icon><span>Add Tip</span></span>
+            <span v-if="invoice.tip"><v-icon class="mr-1">edit</v-icon><span>Edit Tip</span></span>
+            <span v-else><v-icon class="mr-1">add</v-icon><span>Add Tip</span></span>
           </v-btn>
           <v-btn
-            v-if="amount > 0"
+            v-if="invoice.amount > 0"
             @click.native="showcode = !showcode"
             class="mr-2 mb-2 mb-sm-0 wide"
           >
@@ -58,6 +57,9 @@
           </v-btn>
         </div>
       </v-card>
+      <v-btn @click="$emit('clear')" class="mb-2">
+        <v-icon>arrow_back</v-icon><span>Go Back</span>
+      </v-btn>
     </div>
   </div>
 </template>
@@ -67,13 +69,14 @@ import qr from 'qrcode';
 import { mapGetters, mapActions } from 'vuex';
 import { get, sync } from 'vuex-pathify';
 import Copy from '../mixins/Copy';
+import FullScreen from '../mixins/FullScreen';
 import Tippad from './TipPad';
 
 const SATS = 100000000;
 
 export default {
   components: { Tippad },
-  mixins: [Copy],
+  mixins: [Copy, FullScreen],
   props: {
     clear: { type: Function },
     total: { type: String },
@@ -81,19 +84,14 @@ export default {
 
   data() {
     return {
-      full: false,
       showcode: false,
       tipping: false,
     };
   },
 
   computed: {
-    ...mapGetters(['amount', 'fiatAmount', 'rate', 'user']),
-    fiatTip() {
-      return ((this.tip / SATS) * this.rate).toFixed(2);
-    },
-    text: get('text'),
-    tip: sync('tip'),
+    invoice: get('invoice'),
+    user: get('user'),
     code() {
       return this.showcode ? 'Show QR' : 'Show Code';
     },
@@ -104,13 +102,13 @@ export default {
   },
 
   methods: {
-    ...mapActions(['generateRequest', 'snack']),
+    ...mapActions(['addInvoice', 'snack']),
     draw() {
       this.$nextTick(() => {
         let canvas = document.getElementById('qr');
         if (!canvas) return;
 
-        qr.toCanvas(canvas, this.text, e => {
+        qr.toCanvas(canvas, this.invoice.text, e => {
           if (e) console.log(e);
         });
 
@@ -118,41 +116,12 @@ export default {
         canvas.style.height = '35vh';
       });
     },
-    async setTip(e) {
+    async setTip(tip, fiatTip) {
       this.tipping = false;
-      console.log(e);
-      this.tip = e;
-      await this.generateRequest();
+      this.invoice.tip = tip;
+      this.invoice.fiatTip = fiatTip;
+      await this.addInvoice();
       this.draw();
-    },
-    fullscreen() {
-      if (this.full) {
-        if (document.exitFullscreen) {
-          document.exitFullscreen();
-        } else if (document.mozCancelFullScreen) {
-          document.mozCancelFullScreen();
-        } else if (document.webkitExitFullscreen) {
-          document.webkitExitFullscreen();
-        } else if (document.msExitFullscreen) {
-          document.msExitFullscreen();
-        }
-        this.full = false;
-        return;
-      }
-
-      let elem = document.getElementById('qr');
-
-      if (elem.requestFullscreen) {
-        elem.requestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-      } else if (elem.mozRequestFullScreen) {
-        elem.mozRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
-      } else if (elem.webkitRequestFullscreen) {
-        elem.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-      } else if (elem.msRequestFullscreen) {
-        elem.msRequestFullscreen();
-      }
-
-      this.full = true;
     },
   },
 };

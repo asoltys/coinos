@@ -61,14 +61,12 @@ export default {
   computed: {
     address: sync('address'),
     addressType: sync('addressType'),
-    confTarget: sync('confTarget'),
     fee() {
       if (this.tx) return parseInt(this.tx.fee * SATS);
       else return null;
     },
     feeRate: sync('feeRate'),
     loadingFee: get('loadingFee'),
-    mode: sync('mode'),
     tx: get('tx'),
   },
   methods: {

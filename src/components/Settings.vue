@@ -171,9 +171,11 @@ import validator from 'email-validator';
 import SetPin from './SetPin';
 import qr from 'qrcode';
 import PincodeInput from 'vue-pincode-input';
+import FullScreen from '../mixins/FullScreen';
 
 export default {
   components: { SetPin, PincodeInput },
+  mixins: [FullScreen],
   data() {
     return {
       tokenKey: 'a',
@@ -237,35 +239,6 @@ export default {
         this.twofaFail = true;
       }
       this.clear();
-    },
-    fullscreen() {
-      if (this.full) {
-        if (document.exitFullscreen) {
-          document.exitFullscreen();
-        } else if (document.mozCancelFullScreen) {
-          document.mozCancelFullScreen();
-        } else if (document.webkitExitFullscreen) {
-          document.webkitExitFullscreen();
-        } else if (document.msExitFullscreen) {
-          document.msExitFullscreen();
-        }
-        this.full = false;
-        return;
-      }
-
-      let elem = document.getElementById('qr');
-
-      if (elem.requestFullscreen) {
-        elem.requestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-      } else if (elem.mozRequestFullScreen) {
-        elem.mozRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
-      } else if (elem.webkitRequestFullscreen) {
-        elem.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-      } else if (elem.msRequestFullscreen) {
-        elem.msRequestFullscreen();
-      }
-
-      this.full = true;
     },
     filterCurrencies() {
       this.form.currencies = this.form.currencies.filter(c =>
