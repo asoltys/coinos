@@ -20,7 +20,7 @@
       </div>
       <h1 v-else class="text-center font-weight-black">Receiving Address</h1>
       <v-card class="pa-3 text-center mb-2">
-        <div v-if="showcode" class="code mb-4">{{ text }}</div>
+        <div v-if="showcode" class="code mb-4">{{ invoice.text }}</div>
         <canvas
           id="qr"
           v-show="!showcode"
@@ -30,8 +30,8 @@
           class="w-100 mx-auto mb-2"
         />
         <div class="mb-2" v-if="!(invoice.amount > 0)">
-          <code class="black--text mb-2" :data-clipboard-text="text">{{
-            text
+          <code class="black--text mb-2" :data-clipboard-text="invoice.text">{{
+            invoice.text
           }}</code>
         </div>
         <div>
@@ -52,7 +52,7 @@
             <v-icon v-else>code</v-icon>
             <span>{{ code }}</span>
           </v-btn>
-          <v-btn @click.native="() => copy(text)" class="wide">
+          <v-btn @click.native="() => copy(invoice.text)" class="wide">
             <v-icon>content_copy</v-icon><span>Copy</span>
           </v-btn>
         </div>
