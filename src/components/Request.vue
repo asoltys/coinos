@@ -1,6 +1,6 @@
 <template>
   <div>
-    <tippad v-if="tipping" :initialTip="invoice.tip" @input="setTip" />
+    <tippad v-if="tipping" @input="setTip" />
     <div v-else>
       <div v-if="invoice.amount > 0">
         <h1 class="text-center font-weight-black">Requesting</h1>

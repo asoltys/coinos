@@ -54,13 +54,6 @@ const SATS = 100000000;
 export default {
   components: { Numpad },
 
-  props: {
-    initialTip: {
-      type: Number,
-      default: 0,
-    },
-  },
-
   data() {
     return {
       fiatTip: 0,
@@ -98,8 +91,9 @@ export default {
   },
 
   mounted() {
-    if (this.initialTip) {
-      this.tip = this.initialTip;
+    if (this.invoice.tip) {
+      this.tip = this.invoice.tip;
+      this.fiatTip = this.invoice.fiatTip;
       let percent = Math.round(this.tip / (this.invoice.amount * 0.01));
       if (percent > this.max) this.max = percent;
       this.percent = percent;
