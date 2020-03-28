@@ -156,7 +156,7 @@ export default {
       this.inputAmount = amount.toFixed(this.decimals);
 
       if (this.fiat) {
-        this.fiatAmount = this.inputAmount;
+        this.fiatAmount = f(this.inputAmount).toFixed(2);
         this.amount = parseInt(((amount * SATS) / this.rate).toFixed(8));
       } else {
         this.fiatAmount = ((amount / SATS) * this.rate).toFixed(2);

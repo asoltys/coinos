@@ -37,7 +37,13 @@
           </div>
         </div>
         <template v-else-if="editingAmount">
-          <numpad class="mb-2" @done="stopEditingAmount" :initialAmount="amount" :initialRate="rate" />
+          <numpad
+            class="mb-2"
+            @done="stopEditingAmount"
+            :initialAmount="amount"
+            :rate="rate"
+            @input="updateAmount"
+          />
           <div class="d-flex">
             <v-btn
               class="black--text flex-grow-1"
@@ -51,7 +57,14 @@
         </template>
         <div v-else>
           <send-to-user v-bind="{ payuser }" />
-          <numpad v-if="payuser" class="mb-2" @done="stopEditingAmount" />
+          <numpad
+            v-if="payuser"
+            class="mb-2"
+            @done="stopEditingAmount"
+            :rate="rate"
+            :initialAmount="0"
+            @input="updateAmount"
+          />
           <recipient
             v-bind="{ address, amount, scannedBalance }"
             @editingAmount="startEditingAmount"
@@ -81,6 +94,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
+import { sync } from 'vuex-pathify';
 import Balance from './Balance';
 import Numpad from './NumPad';
 import Recipient from './Recipient';
@@ -118,9 +132,10 @@ export default {
   },
 
   computed: {
+    amount: sync('amount'),
+    fiatAmount: sync('fiatAmount'),
     ...mapGetters([
       'address',
-      'amount',
       'balance',
       'loading',
       'user',
@@ -134,11 +149,22 @@ export default {
   },
 
   methods: {
-    ...mapActions(['handleScan', 'estimateFee', 'sendPayment', 'clearPayment', 'snack']),
+    ...mapActions([
+      'handleScan',
+      'estimateFee',
+      'sendPayment',
+      'clearPayment',
+      'snack',
+    ]),
 
     async paste() {
       this.to = await navigator.clipboard.readText();
       this.handleScan(this.to);
+    },
+
+    updateAmount(amount, fiatAmount) {
+      this.amount = amount;
+      this.fiatAmount = fiatAmount;
     },
 
     startEditingAmount() {
@@ -173,7 +199,10 @@ export default {
   mounted() {
     this.init();
     this.$store.commit('payuser', this.$route.query.payuser);
-    const vw = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+    const vw = Math.max(
+      document.documentElement.clientWidth,
+      window.innerWidth || 0
+    );
     if (vw > 600 && this.$refs.to) this.$refs.to.focus();
   },
 };

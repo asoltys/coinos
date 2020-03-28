@@ -17,8 +17,10 @@
         </div>
         <div>
           <span class="yellow--text">
-            <span class="display-1">{{ fiat }}</span>
-            {{ user.currency }}
+            <span v-if="invoice.amount === payment.amount" class="display-1">{{ total }}</span>
+            <span v-else class="display-1">{{ fiat }}</span>
+            <span v-if="invoice.amount === payment.amount"> {{ invoice.currency }}</span>
+            <span v-else> {{ user.currency }}</span>
           </span>
         </div>
       </div>
@@ -33,21 +35,28 @@
 import { get } from 'vuex-pathify';
 
 const SATS = 100000000;
+const f = parseFloat;
 
 export default {
   computed: {
+    total() {
+      return (f(this.invoice.fiatAmount) + f(this.invoice.fiatTip)).toFixed(2);
+    },
     fiat() {
       return (
         ((this.payment.amount + this.payment.tip) / SATS) *
         this.rate
       ).toFixed(2);
     },
+    invoice() {
+      return this.invoices && this.invoices[0]
+    },
+    invoices: get('invoices'),
     payment() {
       return this.payments[this.payments.length - 1];
     },
     payments: get('payments'),
     rate: get('rate'),
-    received: get('received'),
     user: get('user'),
   },
 };

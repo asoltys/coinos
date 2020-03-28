@@ -50,6 +50,7 @@ const state = {
   fiatAmount: 0,
   friends: [],
   invoice: JSON.parse(blankInvoice),
+  invoices: [],
   initializing: false,
   loading: false,
   loadingFee: false,
@@ -560,10 +561,11 @@ export default new Vuex.Store({
   mutations: {
     ...make.mutations(state),
     addPayment(s, v) {
-      s.received += parseInt(Math.abs(v.amount));
-      if (s.received >= s.amount) {
-        s.amount = 0;
-        s.fiatAmount = 0;
+      s.invoice.received += parseInt(Math.abs(v.amount));
+      if (s.invoice.received >= s.invoice.amount) {
+        s.invoices.unshift(JSON.parse(JSON.stringify(s.invoice)));
+        s.invoice.amount = 0;
+        s.invoice.fiatAmount = 0;
       }
       s.payments.push(v);
     },
