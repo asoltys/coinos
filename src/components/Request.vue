@@ -6,7 +6,7 @@
         <h1 class="text-center font-weight-black">Requesting</h1>
         <div class="d-flex justify-center mb-2">
           <div class="mr-2">
-            <span class="display-1">{{ invoice.amount }}</span>
+            <span class="display-1">{{ invoice.amount + invoice.tip }}</span>
             SAT
           </div>
           <div>

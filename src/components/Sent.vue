@@ -53,7 +53,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['rate', 'user']),
+    ...mapGetters(['user']),
     total() {
       return Math.abs(this.payment.amount) - this.payment.fee;
     },

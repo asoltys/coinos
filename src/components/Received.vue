@@ -45,16 +45,12 @@ export default {
     fiat() {
       return (
         ((this.payment.amount + this.payment.tip) / SATS) *
-        this.rate
+        this.payment.rate
       ).toFixed(2);
     },
-    invoice() {
-      return this.invoices && this.invoices[0]
-    },
+    invoice() { return this.invoices && this.invoices[0] },
     invoices: get('invoices'),
-    payment() {
-      return this.payments[this.payments.length - 1];
-    },
+    payment() { return this.payments[0] },
     payments: get('payments'),
     rate: get('rate'),
     user: get('user'),

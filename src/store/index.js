@@ -12,6 +12,12 @@ Vue.use(Vuex);
 
 const SATS = 100000000;
 
+const assets = {
+  bitcoin: 'BTC',
+  liquid: 'LBTC',
+  lightning: 'LNBTC',
+};
+
 pathify.options.mapping = 'simple';
 
 const isLiquid = address =>
@@ -105,7 +111,10 @@ export default new Vuex.Store({
 
       const { path } = router.currentRoute;
       const initialize = () => {
-        if (getters.user && getters.user.currency && getters.rate || paths.includes(path)) {
+        if (
+          (getters.user && getters.user.currency && getters.rate) ||
+          paths.includes(path)
+        ) {
           commit('initializing', false);
         } else {
           setTimeout(initialize, 500);
@@ -219,7 +228,8 @@ export default new Vuex.Store({
       });
 
       s.on('payment', p => {
-        if (p.amount > 0) dispatch('snack', `Received ${p.amount} satoshi`);
+        if (p.amount > 0)
+          dispatch('snack', `Received ${p.amount + p.tip} satoshi`);
         commit('addPayment', p);
       });
 
@@ -406,23 +416,25 @@ export default new Vuex.Store({
       const { invoice, user } = state;
       const { amount, tip } = invoice;
 
+      method = method || invoice.method;
+      invoice.method = method;
+      invoice.asset = assets[method];
+
       const url = address =>
         amount > 0
           ? `${method}:${address}?amount=${(amount + tip) / SATS}`
           : address;
 
       let address;
-
-      if (method) commit('invoice', { ...state.invoice, method });
-      else method = state.method;
-
       switch (method) {
         case 'bitcoin':
           ({ address } = user);
+          invoice.address = address;
           invoice.text = url(address);
           break;
         case 'liquid':
           ({ confidential: address } = user);
+          invoice.address = address;
           invoice.text = url(address);
           break;
         case 'lightning':
@@ -567,7 +579,7 @@ export default new Vuex.Store({
         s.invoice.amount = 0;
         s.invoice.fiatAmount = 0;
       }
-      s.payments.push(v);
+      s.payments.unshift(v);
     },
     error(s, v) {
       s.error = v;

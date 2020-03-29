@@ -160,7 +160,6 @@ export default {
           o.fiat = ((p.amount * p.rate) / SATS).toFixed(2);
           o.tip = parseFloat((p.tip * p.rate) / SATS).toFixed(2);
           if (isNaN(o.tip) || o.tip <= 0) o.tip = null;
-          if (o.tip) o.fiat -= o.tip;
           o.color = o.amount < 0 ? 'red--text' : 'green--text';
           o.sign = o.amount < 0 ? '-' : '+';
           if (o.asset === 'BTC') o.link = `${bs}/tx/${o.hash}`;
