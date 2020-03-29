@@ -424,7 +424,7 @@ export default new Vuex.Store({
 
       const url = address =>
         amount
-          ? `${method}:${address}?amount=${(amount + tip) / SATS}`
+          ? `${method}:${address}?amount=${((amount + tip) / SATS).toFixed(8)}`
           : address;
 
       let address;

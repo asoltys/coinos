@@ -1,5 +1,3 @@
-- currency select box is janky when typing or clicking out
-- small amounts have scientific notation when viewing code
 - scroll to password and username fields
 - show fiat amounts on send page for amount and fee
 - support toggling between SAT and BTC units
@@ -82,3 +80,5 @@ done
 - db backups
 - separate invoices from payments in db
 - better docs on about page
+- currency select box is janky when typing or clicking out
+- small amounts have scientific notation when viewing code
