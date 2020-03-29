@@ -2,7 +2,7 @@
   <div>
     <v-progress-linear v-if="loading" indeterminate />
     <template v-else-if="invoice.text">
-      <request v-if="!invoice.amount || invoice.received < invoice.amount" @clear="clearInvoice" />
+      <request v-if="invoice.amount === null || invoice.received < invoice.amount" @clear="clearInvoice" />
       <balance v-else />
       <received v-if="invoice.received" @clear="clearInvoice" />
     </template>

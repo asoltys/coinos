@@ -416,12 +416,14 @@ export default new Vuex.Store({
       const { invoice, user } = state;
       const { amount, tip } = invoice;
 
+      if (!amount) amount = null;
+
       method = method || invoice.method;
       invoice.method = method;
       invoice.asset = assets[method];
 
       const url = address =>
-        amount > 0
+        amount
           ? `${method}:${address}?amount=${(amount + tip) / SATS}`
           : address;
 
