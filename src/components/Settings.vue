@@ -1,5 +1,6 @@
 <template>
   <div>
+    {{ searchInput }}
     <v-progress-linear v-if="saving" indeterminate />
     <v-alert
       class="mb-4"
@@ -127,18 +128,15 @@
             type="text"
           />
 
-          <v-combobox
+          <v-autocomplete
             v-model="form.currencies"
             :items="currencies"
             chips
             label="Currencies"
             multiple
             @change="filterCurrencies"
-            :menu-props="{
-              maxHeight: 200,
-              closeOnClick: true,
-              closeOnContentClick: true,
-            }"
+            :menu-props="{ maxHeight: 200, }"
+            :search-input.sync="searchInput"
           >
             <template v-slot:selection="{ attrs, item, select, selected }">
               <v-chip
@@ -151,7 +149,7 @@
                 <strong>{{ item }}</strong>
               </v-chip>
             </template>
-          </v-combobox>
+          </v-autocomplete>
 
           <div class="text-right">
             <v-btn @click="submit">
@@ -183,6 +181,7 @@ export default {
       token: '',
       full: false,
       saving: false,
+      searchInput: "",
       showPinDialog: false,
       success: false,
       changingPassword: false,
