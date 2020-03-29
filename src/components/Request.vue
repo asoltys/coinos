@@ -36,6 +36,7 @@
         </div>
         <div>
           <v-btn
+            v-if="invoice.amount > 0"
             @click.native="tipping = true"
             class="mr-2 mb-2 mb-sm-0 black--text wide"
             color="yellow"
@@ -57,9 +58,6 @@
           </v-btn>
         </div>
       </v-card>
-      <v-btn @click="$emit('clear')" class="mb-2">
-        <v-icon>arrow_back</v-icon><span>Go Back</span>
-      </v-btn>
     </div>
   </div>
 </template>
