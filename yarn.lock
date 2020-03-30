@@ -2598,6 +2598,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"bezier-easing@npm:2.1.0":
+  version: 2.1.0
+  resolution: "bezier-easing@npm:2.1.0"
+  checksum: 2/6ee6bc647109e1dc86533eef31c673652cc97188590ff8ee2a4c0596d275d9e54383a3ea7c2b51500e9b2263718e252f296dbce050df3df888025eca4b453be8
+  languageName: node
+  linkType: hard
+
 "bfj@npm:^6.1.1":
   version: 6.1.2
   resolution: "bfj@npm:6.1.2"
@@ -3763,6 +3770,7 @@ __metadata:
     vue-pincode-input: ^0.0.4
     vue-qrcode-reader: ^2.0.1
     vue-router: ^3.0.7
+    vue-scrollto: ^2.17.1
     vue-stripe: ^0.1.52
     vue-template-compiler: ^2.6.10
     vuetify: ^2.2.10
@@ -13542,6 +13550,15 @@ fsevents@~2.1.2:
   version: 3.1.5
   resolution: "vue-router@npm:3.1.5"
   checksum: 2/0b1760ee10482e52086a722a409866a56ba8a07fc1e0a70a0e5a4d2c49b372ecc3957943a45153e2b37de6092a209d89b5ae4f784bcce8e1e0757a7addcfea74
+  languageName: node
+  linkType: hard
+
+"vue-scrollto@npm:^2.17.1":
+  version: 2.17.1
+  resolution: "vue-scrollto@npm:2.17.1"
+  dependencies:
+    bezier-easing: 2.1.0
+  checksum: 2/2b5b47dc8b3147ef93a13702a391c46ecc645fde194689bda52e15bd950229a1149398bd3ceef886966e89e0434dd527198b5ee416c18a1601ebb433a5942704
   languageName: node
   linkType: hard
 

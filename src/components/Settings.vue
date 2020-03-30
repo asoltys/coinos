@@ -88,12 +88,14 @@
         </div>
         <div v-if="changingPassword" class="mb-2">
           <v-form @keyup.native.enter="submit">
-            <v-text-field
-              label="New Password"
-              v-model="form.password"
-              type="password"
-              ref="password"
-            />
+            <div id="password">
+              <v-text-field
+                label="New Password"
+                v-model="form.password"
+                type="password"
+                ref="password"
+              />
+            </div>
             <v-text-field
               label="Confirm Password"
               v-model="form.passconfirm"
@@ -126,7 +128,9 @@
             label="Username"
             v-model="form.username"
             type="text"
-          />
+            @focus="scroll"
+            ref="username"
+            />
 
           <v-autocomplete
             v-model="form.currencies"
@@ -135,8 +139,10 @@
             label="Currencies"
             multiple
             @change="filterCurrencies"
-            :menu-props="{ maxHeight: 200, }"
+            @focus="scroll"
+            :menu-props="{ closeOnContentClick: true, maxHeight: 200 }"
             :search-input.sync="searchInput"
+            :full-width="false"
           >
             <template v-slot:selection="{ attrs, item, select, selected }">
               <v-chip
@@ -170,6 +176,8 @@ import SetPin from './SetPin';
 import qr from 'qrcode';
 import PincodeInput from 'vue-pincode-input';
 import FullScreen from '../mixins/FullScreen';
+import VueScrollTo from 'vue-scrollto';
+
 
 export default {
   components: { SetPin, PincodeInput },
@@ -181,7 +189,7 @@ export default {
       token: '',
       full: false,
       saving: false,
-      searchInput: "",
+      searchInput: '',
       showPinDialog: false,
       success: false,
       changingPassword: false,
@@ -215,6 +223,9 @@ export default {
   },
 
   methods: {
+    scroll(e) { 
+      VueScrollTo.scrollTo(e.target, 100, { offset: -15 })
+    },
     clear() {
       this.tokenKey += 'a';
       this.token = '';
@@ -263,10 +274,11 @@ export default {
     },
     changePassword() {
       this.changingPassword = !this.changingPassword;
-      this.$nextTick(() => {
-        this.$refs.password.focus();
-        window.scrollTo(0, this.$refs.password.offsetTop);
-      });
+      if (this.changingPassword)
+        this.$nextTick(() => {
+          this.$refs.password.focus();
+          VueScrollTo.scrollTo(this.$refs.password.$refs.input, 100, { offset: -15 })
+        });
     },
     pin(pin) {
       this.form.pin = pin;
