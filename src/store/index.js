@@ -414,9 +414,9 @@ export default new Vuex.Store({
 
     async addInvoice({ commit, state }, method) {
       const { invoice, user } = state;
-      const { amount, tip } = invoice;
 
-      if (!amount) amount = null;
+      if (!invoice.amount) invoice.amount = null;
+      const { amount, tip } = invoice;
 
       method = method || invoice.method;
       invoice.method = method;

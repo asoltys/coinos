@@ -29,7 +29,7 @@
           @click="fullscreen"
           class="w-100 mx-auto mb-2"
         />
-        <div class="mb-2" v-if="!(invoice.amount > 0)">
+        <div class="mb-2" v-if="invoice.amount <= 0">
           <code class="black--text mb-2" :data-clipboard-text="invoice.text">{{
             invoice.text
           }}</code>
