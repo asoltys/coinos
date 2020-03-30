@@ -6,14 +6,25 @@
       </v-card-title>
 
       <v-card-text>
-        <v-text-field
-          @focus="select"
-          label="Fee Rate"
+        <v-slider
           v-model="feeRate"
-          type="number"
-          suffix="sat/byte"
-          @keyup.enter="close"
-        />
+          :min="min"
+          max="100000"
+          class="align-center"
+          hide-details
+        >
+          <template v-slot:append>
+            <v-text-field
+              v-model="feeRate"
+              class="mt-0 pt-0"
+              type="text"
+              suffix="sat/kb"
+              @keyup.enter="close"
+              readonly
+              hide-details
+            />
+          </template>
+        </v-slider>
       </v-card-text>
 
       <v-card-actions>
@@ -27,7 +38,7 @@
 </template>
 
 <script>
-import { call, sync } from 'vuex-pathify';
+import { get, call, sync } from 'vuex-pathify';
 export default {
   props: { adjusting: { type: Boolean } },
   data() {
@@ -36,7 +47,11 @@ export default {
     };
   },
   computed: {
+    addressType: get('addressType'),
     feeRate: sync('feeRate'),
+    min() {
+      return this.addressType === 'bitcoin' ? 1000 : 100;
+    },
   },
   methods: {
     estimateFee: call('estimateFee'),
@@ -44,7 +59,6 @@ export default {
       this.dialog = false;
       this.estimateFee();
     },
-    select(e) { e.target.select(); },
   },
   watch: {
     adjusting() {

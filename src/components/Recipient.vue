@@ -20,16 +20,28 @@
         </v-btn>
       </template>
     </v-textarea>
-    <v-text-field class="amount" label="Amount" v-model="amount" readonly suffix="sat" @click="setAmount">
+    <v-text-field class="amount" label="Amount" v-model="displayAmount" readonly @click="setAmount">
       <template v-slot:append>
-        <v-btn icon @click="() => copy(amount)" class="ml-1" text>
+        <v-btn
+          class="toggle black--text ml-2 mt-auto mb-1"
+          color="yellow"
+          @click.prevent="toggle"
+          >{{ currency }}</v-btn
+        >
+        <v-btn icon @click="() => copy(displayAmount)" class="ml-1" text>
           <v-icon class="mr-1">content_copy</v-icon>
         </v-btn>
       </template>
     </v-text-field>
-    <v-text-field :loading="loadingFee" label="Fee" v-model="fee" readonly suffix="sat" @click="setFee">
+    <v-text-field :loading="loadingFee" label="Fee" v-model="displayFee" readonly @click="setFee">
       <template v-slot:append>
-        <v-btn icon @click="() => copy(fee)" class="ml-1" text>
+        <v-btn
+          class="toggle black--text ml-2 mt-auto mb-1"
+          color="yellow"
+          @click.prevent="toggle"
+          >{{ currency }}</v-btn
+        >
+        <v-btn icon @click="() => copy(displayFee)" class="ml-1" text>
           <v-icon class="mr-1">content_copy</v-icon>
         </v-btn>
       </template>
@@ -51,6 +63,7 @@ export default {
   mixins: [Copy],
   props: {
     amount: { type: Number },
+    fiatAmount: { type: String },
   },
   data() {
     return {
@@ -59,17 +72,35 @@ export default {
     };
   },
   computed: {
+    currency() {
+      return this.fiat ? this.user.currency : 'sat';
+    },
     address: sync('address'),
     addressType: sync('addressType'),
+    displayAmount() {
+      return this.fiat ? this.fiatAmount : this.amount;
+    }, 
+    displayFee() {
+      return this.fiat ? this.fiatFee : this.fee;
+    }, 
     fee() {
       if (this.tx) return parseInt(this.tx.fee * SATS);
       else return null;
     },
+    fiatFee() {
+      return (this.fee * this.rate / SATS).toFixed(2);
+    },
     feeRate: sync('feeRate'),
+    fiat: sync('fiat'),
     loadingFee: get('loadingFee'),
+    rate: get('rate'),
+    user: get('user'),
     tx: get('tx'),
   },
   methods: {
+    toggle() {
+      this.fiat = !this.fiat;
+    },
     explore() {
       this.$nextTick(function() {
         if (this.addressType === 'bitcoin') window.open(`${bs}/address/${this.address}`);

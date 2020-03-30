@@ -66,7 +66,7 @@
             @input="updateAmount"
           />
           <recipient
-            v-bind="{ address, amount, scannedBalance }"
+            v-bind="{ address, amount, fiatAmount, scannedBalance }"
             @editingAmount="startEditingAmount"
             @back="back"
           />

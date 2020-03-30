@@ -320,7 +320,7 @@ export default new Vuex.Store({
 
       let { address, amount, feeRate } = getters;
 
-      let params = { address, amount, feeRate };
+      let params = { address, amount, feeRate: feeRate / 1000 };
 
       if (address) {
         if (isLiquid(address)) {
@@ -526,8 +526,11 @@ export default new Vuex.Store({
       if (url) {
         commit('address', url.address);
 
-        if (url.options.amount)
-          commit('amount', parseInt((url.options.amount * SATS).toFixed(0)));
+        if (url.options.amount) {
+          let amount = parseInt((url.options.amount * SATS).toFixed(0));
+          commit('amount', amount);
+          commit('fiatAmount', (amount * getters.rate / SATS).toFixed(2));
+        }
 
         if (!tx) await dispatch('estimateFee');
         go({ name: 'send', params: { keep: true } });
