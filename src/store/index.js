@@ -75,6 +75,7 @@ const state = {
   scan: '',
   scanning: false,
   scannedBalance: null,
+  stats: null,
   snack: '',
   socket: null,
   text: '',
@@ -167,8 +168,16 @@ export default new Vuex.Store({
       }
     },
 
-    async getOtpSecret(_, token) {
-      Vue.axios.get('/otpsecret');
+    async getStats({ commit }) {
+      commit('loading', true);
+      try {
+        const stats = (await Vue.axios.get('/balances')).data
+        commit('stats', stats);
+      } catch(e) {
+        commit('error', e.response.data);
+      } 
+
+      commit('loading', false);
     },
 
     async enable2fa(_, token) {

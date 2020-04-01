@@ -92,50 +92,22 @@
 
     <iframe width="100%" height="315" src="https://www.youtube.com/embed/KFGJKjnPF84" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-    <v-card>
-      <v-card-text>
-        <h3 class="mb-4 text-center">Lightning Node Info</h3>
-        <canvas id="qr" class="d-block mx-auto mb-4" />
-        <div class="text-center my-4">
-          <code class="black--text" :data-clipboard-text="node">{{
-            node
-          }}</code>
-        </div>
-        <v-btn @click="() => copy(node)" class="d-block mx-auto">
-          <v-icon class="mr-1">content_copy</v-icon><span>Copy</span>
-        </v-btn>
-      </v-card-text>
-    </v-card>
-    <v-card class="mt-2">
-      <v-card-title>Privacy Policy</v-card-title>
-      <v-card-text class="white--text body-1">
-        We don't require any personal information. If you login with Facebook,
-        we access your friends list in order to populate your address book.
-      </v-card-text>
-    </v-card>
+    <lightning-node />
+    <stats />
+    <privacy-policy />
   </div>
 </template>
 
 <script>
-import qr from 'qrcode';
 import { mapActions } from 'vuex';
-import Copy from '../mixins/Copy';
-
-const node =
-  '02868e12f320073cad0c2959c42559fbcfd1aa326fcb943492ed7f02c9820aa399@coinos.io:9735';
+import PrivacyPolicy from './PrivacyPolicy';
+import Stats from './Stats';
+import LightningNode from './LightningNode';
 
 export default {
-  mixins: [Copy],
+  components: { LightningNode, PrivacyPolicy, Stats },
   data() {
-    return { more: false, node };
-  },
-
-  mounted() {
-    let canvas = document.getElementById('qr');
-    if (!canvas) return;
-    qr.toCanvas(canvas, node, e => {
-      if (e) console.log(e);
-    });
+    return { more: false };
   },
 
   methods: {

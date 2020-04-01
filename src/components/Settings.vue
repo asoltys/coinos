@@ -1,6 +1,5 @@
 <template>
   <div>
-    {{ searchInput }}
     <v-progress-linear v-if="saving" indeterminate />
     <v-alert
       class="mb-4"
@@ -302,7 +301,7 @@ export default {
       }
     },
 
-    ...mapActions(['updateUser', 'enable2fa', 'disable2fa', 'getOtpSecret']),
+    ...mapActions(['updateUser', 'enable2fa', 'disable2fa']),
   },
 
   watch: {
@@ -337,7 +336,6 @@ export default {
     } catch (e) {
       /**/
     }
-    this.getOtpSecret();
   },
 };
 </script>
