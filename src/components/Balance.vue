@@ -1,7 +1,7 @@
 <template>
   <div v-if="!isNaN(animatedBalance)" class="mb-2 text-center">
     <span class="display-2 font-weight-black">{{ animatedBalance }} </span>
-    <span class="headline">SAT</span>
+    <span class="headline" style="cursor: pointer" @click="toggleUnit">{{ user.unit }}</span>
     <h3 v-if="!isNaN(animatedRate)" class="d-flex flex-wrap justify-center">
       <div class="fiat yellow--text display-1">{{ fiat | format }}</div>
       <v-btn
@@ -35,6 +35,8 @@ import { mapGetters } from 'vuex';
 import { TweenLite } from 'gsap';
 import { call } from 'vuex-pathify';
 
+const SATS = 100000000;
+
 export default {
   props: { payobj: { type: Object } },
 
@@ -58,13 +60,15 @@ export default {
   computed: {
     ...mapGetters(['rate', 'user']),
     fiat() {
-      return (this.animatedBalance / 100000000) * this.animatedRate;
+      return (this.tweenedBalance / SATS) * this.animatedRate;
     },
     pendingFiat() {
-      return (this.animatedPending / 100000000) * this.animatedRate;
+      return (this.animatedPending / SATS) * this.animatedRate;
     },
     animatedBalance() {
-      return parseInt(this.tweenedBalance).toFixed(0);
+      if (this.user.unit === 'SAT')
+        return parseInt(this.tweenedBalance).toFixed(0);
+      else return Number(parseFloat(this.tweenedBalance / SATS).toFixed(8));
     },
     animatedPending() {
       return parseInt(this.tweenedPending).toFixed(0);
@@ -76,6 +80,7 @@ export default {
 
   methods: {
     shiftCurrency: call('shiftCurrency'),
+    toggleUnit: call('toggleUnit'),
   },
 
   watch: {

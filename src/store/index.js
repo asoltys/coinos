@@ -179,6 +179,11 @@ export default new Vuex.Store({
       const res = await Vue.axios.post('/disable2fa', { token });
     },
 
+    async toggleUnit({ commit, dispatch, state }) {
+      state.user.unit = state.user.unit === 'SAT' ? 'BTC' : 'SAT';
+      dispatch('updateUser', state.user);
+    },
+
     async shiftCurrency({ commit, dispatch, state }) {
       const { invoice, user } = state;
       let { currencies } = user;

@@ -127,6 +127,7 @@ export default {
 
   data() {
     return {
+      currency: '',
       editingAmount: false,
       fiat: false,
       to: '',
@@ -152,10 +153,11 @@ export default {
 
   methods: {
     ...mapActions([
-      'handleScan',
-      'estimateFee',
-      'sendPayment',
       'clearPayment',
+      'estimateFee',
+      'handleScan',
+      'sendPayment',
+      'setCurrency',
       'snack',
     ]),
 
@@ -167,7 +169,7 @@ export default {
     updateAmount(amount, fiatAmount, currency) {
       this.amount = amount;
       this.fiatAmount = fiatAmount;
-      this.setCurrency(currency);
+      this.currency = currency;
     },
 
     startEditingAmount() {
@@ -176,6 +178,7 @@ export default {
     stopEditingAmount() {
       this.editingAmount = false;
       this.estimateFee();
+      this.setCurrency(this.currency);
     },
 
     init() {

@@ -20,7 +20,13 @@
         </v-btn>
       </template>
     </v-textarea>
-    <v-text-field class="amount" label="Amount" v-model="displayAmount" readonly @click="setAmount">
+    <v-text-field
+      class="amount"
+      label="Amount"
+      v-model="displayAmount"
+      readonly
+      @click="setAmount"
+    >
       <template v-slot:append>
         <v-btn
           class="toggle black--text ml-2 mt-auto mb-1"
@@ -33,7 +39,13 @@
         </v-btn>
       </template>
     </v-text-field>
-    <v-text-field :loading="loadingFee" label="Fee" v-model="displayFee" readonly @click="setFee">
+    <v-text-field
+      :loading="loadingFee"
+      label="Fee"
+      v-model="displayFee"
+      readonly
+      @click="setFee"
+    >
       <template v-slot:append>
         <v-btn
           class="toggle black--text ml-2 mt-auto mb-1"
@@ -73,22 +85,26 @@ export default {
   },
   computed: {
     currency() {
-      return this.fiat ? this.user.currency : 'sat';
+      return this.fiat ? this.user.currency : this.user.unit;
     },
     address: sync('address'),
     addressType: sync('addressType'),
     displayAmount() {
-      return this.fiat ? this.fiatAmount : this.amount;
-    }, 
+      return this.fiat
+        ? this.fiatAmount
+        : this.user.unit === 'SAT'
+        ? this.amount
+        : Number((this.amount / SATS).toFixed(8));
+    },
     displayFee() {
-      return this.fiat ? this.fiatFee : this.fee;
-    }, 
+      return this.fiat ? this.fiatFee : this.user.unit === 'SAT' ? this.fee : Number((this.fee / SATS).toFixed(8));
+    },
     fee() {
       if (this.tx) return parseInt(this.tx.fee * SATS);
       else return null;
     },
     fiatFee() {
-      return (this.fee * this.rate / SATS).toFixed(2);
+      return ((this.fee * this.rate) / SATS).toFixed(2);
     },
     feeRate: sync('feeRate'),
     fiat: sync('fiat'),
@@ -103,7 +119,8 @@ export default {
     },
     explore() {
       this.$nextTick(function() {
-        if (this.addressType === 'bitcoin') window.open(`${bs}/address/${this.address}`);
+        if (this.addressType === 'bitcoin')
+          window.open(`${bs}/address/${this.address}`);
         else window.open(`${bs}/liquid/address/${this.address}`);
       });
     },
@@ -138,5 +155,4 @@ export default {
 @media (max-width: 600px)
   .v-application code
     font-size 0.8em
-
 </style>

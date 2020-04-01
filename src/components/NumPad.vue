@@ -185,7 +185,7 @@ export default {
 
       this.$nextTick(() => {
         this.convert(amount);
-        this.$emit('input', this.amount, this.fiatAmount);
+        this.$emit('input', this.amount, this.fiatAmount, this.currency);
       });
     },
   },
