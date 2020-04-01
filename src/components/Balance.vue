@@ -68,7 +68,7 @@ export default {
     animatedBalance() {
       if (this.user.unit === 'SAT')
         return parseInt(this.tweenedBalance).toFixed(0);
-      else return Number(parseFloat(this.tweenedBalance / SATS).toFixed(8));
+      else return (this.tweenedBalance / SATS).toFixed(8).replace(/([0-9]+(\.[0-9]+[1-9])?)(\.?0+$)/,'$1')
     },
     animatedPending() {
       return parseInt(this.tweenedPending).toFixed(0);
