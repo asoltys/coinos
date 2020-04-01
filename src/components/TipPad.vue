@@ -92,11 +92,15 @@ export default {
 
   mounted() {
     if (this.invoice.tip) {
-      this.tip = this.invoice.tip;
-      this.fiatTip = this.invoice.fiatTip;
-      let percent = Math.round(this.tip / (this.invoice.amount * 0.01));
+      let percent = Math.round(this.invoice.tip / (this.invoice.amount * 0.01));
       if (percent > this.max) this.max = percent;
       this.percent = percent;
+
+      this.$nextTick(() => {
+        this.tip = this.invoice.tip;
+        this.fiatTip = this.invoice.fiatTip;
+      });
+
     } else this.percent = 15;
   },
 
