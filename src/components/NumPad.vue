@@ -39,8 +39,8 @@ const SATS = 100000000;
 export default {
   props: {
     initialAmount: { type: Number },
-    rate: { type: Number },
-    allowCurrencyToggle: { type: Boolean, default: true },
+    initialRate: { type: Number },
+    currencies: { type: Array },
   },
   filters: {
     format(n, d) {
@@ -54,14 +54,18 @@ export default {
   data() {
     return {
       amount: this.initialAmount,
-      fiatAmount: ((this.initialAmount / SATS) * this.rate).toFixed(2),
+      fiatAmount: ((this.initialAmount / SATS) * this.initialRate).toFixed(2),
       inputAmount: '_',
       buttons: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '<', '0', 'C'],
       codes: Array.from(Array(10), (_, x) => x + 48),
+      currency: '',
+      rates: [],
     };
   },
 
   mounted() {
+    this.rates = this.globalRates;
+    this.currency = this.user.currency;
     this.inputAmount =
       this.fiat && this.fiatAmount
         ? this.fiatAmount
@@ -69,27 +73,66 @@ export default {
   },
 
   computed: {
-    currency() {
-      return this.fiat ? this.user.currency : 'sat';
+    fiat() {
+      return this.currency !== 'SAT';
     },
-    fiat: sync('fiat'),
     decimals() {
-      return this.fiat ? 2 : 0;
+      switch (this.currency) {
+        case 'SAT':
+          return 0;
+          break;
+        case 'BTC':
+          return 8;
+          break;
+        default:
+          return 2;
+      }
     },
     divisor() {
       return 10 ** this.decimals;
     },
     globalRate: get('rate'),
+    rate() {
+      switch (this.currency) {
+        case 'SAT':
+          return SATS;
+          break;
+        case 'BTC':
+          return 1;
+          break;
+        default:
+          return this.rates[this.currency];
+          break;
+      }
+    },
+    globalRates: get('rates'),
     user: get('user'),
   },
 
   watch: {
     inputAmount(v) {
-      this.$emit('input', this.amount, this.fiatAmount);
+      this.convert(v);
+      this.$emit('input', this.amount, this.fiatAmount, this.currency);
     },
   },
 
   methods: {
+    convert(n) {
+      if (this.fiat) {
+        if (this.currency === 'BTC') {
+          this.amount = parseInt(parseFloat(n) * SATS);
+          this.fiatAmount = f(n * this.globalRate).toFixed(2);
+        } else {
+          this.fiatAmount = f(this.inputAmount).toFixed(this.decimals);
+          this.amount = parseInt(
+            ((parseFloat(this.fiatAmount) * SATS) / this.rate).toFixed(8)
+          );
+        }
+      } else {
+        this.amount = parseInt(n);
+        this.fiatAmount = f((n * this.globalRate) / SATS).toFixed(2);
+      }
+    },
     done(e) {
       let amount = e.target.value;
       if (this.fiat)
@@ -97,7 +140,6 @@ export default {
       else this.amount = parseInt(amount);
       this.$emit('done');
     },
-    shiftCurrency: call('shiftCurrency'),
 
     id(n) {
       let prefix = 'button-';
@@ -117,29 +159,15 @@ export default {
     },
 
     async toggle() {
-      let { currency, currencies } = this.user;
+      let index = this.currencies.findIndex(c => c === this.currency);
+      index = index >= this.currencies.length - 1 ? 0 : index + 1;
+      this.currency = this.currencies[index];
 
-      if (!currency) return;
-      if (!Array.isArray(currencies)) currencies = JSON.parse(currencies);
-
-      let index = currencies.findIndex(c => c === currency);
-
-      if (this.fiat) {
-          if (index === currencies.length - 1) this.fiat = false;
-          if (this.allowCurrencyToggle) {
-            await this.shiftCurrency();
-          } else {
-            this.fiat = false;
-          } 
-          this.$nextTick(() => {
-            if (this.fiat)
-              this.inputAmount = ((this.amount / SATS) * this.rate).toFixed(2);
-            else this.inputAmount = this.amount.toFixed(0);
-          });
-      } else {
-        this.inputAmount = ((this.amount / SATS) * this.rate).toFixed(2);
-        this.fiat = true;
-      }
+      this.$nextTick(() => {
+        this.inputAmount = ((this.amount * this.rate) / SATS).toFixed(
+          this.decimals
+        );
+      });
     },
 
     update(m) {
@@ -155,13 +183,10 @@ export default {
       if (m === 'C') amount = 0;
       this.inputAmount = amount.toFixed(this.decimals);
 
-      if (this.fiat) {
-        this.fiatAmount = f(this.inputAmount).toFixed(2);
-        this.amount = parseInt(((amount * SATS) / this.rate).toFixed(8));
-      } else {
-        this.fiatAmount = ((amount / SATS) * this.rate).toFixed(2);
-        this.amount = parseInt(amount);
-      }
+      this.$nextTick(() => {
+        this.convert(amount);
+        this.$emit('input', this.amount, this.fiatAmount);
+      });
     },
   },
 

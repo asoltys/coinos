@@ -187,13 +187,19 @@ export default new Vuex.Store({
       if (i === currencies.length) i = 0;
 
       let currency = currencies[i];
-      let rate = state.rates[currency];
+      dispatch('setCurrency', currency);
+    },
+
+    async setCurrency({ commit, dispatch, state }, currency) {
+      const { invoice, rates, user } = state;
+      if (!(user.currencies.includes(currency) && rates[currency])) return;
+      const rate = rates[currency];
 
       user.currency = currency;
       invoice.currency = currency;
       invoice.rate = rate;
 
-      commit('rate', state.rates[user.currency]);
+      commit('rate', rate);
       dispatch('updateUser', user);
     },
 
@@ -252,6 +258,7 @@ export default new Vuex.Store({
         s.on('connected', () => {
           s.emit('getuser', {}, user => {
             if (user) {
+              if (!Array.isArray(user.currencies)) user.currencies = JSON.parse(user.currencies);
               commit('user', user);
               if (
                 router.currentRoute.path === '/login' ||

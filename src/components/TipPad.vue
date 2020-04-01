@@ -2,10 +2,10 @@
   <div class="tippad">
     <div v-if="custom">
       <numpad
-        :initialAmount="tip"
         @input="updateTip"
-        :rate="invoice.rate"
-        :allowCurrencyToggle="false"
+        :initialAmount="tip"
+        :initialRate="invoice.rate"
+        :currencies="[invoice.currency, 'SAT', 'BTC']"
       />
       <div class="d-flex my-2">
         <v-btn

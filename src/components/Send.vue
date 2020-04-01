@@ -40,8 +40,9 @@
           <numpad
             class="mb-2"
             @done="stopEditingAmount"
+            :currencies="[...user.currencies, 'SAT', 'BTC']"
             :initialAmount="amount"
-            :rate="rate"
+            :initialRate="rate"
             @input="updateAmount"
           />
           <div class="d-flex">
@@ -61,7 +62,8 @@
             v-if="payuser"
             class="mb-2"
             @done="stopEditingAmount"
-            :rate="rate"
+            :currencies="[...user.currencies, 'SAT', 'BTC']"
+            :initialRate="rate"
             :initialAmount="0"
             @input="updateAmount"
           />
@@ -162,9 +164,10 @@ export default {
       this.handleScan(this.to);
     },
 
-    updateAmount(amount, fiatAmount) {
+    updateAmount(amount, fiatAmount, currency) {
       this.amount = amount;
       this.fiatAmount = fiatAmount;
+      this.setCurrency(currency);
     },
 
     startEditingAmount() {

@@ -11,8 +11,9 @@
         class="mr-4 mb-2"
         @done="() => addInvoice('lightning')"
         @input="updateAmount"
+        :currencies="[...user.currencies, 'SAT', 'BTC']"
         :initialAmount="invoice.amount"
-        :rate="rate"
+        :initialRate="rate"
       />
 
       <div class="d-flex flex-wrap buttons">
@@ -57,15 +58,16 @@ export default {
     loading: sync('loading'),
     rate: get('rate'),
     received: sync('received'),
-    user: get('user'),
+    user: sync('user'),
   },
 
   methods: {
-    ...mapActions(['addInvoice', 'clearInvoice', 'snack', 'shiftCurrency']),
+    ...mapActions(['addInvoice', 'clearInvoice', 'snack', 'setCurrency']),
 
-    updateAmount(amount, fiatAmount) {
+    updateAmount(amount, fiatAmount, currency) {
       this.invoice.amount = amount;
       this.invoice.fiatAmount = fiatAmount;
+      this.setCurrency(currency);
     },
 
     checkRefresh() {
