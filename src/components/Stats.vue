@@ -13,6 +13,7 @@ import { get, call } from 'vuex-pathify';
 
 export default {
   computed: {
+    loading: get('loading'),
     stats: get('stats'),
   },
   methods: {

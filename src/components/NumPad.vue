@@ -1,6 +1,6 @@
 <template>
-  <div class="numpad mr-2 pl-0" @keyup.prevent="keyup">
-    <div class="d-flex mb-2">
+  <div @keyup.prevent="keyup">
+    <div class="d-flex">
       <input
         class="display-1"
         v-model="inputAmount"
@@ -16,7 +16,7 @@
     </div>
     <div class="d-flex" v-for="i in buttons.length / 3" :key="i">
       <v-btn
-        class="col-4 my-1 ml-0 mr-2 numpad-button"
+                        :class="`numpad-button flex-grow-1 ${j < 3 && 'mr-1'} mb-1`"
         v-for="j in 3"
         :key="j"
         @click="update(buttons[j + 3 * i - 4])"
@@ -206,13 +206,14 @@ input
   width 100%
 
 .toggle
-  margin-top 8px
-  max-height 24px !important
-  min-width 44px !important
-  width 30px !important
+  margin auto 0.25rem !important
+  min-width 3rem !important
+  width 3rem !important
+  height 1.9rem !important
 
 .numpad-button
-  height 10vh !important
+  height 8vh !important
+  min-height 60px
   font-size 18px
   font-weight bolder
 </style>

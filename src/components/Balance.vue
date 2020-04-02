@@ -124,12 +124,11 @@ export default {
   margin-top 2px
 
 .toggle
-  margin-left 6px !important
-  margin-right 6px !important
-  margin-top 2px 
-  max-height 24px
-  min-width 40px !important
-  width 40px !important
+  margin auto 0.25rem !important
+  margin-top 0 !important
+  height 1.75rem !important
+  min-width 3rem !important
+  width 3rem !important
 
 .unitToggle
   margin-top -25px

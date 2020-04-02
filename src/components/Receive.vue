@@ -2,13 +2,15 @@
   <div>
     <v-progress-linear v-if="loading" indeterminate />
     <template v-else-if="invoice.text">
-      <request v-if="invoice.amount === null || invoice.received < invoice.amount" @clear="clearInvoice" />
+      <request
+        v-if="invoice.amount === null || invoice.received < invoice.amount"
+        @clear="clearInvoice"
+      />
       <balance v-else />
       <received v-if="invoice.received" @clear="clearInvoice" />
     </template>
     <div v-else>
       <numpad
-        class="mr-4 mb-2"
         @done="() => addInvoice('lightning')"
         @input="updateAmount"
         :currencies="[...user.currencies, 'SAT', 'BTC']"
@@ -17,13 +19,16 @@
       />
 
       <div class="d-flex flex-wrap buttons">
-        <v-btn class="flex-grow-1 mb-2 mr-2" @click="addInvoice('bitcoin')">
+        <v-btn
+          class="flex-grow-1 mb-2 mr-1"
+          @click="addInvoice('bitcoin')"
+        >
           <img class="mr-1" src="../assets/bitcoin.png" width="30px" />
           <span>Bitcoin</span>
         </v-btn>
 
         <v-btn
-          class="flex-grow-1 mb-2 mr-2"
+          class="flex-grow-1 mb-2 mr-1"
           @click="addInvoice('lightning')"
           :disabled="invoice.amount <= 0"
         >
@@ -31,7 +36,10 @@
           <span>Lightning</span>
         </v-btn>
 
-        <v-btn class="flex-grow-1 mr-0" @click="addInvoice('liquid')">
+        <v-btn
+          class="flex-grow-1 mr-0"
+          @click="addInvoice('liquid')"
+        >
           <water fillColor="#00aaee" />
           <span>Liquid</span>
         </v-btn>
@@ -99,11 +107,19 @@ canvas
   margin-left auto
   margin-right auto
 
-.v-btn.subheading
-  width 100%
+.buttons
+  width: 100%;
+
+.buttons .v-btn
+  max-width 33%
 
 @media (max-width: 600px)
   .buttons .v-btn
+    max-width none 
     width 100%
     height 62px !important
+
+.buttons .v-btn
+  height 8vh !important
+  min-height 60px
 </style>

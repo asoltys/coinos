@@ -4,25 +4,25 @@
     <div v-else>
       <div v-if="invoice.amount > 0">
         <h1 class="text-center font-weight-black">Requesting</h1>
-        <div class="d-flex justify-center mb-2">
-          <div class="mr-2">
-            <span class="display-1">{{ total }}</span>
-      <v-btn
-        class="black--text toggle"
-        color="white"
-        @click="toggleUnit"
-        >{{ user.unit }}</v-btn>
+        <div class="d-flex flex-wrap justify-center">
+          <div class="display-1 mr-1">
+            <span>{{ total }}</span>
+            <v-btn
+              class="black--text toggle"
+              color="white"
+              @click="toggleUnit"
+              >{{ user.unit }}</v-btn
+            >
           </div>
-          <div>
-            <span class="yellow--text">
-              <span class="display-1">{{ invoice.fiatAmount }}</span>
-              <span v-if="invoice.tip">&nbsp;(+{{ invoice.fiatTip }})</span>
-      <v-btn
-        class="black--text toggle"
-        color="yellow"
-        @click="shiftCurrency"
-        >{{ invoice.currency }}</v-btn>
-            </span>
+          <div class="yellow--text display-1">
+            <span>{{ invoice.fiatAmount }}</span>
+            <span v-if="invoice.tip">&nbsp;(+{{ invoice.fiatTip }})</span>
+            <v-btn
+                  class="black--text toggle"
+                  color="yellow"
+                  @click="shiftCurrency"
+                  >{{ invoice.currency }}</v-btn
+                >
           </div>
         </div>
       </div>
@@ -50,8 +50,12 @@
             class="mr-2 mb-2 mb-sm-0 black--text wide"
             color="yellow"
           >
-            <span v-if="invoice.tip"><v-icon class="mr-1">edit</v-icon><span>Edit Tip</span></span>
-            <span v-else><v-icon class="mr-1">add</v-icon><span>Add Tip</span></span>
+            <span v-if="invoice.tip"
+              ><v-icon class="mr-1">edit</v-icon><span>Edit Tip</span></span
+            >
+            <span v-else
+              ><v-icon class="mr-1">add</v-icon><span>Add Tip</span></span
+            >
           </v-btn>
           <v-btn
             v-if="invoice.amount > 0"
@@ -98,7 +102,6 @@ export default {
 
   computed: {
     total() {
-      console.log(this.invoice.amount, this.invoice.tip);
       return this.btc(this.invoice.amount + this.invoice.tip);
     },
     invoice: get('invoice'),
@@ -153,9 +156,9 @@ export default {
   font-size 0.8em
 
 .toggle
-  max-height 24px
-  margin-top -12px
-  margin-left 5px
-  min-width 44px !important
-  width 44px !important
+  margin auto 0.25rem !important
+  margin-top -0.3rem !important
+  height 1.7rem !important
+  min-width 3rem !important
+  width 3rem !important
 </style>
