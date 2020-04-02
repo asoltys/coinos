@@ -171,11 +171,11 @@ export default new Vuex.Store({
     async getStats({ commit }) {
       commit('loading', true);
       try {
-        const stats = (await Vue.axios.get('/balances')).data
+        const stats = (await Vue.axios.get('/balances')).data;
         commit('stats', stats);
-      } catch(e) {
+      } catch (e) {
         commit('error', e.response.data);
-      } 
+      }
 
       commit('loading', false);
     },
@@ -212,8 +212,9 @@ export default new Vuex.Store({
       user.currency = currency;
       invoice.currency = currency;
       invoice.rate = rate;
-      invoice.fiatAmount = (invoice.amount * rate / SATS).toFixed(2);
-      invoice.fiatTip = (invoice.tip * rate / SATS).toFixed(2);
+      invoice.fiatAmount = ((invoice.amount * rate) / SATS).toFixed(2);
+      invoice.fiatTip = ((invoice.tip * rate) / SATS).toFixed(2);
+      state.fiatAmount = ((state.amount * rate) / SATS).toFixed(2);
 
       commit('rate', rate);
       dispatch('updateUser', user);
@@ -267,6 +268,7 @@ export default new Vuex.Store({
         commit('user', { ...state.user, otpsecret })
       );
       s.on('user', user => {
+        console.log("user", user);
         commit('user', user);
       });
 
@@ -274,7 +276,8 @@ export default new Vuex.Store({
         s.on('connected', () => {
           s.emit('getuser', {}, user => {
             if (user) {
-              if (!Array.isArray(user.currencies)) user.currencies = JSON.parse(user.currencies);
+              if (!Array.isArray(user.currencies))
+                user.currencies = JSON.parse(user.currencies);
               commit('user', user);
               if (
                 router.currentRoute.path === '/login' ||
@@ -552,7 +555,7 @@ export default new Vuex.Store({
         if (url.options.amount) {
           let amount = parseInt((url.options.amount * SATS).toFixed(0));
           commit('amount', amount);
-          commit('fiatAmount', (amount * getters.rate / SATS).toFixed(2));
+          commit('fiatAmount', ((amount * getters.rate) / SATS).toFixed(2));
         }
 
         if (!tx) await dispatch('estimateFee');

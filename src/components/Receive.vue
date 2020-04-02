@@ -73,9 +73,11 @@ export default {
     ...mapActions(['addInvoice', 'clearInvoice', 'snack', 'setCurrency']),
 
     updateAmount(amount, fiatAmount, currency) {
-      this.invoice.amount = amount;
-      this.invoice.fiatAmount = fiatAmount;
       this.setCurrency(currency);
+      this.$nextTick(() => {
+        this.invoice.amount = amount;
+        this.invoice.fiatAmount = fiatAmount;
+      });
     },
 
     checkRefresh() {

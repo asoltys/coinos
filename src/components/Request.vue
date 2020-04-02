@@ -16,7 +16,7 @@
           </div>
           <div class="yellow--text display-1">
             <span>{{ invoice.fiatAmount }}</span>
-            <span v-if="invoice.tip">&nbsp;(+{{ invoice.fiatTip }})</span>
+            <span v-if="invoice.tip">&nbsp;<span class="headline">+{{ invoice.fiatTip }}</span></span>
             <v-btn
                   class="black--text toggle"
                   color="yellow"

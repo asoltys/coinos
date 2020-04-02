@@ -175,6 +175,7 @@ export default {
     startEditingAmount() {
       this.editingAmount = true;
     },
+
     stopEditingAmount() {
       this.editingAmount = false;
       this.estimateFee();
