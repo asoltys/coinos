@@ -29,8 +29,8 @@
     >
       <template v-slot:append>
         <v-btn
-          class="toggle black--text ml-2 mt-auto mb-1"
-          color="yellow"
+          class="toggle black--text mt-auto"
+          :color="['SAT', 'BTC'].includes(currency) ? 'white' : 'yellow'"
           @click.prevent="toggle"
           >{{ currency }}</v-btn
         >
@@ -48,8 +48,8 @@
     >
       <template v-slot:append>
         <v-btn
-          class="toggle black--text ml-2 mt-auto mb-1"
-          color="yellow"
+          class="toggle black--text mt-auto"
+          :color="['SAT', 'BTC'].includes(currency) ? 'white' : 'yellow'"
           @click.prevent="toggle"
           >{{ currency }}</v-btn
         >
@@ -97,7 +97,11 @@ export default {
         : Number((this.amount / SATS).toFixed(8));
     },
     displayFee() {
-      return this.fiat ? this.fiatFee : this.user.unit === 'SAT' ? this.fee : Number((this.fee / SATS).toFixed(8));
+      return this.fiat
+        ? this.fiatFee
+        : this.user.unit === 'SAT'
+        ? this.fee
+        : Number((this.fee / SATS).toFixed(8));
     },
     fee() {
       if (this.tx) return parseInt(this.tx.fee * SATS);
@@ -155,4 +159,11 @@ export default {
 @media (max-width: 600px)
   .v-application code
     font-size 0.8em
+
+.toggle
+  max-height 24px
+  margin-top -12px
+  margin-bottom 6px
+  min-width 44px !important
+  width 44px !important
 </style>

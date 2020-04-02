@@ -9,7 +9,7 @@
       />
       <v-btn
         class="toggle black--text ml-2 mt-auto"
-        color="yellow"
+        :color="['SAT', 'BTC'].includes(currency) ? 'white' : 'yellow'"
         @click.prevent="toggle"
         >{{ currency }}</v-btn
       >
@@ -120,7 +120,8 @@ export default {
     convert(n) {
       if (this.fiat) {
         if (this.currency === 'BTC') {
-          this.amount = parseInt(parseFloat(n) * SATS);
+          console.log("convert", n, parseFloat(n), parseFloat(n) * SATS);
+          this.amount = parseInt(parseFloat(n.toFixed(8)) * SATS);
           this.fiatAmount = f(n * this.globalRate).toFixed(2);
         } else {
           this.fiatAmount = f(this.inputAmount).toFixed(this.decimals);

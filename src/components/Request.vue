@@ -6,14 +6,22 @@
         <h1 class="text-center font-weight-black">Requesting</h1>
         <div class="d-flex justify-center mb-2">
           <div class="mr-2">
-            <span class="display-1">{{ invoice.amount + invoice.tip }}</span>
-            SAT
+            <span class="display-1">{{ total }}</span>
+      <v-btn
+        class="black--text toggle"
+        color="white"
+        @click="toggleUnit"
+        >{{ user.unit }}</v-btn>
           </div>
           <div>
             <span class="yellow--text">
               <span class="display-1">{{ invoice.fiatAmount }}</span>
               <span v-if="invoice.tip">&nbsp;(+{{ invoice.fiatTip }})</span>
-              {{ invoice.currency }}
+      <v-btn
+        class="black--text toggle"
+        color="yellow"
+        @click="shiftCurrency"
+        >{{ invoice.currency }}</v-btn>
             </span>
           </div>
         </div>
@@ -28,6 +36,7 @@
           height="100"
           @click="fullscreen"
           class="w-100 mx-auto mb-2"
+          style="cursor: pointer"
         />
         <div class="mb-2" v-if="invoice.amount <= 0">
           <code class="black--text mb-2" :data-clipboard-text="invoice.text">{{
@@ -68,16 +77,16 @@ import { mapGetters, mapActions } from 'vuex';
 import { get, sync } from 'vuex-pathify';
 import Copy from '../mixins/Copy';
 import FullScreen from '../mixins/FullScreen';
+import Utils from '../mixins/Utils';
 import Tippad from './TipPad';
 
 const SATS = 100000000;
 
 export default {
   components: { Tippad },
-  mixins: [Copy, FullScreen],
+  mixins: [Copy, FullScreen, Utils],
   props: {
     clear: { type: Function },
-    total: { type: String },
   },
 
   data() {
@@ -88,6 +97,10 @@ export default {
   },
 
   computed: {
+    total() {
+      console.log(this.invoice.amount, this.invoice.tip);
+      return this.btc(this.invoice.amount + this.invoice.tip);
+    },
     invoice: get('invoice'),
     user: get('user'),
     code() {
@@ -100,7 +113,7 @@ export default {
   },
 
   methods: {
-    ...mapActions(['addInvoice', 'snack']),
+    ...mapActions(['addInvoice', 'shiftCurrency', 'snack']),
     draw() {
       this.$nextTick(() => {
         let canvas = document.getElementById('qr');
@@ -138,4 +151,11 @@ export default {
   max-width 100%
   word-wrap break-word
   font-size 0.8em
+
+.toggle
+  max-height 24px
+  margin-top -12px
+  margin-left 5px
+  min-width 44px !important
+  width 44px !important
 </style>

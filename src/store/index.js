@@ -204,7 +204,7 @@ export default new Vuex.Store({
       dispatch('setCurrency', currency);
     },
 
-    async setCurrency({ commit, dispatch, state }, currency) {
+    async setCurrency({ commit, dispatch, getters, state }, currency) {
       const { invoice, rates, user } = state;
       if (!(user.currencies.includes(currency) && rates[currency])) return;
       const rate = rates[currency];
@@ -212,6 +212,8 @@ export default new Vuex.Store({
       user.currency = currency;
       invoice.currency = currency;
       invoice.rate = rate;
+      invoice.fiatAmount = (invoice.amount * rate / SATS).toFixed(2);
+      invoice.fiatTip = (invoice.tip * rate / SATS).toFixed(2);
 
       commit('rate', rate);
       dispatch('updateUser', user);
