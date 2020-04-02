@@ -45,6 +45,7 @@
                 v-model="form.username"
                 dark
                 autocapitalize="none"
+                ref="username"
               />
               <v-text-field
                 label="Password"
@@ -122,6 +123,9 @@ export default {
 
   mounted() {
     this.showlogout = this.logout;
+    if(window.innerWidth > 600) {
+      this.$refs.username.focus();
+    } 
   },
 };
 </script>
