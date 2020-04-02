@@ -9,7 +9,7 @@
     <h3 v-if="!isNaN(animatedRate)" class="d-flex flex-wrap justify-center">
       <div class="fiat yellow--text display-1">{{ fiat | format }}</div>
       <v-btn
-        class="toggle black--text mx-1"
+        class="toggle black--text"
         color="yellow"
         @click="shiftCurrency"
         >{{ user.currency }}</v-btn
@@ -124,11 +124,15 @@ export default {
   margin-top 2px
 
 .toggle
-  max-height 28px
-  min-width 0
+  margin-left 6px !important
+  margin-right 6px !important
+  margin-top 2px 
+  max-height 24px
+  min-width 40px !important
+  width 40px !important
 
 .unitToggle
-  margin-top -22px
-  max-height 30px
-  margin-left -4px
+  margin-top -25px
+  max-height 34px !important
+  margin-left -8px
 </style>

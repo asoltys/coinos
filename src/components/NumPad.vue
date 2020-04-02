@@ -8,7 +8,7 @@
         @keyup.enter="done"
       />
       <v-btn
-        class="toggle black--text ml-2 mt-auto"
+        class="toggle black--text"
         :color="['SAT', 'BTC'].includes(currency) ? 'white' : 'yellow'"
         @click.prevent="toggle"
         >{{ currency }}</v-btn
@@ -120,8 +120,7 @@ export default {
     convert(n) {
       if (this.fiat) {
         if (this.currency === 'BTC') {
-          console.log("convert", n, parseFloat(n), parseFloat(n) * SATS);
-          this.amount = parseInt(parseFloat(n.toFixed(8)) * SATS);
+          this.amount = parseInt(parseFloat(n).toFixed(8) * SATS);
           this.fiatAmount = f(n * this.globalRate).toFixed(2);
         } else {
           this.fiatAmount = f(this.inputAmount).toFixed(this.decimals);
@@ -207,9 +206,10 @@ input
   width 100%
 
 .toggle
-  margin-top -16px
-  max-height 28px
-  min-width 0
+  margin-top 8px
+  max-height 24px !important
+  min-width 44px !important
+  width 30px !important
 
 .numpad-button
   height 10vh !important
