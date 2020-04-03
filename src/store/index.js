@@ -351,6 +351,7 @@ export default new Vuex.Store({
         if (isLiquid(address)) {
           try {
             let res = await Vue.axios.post('/liquid/fee', params);
+            commit('feeRate', res.data.feeRate);
             commit('tx', res.data.tx);
           } catch (e) {
             commit('error', e.response.data);
@@ -358,6 +359,7 @@ export default new Vuex.Store({
         } else {
           try {
             let res = await Vue.axios.post('/bitcoin/fee', params);
+            commit('feeRate', res.data.feeRate);
             commit('tx', res.data.tx);
           } catch (e) {
             commit('error', e.response.data);
