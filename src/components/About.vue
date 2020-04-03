@@ -90,7 +90,12 @@
       </v-card-text>
     </v-card>
 
-    <iframe width="100%" height="315" src="https://www.youtube.com/embed/KFGJKjnPF84" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    <video-player
+      class="vjs-custom-skin"
+      ref="videoPlayer"
+      :options="playerOptions"
+    >
+    </video-player>
 
     <lightning-node />
     <stats />
@@ -107,12 +112,27 @@ import LightningNode from './LightningNode';
 export default {
   components: { LightningNode, PrivacyPolicy, Stats },
   data() {
-    return { more: false };
+    return {
+      playerOptions: {
+        autoplay: false,
+        controls: true,
+        sources: [
+          {
+            type: 'video/mp4',
+            src:
+              'https://skynet.adamsoltys.com/AABeQw1UnnfFBEAxX_BZDCz3pSNVO7HX2XMsUlR8E4Wvjg',
+          },
+        ],
+      },
+      more: false,
+    };
   },
 
   methods: {
     ...mapActions(['createUser', 'snack']),
   },
+
+  async mounted() {},
 };
 </script>
 

@@ -123,7 +123,7 @@ export default {
 
   mounted() {
     this.showlogout = this.logout;
-    if(window.innerWidth > 600) {
+    if(window.innerWidth > 600 && this.$refs.username) {
       this.$refs.username.focus();
     } 
   },
