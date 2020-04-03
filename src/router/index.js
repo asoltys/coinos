@@ -12,6 +12,7 @@ import Market from '../components/Market';
 import Contacts from '../components/Contacts';
 import Settings from '../components/Settings';
 import Forgot from '../components/Forgot';
+import Text from '../components/Text';
 
 const routes = [
   { path: '/', component: Login, props: { logout: false } },
@@ -28,6 +29,7 @@ const routes = [
   { path: '/about', component: About },
   { path: '/settings', component: Settings },
   { path: '/forgot', component: Forgot },
+  { path: '/text', component: Text },
   { path: '/logout', component: Login, props: { logout: true } },
   {
     path: '/verifyEmail/:username/:token',

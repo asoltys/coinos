@@ -107,7 +107,7 @@ export default {
     invoice: get('invoice'),
     user: get('user'),
     code() {
-      return this.showcode ? 'Show QR' : 'Show Code';
+      return this.showcode ? 'Show QR' : 'Show Text';
     },
   },
 

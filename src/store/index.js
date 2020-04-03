@@ -268,7 +268,6 @@ export default new Vuex.Store({
         commit('user', { ...state.user, otpsecret })
       );
       s.on('user', user => {
-        console.log("user", user);
         commit('user', user);
       });
 
@@ -486,6 +485,10 @@ export default new Vuex.Store({
       }
     },
 
+    async paste({ commit, dispatch }) {
+      go('/pasted');
+    },
+
     async scan({ commit, dispatch }) {
       commit('scanning', true);
 
@@ -595,6 +598,13 @@ export default new Vuex.Store({
       } catch (e) {
         /**/
       }
+
+      dispatch('showText', text);
+    },
+
+    async showText({ commit }, text) {
+      commit('text', text);
+      go('/text');
     },
 
     async snack({ commit }, msg) {

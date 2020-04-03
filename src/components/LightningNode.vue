@@ -2,7 +2,7 @@
   <v-card class="mb-2">
     <v-card-title>Lightning Node</v-card-title>
     <v-card-text>
-      <canvas id="qr" class="d-block mx-auto mb-4" />
+      <canvas id="qr" class="d-block mx-auto mb-4" @click="fullscreen" />
       <div class="text-center my-4">
         <code class="black--text" :data-clipboard-text="node">{{ node }}</code>
       </div>
@@ -16,8 +16,10 @@
 <script>
 import qr from 'qrcode';
 import Copy from '../mixins/Copy';
+import FullScreen from '../mixins/FullScreen';
+
 export default {
-  mixins: [Copy],
+  mixins: [Copy, FullScreen],
   data() {
     return {
       node:

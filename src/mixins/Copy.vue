@@ -1,4 +1,6 @@
 <script>
+import { call } from 'vuex-pathify';
+
 export default {
   methods: {
     copy(v) {
@@ -16,6 +18,7 @@ export default {
 
       this.snack('Copied to Clipboard');
     },
+    snack: call('snack'),
   },
 }
 </script>

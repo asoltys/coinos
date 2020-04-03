@@ -5,7 +5,15 @@
     <v-content v-show="scanning">
       <div class="text-center" v-if="webscanning">
         <qrcode-stream class="mt-4" @decode="handleScan"></qrcode-stream>
-        <v-btn @click="handleScan" class="my-2">Cancel</v-btn>
+        <v-btn @click="handleScan" class="mr-2 my-2">Cancel</v-btn>
+        <v-btn class="my-2 mr-2" @click="paste">
+          <v-icon class="mr-1">assignment</v-icon>
+          <span>Paste</span>
+        </v-btn>
+        <v-btn class="my-2" @click="generate">
+          <v-icon class="mr-1">crop_free</v-icon>
+          <span>Generate</span>
+        </v-btn>
       </div>
     </v-content>
     <v-content v-show="!scanning" style="background: #333">
@@ -21,7 +29,7 @@
           >
           <two-fa />
 
-          <v-progress-linear v-if="!publicPath && initializing" indeterminate /> 
+          <v-progress-linear v-if="!publicPath && initializing" indeterminate />
           <router-view v-else :key="$route.path" />
 
           <div class="text-center pa-4">
@@ -100,7 +108,15 @@ export default {
   },
 
   methods: {
-    ...mapActions(['init', 'handleScan']),
+    ...mapActions(['init', 'handleScan', 'showText']),
+
+    async paste() {
+      this.handleScan(await navigator.clipboard.readText());
+    },
+
+    async generate() {
+      this.showText(await navigator.clipboard.readText());
+    },
 
     async install() {
       const { outcome } = await this.prompt.prompt();
@@ -186,7 +202,7 @@ body
 @media print
   .v-btn, header, #footer
     display none !important
-  
+
   .v-card
     box-shadow none
 
