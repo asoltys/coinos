@@ -29,7 +29,7 @@
           >
           <two-fa />
 
-          <v-progress-linear v-if="!publicPath && initializing" indeterminate />
+          <v-progress-linear v-if="initializing" indeterminate />
           <router-view v-else :key="$route.path" />
 
           <div class="text-center pa-4">

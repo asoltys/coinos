@@ -110,16 +110,19 @@ export default new Vuex.Store({
         await dispatch('setupSockets');
       }
 
-      const { path } = router.currentRoute;
       const initialize = () => {
+        const { path } = router.currentRoute;
+
         if (
-          (getters.user && getters.user.currency && getters.rate) ||
-          paths.includes(path)
+          (getters.user && getters.user.currency && getters.rate)
         ) {
+          if (path === '/') go('/home');
+          commit('initializing', false);
+        } else if (paths.includes(path)) { 
           commit('initializing', false);
         } else {
+          go('/');
           setTimeout(initialize, 500);
-          if (!getters.user && paths.includes(path)) go('/');
         }
       };
 
