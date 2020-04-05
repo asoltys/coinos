@@ -128,7 +128,6 @@ export default {
         else window.open(`${bs}/liquid/address/${this.address}`);
       });
     },
-    snack: call('snack'),
     select(e) {
       if (!e.target.readOnly) e.target.select();
     },

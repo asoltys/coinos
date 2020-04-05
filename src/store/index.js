@@ -456,12 +456,11 @@ export default new Vuex.Store({
       invoice.method = method;
       invoice.asset = assets[method];
 
-      if (method === 'liquid') method += 'network';
-
       const url = address =>
         amount
           ? `${method}:${address}?amount=${((amount + tip) / SATS).toFixed(8)}`
           : address;
+
 
       let address;
       switch (method) {
@@ -470,10 +469,15 @@ export default new Vuex.Store({
           invoice.address = address;
           invoice.text = url(address);
           break;
-        case 'liquidnetwork':
+        case 'liquid':
           ({ confidential: address } = user);
+
+          let text = url(address);
+          text = text.replace('liquid', 'liquidnetwork');
+          text += `&asset=${process.env.VUE_APP_LBTC}`;
+
           invoice.address = address;
-          invoice.text = url(address);
+          invoice.text = text;
           break;
         case 'lightning':
           try {
