@@ -91,12 +91,13 @@
     </v-card>
 
     <video-player
-      class="vjs-custom-skin"
+      class="vjs-custom-skin mb-2"
       ref="videoPlayer"
       :options="playerOptions"
     >
     </video-player>
 
+    <tor />
     <lightning-node />
     <stats />
     <privacy-policy />
@@ -108,9 +109,10 @@ import { mapActions } from 'vuex';
 import PrivacyPolicy from './PrivacyPolicy';
 import Stats from './Stats';
 import LightningNode from './LightningNode';
+import Tor from './Tor';
 
 export default {
-  components: { LightningNode, PrivacyPolicy, Stats },
+  components: { LightningNode, PrivacyPolicy, Stats, Tor },
   data() {
     return {
       playerOptions: {
