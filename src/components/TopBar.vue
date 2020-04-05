@@ -2,7 +2,7 @@
   <v-app-bar absolute app dark color="black" fixed>
     <v-toolbar-title
       dark
-      @click="$go('/home')"
+      @click="goHome"
       class="display-2"
       style="cursor: pointer"
       >coin<span class="yellow--text">os</span></v-toolbar-title
@@ -56,9 +56,8 @@ export default {
   computed: mapGetters(['user']),
   methods: {
     goHome() {
-      this.$go('/home')
-        .then()
-        .catch(() => {});
+      if (this.user) this.$go('/home');
+      else this.$go('/');
     },
   },
 };
