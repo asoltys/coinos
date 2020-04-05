@@ -456,6 +456,8 @@ export default new Vuex.Store({
       invoice.method = method;
       invoice.asset = assets[method];
 
+      if (method === 'liquid') method += 'network';
+
       const url = address =>
         amount
           ? `${method}:${address}?amount=${((amount + tip) / SATS).toFixed(8)}`
@@ -468,7 +470,7 @@ export default new Vuex.Store({
           invoice.address = address;
           invoice.text = url(address);
           break;
-        case 'liquid':
+        case 'liquidnetwork':
           ({ confidential: address } = user);
           invoice.address = address;
           invoice.text = url(address);
@@ -554,7 +556,7 @@ export default new Vuex.Store({
         commit('addressType', 'bitcoin');
       } catch (e) {
         try {
-          url = bip21.decode(text, 'liquid');
+          url = bip21.decode(text, 'liquidnetwork');
           commit('addressType', 'liquid');
         } catch (e) {
           /**/
