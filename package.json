@@ -5,6 +5,7 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
+    "buildtor": "vue-cli-service build --mode tor",
     "lint": "vue-cli-service lint",
     "format": "prettier --write '**/*.{js,mjs,json,vue,gql}'",
     "start": "npm run serve",

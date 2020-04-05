@@ -115,8 +115,6 @@ export default new Vuex.Store({
         attempts++;
         const { path } = router.currentRoute;
 
-        console.log(attempts);
-
         if (
           (getters.user && getters.user.currency && getters.rate)
         ) {
@@ -246,7 +244,7 @@ export default new Vuex.Store({
 
     async setupSockets({ commit, getters, state, dispatch }) {
       if (state.socket) return;
-      let s = socketio(process.env.VUE_APP_SOCKETIO, {
+      let s = socketio('/', {
         query: { token: state.token },
       });
       commit('socket', s);

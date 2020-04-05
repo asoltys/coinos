@@ -13,7 +13,7 @@ import 'video.js/dist/video-js.css'
 import 'vue-video-player/src/custom-theme.css'
 import 'videojs-contrib-hls/dist/videojs-contrib-hls'
 
-Axios.defaults.baseURL = process.env.VUE_APP_BASEURL;
+Axios.defaults.baseURL = '/api';
 
 Vue.use(VueVideoPlayer)
 Vue.use(FBSignInButton);
