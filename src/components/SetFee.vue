@@ -9,7 +9,7 @@
         <v-slider
           v-model="feeRate"
           :min="min"
-          max="100000"
+          :max="max"
           class="align-center"
           hide-details
         >
@@ -51,6 +51,9 @@ export default {
     feeRate: sync('feeRate'),
     min() {
       return this.addressType === 'bitcoin' ? 1000 : 100;
+    },
+    max() {
+      return this.addressType === 'bitcoin' ? 10000 : 1000;
     },
   },
   methods: {
