@@ -19,7 +19,7 @@
             ref="to"
           />
           <div class="d-flex flex-wrap">
-            <v-btn class="mr-2 mb-2 flex-grow-1" @click="paste">
+            <v-btn v-if="canPaste" class="mr-2 mb-2 flex-grow-1" @click="paste">
               <v-icon class="mr-1">assignment</v-icon>
               <span>Paste</span>
             </v-btn>
@@ -136,6 +136,9 @@ export default {
 
   computed: {
     amount: sync('amount'),
+    canPaste() {
+      return navigator.clipboard;
+    },
     fiatAmount: sync('fiatAmount'),
     ...mapGetters([
       'address',
