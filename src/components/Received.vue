@@ -17,12 +17,21 @@
         </div>
         <div>
           <span class="yellow--text">
-            <span v-if="invoice.amount === payment.amount" class="display-1">{{ total }}</span>
+            <span v-if="invoice.amount === payment.amount" class="display-1">{{
+              total
+            }}</span>
             <span v-else class="display-1">{{ fiat }}</span>
-            <span v-if="invoice.amount === payment.amount"> {{ invoice.currency }}</span>
+            <span v-if="invoice.amount === payment.amount">
+              {{ invoice.currency }}</span
+            >
             <span v-else> {{ user.currency }}</span>
           </span>
         </div>
+      </div>
+      <div class="text-center">
+        <v-btn class="mt-2" v-if="payment.link" @click="explore(payment.link)">
+          <v-icon class="mr-1">open_in_new</v-icon><span>Explore</span>
+        </v-btn>
       </div>
     </v-card>
   </div>
@@ -33,6 +42,7 @@ import { get } from 'vuex-pathify';
 
 const SATS = 100000000;
 const f = parseFloat;
+const bs = 'https://blockstream.info';
 
 export default {
   computed: {
@@ -45,12 +55,24 @@ export default {
         this.payment.rate
       ).toFixed(2);
     },
-    invoice() { return this.invoices && this.invoices[0] },
+    invoice() {
+      return this.invoices && this.invoices[0];
+    },
     invoices: get('invoices'),
-    payment() { return this.payments[0] },
+    payment() {
+      let payment = this.payments[0];
+      if (payment.asset === 'LBTC') bs += 'liquid/';
+      payment.link = `${bs}/tx/${payment.hash}`;
+      return payment;
+    },
     payments: get('payments'),
     rate: get('rate'),
     user: get('user'),
+  },
+  methods: {
+    explore(link) {
+      window.open(link, '_blank');
+    },
   },
 };
 </script>
