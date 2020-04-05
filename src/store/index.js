@@ -110,8 +110,12 @@ export default new Vuex.Store({
         await dispatch('setupSockets');
       }
 
+      let attempts = 0;
       const initialize = () => {
+        attempts++;
         const { path } = router.currentRoute;
+
+        console.log(attempts);
 
         if (
           (getters.user && getters.user.currency && getters.rate)
@@ -120,8 +124,10 @@ export default new Vuex.Store({
           commit('initializing', false);
         } else if (paths.includes(path)) { 
           commit('initializing', false);
-        } else {
+        } else if (attempts > 5) {
           go('/');
+          commit('initializing', false);
+        } else {
           setTimeout(initialize, 500);
         }
       };
@@ -348,7 +354,7 @@ export default new Vuex.Store({
 
       let { address, amount, feeRate } = getters;
 
-      let params = { address, amount, feeRate: feeRate / 1000 };
+      let params = { address, amount, feeRate };
 
       if (address) {
         if (isLiquid(address)) {
