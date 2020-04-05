@@ -15,7 +15,7 @@
             auto-grow
             rows="1"
             hide-details
-            @keyup="() => handleScan(to)"
+            @input="() => handleScan(to)"
             ref="to"
           />
           <div class="d-flex flex-wrap">
