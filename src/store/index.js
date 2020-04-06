@@ -647,7 +647,7 @@ export default new Vuex.Store({
     },
     user(s, v) {
       if (v && v.payments) s.payments = v.payments;
-      if (!Array.isArray(v.currencies))
+      if (v && v.currencies && !Array.isArray(v.currencies))
         v.currencies = JSON.parse(v.currencies);
       s.user = v;
     },
