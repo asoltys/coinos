@@ -62,7 +62,8 @@ export default {
     payment() {
       let payment = this.payments[0];
       if (payment.asset === 'LBTC') bs += 'liquid/';
-      payment.link = `${bs}/tx/${payment.hash}`;
+      if (payment.asset !== 'LNBTC')
+        payment.link = `${bs}/tx/${payment.hash}`;
       return payment;
     },
     payments: get('payments'),

@@ -282,8 +282,6 @@ export default new Vuex.Store({
         s.on('connected', () => {
           s.emit('getuser', {}, user => {
             if (user) {
-              if (!Array.isArray(user.currencies))
-                user.currencies = JSON.parse(user.currencies);
               commit('user', user);
               if (
                 router.currentRoute.path === '/login' ||
@@ -649,6 +647,8 @@ export default new Vuex.Store({
     },
     user(s, v) {
       if (v && v.payments) s.payments = v.payments;
+      if (!Array.isArray(v.currencies))
+        v.currencies = JSON.parse(v.currencies);
       s.user = v;
     },
   },
