@@ -472,7 +472,7 @@ export default new Vuex.Store({
 
           let text = url(address);
           text = text.replace('liquid', 'liquidnetwork');
-          text += `&asset=${process.env.VUE_APP_LBTC}`;
+          if (amount) text += `&asset=${process.env.VUE_APP_LBTC}`;
 
           invoice.address = address;
           invoice.text = text;
