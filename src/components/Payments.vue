@@ -58,11 +58,11 @@
               <v-card class="pa-4" style="background: #333">
                 <div class="text-center">
                   <flash v-if="asset === 'LNBTC'" fillColor="yellow" />
-                  <water v-else-if="asset === 'LBTC'" fillColor="#00aaee" />
                   <v-icon v-else-if="asset === 'GIFT'" color="yellow"
                     >card_giftcard</v-icon
                   >
-                  <img v-else src="../assets/bitcoin.png" width="24px" />
+                  <img v-else-if="asset === 'BTC'" src="../assets/bitcoin.png" width="24px" />
+                  <water v-else fillColor="#00aaee" />
                 </div>
                 <code class="black--text my-4 py-2 text-center">{{
                   hash
