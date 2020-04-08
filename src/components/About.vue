@@ -122,7 +122,7 @@ export default {
           {
             type: 'video/mp4',
             src:
-              'https://skynet.adamsoltys.com/AABeQw1UnnfFBEAxX_BZDCz3pSNVO7HX2XMsUlR8E4Wvjg',
+              'https://skynet.adamsoltys.com/AABvoyqXdo-NR5IdLUsxUXrWTQ42mZx44wmR65AmTZirkQ',
           },
         ],
       },
