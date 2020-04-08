@@ -137,10 +137,3 @@ export default {
   async mounted() {},
 };
 </script>
-
-<style lang="stylus" scoped>
-.v-application code
-  max-width 100%
-  word-wrap break-word
-  font-size 0.8em
-</style>
