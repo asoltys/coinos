@@ -441,6 +441,7 @@ export default new Vuex.Store({
       commit('payobj', null);
       commit('payuser', null);
       commit('amount', 0);
+      commit('fiatAmount', 0);
       commit('error', null);
     },
 
