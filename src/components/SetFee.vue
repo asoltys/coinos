@@ -53,8 +53,7 @@ export default {
       return this.addressType === 'bitcoin' ? 1000 : 100;
     },
     max() {
-      return 50000;
-      // return this.addressType === 'bitcoin' ? 10000 : 1000;
+      return this.addressType === 'bitcoin' ? 50000 : 5000;
     },
   },
   methods: {
