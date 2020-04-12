@@ -34,10 +34,10 @@ const go = path => {
 };
 
 const blankInvoice = JSON.stringify({
-  amount: 0,
+  amount: null,
   currency: '',
-  fiatAmount: 0,
-  fiatTip: 0,
+  fiatAmount: null,
+  fiatTip: null,
   method: '',
   rate: 0,
   received: 0,
@@ -48,12 +48,12 @@ const blankInvoice = JSON.stringify({
 const state = {
   address: '',
   addressType: 'bitcoin',
-  amount: 0,
+  amount: null,
   channels: [],
   error: '',
   feeRate: null,
   fiat: true,
-  fiatAmount: 0,
+  fiatAmount: null,
   friends: [],
   invoice: JSON.parse(blankInvoice),
   invoices: [],
@@ -432,7 +432,7 @@ export default new Vuex.Store({
 
     async clearPayment({ commit }) {
       commit('feeRate', null);
-      commit('tip', 0);
+      commit('tip', null);
       commit('tx', null);
       commit('loading', false);
       commit('payreq', '');
@@ -440,8 +440,8 @@ export default new Vuex.Store({
       commit('payment', null);
       commit('payobj', null);
       commit('payuser', null);
-      commit('amount', 0);
-      commit('fiatAmount', 0);
+      commit('amount', null);
+      commit('fiatAmount', null);
       commit('error', null);
     },
 

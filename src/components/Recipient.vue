@@ -108,6 +108,7 @@ export default {
       else return null;
     },
     fiatFee() {
+      if (!this.fee) return null;
       return ((this.fee * this.rate) / SATS).toFixed(2);
     },
     feeRate: sync('feeRate'),
