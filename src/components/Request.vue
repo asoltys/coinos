@@ -66,8 +66,11 @@
             <v-icon v-else>code</v-icon>
             <span>{{ code }}</span>
           </v-btn>
-          <v-btn @click.native="() => copy(invoice.text)" class="wide">
+          <v-btn @click.native="() => copy(invoice.text)" class="wide mr-2 mb-2 mb-sm-0">
             <v-icon>content_copy</v-icon><span>Copy</span>
+          </v-btn>
+          <v-btn v-if="invoice.method === 'bitcoin'" @click="address" class="wide">
+            <v-icon>refresh</v-icon><span>Address</span>
           </v-btn>
         </div>
       </v-card>
@@ -77,7 +80,7 @@
 
 <script>
 import qr from 'qrcode';
-import { mapGetters, mapActions } from 'vuex';
+import { mapActions } from 'vuex';
 import { get, sync } from 'vuex-pathify';
 import Copy from '../mixins/Copy';
 import FullScreen from '../mixins/FullScreen';
@@ -116,7 +119,11 @@ export default {
   },
 
   methods: {
-    ...mapActions(['addInvoice', 'shiftCurrency', 'snack']),
+    ...mapActions(['addInvoice', 'getNewAddress', 'shiftCurrency', 'snack']),
+    async address() {
+      await this.getNewAddress();
+      this.draw();
+    },
     draw() {
       this.$nextTick(() => {
         let canvas = document.getElementById('qr');

@@ -47,7 +47,7 @@ const blankInvoice = JSON.stringify({
 
 const state = {
   address: '',
-  addressType: 'bitcoin',
+  addressTypes: ['p2sh-segwit', 'legacy', 'bech32'],
   amount: null,
   channels: [],
   error: '',
@@ -60,6 +60,7 @@ const state = {
   initializing: false,
   loading: false,
   loadingFee: false,
+  network: null,
   orders: [],
   payment: null,
   payments: [],
@@ -173,6 +174,13 @@ export default new Vuex.Store({
             }
           }
       }
+    },
+
+    async getNewAddress({ commit, dispatch, state }) {
+      let type = state.addressTypes.shift();
+      state.addressTypes.push(type);
+      state.invoice.address = (await Vue.axios.post('/address', { type })).data;
+      dispatch('addInvoice');
     },
 
     async getStats({ commit }) {
@@ -546,6 +554,7 @@ export default new Vuex.Store({
         let res = await Vue.axios.post('/lightning/query', { payreq });
         if (res.data.routes.length) commit('route', res.data.routes[0]);
         go({ name: 'send', params: { keep: true } });
+        commit('network', 'lightning');
         commit('payobj', payobj);
         commit('payreq', text);
         return;
@@ -556,11 +565,11 @@ export default new Vuex.Store({
       let url;
       try {
         url = bip21.decode(text);
-        commit('addressType', 'bitcoin');
+        commit('network', 'bitcoin');
       } catch (e) {
         try {
           url = bip21.decode(text, 'liquidnetwork');
-          commit('addressType', 'liquid');
+          commit('network', 'liquid');
         } catch (e) {
           /**/
         }
@@ -583,7 +592,7 @@ export default new Vuex.Store({
       try {
         BitcoinAddress.fromBase58Check(text);
         commit('address', text);
-        commit('addressType', 'bitcoin');
+        commit('network', 'bitcoin');
         go({ name: 'send', params: { keep: true } });
         return;
       } catch (e) {
@@ -598,7 +607,7 @@ export default new Vuex.Store({
         text.startsWith('VT')
       ) {
         commit('address', text);
-        commit('addressType', 'liquid');
+        commit('network', 'liquid');
         go({ name: 'send', params: { keep: true } });
         return;
       }
@@ -606,7 +615,7 @@ export default new Vuex.Store({
       try {
         bech32.decode(text);
         commit('address', text);
-        commit('addressType', 'bitcoin');
+        commit('network', 'bitcoin');
         go({ name: 'send', params: { keep: true } });
         return;
       } catch (e) {
