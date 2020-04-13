@@ -116,6 +116,7 @@ export default {
   data() {
     return {
       playerOptions: {
+        poster: '/intro.png',
         autoplay: false,
         controls: true,
         sources: [
