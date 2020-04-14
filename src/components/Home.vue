@@ -45,7 +45,7 @@ export default {
     },
   },
 
-  computed: mapGetters(['fbtoken', 'rate', 'user', 'verified']),
+  computed: mapGetters(['rate', 'user']),
   methods: mapActions(['snack']),
 
   created() {

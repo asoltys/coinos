@@ -20,6 +20,11 @@
         </v-btn>
       </template>
     </v-textarea>
+    <v-select
+      v-if="network === 'liquid'"
+      v-model="asset"
+      :items="assets"
+    />
     <v-text-field
       class="amount"
       label="Amount"
@@ -84,11 +89,15 @@ export default {
     };
   },
   computed: {
+    accounts: get('accounts'),
+    assets() {
+      return ['LBTC', ...this.accounts.map(a => a.asset)];
+    }, 
     currency() {
       return this.fiat ? this.user.currency : this.user.unit;
     },
     address: sync('address'),
-    addressType: sync('addressType'),
+    asset: sync('asset'),
     displayAmount() {
       return this.fiat
         ? this.fiatAmount
@@ -114,6 +123,7 @@ export default {
     feeRate: sync('feeRate'),
     fiat: sync('fiat'),
     loadingFee: get('loadingFee'),
+    network: get('network'),
     rate: get('rate'),
     user: get('user'),
     tx: get('tx'),
@@ -124,7 +134,7 @@ export default {
     },
     explore() {
       this.$nextTick(function() {
-        if (this.addressType === 'bitcoin')
+        if (this.network === 'bitcoin')
           window.open(`${bs}/address/${this.address}`);
         else window.open(`${bs}/liquid/address/${this.address}`);
       });

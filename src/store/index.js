@@ -18,6 +18,8 @@ const assets = {
   lightning: 'LNBTC',
 };
 
+const addressTypes = ['p2sh-segwit', 'legacy', 'bech32'];
+
 pathify.options.mapping = 'simple';
 
 const isLiquid = address =>
@@ -46,9 +48,11 @@ const blankInvoice = JSON.stringify({
 });
 
 const state = {
+  accounts: [],
   address: '',
-  addressTypes: ['p2sh-segwit', 'legacy', 'bech32'],
+  addressTypes,
   amount: null,
+  asset: 'LBTC',
   channels: [],
   error: '',
   feeRate: null,
@@ -356,9 +360,9 @@ export default new Vuex.Store({
       commit('error', null);
       commit('loadingFee', true);
 
-      let { address, amount, feeRate } = getters;
+      let { address, asset, amount, feeRate } = getters;
 
-      let params = { address, amount, feeRate };
+      let params = { address, amount, asset, feeRate };
 
       if (address) {
         if (isLiquid(address)) {
@@ -387,7 +391,7 @@ export default new Vuex.Store({
       commit('loading', true);
       commit('error', null);
 
-      let { address, amount, tx, payreq, payuser, route } = getters;
+      let { address, amount, asset, tx, payreq, payuser, route } = getters;
 
       if (payreq) {
         try {
@@ -413,7 +417,7 @@ export default new Vuex.Store({
 
         if (isLiquid(address)) {
           try {
-            let res = await Vue.axios.post('/liquid/send', { address, tx });
+            let res = await Vue.axios.post('/liquid/send', { address, asset, tx });
             commit('payment', res.data);
           } catch (e) {
             commit('error', e.response.data);
@@ -656,6 +660,7 @@ export default new Vuex.Store({
       s.token = v;
     },
     user(s, v) {
+      if (v && v.accounts) s.accounts = v.accounts;
       if (v && v.payments) s.payments = v.payments;
       if (v && v.currencies && !Array.isArray(v.currencies))
         v.currencies = JSON.parse(v.currencies);

@@ -142,7 +142,6 @@ export default {
     fiatAmount: sync('fiatAmount'),
     ...mapGetters([
       'address',
-      'balance',
       'loading',
       'user',
       'payment',

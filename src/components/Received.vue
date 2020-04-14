@@ -11,7 +11,7 @@
       <v-alert v-else class="headline text-center black--text" color="yellow">
         Payment Received!
       </v-alert>
-      <div class="d-flex justify-center">
+      <div v-if="payment.asset.substr(-3) === 'BTC'" class="d-flex justify-center">
         <div class="mr-2">
           <span class="display-1">{{ payment.amount + payment.tip }}</span> SAT
         </div>
@@ -28,6 +28,13 @@
           </span>
         </div>
       </div>
+      <div v-else class="text-center">
+        <h1>Asset</h1>
+        <code class="black--text mb-2">{{ payment.asset }}</code>
+        <div class="mr-2">
+          <span class="display-1">{{ payment.amount + payment.tip }}</span> UNITS
+        </div>
+      </div>
       <div class="text-center">
         <v-btn class="mt-2" v-if="payment.link" @click="explore(payment.link)">
           <v-icon class="mr-1">open_in_new</v-icon><span>Explore</span>
@@ -42,7 +49,7 @@ import { get } from 'vuex-pathify';
 
 const SATS = 100000000;
 const f = parseFloat;
-const bs = 'https://blockstream.info';
+let bs = 'https://blockstream.info';
 
 export default {
   computed: {
@@ -61,9 +68,8 @@ export default {
     invoices: get('invoices'),
     payment() {
       let payment = this.payments[0];
-      if (payment.asset === 'LBTC') bs += 'liquid/';
-      if (payment.asset !== 'LNBTC')
-        payment.link = `${bs}/tx/${payment.hash}`;
+      if (!['BTC', 'LNBTC'].includes(payment.asset)) bs += '/liquid';
+      payment.link = `${bs}/tx/${payment.hash}`;
       return payment;
     },
     payments: get('payments'),

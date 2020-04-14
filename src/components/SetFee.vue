@@ -47,14 +47,14 @@ export default {
     };
   },
   computed: {
-    addressType: get('addressType'),
     feeRate: sync('feeRate'),
     min() {
-      return this.addressType === 'bitcoin' ? 1000 : 100;
+      return this.network === 'bitcoin' ? 1000 : 100;
     },
     max() {
-      return this.addressType === 'bitcoin' ? 50000 : 5000;
+      return this.network === 'bitcoin' ? 50000 : 5000;
     },
+    network: get('network'),
   },
   methods: {
     estimateFee: call('estimateFee'),

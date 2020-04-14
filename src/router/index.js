@@ -2,6 +2,7 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 import Home from '../components/Home';
 import About from '../components/About';
+import Assets from '../components/Assets';
 import Login from '../components/Login';
 import Register from '../components/Register';
 import Payments from '../components/Payments';
@@ -27,6 +28,7 @@ const routes = [
   { path: '/market', component: Market },
   { path: '/contacts', component: Contacts },
   { path: '/about', component: About },
+  { path: '/assets', component: Assets },
   { path: '/settings', component: Settings },
   { path: '/forgot', component: Forgot },
   { path: '/text', component: Text },
