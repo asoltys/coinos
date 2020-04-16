@@ -40,7 +40,7 @@
           <numpad
             class="mb-2"
             @done="stopEditingAmount"
-            :currencies="[...user.currencies, 'SAT', 'BTC']"
+            :currencies="currencies"
             :initialAmount="amount"
             :initialRate="rate"
             @input="updateAmount"
@@ -62,7 +62,7 @@
             v-if="payuser"
             class="mb-2"
             @done="stopEditingAmount"
-            :currencies="[...user.currencies, 'SAT', 'BTC']"
+            :currencies="currencies"
             :initialRate="rate"
             :initialAmount="0"
             @input="updateAmount"
@@ -129,7 +129,6 @@ export default {
     return {
       currency: '',
       editingAmount: false,
-      fiat: false,
       to: '',
     };
   },
@@ -139,10 +138,22 @@ export default {
     canPaste() {
       return navigator.clipboard;
     },
+    currencies() {
+      console.log(this.network, this.asset);
+      if (this.network === 'liquid' && this.asset !== 'LBTC') {
+        let asset = this.assets[this.asset];
+        return asset ? [asset.ticker] : ['SAT', 'BTC'];
+      } 
+      return [...this.user.currencies, 'SAT', 'BTC'];
+    },
+    fiat: sync('fiat'),
     fiatAmount: sync('fiatAmount'),
     ...mapGetters([
       'address',
+      'asset',
+      'assets',
       'loading',
+      'network',
       'user',
       'payment',
       'payreq',

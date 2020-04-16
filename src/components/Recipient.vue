@@ -1,5 +1,8 @@
 <template>
   <v-card class="elevation-1 pa-2 my-4" v-if="address">
+    {{ user.unit }}
+    {{ currency }}
+    {{ fiat }}
     <v-textarea
       rows="1"
       label="Recipient"
@@ -91,7 +94,7 @@ export default {
   computed: {
     accounts: get('accounts'),
     assets() {
-      return ['LBTC', ...this.accounts.map(a => a.asset)];
+      return [process.env.VUE_APP_LBTC, ...this.accounts.map(a => a.asset)];
     }, 
     currency() {
       return this.fiat ? this.user.currency : this.user.unit;
@@ -103,14 +106,14 @@ export default {
         ? this.fiatAmount
         : this.user.unit === 'SAT'
         ? this.amount
-        : Number((this.amount / SATS).toFixed(8));
+        : (this.amount / SATS).toFixed(8);
     },
     displayFee() {
       return this.fiat
         ? this.fiatFee
         : this.user.unit === 'SAT'
         ? this.fee
-        : Number((this.fee / SATS).toFixed(8));
+        : (this.fee / SATS).toFixed(8);
     },
     fee() {
       if (this.tx) return parseInt(this.tx.fee * SATS);
@@ -130,6 +133,7 @@ export default {
   },
   methods: {
     toggle() {
+      if (this.network === 'liquid' && this.asset !== process.env.VUE_APP_LBTC) return;
       this.fiat = !this.fiat;
     },
     explore() {
@@ -150,6 +154,11 @@ export default {
     },
     estimateFee: call('estimateFee'),
   },
+  watch: {
+    asset(v) {
+      if (v !== process.env.VUE_APP_LBTC) this.fiat = false;
+    } 
+  } 
 };
 </script>
 

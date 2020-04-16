@@ -6,7 +6,7 @@ module.exports = IS_PRODUCTION
   : {
       runtimeCompiler: true,
       devServer: {
-        host: "0.0.0.0",
+        host: '0.0.0.0',
         disableHostCheck: true,
         proxy: {
           '/api': {

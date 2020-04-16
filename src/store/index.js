@@ -52,7 +52,8 @@ const state = {
   address: '',
   addressTypes,
   amount: null,
-  asset: 'LBTC',
+  asset: process.env.VUE_APP_LBTC,
+  assets: [],
   channels: [],
   error: '',
   feeRate: null,
@@ -136,6 +137,13 @@ export default new Vuex.Store({
       };
 
       initialize();
+
+      try {
+        commit('assets', (await Vue.axios.get('/assets')).data);
+      } catch(e) {
+        l(e);
+        commit('error', 'Problem fetching assets');
+      } 
     },
 
     async login({ commit, dispatch, state }, user) {

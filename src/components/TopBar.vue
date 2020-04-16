@@ -8,6 +8,19 @@
       >coin<span class="yellow--text">os</span></v-toolbar-title
     >
     <v-spacer></v-spacer>
+    <v-menu class="mx-2" v-if="user && user.name && user.accounts.length" offset-y nudge-bottom="1">
+      <template v-slot:activator="{ on }">
+        <v-btn v-on="on" class="mx-2">
+          <v-icon>account_balance_wallet</v-icon>
+          <span class="truncate">{{ asset }}</span>
+        </v-btn>
+      </template>
+      <v-card tile class="mx-auto menu" max-width="400">
+        <v-list-item v-for="a in accounts" :key="a" @click="asset = a">
+          <v-list-item-content><span class="truncate">{{ a }}</span></v-list-item-content>
+        </v-list-item>
+      </v-card>
+    </v-menu>
     <v-menu class="ml-2" v-if="user && user.name" offset-y nudge-bottom="1">
       <template v-slot:activator="{ on }">
         <v-btn v-on="on">
@@ -15,7 +28,7 @@
             <img :src="user.pic" />
           </v-avatar>
           <v-icon v-else>person</v-icon>
-          <span class="username">{{
+          <span class="truncate">{{
             user.fbtoken ? user.name : user.username
           }}</span>
         </v-btn>
@@ -49,11 +62,17 @@
 
 <script>
 import PowerSettingsIcon from 'vue-material-design-icons/PowerSettings';
-import { mapGetters } from 'vuex';
+import { get, sync } from 'vuex-pathify';
 
 export default {
   components: { PowerSettingsIcon },
-  computed: mapGetters(['user']),
+  computed: {
+    accounts() {
+      return ['BTC', ...this.user.accounts.map(a => a.asset)];
+    },
+    asset: sync('asset'),
+    user: get('user'),
+  },
   methods: {
     goHome() {
       if (this.user) this.$go('/home');
@@ -64,9 +83,13 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-@media (max-width: 400px)
-  .username
-    max-width 100px
-    overflow: hidden
-    text-overflow: ellipsis
+.truncate
+  max-width 80px
+  overflow hidden
+  text-overflow ellipsis
+  white-space nowrap
+
+@media (max-width: 450px)
+  .v-application .display-2
+    font-size 1.4rem !important
 </style>

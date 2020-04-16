@@ -4,17 +4,17 @@
       <v-expansion-panel v-for="a in user.accounts" :key="a.asset">
         <v-expansion-panel-header
           ripple
-          class="justify-center justify-space-around flex-wrap"
+          class="d-flex justify-space-around"
           expand-icon=""
         >
-          <div>
+                <div class="asset">
             {{ a.asset }}
           </div>
-          <div class="display-1">
+          <div class="display-1 flex-grow-1 text-right">
             {{ a.balance }}
-          </div>
-          <div v-if="a.pending" class="display-1 red--text">
-            {{ a.pending }} unconfirmed
+            <div v-if="a.pending" class="title red--text">
+              {{ a.pending }} unconfirmed
+            </div>
           </div>
         </v-expansion-panel-header>
       </v-expansion-panel>
@@ -27,10 +27,12 @@ import { get } from 'vuex-pathify';
 
 export default {
   computed: {
-    assets() {
-      return this.user.accounts.map(a => a.asset);
-    },
     user: get('user'),
   },
 };
 </script>
+<style lang="stylus" scoped>
+.asset
+  max-width 70%
+  word-wrap break-word
+  </style>

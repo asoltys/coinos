@@ -65,7 +65,7 @@ export default {
 
   mounted() {
     this.rates = this.globalRates;
-    this.currency = this.user.currency;
+    this.currency = this.currencies.includes(this.user.currency) ? this.user.currency : this.user.unit;
     this.inputAmount =
       this.fiat && this.fiatAmount
         ? this.fiatAmount

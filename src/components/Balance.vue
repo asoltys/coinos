@@ -31,10 +31,6 @@
       <span class="display-1 font-weight-black">{{ animatedPending }} </span>
       <span class="headline">UNCONFIRMED</span>
     </div>
-      <v-btn color="white" v-if="assets" @click="$go('/assets')">
-        <v-icon color="black">terrain</v-icon>
-        <v-badge color="black" border class="black--text" :content="assets" size="lg">assets</v-badge>
-      </v-btn>
   </div>
 </template>
 
