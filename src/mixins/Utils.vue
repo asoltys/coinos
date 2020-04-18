@@ -7,8 +7,8 @@ export default {
   methods: {
     toggleUnit: call('toggleUnit'),
     btc(n) {
-      if (this.user.unit === 'SAT') return parseInt(n).toFixed(0);
-      else return trimZeros((n / SATS).toFixed(8))
+      if (this.user.account.ticker !== 'BTC' || this.user.unit === 'SAT') return parseInt(n).toFixed(0);
+      else return (n / SATS).toFixed(8);
     },
   },
 };

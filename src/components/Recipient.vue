@@ -1,8 +1,5 @@
 <template>
   <v-card class="elevation-1 pa-2 my-4" v-if="address">
-    {{ user.unit }}
-    {{ currency }}
-    {{ fiat }}
     <v-textarea
       rows="1"
       label="Recipient"
@@ -24,9 +21,11 @@
       </template>
     </v-textarea>
     <v-select
+      label="Asset"
       v-if="network === 'liquid'"
-      v-model="asset"
-      :items="assets"
+      v-model="user.account_id"
+      @change="changeAsset"
+      :items="accounts"
     />
     <v-text-field
       class="amount"
@@ -35,7 +34,7 @@
       readonly
       @click="setAmount"
     >
-      <template v-slot:append>
+      <template v-slot:append v-if="user.account.ticker === 'BTC'">
         <v-btn
           class="toggle black--text mt-auto"
           :color="['SAT', 'BTC'].includes(currency) ? 'white' : 'yellow'"
@@ -54,7 +53,7 @@
       readonly
       @click="setFee"
     >
-      <template v-slot:append>
+      <template v-slot:append v-if="user.account.ticker === 'BTC'">
         <v-btn
           class="toggle black--text mt-auto"
           :color="['SAT', 'BTC'].includes(currency) ? 'white' : 'yellow'"
@@ -87,20 +86,23 @@ export default {
   },
   data() {
     return {
+      asset: null,
       adjusting: false,
       editingAddress: false,
     };
   },
   computed: {
-    accounts: get('accounts'),
-    assets() {
-      return [process.env.VUE_APP_LBTC, ...this.accounts.map(a => a.asset)];
+    accounts() {
+      return this.user.accounts.map(a => ({ text: a.name, value: a.id }));
     }, 
+    isBtc() {
+      return this.user.account.ticker === 'BTC';
+    },
     currency() {
-      return this.fiat ? this.user.currency : this.user.unit;
+      if (this.isBtc) return this.fiat ? this.user.currency : this.user.unit;
+      else return this.user.account.ticker;
     },
     address: sync('address'),
-    asset: sync('asset'),
     displayAmount() {
       return this.fiat
         ? this.fiatAmount
@@ -132,8 +134,11 @@ export default {
     tx: get('tx'),
   },
   methods: {
+    changeAsset(id) {
+      this.shiftAccount(this.accounts.find(a => a.value === id).asset);
+    },
     toggle() {
-      if (this.network === 'liquid' && this.asset !== process.env.VUE_APP_LBTC) return;
+      if (this.user.account.ticker !== 'BTC') return;
       this.fiat = !this.fiat;
     },
     explore() {
@@ -153,11 +158,10 @@ export default {
       this.adjusting = !this.adjusting;
     },
     estimateFee: call('estimateFee'),
+    shiftAccount: call('shiftAccount'),
   },
-  watch: {
-    asset(v) {
-      if (v !== process.env.VUE_APP_LBTC) this.fiat = false;
-    } 
+  mounted() {
+    this.asset = this.user.account.id;
   } 
 };
 </script>

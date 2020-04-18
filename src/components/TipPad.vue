@@ -22,7 +22,7 @@
       <div class="d-flex display-1 text-center justify-center">
         <div class="flex-grow-1">{{ tip }} <span class="body-1">SAT</span></div>
         <div class="flex-grow-1">{{ percent }}%</div>
-        <div class="flex-grow-1 yellow--text">
+        <div v-if="user.account.ticker === 'BTC'" class="flex-grow-1 yellow--text">
           {{ fiatTip }} <span class="body-1">{{ invoice.currency }}</span>
         </div>
       </div>
@@ -68,6 +68,7 @@ export default {
 
   computed: {
     invoice: get('invoice'),
+    user: get('user'),
   },
 
   methods: {

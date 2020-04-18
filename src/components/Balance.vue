@@ -4,9 +4,9 @@
       <v-btn
         class="black--text unitToggle"
         color="white"
-        @click="toggleUnit"
-        >{{ user.unit }}</v-btn>
-    <h3 v-if="!isNaN(animatedRate)" class="d-flex flex-wrap justify-center">
+        @click="shiftAccount"
+        >{{ ticker }}</v-btn>
+    <h3 v-if="!isNaN(animatedRate) && isBtc" class="d-flex flex-wrap justify-center">
       <div class="fiat yellow--text display-1">{{ fiat | format }}</div>
       <v-btn
         class="toggle black--text"
@@ -26,7 +26,7 @@
     </h3>
     <div
                 class="red--text"
-      v-if="user.pending && !isNaN(animatedPending)"
+      v-if="user.account.pending && !isNaN(animatedPending)"
     >
       <span class="display-1 font-weight-black">{{ animatedPending }} </span>
       <span class="headline">UNCONFIRMED</span>
@@ -64,11 +64,13 @@ export default {
   },
 
   computed: {
-    assets() {
-      if (!this.user.accounts) return 0;
-      return this.user.accounts.map(a => a.asset).length;
-    },
     ...mapGetters(['rate', 'user']),
+    ticker() {
+      return this.isBtc ? this.user.unit : this.user.account.ticker;
+    },
+    isBtc() {
+      return this.user.account.ticker === 'BTC';
+    }, 
     fiat() {
       return (this.tweenedBalance / SATS) * this.animatedRate;
     },
@@ -87,6 +89,7 @@ export default {
   },
 
   methods: {
+    shiftAccount: call('shiftAccount'),
     shiftCurrency: call('shiftCurrency'),
   },
 
@@ -98,10 +101,10 @@ export default {
 
     user: {
       handler(user) {
-        let tweenedBalance = user.balance;
-        let tweenedPending = user.pending;
+        let tweenedBalance = user.account.balance;
+        let tweenedPending = user.account.pending;
 
-        if (user.pending === 0) user.pending = null;
+        if (user.account.pending === 0) user.account.pending = null;
 
         TweenLite.to(this, 0.5, { tweenedBalance });
         TweenLite.to(this, 0.5, { tweenedPending });
@@ -113,8 +116,8 @@ export default {
   },
 
   created() {
-    this.tweenedBalance = this.user.balance;
-    this.tweenedPending = this.user.pending;
+    this.tweenedBalance = this.user.account.balance;
+    this.tweenedPending = this.user.account.pending;
     this.tweenedRate = this.rate;
   },
 };

@@ -195,7 +195,20 @@ img.fx
 body
   background #222
 
-@media only screen and (min-width: 960px)
+.truncate
+  overflow hidden
+  text-overflow ellipsis
+  white-space nowrap
+
+@media (max-width: 600px)
+  .truncate
+    max-width 100px
+
+  .wide
+    width 100%
+    height 62px !important
+
+@media (min-width: 960px)
   .container
     max-width 1000px !important
 
@@ -209,8 +222,4 @@ body
   *
     color black !important
 
-@media (max-width: 600px)
-  .wide
-    width 100%
-    height 62px !important
 </style>

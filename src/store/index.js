@@ -12,7 +12,7 @@ Vue.use(Vuex);
 
 const SATS = 100000000;
 
-const assets = {
+const networks = {
   bitcoin: 'BTC',
   liquid: 'LBTC',
   lightning: 'LNBTC',
@@ -35,6 +35,8 @@ const go = path => {
     router.push(path);
 };
 
+const BTC = process.env.VUE_APP_LBTC;
+
 const blankInvoice = JSON.stringify({
   amount: null,
   currency: '',
@@ -48,11 +50,10 @@ const blankInvoice = JSON.stringify({
 });
 
 const state = {
-  accounts: [],
   address: '',
   addressTypes,
   amount: null,
-  asset: process.env.VUE_APP_LBTC,
+  asset: BTC,
   assets: [],
   channels: [],
   error: '',
@@ -121,12 +122,10 @@ export default new Vuex.Store({
         attempts++;
         const { path } = router.currentRoute;
 
-        if (
-          (getters.user && getters.user.currency && getters.rate)
-        ) {
+        if (getters.user && getters.user.currency && getters.rate) {
           if (path === '/') go('/home');
           commit('initializing', false);
-        } else if (paths.includes(path)) { 
+        } else if (paths.includes(path)) {
           commit('initializing', false);
         } else if (attempts > 5) {
           go('/');
@@ -140,10 +139,10 @@ export default new Vuex.Store({
 
       try {
         commit('assets', (await Vue.axios.get('/assets')).data);
-      } catch(e) {
+      } catch (e) {
         l(e);
         commit('error', 'Problem fetching assets');
-      } 
+      }
     },
 
     async login({ commit, dispatch, state }, user) {
@@ -152,6 +151,7 @@ export default new Vuex.Store({
       try {
         let res = await Vue.axios.post('/login', user);
 
+        console.log(res.data.user);
         commit('user', res.data.user);
         commit('token', res.data.token);
       } catch (e) {
@@ -216,6 +216,7 @@ export default new Vuex.Store({
     },
 
     async toggleUnit({ commit, dispatch, state }) {
+      if (state.user.account.ticker !== 'BTC') return;
       state.user.unit = state.user.unit === 'SAT' ? 'BTC' : 'SAT';
       dispatch('updateUser', state.user);
     },
@@ -278,8 +279,9 @@ export default new Vuex.Store({
       });
 
       s.on('payment', p => {
+        commit('payment', p);
         if (p.amount > 0)
-          dispatch('snack', `Received ${p.amount + p.tip} satoshi`);
+          dispatch('snack', `Received ${p.amount + p.tip} ${p.account.ticker}`);
         commit('addPayment', p);
       });
 
@@ -368,7 +370,8 @@ export default new Vuex.Store({
       commit('error', null);
       commit('loadingFee', true);
 
-      let { address, asset, amount, feeRate } = getters;
+      let { address, amount, feeRate, user } = getters;
+      let { asset } = user.account;
 
       let params = { address, amount, asset, feeRate };
 
@@ -425,7 +428,11 @@ export default new Vuex.Store({
 
         if (isLiquid(address)) {
           try {
-            let res = await Vue.axios.post('/liquid/send', { address, asset, tx });
+            let res = await Vue.axios.post('/liquid/send', {
+              address,
+              asset,
+              tx,
+            });
             commit('payment', res.data);
           } catch (e) {
             commit('error', e.response.data);
@@ -473,13 +480,12 @@ export default new Vuex.Store({
 
       method = method || invoice.method;
       invoice.method = method;
-      invoice.asset = assets[method];
+      invoice.network = networks[method];
 
       const url = address =>
         amount
           ? `${method}:${address}?amount=${((amount + tip) / SATS).toFixed(8)}`
           : address;
-
 
       let address;
       switch (method) {
@@ -493,7 +499,7 @@ export default new Vuex.Store({
 
           let text = url(address);
           text = text.replace('liquid', 'liquidnetwork');
-          if (amount) text += `&asset=${process.env.VUE_APP_LBTC}`;
+          if (amount) text += `&asset=${user.account.asset}`;
 
           invoice.address = address;
           invoice.text = text;
@@ -521,6 +527,27 @@ export default new Vuex.Store({
 
     async paste({ commit, dispatch }) {
       go('/pasted');
+    },
+
+    async shiftAccount({ commit, dispatch, state }, asset) {
+      let { user } = state;
+
+      if (typeof asset !== 'string') {
+        let index = user.accounts.findIndex(a => a.id === user.account.id);
+        let current = user.accounts[index].asset;
+
+        if (current === BTC) {
+          dispatch('toggleUnit');
+          if (user.unit === 'SAT') return;
+        }
+
+        if (index >= user.accounts.length - 1) index = 0;
+        else index++;
+
+        asset = user.accounts[index].asset;
+      }
+
+      Vue.axios.post('/shiftAccount', { asset });
     },
 
     async scan({ commit, dispatch }) {
@@ -557,7 +584,7 @@ export default new Vuex.Store({
     async handleScan({ commit, dispatch, getters }, text) {
       await dispatch('clearPayment');
       commit('scanning', false);
-      let { tx } = getters;
+      let { user } = getters;
 
       try {
         if (text.slice(0, 10) === 'lightning:') text = text.slice(10);
@@ -578,6 +605,7 @@ export default new Vuex.Store({
       try {
         url = bip21.decode(text);
         commit('network', 'bitcoin');
+        url.options.asset = process.env.VUE_APP_LBTC;
       } catch (e) {
         try {
           url = bip21.decode(text, 'liquidnetwork');
@@ -588,6 +616,10 @@ export default new Vuex.Store({
       }
 
       if (url) {
+        let account = user.accounts.find(a => a.asset === url.options.asset);
+        if (account) await dispatch('shiftAccount', account.asset);
+        else return commit('error', 'Unrecognized asset');
+
         commit('address', url.address);
 
         if (url.options.amount) {
@@ -596,7 +628,7 @@ export default new Vuex.Store({
           commit('fiatAmount', ((amount * getters.rate) / SATS).toFixed(2));
         }
 
-        if (!tx) await dispatch('estimateFee');
+        await dispatch('estimateFee');
         go({ name: 'send', params: { keep: true } });
         return;
       }
@@ -655,7 +687,10 @@ export default new Vuex.Store({
         s.invoice.amount = 0;
         s.invoice.fiatAmount = 0;
       }
-      s.payments.unshift(v);
+
+      let index = s.payments.findIndex(p => p.id === v.id);
+      if (index > -1) s.payments[index] = v;
+      else s.payments.unshift(v);
     },
     error(s, v) {
       s.error = v;
@@ -668,10 +703,12 @@ export default new Vuex.Store({
       s.token = v;
     },
     user(s, v) {
-      if (v && v.accounts) s.accounts = v.accounts;
-      if (v && v.payments) s.payments = v.payments;
-      if (v && v.currencies && !Array.isArray(v.currencies))
-        v.currencies = JSON.parse(v.currencies);
+      if (v) {
+        if (v.account && v.account.ticker !== 'BTC') s.fiat = false;
+        if (v.payments) s.payments = v.payments;
+        if (v.currencies && !Array.isArray(v.currencies))
+          v.currencies = JSON.parse(v.currencies);
+      }
       s.user = v;
     },
   },

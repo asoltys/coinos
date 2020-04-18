@@ -13,7 +13,7 @@
       <numpad
         @done="() => addInvoice('lightning')"
         @input="updateAmount"
-        :currencies="[...user.currencies, 'SAT', 'BTC']"
+        :currencies="currencies"
         :initialAmount="invoice.amount"
         :initialRate="rate"
       />
@@ -22,6 +22,7 @@
         <v-btn
           class="flex-grow-1 mb-2 mr-1"
           @click="addInvoice('bitcoin')"
+          :disabled="user.account.ticker !== 'BTC'"
         >
           <img class="mr-1" src="../assets/bitcoin.png" width="30px" />
           <span>Bitcoin</span>
@@ -30,7 +31,7 @@
         <v-btn
           class="flex-grow-1 mb-2 mr-1"
           @click="addInvoice('lightning')"
-          :disabled="invoice.amount <= 0"
+          :disabled="user.account.ticker !== 'BTC' || invoice.amount <= 0"
         >
           <flash fillColor="yellow" />
           <span>Lightning</span>
@@ -62,8 +63,16 @@ export default {
   components: { Balance, Flash, Numpad, Received, Request, Water },
 
   computed: {
+    currencies() {
+      let user = this.user;
+      if (user.account.ticker === 'BTC') {
+        return [...user.currencies, 'SAT', 'BTC'];
+      } 
+      return [user.account.ticker];
+    },
     invoice: sync('invoice'),
     loading: sync('loading'),
+    payment: get('payment'),
     rate: get('rate'),
     received: sync('received'),
     user: sync('user'),

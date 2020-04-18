@@ -11,12 +11,13 @@
       <v-alert v-else class="headline text-center black--text" color="yellow">
         Payment Received!
       </v-alert>
-      <div v-if="payment.asset.substr(-3) === 'BTC'" class="d-flex justify-center">
+      <div class="d-flex justify-center">
         <div class="mr-2">
-          <span class="display-1">{{ payment.amount + payment.tip }}</span> SAT
+          <span class="display-1">{{ payment.amount + payment.tip }}</span> 
+          {{ ticker }}
         </div>
         <div>
-          <span class="yellow--text">
+          <span v-if="payment.account.ticker === 'BTC'" class="yellow--text">
             <span v-if="invoice.amount === payment.amount" class="display-1">{{
               total
             }}</span>
@@ -26,13 +27,6 @@
             >
             <span v-else> {{ user.currency }}</span>
           </span>
-        </div>
-      </div>
-      <div v-else class="text-center">
-        <h1>Asset</h1>
-        <code class="black--text mb-2">{{ payment.asset }}</code>
-        <div class="mr-2">
-          <span class="display-1">{{ payment.amount + payment.tip }}</span> UNITS
         </div>
       </div>
       <div class="text-center">
@@ -53,6 +47,14 @@ let bs = 'https://blockstream.info';
 
 export default {
   computed: {
+    ticker() {
+      let { ticker } = this.payment.account;
+      if (ticker === 'BTC') return 'SAT';
+      return ticker;
+    },
+    isBtc() {
+      return this.payment.account.ticker === 'BTC';
+    },
     total() {
       return (f(this.invoice.fiatAmount) + f(this.invoice.fiatTip)).toFixed(2);
     },
@@ -66,13 +68,11 @@ export default {
       return this.invoices && this.invoices[0];
     },
     invoices: get('invoices'),
-    payment() {
-      let payment = this.payments[0];
-      if (!['BTC', 'LNBTC'].includes(payment.asset)) bs += '/liquid';
-      payment.link = `${bs}/tx/${payment.hash}`;
-      return payment;
+    link() {
+      if (!this.isBtc) bs += '/liquid';
+      return `${bs}/tx/${payment.hash}`;
     },
-    payments: get('payments'),
+    payment: get('payment'),
     rate: get('rate'),
     user: get('user'),
   },

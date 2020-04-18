@@ -9,7 +9,7 @@
       />
       <v-btn
         class="toggle black--text"
-        :color="['SAT', 'BTC'].includes(currency) ? 'white' : 'yellow'"
+        :color="color"
         @click.prevent="toggle"
         >{{ currency }}</v-btn
       >
@@ -65,7 +65,7 @@ export default {
 
   mounted() {
     this.rates = this.globalRates;
-    this.currency = this.currencies.includes(this.user.currency) ? this.user.currency : this.user.unit;
+    this.currency = this.currencies.includes(this.user.currency) ? this.user.currency : this.user.account.ticker;
     this.inputAmount =
       this.fiat && this.fiatAmount
         ? this.fiatAmount
@@ -73,10 +73,15 @@ export default {
   },
 
   computed: {
+    color() {
+      let tickers = this.user.accounts.map(a => a.ticker);
+      return ['SAT', 'BTC', ...tickers].includes(this.currency) ? 'white' : 'yellow';
+    },
     fiat() {
-      return this.currency !== 'SAT';
+      return this.user.account.ticker === 'BTC' && this.currency !== 'SAT';
     },
     decimals() {
+      if (this.user.account.ticker !== 'BTC') return 0;
       switch (this.currency) {
         case 'SAT':
           return 0;
@@ -159,6 +164,7 @@ export default {
     },
 
     async toggle() {
+      if (this.currencies.length <= 1) return;
       let index = this.currencies.findIndex(c => c === this.currency);
       index = index >= this.currencies.length - 1 ? 0 : index + 1;
       this.currency = this.currencies[index];

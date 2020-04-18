@@ -139,12 +139,11 @@ export default {
       return navigator.clipboard;
     },
     currencies() {
-      console.log(this.network, this.asset);
-      if (this.network === 'liquid' && this.asset !== 'LBTC') {
-        let asset = this.assets[this.asset];
-        return asset ? [asset.ticker] : ['SAT', 'BTC'];
+      let user = this.user;
+      if (user.account.ticker === 'BTC') {
+        return [...user.currencies, 'SAT', 'BTC'];
       } 
-      return [...this.user.currencies, 'SAT', 'BTC'];
+      return [user.account.ticker];
     },
     fiat: sync('fiat'),
     fiatAmount: sync('fiatAmount'),

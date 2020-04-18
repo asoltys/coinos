@@ -7,8 +7,8 @@
       <div class="mb-2 text-center">
         <div>
           <span class="display-1">{{ total }}</span>
-          SAT
-          <span class="ml-2 yellow--text">
+          {{ ticker }}
+          <span v-if="payment.account.ticker === 'BTC'" class="ml-2 yellow--text">
             <span class="display-1">{{ fiat(total) }}</span>
             {{ payment.currency }}
           </span>
@@ -18,8 +18,9 @@
       <div class="mb-4 text-center">
         <div>
           <span class="headline grey--text">Fee: </span>
-          <span class="display-1">{{ payment.fee || 0 }}</span> SAT
-          <span class="ml-2 yellow--text">
+          <span class="display-1">{{ payment.fee || 0 }}</span>
+          SAT
+          <span v-if="payment.account.ticker === 'BTC'" class="ml-2 yellow--text">
             <span class="display-1">{{ fiat(payment.fee) }}</span>
             {{ payment.currency }}
           </span>
@@ -54,8 +55,15 @@ export default {
 
   computed: {
     ...mapGetters(['user']),
+    ticker() {
+      let { ticker } = this.payment.account;
+      if (ticker === 'BTC') return 'SAT';
+      return ticker;
+    },
     total() {
-      return Math.abs(this.payment.amount) - this.payment.fee;
+      let total = Math.abs(this.payment.amount);
+      if (this.payment.account.ticker === 'BTC') total -= this.payment.fee;
+      return total;
     },
   },
 

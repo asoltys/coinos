@@ -9,7 +9,8 @@
         <v-expansion-panels accordion>
           <v-expansion-panel
             v-for="{
-              asset,
+              account,
+              network,
               currency,
               confirmed,
               link,
@@ -35,8 +36,9 @@
                   <span :class="color">{{ sign }}</span>
                   {{ amount | abs }}
                 </span>
-                SAT
-                <div>
+            
+            <span>{{ account.ticker }}</span>
+            <div v-if="account.ticker === 'BTC'">
                   <span class="yellow--text">
                     {{ fiat | abs | twodec }}
                     <span v-if="tip">(+{{ tip }})</span>
@@ -57,12 +59,12 @@
             <v-expansion-panel-content class="text-left">
               <v-card class="pa-4" style="background: #333">
                 <div class="text-center">
-                  <flash v-if="asset === 'LNBTC'" fillColor="yellow" />
-                  <v-icon v-else-if="asset === 'GIFT'" color="yellow"
+                  <flash v-if="network === 'LNBTC'" fillColor="yellow" title="Lightning Payment" />
+                  <v-icon v-else-if="network === 'GIFT'" color="yellow"
                     >card_giftcard</v-icon
                   >
-                  <img v-else-if="asset === 'BTC'" src="../assets/bitcoin.png" width="24px" />
-                  <water v-else fillColor="#00aaee" />
+                  <img v-else-if="network === 'BTC'" src="../assets/bitcoin.png" width="24px" title="Bitcoin Payment" />
+                  <water v-else fillColor="#00aaee" title="Liquid Payment" />
                 </div>
                 <code class="black--text my-4 py-2 text-center">{{
                   hash
@@ -94,7 +96,7 @@
         <div class="d-flex">
           <v-btn
             class="my-4 mx-auto"
-            v-if="payments.length === 12 && !loaded"
+            v-if="filteredPayments.length >= 12 && !loaded"
             @click="more"
           >
             <v-icon class="mr-1">get_app</v-icon><span>Load More</span>
@@ -162,9 +164,9 @@ export default {
           if (isNaN(o.tip) || o.tip <= 0) o.tip = null;
           o.color = o.amount < 0 ? 'red--text' : 'green--text';
           o.sign = o.amount < 0 ? '-' : '+';
-          if (o.asset === 'BTC') o.link = `${bs}/tx/${o.hash}`;
-          if (o.asset === 'LBTC') o.link = `${bs}/liquid/tx/${o.hash}`;
-          if (o.asset === 'LNBTC') {
+          if (o.network === 'BTC') o.link = `${bs}/tx/${o.hash}`;
+          if (o.network === 'LBTC') o.link = `${bs}/liquid/tx/${o.hash}`;
+          if (o.network === 'LNBTC') {
             try {
               o.hash = bolt11
                 .decode(o.hash.toLowerCase())
@@ -184,6 +186,7 @@ export default {
           return p;
         })
         .filter(p => p.amount < 0 || p.received)
+        .filter(p => p.account_id === this.user.account.id)
         .reverse();
     },
 

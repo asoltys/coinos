@@ -11,10 +11,10 @@
               class="black--text toggle"
               color="white"
               @click="toggleUnit"
-              >{{ user.unit }}</v-btn
+              >{{ ticker }}</v-btn
             >
           </div>
-          <div class="yellow--text display-1">
+          <div v-if="isBtc" class="yellow--text display-1">
             <span>{{ invoice.fiatAmount }}</span>
             <span v-if="invoice.tip">&nbsp;<span class="headline">+{{ invoice.fiatTip }}</span></span>
             <v-btn
@@ -104,6 +104,12 @@ export default {
   },
 
   computed: {
+    ticker() {
+      return this.isBtc ? this.user.unit : this.user.account.ticker;
+    },
+    isBtc() {
+      return this.user.account.ticker === 'BTC';
+    }, 
     total() {
       return this.btc(this.invoice.amount + this.invoice.tip);
     },
@@ -137,6 +143,7 @@ export default {
         canvas.style.height = '35vh';
       });
     },
+
     async setTip(tip, fiatTip) {
       this.tipping = false;
       this.invoice.tip = tip;
