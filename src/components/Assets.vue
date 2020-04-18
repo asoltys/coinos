@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-expansion-panels accordion>
-      <v-expansion-panel v-for="a in user.accounts" :key="a.asset">
+      <v-expansion-panel v-for="a in user.accounts" :key="a.asset" @click="() => choochoo(a.asset)">
         <v-expansion-panel-header
           ripple
           class="d-flex justify-space-around"
@@ -23,11 +23,14 @@
 </template>
 
 <script>
-import { get } from 'vuex-pathify';
+import { get, call } from 'vuex-pathify';
 
 export default {
   computed: {
     user: get('user'),
+  },
+  methods: {
+    choochoo: call('choochoo'),
   },
 };
 </script>

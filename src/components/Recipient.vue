@@ -1,8 +1,5 @@
 <template>
   <v-card class="elevation-1 pa-2 my-4" v-if="address">
-    {{ user.unit }}
-    {{ currency }}
-    {{ fiat }}
     <v-textarea
       rows="1"
       label="Recipient"
@@ -35,7 +32,7 @@
       readonly
       @click="setAmount"
     >
-      <template v-slot:append>
+      <template v-slot:append v-if="asset === 'BTC'">
         <v-btn
           class="toggle black--text mt-auto"
           :color="['SAT', 'BTC'].includes(currency) ? 'white' : 'yellow'"
@@ -54,7 +51,7 @@
       readonly
       @click="setFee"
     >
-      <template v-slot:append>
+      <template v-slot:append v-if="asset === 'BTC'">
         <v-btn
           class="toggle black--text mt-auto"
           :color="['SAT', 'BTC'].includes(currency) ? 'white' : 'yellow'"
@@ -156,6 +153,7 @@ export default {
   },
   watch: {
     asset(v) {
+      console.log("woordd");
       if (v !== process.env.VUE_APP_LBTC) this.fiat = false;
     } 
   } 

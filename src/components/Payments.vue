@@ -35,7 +35,8 @@
                   <span :class="color">{{ sign }}</span>
                   {{ amount | abs }}
                 </span>
-                SAT
+            
+            <span v-if="asset.substr(-2) === 'BTC'">SAT</span>
                 <div>
                   <span class="yellow--text">
                     {{ fiat | abs | twodec }}
@@ -138,7 +139,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['initializing', 'loading', 'payments', 'user']),
+    ...mapGetters(['asset', 'initializing', 'loading', 'payments', 'user']),
   },
 
   methods: {
@@ -184,6 +185,7 @@ export default {
           return p;
         })
         .filter(p => p.amount < 0 || p.received)
+        .filter(p => p.asset === this.asset)
         .reverse();
     },
 

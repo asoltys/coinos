@@ -5,8 +5,9 @@
         class="black--text unitToggle"
         color="white"
         @click="toggleUnit"
+        v-if="asset === 'BTC'"
         >{{ user.unit }}</v-btn>
-    <h3 v-if="!isNaN(animatedRate)" class="d-flex flex-wrap justify-center">
+    <h3 v-if="!isNaN(animatedRate) && asset === 'BTC'" class="d-flex flex-wrap justify-center">
       <div class="fiat yellow--text display-1">{{ fiat | format }}</div>
       <v-btn
         class="toggle black--text"
@@ -64,11 +65,7 @@ export default {
   },
 
   computed: {
-    assets() {
-      if (!this.user.accounts) return 0;
-      return this.user.accounts.map(a => a.asset).length;
-    },
-    ...mapGetters(['rate', 'user']),
+    ...mapGetters(['asset', 'rate', 'user']),
     fiat() {
       return (this.tweenedBalance / SATS) * this.animatedRate;
     },

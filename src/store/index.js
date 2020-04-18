@@ -523,6 +523,13 @@ export default new Vuex.Store({
       go('/pasted');
     },
 
+    async choochoo({ commit, dispatch, state }, asset) {
+      console.log("setting asset");
+      commit('asset', asset);
+      state.user.balance = state.user.accounts.find(a => a.asset === asset).balance;
+      go("/home");
+    },
+
     async scan({ commit, dispatch }) {
       commit('scanning', true);
 

@@ -195,6 +195,12 @@ img.fx
 body
   background #222
 
+.truncate
+  max-width 100px
+  overflow hidden
+  text-overflow ellipsis
+  white-space nowrap
+
 @media only screen and (min-width: 960px)
   .container
     max-width 1000px !important
