@@ -2,58 +2,71 @@
   <v-card class="mb-2">
     <v-card-title>Server Balances</v-card-title>
     <v-progress-linear v-if="loading" indeterminate />
-    <v-card-text v-else-if="stats">
-      <v-card class="mb-2" color="secondary">
-        <v-card-text class="white--text">
-          <div class="d-flex">
-            <h4 class="flex-grow-1">Bitcoin</h4>
-            <h4 class="text-right flex-grow-1">{{ stats.bitcoin }}</h4>
-          </div>
-          <div class="d-flex">
-            <h4 class="flex-grow-1">Liquid Bitcoin</h4>
-            <h4 class="text-right flex-grow-1">{{ stats.liquid }}</h4>
-          </div>
-          <div class="d-flex">
-            <h4 class="flex-grow-1">Lightning Wallet</h4>
-            <h4 class="text-right flex-grow-1">{{ stats.lnwallet }}</h4>
-          </div>
-          <div class="d-flex mb-4">
-            <h4 class="flex-grow-1">Lightning Channels</h4>
-            <h4 class="text-right flex-grow-1">{{ stats.lnchannel }}</h4>
-          </div>
-          <div class="d-flex">
-            <h4 class="flex-grow-1">Total Hot Wallets</h4>
-            <h4 class="text-right flex-grow-1">{{ stats.total }}</h4>
-          </div>
-          <div class="d-flex mb-4">
-            <h4 class="flex-grow-1">Total User Account Balances</h4>
-            <h4 class="text-right flex-grow-1">{{ stats.user }}</h4>
-          </div>
-          <div class="d-flex">
-            <h4 class="flex-grow-1">Reserve Ratio</h4>
-            <h4 class="text-right flex-grow-1">{{ stats.ratio }}%</h4>
-          </div>
-        </v-card-text>
-      </v-card>
-      <v-card color="secondary">
-        <v-card-text class="white--text">
-          <div class="d-flex" v-for="a in assets" :key="a">
-            <h4 class="flex-grow-1">
-              <v-icon color="green" class="mr-1">account_balance_wallet</v-icon>
-              <span class="wrap">{{ a }}</span>
-            </h4>
-            <h4 class="text-right flex-grow-1">{{ stats.assets[a] }}</h4>
-          </div>
-        </v-card-text>
-      </v-card>
+    <v-card-text v-else-if="stats" class="white--text">
+      <v-list>
+        <v-list-item>
+          <v-list-item-avatar>
+            <img class="ml-2" src="../assets/bitcoin.png" style="width: 25px; height: 25px" />
+          </v-list-item-avatar>
+          <v-list-item-content>
+            <v-list-item-title>Bitcoin</v-list-item-title>
+          </v-list-item-content>
+          <v-list-item-action>
+            {{ stats.bitcoin }}
+          </v-list-item-action>
+        </v-list-item>
+        <v-list-item>
+          <v-list-item-avatar>
+            <water class="ml-2"  fillColor="#00aaee" />
+          </v-list-item-avatar>
+          <v-list-item-content>
+            <v-list-item-title>Liquid</v-list-item-title>
+          </v-list-item-content>
+          <v-list-item-action>
+            {{ stats.liquid }}
+          </v-list-item-action>
+        </v-list-item>
+        <v-list-item>
+          <v-list-item-avatar>
+            <flash class="ml-2" fillColor="yellow" />
+          </v-list-item-avatar>
+          <v-list-item-content>
+            <v-list-item-title>Lightning</v-list-item-title>
+          </v-list-item-content>
+          <v-list-item-action>
+            {{ stats.lnchannel }}
+          </v-list-item-action>
+        </v-list-item>
+        <v-divider />
+        <v-list-item>
+          <v-list-item-avatar>
+            <v-icon class="ml-0 pl-0" color="green">person</v-icon>
+          </v-list-item-avatar>
+          <v-list-item-content>
+            <v-list-item-title>User Balances</v-list-item-title>
+          </v-list-item-content>
+          <v-list-item-action>
+            {{ stats.user }}
+          </v-list-item-action>
+        </v-list-item>
+      </v-list>
     </v-card-text>
   </v-card>
 </template>
 
 <script>
 import { get, call } from 'vuex-pathify';
+import Flash from 'vue-material-design-icons/Flash';
+import Water from 'vue-material-design-icons/Water';
 
 export default {
+  components: { Flash, Water },
+
+  data() {
+    return {
+      expanded: false,
+    };
+  },
   computed: {
     assets() {
       let assets = Object.keys(this.stats.assets);
@@ -73,10 +86,14 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-h4
+span
  max-width 80%
 
 .wrap
   max-width 100%
   word-wrap break-word
+
+.col-3
+  padding-top 0 !important
+  padding-bottom 0 !important
 </style>
