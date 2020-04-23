@@ -1,6 +1,6 @@
 <template>
-  <v-card class="mb-2">
-    <v-card-title>Server Balances</v-card-title>
+  <v-card>
+    <v-card-title class="pb-0">Server Funds</v-card-title>
     <v-progress-linear v-if="loading" indeterminate />
     <v-card-text v-else-if="stats" class="white--text">
       <v-list>
@@ -11,7 +11,7 @@
           <v-list-item-content>
             <v-list-item-title>Bitcoin</v-list-item-title>
           </v-list-item-content>
-          <v-list-item-action>
+          <v-list-item-action class="title">
             {{ stats.bitcoin }}
           </v-list-item-action>
         </v-list-item>
@@ -22,7 +22,7 @@
           <v-list-item-content>
             <v-list-item-title>Liquid</v-list-item-title>
           </v-list-item-content>
-          <v-list-item-action>
+          <v-list-item-action class="title">
             {{ stats.liquid }}
           </v-list-item-action>
         </v-list-item>
@@ -33,11 +33,10 @@
           <v-list-item-content>
             <v-list-item-title>Lightning</v-list-item-title>
           </v-list-item-content>
-          <v-list-item-action>
+          <v-list-item-action class="title">
             {{ stats.lnchannel }}
           </v-list-item-action>
         </v-list-item>
-        <v-divider />
         <v-list-item>
           <v-list-item-avatar>
             <v-icon class="ml-0 pl-0" color="green">person</v-icon>
@@ -45,7 +44,7 @@
           <v-list-item-content>
             <v-list-item-title>User Balances</v-list-item-title>
           </v-list-item-content>
-          <v-list-item-action>
+          <v-list-item-action class="title">
             {{ stats.user }}
           </v-list-item-action>
         </v-list-item>

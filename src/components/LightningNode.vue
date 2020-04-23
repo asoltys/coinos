@@ -1,6 +1,6 @@
 <template>
-  <v-card class="mb-2">
-    <v-card-title>Lightning Node</v-card-title>
+  <v-card class="mb-2" color="secondary">
+    <v-card-title><flash fillColor="yellow" class="mr-1 pt-3" />Lightning Node</v-card-title>
     <v-card-text>
       <canvas
         v-if="qrText"
@@ -53,9 +53,10 @@ import qr from 'qrcode';
 import Copy from '../mixins/Copy';
 import FullScreen from '../mixins/FullScreen';
 import Qrcode from 'vue-material-design-icons/Qrcode';
+import Flash from 'vue-material-design-icons/Flash';
 
 export default {
-  components: { Qrcode },
+  components: { Flash, Qrcode },
   mixins: [Copy, FullScreen],
   data() {
     return {
