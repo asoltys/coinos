@@ -1,11 +1,12 @@
 {
-  "short_name": "CoinOS",
-  "name": "CoinOS",
+  "short_name": "coinos",
+  "name": "coinos",
   "icons": [
     {
-      "src": "/coinos.svg",
-      "type": "image/svg",
-      "sizes": "1024x1024"
+      "src": "/coinos.png",
+      "type": "image/png",
+      "sizes": "1024x1024",
+      "purpose": "any maskable"
     }
   ],
   "start_url": "/",
