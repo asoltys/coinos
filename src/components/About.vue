@@ -4,8 +4,10 @@
       <v-card-text class="white--text body-1">
         <p>
           Coinos is a bitcoin wallet app. You can
-          <a href="https://github.com/asoltys/coinos">run it on your own
-            server</a> or
+          <a href="https://github.com/asoltys/coinos"
+            >run it on your own server</a
+          >
+          or
           <a @click="createUser">create a free account</a>
           here that you can begin using right away.
         </p>
@@ -48,12 +50,14 @@
       </v-card-text>
     </v-card>
 
-    <video-player
-      class="vjs-custom-skin mb-2"
-      ref="videoPlayer"
-      :options="playerOptions"
-    >
-    </video-player>
+        <div class="embed-responsive embed-responsive-16by9">
+          <iframe
+            class="embed-responsive-item"
+            title="Coinos Bitcoin Wallet"
+            src="https://www.youtube.com/embed/6Om9-7qqxmY?rel=0&amp;showinfo=0&amp;VQ=HD1024"
+            allowfullscreen
+          ></iframe>
+    </div>
 
     <stats />
     <privacy-policy />
@@ -98,4 +102,45 @@ export default {
 <style lang="stylus" scoped>
 .v-application a
   text-decoration none
+
+.embed-responsive {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 0;
+  overflow: hidden;
+}
+.embed-responsive::before {
+  display: block;
+  content: "";
+}
+.embed-responsive .embed-responsive-item,
+.embed-responsive iframe,
+.embed-responsive embed,
+.embed-responsive object,
+.embed-responsive video {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.embed-responsive-21by9::before {
+  padding-top: 42.8571428571%;
+}
+
+.embed-responsive-16by9::before {
+  padding-top: 56.25%;
+}
+
+.embed-responsive-4by3::before {
+  padding-top: 75%;
+}
+
+.embed-responsive-1by1::before {
+  padding-top: 100%;
+}
 </style>
