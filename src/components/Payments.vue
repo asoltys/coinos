@@ -185,7 +185,7 @@ export default {
           return p;
         })
         .filter(p => p.amount < 0 || p.received)
-        .filter(p => p.asset === this.asset)
+        .filter(p => p.account_id === this.user.account.id)
         .reverse();
     },
 

@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-expansion-panels accordion>
-      <v-expansion-panel v-for="a in user.accounts" :key="a.asset" @click="() => choochoo(a.asset)">
+      <v-expansion-panel v-for="a in user.accounts" :key="a.asset" @click="() => toggleAsset(a.asset)">
         <v-expansion-panel-header
           ripple
           class="d-flex justify-space-around"
@@ -30,7 +30,7 @@ export default {
     user: get('user'),
   },
   methods: {
-    choochoo: call('choochoo'),
+    toggleAsset: call('toggleAsset'),
   },
 };
 </script>

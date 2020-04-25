@@ -523,10 +523,11 @@ export default new Vuex.Store({
       go('/pasted');
     },
 
-    async choochoo({ commit, dispatch, state }, asset) {
-      console.log("setting asset");
+    async toggleAsset({ commit, dispatch, state }, asset) {
       commit('asset', asset);
-      state.user.balance = state.user.accounts.find(a => a.asset === asset).balance;
+      if (asset === 'BTC') state.balance = state.user.balance;
+      else state.balance = state.user.accounts.find(a => a.asset === asset).balance;
+      state.user.unit = asset.substr(0,3);
       go("/home");
     },
 
