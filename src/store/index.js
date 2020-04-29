@@ -151,7 +151,6 @@ export default new Vuex.Store({
       try {
         let res = await Vue.axios.post('/login', user);
 
-        console.log(res.data.user);
         commit('user', res.data.user);
         commit('token', res.data.token);
       } catch (e) {

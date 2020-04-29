@@ -14,7 +14,9 @@
               currency,
               confirmed,
               link,
+              fee,
               hash,
+              preimage,
               id,
               payobj,
               sign,
@@ -31,14 +33,31 @@
               ripple
               class="justify-center justify-space-around flex-wrap"
             >
-              <div style="white-space: nowrap;">
+              <div class="flex-grow-0 mr-2 mt-1">
+                <flash
+                  v-if="network === 'LNBTC'"
+                  fillColor="yellow"
+                  title="Lightning Payment"
+                />
+                <v-icon v-else-if="network === 'GIFT'" color="yellow"
+                  >card_giftcard</v-icon
+                >
+                <img
+                  v-else-if="network === 'BTC'"
+                  src="../assets/bitcoin.png"
+                  width="24px"
+                  title="Bitcoin Payment"
+                />
+                <water v-else fillColor="#00aaee" title="Liquid Payment" />
+              </div>
+              <div class="flex-grow-1" style="white-space: nowrap;">
                 <span class="headline">
                   <span :class="color">{{ sign }}</span>
                   {{ amount | abs }}
                 </span>
-            
-            <span>{{ account.ticker }}</span>
-            <div v-if="account.ticker === 'BTC'">
+
+                <span>{{ account.ticker }}</span>
+                <div v-if="account.ticker === 'BTC'">
                   <span class="yellow--text">
                     {{ fiat | abs | twodec }}
                     <span v-if="tip">(+{{ tip }})</span>
@@ -58,37 +77,35 @@
             </v-expansion-panel-header>
             <v-expansion-panel-content class="text-left">
               <v-card class="pa-4" style="background: #333">
-                <div class="text-center">
-                  <flash v-if="network === 'LNBTC'" fillColor="yellow" title="Lightning Payment" />
-                  <v-icon v-else-if="network === 'GIFT'" color="yellow"
-                    >card_giftcard</v-icon
-                  >
-                  <img v-else-if="network === 'BTC'" src="../assets/bitcoin.png" width="24px" title="Bitcoin Payment" />
-                  <water v-else fillColor="#00aaee" title="Liquid Payment" />
-                </div>
-                <code class="black--text my-4 py-2 text-center">{{
-                  hash
-                }}</code>
-                <div class="d-flex justify-center">
-                  <v-btn
-                    v-if="!hash.includes('Welcome')"
-                    class="mt-2 mr-2"
-                    @click="() => copy(hash)"
-                  >
-                    <v-icon class="mr-1">content_copy</v-icon><span>Copy</span>
-                  </v-btn>
-                  <v-btn class="mt-2" v-if="link" @click="explore(link)">
-                    <v-icon class="mr-1">open_in_new</v-icon
-                    ><span>Explore</span>
-                  </v-btn>
-                </div>
-                <div v-if="1 === 2">
-                  <strong>Notes</strong>
-                  <p>
-                    This was a very lovely transaction I most enjoyed it thank
-                    you very much!
-                  </p>
-                </div>
+                <v-text-field label="Payment Hash" :value="hash" readonly>
+                  <template v-slot:append>
+                    <v-btn @click="explore(link)" class="ml-1" icon>
+                      <v-icon class="mr-1">open_in_new</v-icon>
+                    </v-btn>
+                    <v-btn @click="() => copy(hash)" class="ml-1" icon>
+                      <v-icon class="mr-1">content_copy</v-icon>
+                    </v-btn>
+                  </template>
+                </v-text-field>
+                <v-text-field v-if="fee" label="Fee" :value="fee" readonly>
+                  <template v-slot:append>
+                    <v-btn @click="() => copy(fee)" class="ml-1" icon>
+                      <v-icon class="mr-1">content_copy</v-icon>
+                    </v-btn>
+                  </template>
+                </v-text-field>
+                <v-text-field
+                  v-if="preimage"
+                  label="Preimage"
+                  :value="preimage"
+                  readonly
+                >
+                  <template v-slot:append>
+                    <v-btn @click="() => copy(preimage)" class="ml-1" icon>
+                      <v-icon class="mr-1">content_copy</v-icon>
+                    </v-btn>
+                  </template>
+                </v-text-field>
               </v-card>
             </v-expansion-panel-content>
           </v-expansion-panel>
