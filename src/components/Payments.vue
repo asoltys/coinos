@@ -77,7 +77,11 @@
             </v-expansion-panel-header>
             <v-expansion-panel-content class="text-left">
               <v-card class="pa-4" style="background: #333">
-                <v-text-field label="Payment Hash" :value="hash" readonly>
+                <v-textarea label="Payment Hash" :value="hash" readonly
+                            
+      rows="1"
+      auto-grow
+                            >
                   <template v-slot:append>
                     <v-btn @click="explore(link)" class="ml-1" icon>
                       <v-icon class="mr-1">open_in_new</v-icon>
@@ -86,26 +90,32 @@
                       <v-icon class="mr-1">content_copy</v-icon>
                     </v-btn>
                   </template>
-                </v-text-field>
-                <v-text-field v-if="fee" label="Fee" :value="fee" readonly>
+                </v-textarea>
+                <v-textarea v-if="fee" label="Fee" :value="fee" readonly
+                                       
+      rows="1"
+      auto-grow
+                                       >
                   <template v-slot:append>
                     <v-btn @click="() => copy(fee)" class="ml-1" icon>
                       <v-icon class="mr-1">content_copy</v-icon>
                     </v-btn>
                   </template>
-                </v-text-field>
-                <v-text-field
+                </v-textarea>
+                <v-textarea
                   v-if="preimage"
                   label="Preimage"
                   :value="preimage"
                   readonly
+      rows="1"
+      auto-grow
                 >
                   <template v-slot:append>
                     <v-btn @click="() => copy(preimage)" class="ml-1" icon>
                       <v-icon class="mr-1">content_copy</v-icon>
                     </v-btn>
                   </template>
-                </v-text-field>
+                </v-textarea>
               </v-card>
             </v-expansion-panel-content>
           </v-expansion-panel>
