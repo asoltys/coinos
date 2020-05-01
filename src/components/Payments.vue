@@ -53,7 +53,7 @@
               <div class="flex-grow-1" style="white-space: nowrap;">
                 <span class="headline">
                   <span :class="color">{{ sign }}</span>
-                  {{ amount | abs }}
+                  {{ btc(Math.abs(amount)) }}
                 </span>
 
                 <span>{{ account.ticker }}</span>
@@ -187,11 +187,10 @@ export default {
 
     filteredPayments() {
       if (!this.payments.length) return [];
-      let balance = 0;
       return this.payments
         .map(p => {
           let o = JSON.parse(JSON.stringify(p));
-          o.amount = this.btc(p.amount + p.tip);
+          o.amount = p.amount + p.tip;
           o.fiat = ((p.amount * p.rate) / SATS).toFixed(2);
           o.tip = parseFloat((p.tip * p.rate) / SATS).toFixed(2);
           if (isNaN(o.tip) || o.tip <= 0) o.tip = null;
@@ -213,11 +212,6 @@ export default {
         .sort((a, b) =>
           isBefore(parse(a.createdAt), parse(b.createdAt)) ? -1 : 1
         )
-        .map(p => {
-          balance += parseFloat(p.amount);
-          p.balance = balance;
-          return p;
-        })
         .filter(p => p.amount < 0 || p.received)
         .filter(p => p.account_id === this.user.account.id)
         .reverse();
