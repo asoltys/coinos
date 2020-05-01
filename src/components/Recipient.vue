@@ -24,7 +24,7 @@
       label="Asset"
       v-if="network === 'liquid'"
       v-model="user.account_id"
-      @change="changeAsset"
+      @input="changeAsset"
       :items="accounts"
     />
     <v-text-field
@@ -135,7 +135,8 @@ export default {
   },
   methods: {
     changeAsset(id) {
-      this.shiftAccount(this.accounts.find(a => a.value === id).asset);
+      let asset = this.accounts.find(a => a.value === id);
+      this.shiftAccount(asset.value);
     },
     toggle() {
       if (this.user.account.ticker !== 'BTC') return;
