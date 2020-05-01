@@ -1,8 +1,10 @@
-<script>
-import { call } from 'vuex-pathify';
-const SATS = 100000000;
-
-function toFixed(x) {
+const Coinos = {
+  install(Vue, options) {
+    Vue.prototype.$format = function(n, p) { 
+      if (!p) p = this.user.account.precision;
+      if (!parseInt(p) || this.user.unit === 'SAT') return parseInt(n).toFixed(0);
+      else {
+        let x = n / 10**p;
   if (Math.abs(x) < 1.0) {
     var e = parseInt(x.toString().split('e-')[1]);
     if (e) {
@@ -19,17 +21,12 @@ function toFixed(x) {
     }
   }
   return x;
-}
-
-export default {
-  methods: {
-    toggleUnit: call('toggleUnit'),
-    btc(n, precision) {
-      if (!precision) precision = this.user.account.precision;
-      if (!parseInt(precision) || this.user.unit === 'SAT') return parseInt(n).toFixed(0);
-      else return toFixed(n / 10**precision);
-
+      } 
     },
-  },
+    Vue.prototype.$go = function(path) { 
+      this.$router.push(path).then().catch(() => {}) 
+    };
+  }
 };
-</script>
+
+export default Coinos;

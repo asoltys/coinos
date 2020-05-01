@@ -40,17 +40,15 @@
 
 <script>
 import { get } from 'vuex-pathify';
-import Utils from '../mixins/Utils';
 
 const SATS = 100000000;
 const f = parseFloat;
 let bs = 'https://blockstream.info';
 
 export default {
-  mixins: [Utils],
   computed: {
     total() {
-      return this.btc(this.payment.amount + this.payment.tip);
+      return this.$format(this.payment.amount + this.payment.tip);
     },
     ticker() {
       let { ticker } = this.payment.account;

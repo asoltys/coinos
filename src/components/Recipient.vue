@@ -34,10 +34,10 @@
       readonly
       @click="setAmount"
     >
-      <template v-slot:append v-if="user.account.ticker === 'BTC'">
+      <template v-slot:append>
         <v-btn
           class="toggle black--text mt-auto"
-          :color="['SAT', 'BTC'].includes(currency) ? 'white' : 'yellow'"
+          :color="fiat ? 'yellow' : 'white'"
           @click.prevent="toggle"
           >{{ currency }}</v-btn
         >
@@ -53,12 +53,12 @@
       readonly
       @click="setFee"
     >
-      <template v-slot:append v-if="user.account.ticker === 'BTC'">
+      <template v-slot:append>
         <v-btn
           class="toggle black--text mt-auto"
-          :color="['SAT', 'BTC'].includes(currency) ? 'white' : 'yellow'"
+          :color="fiat ? 'yellow' : 'white'"
           @click.prevent="toggle"
-          >{{ currency }}</v-btn
+          >{{ user.unit }}</v-btn
         >
         <v-btn icon @click="() => copy(displayFee)" class="ml-1" text>
           <v-icon class="mr-1">content_copy</v-icon>
@@ -94,7 +94,7 @@ export default {
   computed: {
     accounts() {
       return this.user.accounts.map(a => ({ text: a.name, value: a.id }));
-    }, 
+    },
     isBtc() {
       return this.user.account.ticker === 'BTC';
     },
@@ -108,14 +108,14 @@ export default {
         ? this.fiatAmount
         : this.user.unit === 'SAT'
         ? this.amount
-        : (this.amount / SATS).toFixed(8);
+        : this.$format(this.amount);
     },
     displayFee() {
       return this.fiat
         ? this.fiatFee
         : this.user.unit === 'SAT'
         ? this.fee
-        : (this.fee / SATS).toFixed(8);
+        : this.$format(this.fee, 8);
     },
     fee() {
       if (this.tx) return parseInt(this.tx.fee * SATS);
@@ -135,8 +135,8 @@ export default {
   },
   methods: {
     changeAsset(id) {
-      let asset = this.accounts.find(a => a.value === id);
-      this.shiftAccount(asset.value);
+      let { asset } = this.user.accounts.find(a => a.id === id);
+      this.shiftAccount(asset);
     },
     toggle() {
       if (this.user.account.ticker !== 'BTC') return;
@@ -163,7 +163,7 @@ export default {
   },
   mounted() {
     this.asset = this.user.account.id;
-  } 
+  },
 };
 </script>
 

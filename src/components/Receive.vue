@@ -58,11 +58,9 @@ import { mapActions } from 'vuex';
 import Flash from 'vue-material-design-icons/Flash';
 import Water from 'vue-material-design-icons/Water';
 import { get, call, sync } from 'vuex-pathify';
-import Utils from '../mixins/Utils';
 
 export default {
   components: { Balance, Flash, Numpad, Received, Request, Water },
-  mixins: [Utils],
 
   computed: {
     currencies() {

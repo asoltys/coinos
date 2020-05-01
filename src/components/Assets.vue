@@ -2,24 +2,24 @@
   <div>
     <v-expansion-panels accordion>
       <v-expansion-panel v-for="a in user.accounts" :key="a.asset">
-        <v-expansion-panel-header ripple class="d-flex title">
-          <v-btn
-            class="flex-grow-0 mr-2 black--text"
-            @click="() => select(a.asset)"
-            color="yellow"
-          >
-            <v-icon>forward</v-icon>
-            Select
-          </v-btn>
+        <v-expansion-panel-header ripple class="d-flex title" expand-icon="">
           <div class="asset d-flex flex-grow-1">
             <div class="mb-1">{{ a.name }} <span class="yellow--text">({{ a.ticker }})</span></div>
           </div>
           <div class="display-1 flex-grow-1 text-right">
-            {{ btc(a.balance, a.precision) }}
+            {{ $format(a.balance, a.precision) }}
             <div v-if="a.pending" class="title red--text">
               {{ a.pending }} unconfirmed
             </div>
           </div>
+          <v-btn
+            class="flex-grow-0 ml-2 black--text"
+            @click="() => select(a.asset)"
+            color="yellow"
+          >
+            <v-icon>forward</v-icon>
+            Payments
+          </v-btn>
         </v-expansion-panel-header>
         <v-expansion-panel-content class="text-left">
           <v-card class="pa-4" style="background: #333">
@@ -76,10 +76,8 @@
 
 <script>
 import { get, sync, call } from 'vuex-pathify';
-import Utils from '../mixins/Utils';
 
 export default {
-  mixins: [Utils],
   computed: {
     user: sync('user'),
   },

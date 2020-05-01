@@ -84,14 +84,13 @@ import { mapActions } from 'vuex';
 import { get, sync } from 'vuex-pathify';
 import Copy from '../mixins/Copy';
 import FullScreen from '../mixins/FullScreen';
-import Utils from '../mixins/Utils';
 import Tippad from './TipPad';
 
 const SATS = 100000000;
 
 export default {
   components: { Tippad },
-  mixins: [Copy, FullScreen, Utils],
+  mixins: [Copy, FullScreen],
   props: {
     clear: { type: Function },
   },
@@ -111,7 +110,7 @@ export default {
       return this.user.account.ticker === 'BTC';
     }, 
     total() {
-      return this.btc(this.invoice.amount + this.invoice.tip);
+      return this.$format(this.invoice.amount + this.invoice.tip);
     },
     invoice: get('invoice'),
     user: get('user'),

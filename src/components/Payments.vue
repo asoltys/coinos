@@ -53,7 +53,7 @@
               <div class="flex-grow-1" style="white-space: nowrap;">
                 <span class="headline">
                   <span :class="color">{{ sign }}</span>
-                  {{ btc(Math.abs(amount)) }}
+                  {{ $format(Math.abs(amount)) }}
                 </span>
 
                 <span>{{ account.ticker }}</span>
@@ -148,14 +148,13 @@ import Water from 'vue-material-design-icons/Water';
 import Flash from 'vue-material-design-icons/Flash';
 import colors from 'vuetify/lib/util/colors';
 import Copy from '../mixins/Copy';
-import Utils from '../mixins/Utils';
 
 let bs = 'https://blockstream.info';
 const SATS = 100000000;
 
 export default {
   components: { Flash, Water },
-  mixins: [Copy, Utils],
+  mixins: [Copy],
 
   filters: {
     abs: v => Math.abs(v),

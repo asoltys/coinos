@@ -554,6 +554,7 @@ export default new Vuex.Store({
         asset = user.accounts[index].asset;
       }
 
+      if (asset !== BTC && user.unit === 'SAT') dispatch('toggleUnit');
       Vue.axios.post('/shiftAccount', { asset });
     },
 
@@ -605,7 +606,6 @@ export default new Vuex.Store({
         commit('payreq', text);
         return;
       } catch (e) {
-        l(e);
         if (e.response) commit('error', e.response.data);
       }
 
@@ -613,7 +613,7 @@ export default new Vuex.Store({
       try {
         url = bip21.decode(text);
         commit('network', 'bitcoin');
-        url.options.asset = process.env.VUE_APP_LBTC;
+        url.options.asset = BTC;
       } catch (e) {
         try {
           url = bip21.decode(text, 'liquidnetwork');

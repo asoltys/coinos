@@ -1,6 +1,6 @@
 <template>
   <div v-if="user.account.balance" class="mb-2 text-center">
-    <span class="display-2 font-weight-black">{{ btc(user.account.balance) }} </span>
+    <span class="display-2 font-weight-black">{{ $format(user.account.balance) }} </span>
       <v-btn
         class="black--text unitToggle"
         color="white"
@@ -28,7 +28,7 @@
                 class="red--text"
       v-if="user.account.pending"
     >
-      <span class="display-1 font-weight-black">{{ btc(user.account.pending) }} </span>
+      <span class="display-1 font-weight-black">{{ $format(user.account.pending) }} </span>
       <span class="headline">UNCONFIRMED</span>
     </div>
   </div>
@@ -38,12 +38,10 @@
 import { mapGetters } from 'vuex';
 import { TweenLite } from 'gsap';
 import { call } from 'vuex-pathify';
-import Utils from '../mixins/Utils';
 
 const SATS = 100000000;
 
 export default {
-  mixins: [Utils],
   props: { payobj: { type: Object } },
 
   data() {

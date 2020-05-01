@@ -18,8 +18,8 @@
       <div class="mb-4 text-center">
         <div>
           <span class="headline grey--text">Fee: </span>
-          <span class="display-1">{{ payment.fee || 0 }}</span>
-          SAT
+          <span class="display-1">{{ fee }}</span>
+          {{ user.unit }}
           <span v-if="payment.account.ticker === 'BTC'" class="ml-2 yellow--text">
             <span class="display-1">{{ fiat(payment.fee) }}</span>
             {{ payment.currency }}
@@ -54,6 +54,9 @@ export default {
   },
 
   computed: {
+    fee() {
+      return this.$format(this.payment.fee || 0);
+    },
     ...mapGetters(['user']),
     ticker() {
       let { ticker } = this.payment.account;
@@ -63,7 +66,7 @@ export default {
     total() {
       let total = Math.abs(this.payment.amount);
       if (this.payment.account.ticker === 'BTC') total -= this.payment.fee;
-      return total;
+      return this.$format(total);
     },
   },
 

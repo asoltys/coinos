@@ -6,19 +6,14 @@ import router from './router';
 import store from './store';
 import FastClick from 'fastclick';
 import FBSignInButton from 'vue-facebook-signin-button';
+import coinos from './plugins/coinos';
 import vuetify from './plugins/vuetify';
-import Go from './plugins/go';
-import VueVideoPlayer from 'vue-video-player'
-import 'video.js/dist/video-js.css'
-import 'vue-video-player/src/custom-theme.css'
-import 'videojs-contrib-hls/dist/videojs-contrib-hls'
 
 Axios.defaults.baseURL = '/api';
 
-Vue.use(VueVideoPlayer)
 Vue.use(FBSignInButton);
 Vue.use(VueAxios, Axios);
-Vue.use(Go);
+Vue.use(coinos);
 
 const app = new Vue({
   render: h => h(App),
