@@ -605,7 +605,8 @@ export default new Vuex.Store({
         commit('payreq', text);
         return;
       } catch (e) {
-        /**/
+        l(e);
+        if (e.response) commit('error', e.response.data);
       }
 
       let url;
