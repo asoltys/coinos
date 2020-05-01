@@ -30,7 +30,7 @@
           </v-textarea>
           <v-chip v-if="to.length > 0" class="black--text mb-2" color="white">
             <v-icon color="black" left>warning</v-icon>
-            Unrecognized address or payment request
+            Can't parse address or payment request
           </v-chip>
           <div class="d-flex flex-wrap">
             <v-btn v-if="canPaste" class="mr-2 mb-2 flex-grow-1" @click="paste">
@@ -148,9 +148,6 @@ export default {
       currency: '',
       editingAmount: false,
       to: '',
-      rules: {
-        to: v => (v || '').length === 0 || 'Unrecognized address or payment request',
-      } 
     };
   },
 
