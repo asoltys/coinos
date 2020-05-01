@@ -77,11 +77,13 @@
             </v-expansion-panel-header>
             <v-expansion-panel-content class="text-left">
               <v-card class="pa-4" style="background: #333">
-                <v-textarea label="Payment Hash" :value="hash" readonly
-                            
-      rows="1"
-      auto-grow
-                            >
+                <v-textarea
+                  label="Payment Hash"
+                  :value="hash"
+                  readonly
+                  rows="1"
+                  auto-grow
+                >
                   <template v-slot:append>
                     <v-btn @click="explore(link)" class="ml-1" icon>
                       <v-icon class="mr-1">open_in_new</v-icon>
@@ -91,11 +93,14 @@
                     </v-btn>
                   </template>
                 </v-textarea>
-                <v-textarea v-if="fee" label="Fee" :value="fee" readonly
-                                       
-      rows="1"
-      auto-grow
-                                       >
+                <v-textarea
+                  v-if="fee"
+                  label="Fee"
+                  :value="fee"
+                  readonly
+                  rows="1"
+                  auto-grow
+                >
                   <template v-slot:append>
                     <v-btn @click="() => copy(fee)" class="ml-1" icon>
                       <v-icon class="mr-1">content_copy</v-icon>
@@ -107,8 +112,8 @@
                   label="Preimage"
                   :value="preimage"
                   readonly
-      rows="1"
-      auto-grow
+                  rows="1"
+                  auto-grow
                 >
                   <template v-slot:append>
                     <v-btn @click="() => copy(preimage)" class="ml-1" icon>
@@ -143,13 +148,14 @@ import Water from 'vue-material-design-icons/Water';
 import Flash from 'vue-material-design-icons/Flash';
 import colors from 'vuetify/lib/util/colors';
 import Copy from '../mixins/Copy';
+import Utils from '../mixins/Utils';
 
 let bs = 'https://blockstream.info';
 const SATS = 100000000;
 
 export default {
   components: { Flash, Water },
-  mixins: [Copy],
+  mixins: [Copy, Utils],
 
   filters: {
     abs: v => Math.abs(v),
@@ -185,7 +191,7 @@ export default {
       return this.payments
         .map(p => {
           let o = JSON.parse(JSON.stringify(p));
-          o.amount = p.amount + p.tip;
+          o.amount = this.btc(p.amount + p.tip);
           o.fiat = ((p.amount * p.rate) / SATS).toFixed(2);
           o.tip = parseFloat((p.tip * p.rate) / SATS).toFixed(2);
           if (isNaN(o.tip) || o.tip <= 0) o.tip = null;

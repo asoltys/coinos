@@ -16,7 +16,7 @@
     </div>
     <div class="d-flex" v-for="i in buttons.length / 3" :key="i">
       <v-btn
-                        :class="`numpad-button flex-grow-1 ${j < 3 && 'mr-1'} mb-1`"
+        :class="`numpad-button flex-grow-1 ${j < 3 && 'mr-1'} mb-1`"
         v-for="j in 3"
         :key="j"
         @click="update(buttons[j + 3 * i - 4])"
@@ -65,7 +65,9 @@ export default {
 
   mounted() {
     this.rates = this.globalRates;
-    this.currency = this.currencies.includes(this.user.currency) ? this.user.currency : this.user.account.ticker;
+    this.currency = this.currencies.includes(this.user.currency)
+      ? this.user.currency
+      : this.user.account.ticker;
     this.inputAmount =
       this.fiat && this.fiatAmount
         ? this.fiatAmount
@@ -75,13 +77,17 @@ export default {
   computed: {
     color() {
       let tickers = this.user.accounts.map(a => a.ticker);
-      return ['SAT', 'BTC', ...tickers].includes(this.currency) ? 'white' : 'yellow';
+      return ['SAT', 'BTC', ...tickers].includes(this.currency)
+        ? 'white'
+        : 'yellow';
     },
     fiat() {
       return this.user.account.ticker === 'BTC' && this.currency !== 'SAT';
     },
     decimals() {
-      if (this.user.account.ticker !== 'BTC') return 0;
+      if (this.user.account.ticker !== 'BTC')
+        return this.user.account.precision;
+
       switch (this.currency) {
         case 'SAT':
           return 0;
@@ -117,6 +123,7 @@ export default {
   watch: {
     inputAmount(v) {
       this.convert(v);
+      this.$nextTick(() => {  if (!this.amount) this.inputAmount = '_' });
       this.$emit('input', this.amount, this.fiatAmount, this.currency);
     },
   },
@@ -124,18 +131,19 @@ export default {
   methods: {
     convert(n) {
       if (this.fiat) {
-        if (this.currency === 'BTC') {
-          this.amount = parseInt(parseFloat(n).toFixed(8) * SATS);
-          this.fiatAmount = f(n * this.globalRate).toFixed(2);
+        this.fiatAmount = f(this.inputAmount).toFixed(this.decimals);
+        this.amount = parseInt(
+          ((parseFloat(this.fiatAmount) * SATS) / this.rate).toFixed(8)
+        );
+      } else {
+        if (this.currency === 'SAT') {
+          this.amount = parseInt(n);
+          this.fiatAmount = f((n * this.globalRate) / SATS).toFixed(2);
         } else {
-          this.fiatAmount = f(this.inputAmount).toFixed(this.decimals);
           this.amount = parseInt(
-            ((parseFloat(this.fiatAmount) * SATS) / this.rate).toFixed(8)
+            parseFloat(n).toFixed(this.user.account.precision) * this.divisor
           );
         }
-      } else {
-        this.amount = parseInt(n);
-        this.fiatAmount = f((n * this.globalRate) / SATS).toFixed(2);
       }
     },
     done(e) {

@@ -6,9 +6,10 @@ const trimZeros = s => s.replace(/[0]+$/, '').replace(/[.]$/, '');
 export default {
   methods: {
     toggleUnit: call('toggleUnit'),
-    btc(n) {
-      if (this.user.account.ticker !== 'BTC' || this.user.unit === 'SAT') return parseInt(n).toFixed(0);
-      else return (n / SATS).toFixed(8);
+    btc(n, precision) {
+      if (!precision) precision = this.user.account.precision;
+      if (!parseInt(precision) || this.user.unit === 'SAT') return parseInt(n).toFixed(0);
+      else return (n / 10**precision).toFixed(precision);
     },
   },
 };

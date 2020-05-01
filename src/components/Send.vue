@@ -17,7 +17,21 @@
             hide-details
             @input="() => handleScan(to)"
             ref="to"
-          />
+            :error="to.length > 0"
+          >
+          <template v-if="to.length" v-slot:append>
+            <v-btn icon @click="() => showText(to)" class="ml-1" text>
+              <qrcode />
+            </v-btn>
+            <v-btn @click="() => copy(to)" class="ml-1" icon>
+              <v-icon class="mr-1">content_copy</v-icon>
+            </v-btn>
+          </template>
+          </v-textarea>
+          <v-chip v-if="to.length > 0" class="black--text mb-2" color="white">
+            <v-icon color="black" left>warning</v-icon>
+            Unrecognized address or payment request
+          </v-chip>
           <div class="d-flex flex-wrap">
             <v-btn v-if="canPaste" class="mr-2 mb-2 flex-grow-1" @click="paste">
               <v-icon class="mr-1">assignment</v-icon>
@@ -103,14 +117,18 @@ import Recipient from './Recipient';
 import Sent from './Sent';
 import PaymentDetails from './PaymentDetails';
 import SendToUser from './SendToUser';
+import Qrcode from 'vue-material-design-icons/Qrcode';
+import Copy from '../mixins/Copy';
 
 export default {
+  mixins: [Copy],
   components: {
     Balance,
     Numpad,
     SendToUser,
     Sent,
     PaymentDetails,
+    Qrcode,
     Recipient,
   },
 
@@ -130,6 +148,9 @@ export default {
       currency: '',
       editingAmount: false,
       to: '',
+      rules: {
+        to: v => (v || '').length === 0 || 'Unrecognized address or payment request',
+      } 
     };
   },
 
@@ -170,6 +191,7 @@ export default {
       'handleScan',
       'sendPayment',
       'setCurrency',
+      'showText',
       'snack',
     ]),
 

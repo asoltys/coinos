@@ -13,13 +13,13 @@
       </v-alert>
       <div class="d-flex justify-center">
         <div class="mr-2">
-          <span class="display-1">{{ payment.amount + payment.tip }}</span> 
+          <span class="display-1">{{ total }}</span>
           {{ ticker }}
         </div>
         <div>
           <span v-if="payment.account.ticker === 'BTC'" class="yellow--text">
             <span v-if="invoice.amount === payment.amount" class="display-1">{{
-              total
+              fiatTotal
             }}</span>
             <span v-else class="display-1">{{ fiat }}</span>
             <span v-if="invoice.amount === payment.amount">
@@ -40,13 +40,18 @@
 
 <script>
 import { get } from 'vuex-pathify';
+import Utils from '../mixins/Utils';
 
 const SATS = 100000000;
 const f = parseFloat;
 let bs = 'https://blockstream.info';
 
 export default {
+  mixins: [Utils],
   computed: {
+    total() {
+      return this.btc(this.payment.amount + this.payment.tip);
+    },
     ticker() {
       let { ticker } = this.payment.account;
       if (ticker === 'BTC') return 'SAT';
@@ -55,7 +60,7 @@ export default {
     isBtc() {
       return this.payment.account.ticker === 'BTC';
     },
-    total() {
+    fiatTotal() {
       return (f(this.invoice.fiatAmount) + f(this.invoice.fiatTip)).toFixed(2);
     },
     fiat() {

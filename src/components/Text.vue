@@ -1,15 +1,22 @@
 <template>
   <div>
-    <h1>QR Contents</h1>
+    <h1>QR Code</h1>
     <v-card>
       <v-card-text class="text-center">
         <canvas id="qr" class="d-block mx-auto mb-4" @click="fullscreen" />
-        <code class="black--text mb-2" :data-clipboard-text="text">{{
-          text
-        }}</code>
-        <v-btn @click="() => copy(text)" class="d-block mx-auto">
-          <v-icon class="mr-1">content_copy</v-icon><span>copy</span>
-        </v-btn>
+        <v-textarea
+          label="QR Contents"
+          :value="text"
+          rows="1"
+          auto-grow
+          readonly
+        >
+          <template v-slot:append>
+            <v-btn @click="() => copy(text)" class="ml-1" icon>
+              <v-icon class="mr-1">content_copy</v-icon>
+            </v-btn>
+          </template>
+        </v-textarea>
       </v-card-text>
     </v-card>
   </div>
@@ -34,15 +41,15 @@ export default {
       qr.toCanvas(canvas, v, e => {
         if (e) console.log(e);
       });
-    } 
+    },
   },
   watch: {
     text(v) {
       this.draw(v);
-    } 
+    },
   },
   mounted() {
     this.draw(this.text);
-  } 
+  },
 };
 </script>

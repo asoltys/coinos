@@ -528,6 +528,14 @@ export default new Vuex.Store({
       go('/pasted');
     },
 
+    async updateAccount({ commit, dispatch, state }, account) {
+      try {
+        await Vue.axios.post('/account', account);
+      } catch (e) {
+        commit('error', e.response.data);
+      }
+    },
+
     async shiftAccount({ commit, dispatch, state }, asset) {
       let { user } = state;
 
@@ -664,8 +672,6 @@ export default new Vuex.Store({
       } catch (e) {
         /**/
       }
-
-      dispatch('showText', text);
     },
 
     async showText({ commit }, text) {

@@ -1,41 +1,104 @@
 <template>
   <div>
     <v-expansion-panels accordion>
-      <v-expansion-panel
-        v-for="a in user.accounts"
-        :key="a.asset"
-        @click="() => select(a.asset)"
-      >
-        <v-expansion-panel-header
-          ripple
-          class="d-flex justify-space-around"
-          expand-icon=""
-        >
-          <div class="asset">
-            <div class="mb-1">{{ a.name }} ({{ a.ticker }})</div>
-            <div class="body-4 grey--text">{{ a.asset }}</div>
+      <v-expansion-panel v-for="a in user.accounts" :key="a.asset">
+        <v-expansion-panel-header ripple class="d-flex title">
+          <v-btn
+            class="flex-grow-0 mr-2 black--text"
+            @click="() => select(a.asset)"
+            color="yellow"
+          >
+            <v-icon>forward</v-icon>
+            Select
+          </v-btn>
+          <div class="asset d-flex flex-grow-1">
+            <div class="mb-1">{{ a.name }} <span class="yellow--text">({{ a.ticker }})</span></div>
           </div>
           <div class="display-1 flex-grow-1 text-right">
-            {{ a.balance }}
+            {{ btc(a.balance, a.precision) }}
             <div v-if="a.pending" class="title red--text">
               {{ a.pending }} unconfirmed
             </div>
           </div>
         </v-expansion-panel-header>
+        <v-expansion-panel-content class="text-left">
+          <v-card class="pa-4" style="background: #333">
+            <v-alert
+              v-if="success[a.asset]"
+              class="mb-4"
+              color="success"
+              icon="info"
+              v-model="success[a.asset]"
+              dismissible
+              transition="scale-transition"
+              dark
+            >
+              Settings saved successfully
+            </v-alert>
+            <v-textarea label="Id" :value="a.asset" readonly rows="1" auto-grow>
+              <template v-slot:append>
+                <v-btn @click="() => copy(hash)" class="ml-1" icon>
+                  <v-icon class="mr-1">content_copy</v-icon>
+                </v-btn>
+              </template>
+            </v-textarea>
+            <v-textarea label="Name" v-model="a.name" rows="1" auto-grow>
+              <template v-slot:append>
+                <v-btn @click="() => copy(hash)" class="ml-1" icon>
+                  <v-icon class="mr-1">content_copy</v-icon>
+                </v-btn>
+              </template>
+            </v-textarea>
+            <v-textarea label="Ticker" v-model="a.ticker" rows="1" auto-grow>
+              <template v-slot:append>
+                <v-btn @click="() => copy(fee)" class="ml-1" icon>
+                  <v-icon class="mr-1">content_copy</v-icon>
+                </v-btn>
+              </template>
+            </v-textarea>
+            <v-text-field
+              label="Precision"
+              v-model="a.precision"
+              type="number"
+            />
+            <div class="text-right">
+              <v-btn @click="() => submit(a)">
+                <v-icon class="mr-1 yellow--text">check</v-icon>
+                <span>save</span>
+              </v-btn>
+            </div>
+          </v-card>
+        </v-expansion-panel-content>
       </v-expansion-panel>
     </v-expansion-panels>
   </div>
 </template>
 
 <script>
-import { get, call } from 'vuex-pathify';
+import { get, sync, call } from 'vuex-pathify';
+import Utils from '../mixins/Utils';
 
 export default {
+  mixins: [Utils],
   computed: {
-    user: get('user'),
+    user: sync('user'),
+  },
+  data() {
+    return {
+      success: {},
+    };
   },
   methods: {
+    async submit(a) {
+      try {
+        await this.updateAccount(a);
+        this.$set(this.success, a.asset, true);
+      } catch (e) {
+        this.$set(this.success, a.asset, false);
+      }
+    },
     shiftAccount: call('shiftAccount'),
+    updateAccount: call('updateAccount'),
     async select(a) {
       await this.shiftAccount(a);
       this.$go('/home');
