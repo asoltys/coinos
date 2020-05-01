@@ -1,6 +1,6 @@
 <template>
-  <div v-if="!isNaN(animatedBalance)" class="mb-2 text-center">
-    <span class="display-2 font-weight-black">{{ animatedBalance }} </span>
+  <div v-if="user.account.balance" class="mb-2 text-center">
+    <span class="display-2 font-weight-black">{{ btc(user.account.balance) }} </span>
       <v-btn
         class="black--text unitToggle"
         color="white"
@@ -26,9 +26,9 @@
     </h3>
     <div
                 class="red--text"
-      v-if="user.account.pending && !isNaN(animatedPending)"
+      v-if="user.account.pending"
     >
-      <span class="display-1 font-weight-black">{{ animatedPending }} </span>
+      <span class="display-1 font-weight-black">{{ btc(user.account.pending) }} </span>
       <span class="headline">UNCONFIRMED</span>
     </div>
   </div>
@@ -48,8 +48,6 @@ export default {
 
   data() {
     return {
-      tweenedBalance: null,
-      tweenedPending: null,
       tweenedRate: null,
     };
   },
@@ -72,16 +70,10 @@ export default {
       return this.user.account.ticker === 'BTC';
     }, 
     fiat() {
-      return (this.tweenedBalance / SATS) * this.animatedRate;
+      return (this.user.account.balance / SATS) * this.animatedRate;
     },
     pendingFiat() {
-      return (this.animatedPending / SATS) * this.animatedRate;
-    },
-    animatedBalance() {
-      return this.btc(this.tweenedBalance);
-    },
-    animatedPending() {
-      return parseInt(this.tweenedPending).toFixed(0);
+      return (this.user.account.pending / SATS) * this.animatedRate;
     },
     animatedRate() {
       return parseFloat(this.tweenedRate).toFixed(2);
@@ -98,26 +90,9 @@ export default {
       let tweenedRate = rate;
       TweenLite.to(this.$data, 0.5, { tweenedRate });
     },
-
-    user: {
-      handler(user) {
-        let tweenedBalance = user.account.balance;
-        let tweenedPending = user.account.pending;
-
-        if (user.account.pending === 0) user.account.pending = null;
-
-        TweenLite.to(this, 0.5, { tweenedBalance });
-        TweenLite.to(this, 0.5, { tweenedPending });
-
-        if (!this.tweenedBalance) this.tweenedBalance = 0;
-      },
-      deep: true,
-    },
   },
 
   created() {
-    this.tweenedBalance = this.user.account.balance;
-    this.tweenedPending = this.user.account.pending;
     this.tweenedRate = this.rate;
   },
 };
