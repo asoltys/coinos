@@ -1,5 +1,5 @@
 <template>
-  <div v-if="user.account.balance" class="mb-2 text-center">
+  <div class="mb-2 text-center">
     <span class="display-2 font-weight-black">{{ $format(user.account.balance) }} </span>
       <v-btn
         class="black--text unitToggle"
