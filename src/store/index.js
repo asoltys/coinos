@@ -544,7 +544,7 @@ export default new Vuex.Store({
         let current = user.accounts[index].asset;
 
         if (current === BTC) {
-          dispatch('toggleUnit');
+          await dispatch('toggleUnit');
           if (user.unit === 'SAT') return;
         }
 
