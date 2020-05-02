@@ -1,19 +1,19 @@
 <template>
   <div v-if="user.username" class="text-center">
     <balance />
-    <payments />
     <div
-      v-if="user.account.ticker === 'BTC' && user.account.balance < 101"
-      class="mx-auto mt-4"
+      v-if="user.account.ticker === 'BTC' && !user.account.balance"
+      class="mx-auto mb-2"
     >
       <div class="headline mb-2">Welcome! Your account is empty</div>
-      <v-btn class="mb-2 mr-1 wide" @click="$router.push('/receive')">
+      <v-btn class="mr-1 wide" @click="$router.push('/receive')">
         <v-icon class="mr-1">get_app</v-icon><span>Receive Funds</span>
       </v-btn>
     </div>
+    <payments class="mb-2" />
     <v-btn
       v-if="user.username.startsWith('Guest')"
-      class="mb-2 mr-1 wide"
+      class="mr-1 wide"
       @click="$router.push('/settings')"
     >
       <v-icon class="mr-1 green--text">person</v-icon><span>Setup Account</span>

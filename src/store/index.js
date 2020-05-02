@@ -536,8 +536,8 @@ export default new Vuex.Store({
       }
     },
 
-    async shiftAccount({ commit, dispatch, state }, asset) {
-      let { user } = state;
+    async shiftAccount({ commit, dispatch, getters }, asset) {
+      let { user } = getters;
 
       if (typeof asset !== 'string') {
         let index = user.accounts.findIndex(a => a.id === user.account.id);

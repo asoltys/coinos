@@ -37,10 +37,7 @@
           <span>Lightning</span>
         </v-btn>
 
-        <v-btn
-          class="flex-grow-1 mr-0"
-          @click="addInvoice('liquid')"
-        >
+        <v-btn class="flex-grow-1 mr-0" @click="addInvoice('liquid')">
           <water fillColor="#00aaee" />
           <span>Liquid</span>
         </v-btn>
@@ -64,11 +61,10 @@ export default {
 
   computed: {
     currencies() {
-      let user = this.user;
-      if (user.account.ticker === 'BTC') {
-        return [...user.currencies, 'SAT', 'BTC'];
-      } 
-      return [user.account.ticker];
+      let currencies = this.user.accounts.map(a => a.ticker);
+      if (this.user.account.ticker === 'BTC')
+        currencies = [...currencies, 'SAT', ...this.user.currencies];
+      return currencies;
     },
     invoice: sync('invoice'),
     loading: sync('loading'),
@@ -126,7 +122,7 @@ canvas
 
 @media (max-width: 600px)
   .buttons .v-btn
-    max-width none 
+    max-width none
     width 100%
     height 62px !important
 

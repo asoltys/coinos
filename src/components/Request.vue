@@ -2,9 +2,9 @@
   <div>
     <tippad v-if="tipping" @input="setTip" />
     <div v-else>
-      <div v-if="invoice.amount > 0">
+      <div v-if="invoice.amount > 0 || invoice.network === 'LNBTC'">
         <h1 class="text-center font-weight-black">Requesting</h1>
-        <div class="d-flex flex-wrap justify-center">
+        <div v-if="invoice.amount > 0" class="d-flex flex-wrap justify-center">
           <div class="display-1 mr-1">
             <span>{{ total }}</span>
             <v-btn
@@ -38,7 +38,7 @@
           class="w-100 mx-auto mb-2"
           style="cursor: pointer"
         />
-        <div class="mb-2" v-if="invoice.amount <= 0">
+        <div class="mb-2" v-if="invoice.amount <= 0 && invoice.network !== 'LNBTC'">
           <code class="black--text mb-2" :data-clipboard-text="invoice.text">{{
             invoice.text
           }}</code>
@@ -58,7 +58,7 @@
             >
           </v-btn>
           <v-btn
-            v-if="invoice.amount > 0"
+            v-if="invoice.amount > 0 || invoice.network === 'LNBTC'"
             @click.native="showcode = !showcode"
             class="mr-2 mb-2 mb-sm-0 wide"
           >

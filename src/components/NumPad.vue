@@ -1,18 +1,36 @@
 <template>
   <div @keyup.prevent="keyup">
     <div class="d-flex">
-      <input
-        class="display-1"
+      <v-text-field
+        class="display-1 flex-grow-1 mb-1"
+        hide-details="auto"
         v-model="inputAmount"
         @focus="e => e.target.select()"
         @keyup.enter="done"
-      />
-      <v-btn
-        class="toggle black--text"
-        :color="color"
-        @click.prevent="toggle"
-        >{{ currency }}</v-btn
+        solo
       >
+        <template v-slot:append>
+          <v-menu
+            v-if="user && user.name"
+            offset-y
+            nudge-bottom="1"
+          >
+            <template v-slot:activator="{ on }">
+              <v-btn
+                v-on="on"
+                class="black--text"
+                :color="color"
+                >{{ currency }}</v-btn
+              >
+            </template>
+            <v-list>
+              <v-list-item v-for="c in currencies" :key="c" @click="() => select(c)">
+                <v-list-item-title>{{ c }}</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </template>
+      </v-text-field>
     </div>
     <div class="d-flex" v-for="i in buttons.length / 3" :key="i">
       <v-btn
@@ -82,7 +100,7 @@ export default {
         : 'yellow';
     },
     fiat() {
-      return this.user.account.ticker === 'BTC' && this.currency !== 'SAT';
+      return this.user.account.ticker === 'BTC' && !['SAT', 'BTC'].includes(this.currency);
     },
     decimals() {
       if (this.user.account.ticker !== 'BTC')
@@ -123,7 +141,9 @@ export default {
   watch: {
     inputAmount(v) {
       this.convert(v);
-      this.$nextTick(() => {  if (!this.amount) this.inputAmount = '_' });
+      this.$nextTick(() => {
+        if (!this.amount) this.inputAmount = '_';
+      });
       this.$emit('input', this.amount, this.fiatAmount, this.currency);
     },
   },
@@ -184,6 +204,24 @@ export default {
       });
     },
 
+    shiftAccount: call('shiftAccount'),
+    setCurrency: call('setCurrency'),
+    async select(c) {
+      let account = this.user.accounts.find(a => a.ticker === c)
+      if (account) {
+        this.shiftAccount(account.asset);
+      } else {
+        await this.setCurrency(c);
+      }
+
+      this.currency = c;
+
+      this.$nextTick(() => {
+        this.inputAmount = ((this.amount * this.rate) / SATS).toFixed(
+          this.decimals
+        );
+      });
+    },
     update(m) {
       let amount = f(this.inputAmount);
       if (isNaN(amount)) amount = 0;
@@ -215,16 +253,6 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-input
-  cursor pointer
-  width 100%
-
-.toggle
-  margin auto 0.25rem !important
-  min-width 3rem !important
-  width 3rem !important
-  height 1.9rem !important
-
 .numpad-button
   height 8vh !important
   min-height 60px
