@@ -44,7 +44,7 @@
                   'headline': !$vuetify.breakpoint.xs,
                 }">
                   <span :class="color">{{ sign }}</span>
-                  {{ $format(Math.abs(amount)) }}
+                  {{ $format(Math.abs(amount), precision) }}
                 </span>
 
                 <span>{{ account.ticker }}</span>
@@ -166,6 +166,10 @@ export default {
   },
 
   computed: {
+    precision() {
+      if (this.user.unit === 'SAT') return 0;
+      else return undefined;
+    },
     ...mapGetters(['initializing', 'loading', 'payments', 'user']),
   },
 

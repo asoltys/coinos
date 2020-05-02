@@ -124,7 +124,7 @@ export default {
   },
 
   methods: {
-    ...mapActions(['addInvoice', 'getNewAddress', 'shiftCurrency', 'snack']),
+    ...mapActions(['addInvoice', 'getNewAddress', 'shiftCurrency', 'snack', 'toggleUnit']),
     async address() {
       await this.getNewAddress();
       this.draw();
