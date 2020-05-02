@@ -2,11 +2,21 @@
   <div>
     <v-expansion-panels accordion>
       <v-expansion-panel v-for="a in user.accounts" :key="a.asset">
-        <v-expansion-panel-header ripple class="d-flex title" expand-icon="">
-          <div class="asset d-flex flex-grow-1">
+        <v-expansion-panel-header ripple class="d-flex flex-wrap" expand-icon="">
+          <div class="asset d-flex flex-grow-1"
+               :class="{
+                  'body-1': $vuetify.breakpoint.xsOnly,
+                  'title': !$vuetify.breakpoint.xs,
+                }"
+               >
             <div class="mb-1">{{ a.name }} <span class="yellow--text">({{ a.ticker }})</span></div>
           </div>
-          <div class="display-1 flex-grow-1 text-right">
+          <div class="flex-grow-1 text-right"
+               :class="{
+                  'body-1': $vuetify.breakpoint.xsOnly,
+                  'display-1': !$vuetify.breakpoint.xs,
+                }"
+               >
             {{ $format(a.balance, a.precision) }}
             <div v-if="a.pending" class="title red--text">
               {{ a.pending }} unconfirmed
@@ -18,7 +28,7 @@
             color="yellow"
           >
             <v-icon>forward</v-icon>
-            Payments
+            <span class="d-none d-sm-inline">Payments</span>
           </v-btn>
         </v-expansion-panel-header>
         <v-expansion-panel-content class="text-left">
@@ -35,7 +45,7 @@
             >
               Settings saved successfully
             </v-alert>
-            <v-textarea label="Id" :value="a.asset" readonly rows="1" auto-grow>
+            <v-textarea label="Id" :value="a.asset" rows="1" auto-grow>
               <template v-slot:append>
                 <v-btn @click="() => copy(hash)" class="ml-1" icon>
                   <v-icon class="mr-1">content_copy</v-icon>

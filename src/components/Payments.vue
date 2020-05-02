@@ -32,26 +32,17 @@
             <v-expansion-panel-header
               ripple
               class="justify-center justify-space-around flex-wrap"
+              expand-icon=""
             >
-              <div class="flex-grow-0 mr-2 mt-1">
-                <flash
-                  v-if="network === 'LNBTC'"
-                  fillColor="yellow"
-                  title="Lightning Payment"
-                />
-                <v-icon v-else-if="network === 'GIFT'" color="yellow"
-                  >card_giftcard</v-icon
-                >
-                <img
-                  v-else-if="network === 'BTC'"
-                  src="../assets/bitcoin.png"
-                  width="24px"
-                  title="Bitcoin Payment"
-                />
-                <water v-else fillColor="#00aaee" title="Liquid Payment" />
-              </div>
+              <network-icon
+                class="flex-grow-0 mr-2 mt-1"
+                :network="network"
+              />
               <div class="flex-grow-1" style="white-space: nowrap;">
-                <span class="headline">
+                <span :class="{
+                  'body-1': $vuetify.breakpoint.xsOnly,
+                  'headline': !$vuetify.breakpoint.xs,
+                }">
                   <span :class="color">{{ sign }}</span>
                   {{ $format(Math.abs(amount)) }}
                 </span>
@@ -65,7 +56,11 @@
                   </span>
                 </div>
               </div>
-              <div class="text-right subtitle-1" style="white-space: nowrap;">
+              <div class="text-right"
+                   :class="{
+                  'body-2': $vuetify.breakpoint.xsOnly,
+                  'subtitle-2': !$vuetify.breakpoint.xs,
+                }">
                 <v-chip v-if="!confirmed" color="red" class="mr-2">
                   <v-icon class="mr-1">warning</v-icon>
                   <span class="d-none d-sm-inline" title="UNCONFIRMED"
@@ -144,16 +139,15 @@ import { format, parse, isBefore } from 'date-fns';
 import { mapGetters } from 'vuex';
 import { call } from 'vuex-pathify';
 import bolt11 from 'bolt11';
-import Water from 'vue-material-design-icons/Water';
-import Flash from 'vue-material-design-icons/Flash';
 import colors from 'vuetify/lib/util/colors';
 import Copy from '../mixins/Copy';
+import NetworkIcon from './NetworkIcon';
 
 let bs = 'https://blockstream.info';
 const SATS = 100000000;
 
 export default {
-  components: { Flash, Water },
+  components: { NetworkIcon },
   mixins: [Copy],
 
   filters: {
