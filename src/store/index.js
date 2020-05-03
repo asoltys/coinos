@@ -1,3 +1,4 @@
+import { format } from '../plugins/coinos';
 import socketio from 'socket.io-client';
 import Vue from 'vue';
 import Vuex from 'vuex';
@@ -10,6 +11,7 @@ import pathify, { make } from 'vuex-pathify';
 import paths from '../paths';
 Vue.use(Vuex);
 
+console.log(Vue.$format);
 const SATS = 100000000;
 
 const networks = {
@@ -279,8 +281,12 @@ export default new Vuex.Store({
 
       s.on('payment', p => {
         commit('payment', p);
+
+        let unit = p.account.ticker;
+        if (unit === 'BTC') unit = getters.user.unit;
+
         if (p.amount > 0)
-          dispatch('snack', `Received ${p.amount + p.tip} ${p.account.ticker}`);
+          dispatch('snack', `Received ${p.amount + p.tip} ${unit}`);
         commit('addPayment', p);
       });
 
@@ -405,7 +411,7 @@ export default new Vuex.Store({
 
       if (payreq) {
         try {
-          let res = await Vue.axios.post('/lightning/send', { payreq, route });
+          let res = await Vue.axios.post('/lightning/send', { amount, payreq, route });
           commit('payment', res.data);
         } catch (e) {
           commit('error', e.response.data);
@@ -469,6 +475,7 @@ export default new Vuex.Store({
       commit('amount', null);
       commit('fiatAmount', null);
       commit('error', null);
+      commit('route', null);
     },
 
     async addInvoice({ commit, state }, method) {
@@ -589,6 +596,16 @@ export default new Vuex.Store({
       }
     },
 
+    async queryRoutes({ commit, getters }, amount) {
+      let { payreq } = getters;
+      try {
+        let res = await Vue.axios.post('/lightning/query', { payreq, amount });
+        if (res.data.routes.length) commit('route', res.data.routes[0]);
+      } catch (e) {
+        commit('error', e);
+      }
+    },
+
     async handleScan({ commit, dispatch, getters }, text) {
       await dispatch('clearPayment');
       commit('scanning', false);
@@ -598,12 +615,17 @@ export default new Vuex.Store({
         if (text.slice(0, 10) === 'lightning:') text = text.slice(10);
         let payreq = text.toLowerCase();
         let payobj = bolt11.decode(payreq);
-        let res = await Vue.axios.post('/lightning/query', { payreq });
-        if (res.data.routes.length) commit('route', res.data.routes[0]);
-        go({ name: 'send', params: { keep: true } });
+
+        commit('amount', payobj.satoshis);
         commit('network', 'lightning');
         commit('payobj', payobj);
-        commit('payreq', text);
+        commit('payreq', payreq);
+
+        if (payobj.satoshis) {
+          await dispatch('queryRoutes');
+        }
+
+        go({ name: 'send', params: { keep: true } });
         return;
       } catch (e) {
         if (e.response) commit('error', e.response.data);

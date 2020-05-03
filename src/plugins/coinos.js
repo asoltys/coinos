@@ -9,7 +9,7 @@ const Coinos = {
           var e = parseInt(x.toString().split('e-')[1]);
           if (e) {
             x *= Math.pow(10, e - 1);
-            x = x.toFixed(9-e);
+            x = x.toFixed(1);
             x = '0.' + new Array(e).join('0') + x.toString().substring(2);
           }
         } else {

@@ -19,14 +19,14 @@
             ref="to"
             :error="to.length > 0"
           >
-          <template v-if="to.length" v-slot:append>
-            <v-btn icon @click="() => showText(to)" class="ml-1" text>
-              <qrcode />
-            </v-btn>
-            <v-btn @click="() => copy(to)" class="ml-1" icon>
-              <v-icon class="mr-1">content_copy</v-icon>
-            </v-btn>
-          </template>
+            <template v-if="to.length" v-slot:append>
+              <v-btn icon @click="() => showText(to)" class="ml-1" text>
+                <qrcode />
+              </v-btn>
+              <v-btn @click="() => copy(to)" class="ml-1" icon>
+                <v-icon class="mr-1">content_copy</v-icon>
+              </v-btn>
+            </template>
           </v-textarea>
           <v-chip v-if="to.length > 0" class="black--text mb-2" color="white">
             <v-icon color="black" left>warning</v-icon>
@@ -86,7 +86,11 @@
             @editingAmount="startEditingAmount"
             @back="back"
           />
-          <payment-details :payobj="payobj" />
+          <payment-details
+            :payobj="payobj"
+            v-bind="{ amount, fiatAmount }"
+            @editingAmount="startEditingAmount"
+          />
           <div v-if="!loading">
             <div class="d-flex flex-wrap">
               <v-btn
@@ -160,7 +164,7 @@ export default {
       let user = this.user;
       if (user.account.ticker === 'BTC') {
         return [...user.currencies, 'SAT', 'BTC'];
-      } 
+      }
       return [user.account.ticker];
     },
     fiat: sync('fiat'),
