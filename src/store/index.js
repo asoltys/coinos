@@ -1,4 +1,3 @@
-import { format } from '../plugins/coinos';
 import socketio from 'socket.io-client';
 import Vue from 'vue';
 import Vuex from 'vuex';
@@ -9,9 +8,9 @@ import router from '../router';
 import { address as BitcoinAddress } from 'bitcoinjs-lib';
 import pathify, { make } from 'vuex-pathify';
 import paths from '../paths';
+import format from '../format';
 Vue.use(Vuex);
 
-console.log(Vue.$format);
 const SATS = 100000000;
 
 const networks = {
@@ -281,12 +280,14 @@ export default new Vuex.Store({
 
       s.on('payment', p => {
         commit('payment', p);
+        let { user } = getters;
 
         let unit = p.account.ticker;
-        if (unit === 'BTC') unit = getters.user.unit;
+        if (unit === 'BTC') unit = user.unit;
+        let precision = user.unit === 'SAT' ? 0 : user.account.precision;
 
         if (p.amount > 0)
-          dispatch('snack', `Received ${p.amount + p.tip} ${unit}`);
+          dispatch('snack', `Received ${format(p.amount + p.tip, precision)} ${unit}`);
         commit('addPayment', p);
       });
 

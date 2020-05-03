@@ -32,6 +32,7 @@ export default {
     },
     shiftAccount: call('shiftAccount'),
     setCurrency: call('setCurrency'),
+    toggleUnit: call('toggleUnit'),
     async select(c) {
       let account = this.user.accounts.find(a => a.ticker === c)
       if (account) {
@@ -40,6 +41,8 @@ export default {
         await this.shiftAccount(process.env.VUE_APP_LBTC);
         await this.setCurrency(c);
       }
+
+      if (this.user.account.ticker === 'BTC' && this.user.unit !== c) this.toggleUnit();
 
       this.$emit('currency', c);
     },

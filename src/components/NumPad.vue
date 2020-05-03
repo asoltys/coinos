@@ -1,5 +1,5 @@
 <template>
-  <div @keyup.prevent="keyup">
+  <div>
     <div class="d-flex">
       <v-text-field
         class="display-1 flex-grow-1 mb-1"
@@ -10,11 +10,7 @@
         solo
       >
         <template v-slot:append>
-          <currency-list
-            :currency="currency"
-            :currencies="currencies"
-            @currency="setCurrency"
-          />
+          <currency-list :currency="currency" :currencies="currencies" @currency="setCurrency" />
         </template>
       </v-text-field>
     </div>
@@ -72,12 +68,9 @@ export default {
 
   mounted() {
     this.rates = this.globalRates;
-    this.currency =
-      this.user.account.ticker !== 'BTC'
-        ? this.user.account.ticker
-        : this.fiat
-        ? this.user.currency
-        : this.user.unit;
+    this.currency = this.fiat && this.currencies.includes(this.user.currency)
+      ? this.user.currency
+      : this.user.account.ticker;
     this.inputAmount =
       this.fiat && this.fiatAmount
         ? this.fiatAmount
@@ -85,7 +78,9 @@ export default {
   },
 
   computed: {
-    fiat: sync('fiat'),
+    fiat() {
+      return this.user.account.ticker === 'BTC' && !['SAT', 'BTC'].includes(this.currency);
+    },
     decimals() {
       if (this.user.account.ticker !== 'BTC')
         return this.user.account.precision;
@@ -135,7 +130,6 @@ export default {
   methods: {
     setCurrency(c) {
       this.currency = c;
-      this.fiat = this.user.currencies.includes(c);
 
       this.$nextTick(() => {
         this.inputAmount = ((this.amount * this.rate) / SATS).toFixed(
@@ -147,7 +141,7 @@ export default {
       if (this.fiat) {
         this.fiatAmount = f(this.inputAmount).toFixed(this.decimals);
         this.amount = parseInt(
-          ((parseFloat(this.fiatAmount) * SATS) / this.rate).toFixed(8)
+          ((parseFloat(this.fiatAmount) * SATS) / this.rate).toFixed(this.decimals)
         );
       } else {
         if (this.currency === 'SAT') {
@@ -157,13 +151,14 @@ export default {
           this.amount = parseInt(
             parseFloat(n).toFixed(this.user.account.precision) * this.divisor
           );
+          this.fiatAmount = f((this.amount * this.globalRate) / SATS).toFixed(2);
         }
       }
     },
     done(e) {
       let amount = e.target.value;
       if (this.fiat)
-        this.amount = parseInt(((amount * SATS) / this.rate).toFixed(8));
+        this.amount = parseInt(((amount * SATS) / this.rate).toFixed(this.decimals));
       else this.amount = parseInt(amount);
       this.$emit('done');
     },
@@ -172,30 +167,6 @@ export default {
       let prefix = 'button-';
       if (n === '<') return prefix + 'lt';
       return prefix + n;
-    },
-
-    keyup(e) {
-      if (e.target.nodeName === 'INPUT') return;
-      let key = e.keyCode;
-      if (key > 57) key -= 48;
-      let n = this.codes.indexOf(key).toString();
-      if (key === 8) n = '<';
-      if (key === 46) n = 'C';
-      if (n < 0) return;
-      this.update(n);
-    },
-
-    async toggle() {
-      if (this.currencies.length <= 1) return;
-      let index = this.currencies.findIndex(c => c === this.currency);
-      index = index >= this.currencies.length - 1 ? 0 : index + 1;
-      this.currency = this.currencies[index];
-
-      this.$nextTick(() => {
-        this.inputAmount = ((this.amount * this.rate) / SATS).toFixed(
-          this.decimals
-        );
-      });
     },
 
     update(m) {
@@ -216,14 +187,6 @@ export default {
         this.$emit('input', this.amount, this.fiatAmount, this.currency);
       });
     },
-  },
-
-  created: function() {
-    document.addEventListener('keyup', this.keyup);
-  },
-
-  destroyed: function() {
-    document.removeEventListener('keyup', this.keyup);
   },
 };
 </script>
