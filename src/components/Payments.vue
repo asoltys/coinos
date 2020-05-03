@@ -47,7 +47,7 @@
                   {{ $format(Math.abs(amount), precision) }}
                 </span>
 
-                <span>{{ account.ticker }}</span>
+                <span>{{ ticker(account) }}</span>
                 <div v-if="account.ticker === 'BTC'">
                   <span class="yellow--text">
                     {{ fiat | abs | twodec }}
@@ -174,6 +174,10 @@ export default {
   },
 
   methods: {
+    ticker(a) {
+      if (a.ticker === 'BTC') return this.user.unit;
+      return a.ticker;
+    },
     snack: call('snack'),
     loadPayments: call('loadPayments'),
 
