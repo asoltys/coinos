@@ -47,29 +47,18 @@
             </v-alert>
             <v-textarea label="Id" :value="a.asset" rows="1" auto-grow>
               <template v-slot:append>
-                <v-btn @click="() => copy(hash)" class="ml-1" icon>
+                <v-btn @click="() => copy(hash)" icon>
                   <v-icon class="mr-1">content_copy</v-icon>
                 </v-btn>
               </template>
             </v-textarea>
-            <v-textarea label="Name" v-model="a.name" rows="1" auto-grow>
-              <template v-slot:append>
-                <v-btn @click="() => copy(hash)" class="ml-1" icon>
-                  <v-icon class="mr-1">content_copy</v-icon>
-                </v-btn>
-              </template>
-            </v-textarea>
-            <v-textarea label="Ticker" v-model="a.ticker" rows="1" auto-grow>
-              <template v-slot:append>
-                <v-btn @click="() => copy(fee)" class="ml-1" icon>
-                  <v-icon class="mr-1">content_copy</v-icon>
-                </v-btn>
-              </template>
-            </v-textarea>
+            <v-textarea label="Name" v-model="a.name" rows="1" auto-grow />
+            <v-textarea label="Ticker" v-model="a.ticker" rows="1" auto-grow />
             <v-text-field
               label="Precision"
               v-model="a.precision"
               type="number"
+              @input="(e) => limit(e, a)"
             />
             <div class="text-right">
               <v-btn @click="() => submit(a)">
@@ -97,6 +86,10 @@ export default {
     };
   },
   methods: {
+    limit(e, a) {
+      if (e < 0) this.$nextTick(() => a.precision = 0);
+      if (e > 8) this.$nextTick(() => a.precision = 8);
+    },
     async submit(a) {
       try {
         await this.updateAccount(a);

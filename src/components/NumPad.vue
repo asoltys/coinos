@@ -10,25 +10,11 @@
         solo
       >
         <template v-slot:append>
-          <v-menu
-            v-if="user && user.name"
-            offset-y
-            nudge-bottom="1"
-          >
-            <template v-slot:activator="{ on }">
-              <v-btn
-                v-on="on"
-                class="black--text"
-                :color="color"
-                >{{ currency }}</v-btn
-              >
-            </template>
-            <v-list>
-              <v-list-item v-for="c in currencies" :key="c" @click="() => select(c)">
-                <v-list-item-title>{{ c }}</v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu>
+          <currency-list
+            :currency="currency"
+            :currencies="currencies"
+            @currency="setCurrency"
+          />
         </template>
       </v-text-field>
     </div>
@@ -51,10 +37,13 @@
 
 <script>
 import { get, call, sync } from 'vuex-pathify';
+import CurrencyList from './CurrencyList';
+
 const f = parseFloat;
 const SATS = 100000000;
 
 export default {
+  components: { CurrencyList },
   props: {
     initialAmount: { type: Number },
     initialRate: { type: Number },
@@ -83,9 +72,12 @@ export default {
 
   mounted() {
     this.rates = this.globalRates;
-    this.currency = this.currencies.includes(this.user.currency)
-      ? this.user.currency
-      : this.user.account.ticker;
+    this.currency =
+      this.user.account.ticker !== 'BTC'
+        ? this.user.account.ticker
+        : this.currencies.includes(this.user.currency)
+        ? this.user.currency
+        : 'SAT';
     this.inputAmount =
       this.fiat && this.fiatAmount
         ? this.fiatAmount
@@ -93,14 +85,11 @@ export default {
   },
 
   computed: {
-    color() {
-      let tickers = this.user.accounts.map(a => a.ticker);
-      return ['SAT', 'BTC', ...tickers].includes(this.currency)
-        ? 'white'
-        : 'yellow';
-    },
     fiat() {
-      return this.user.account.ticker === 'BTC' && !['SAT', 'BTC'].includes(this.currency);
+      return (
+        this.user.account.ticker === 'BTC' &&
+        !['SAT', 'BTC'].includes(this.currency)
+      );
     },
     decimals() {
       if (this.user.account.ticker !== 'BTC')
@@ -149,6 +138,15 @@ export default {
   },
 
   methods: {
+    setCurrency(c) {
+      this.currency = c;
+
+      this.$nextTick(() => {
+        this.inputAmount = ((this.amount * this.rate) / SATS).toFixed(
+          this.decimals
+        );
+      });
+    },
     convert(n) {
       if (this.fiat) {
         this.fiatAmount = f(this.inputAmount).toFixed(this.decimals);
@@ -204,24 +202,6 @@ export default {
       });
     },
 
-    shiftAccount: call('shiftAccount'),
-    setCurrency: call('setCurrency'),
-    async select(c) {
-      let account = this.user.accounts.find(a => a.ticker === c)
-      if (account) {
-        this.shiftAccount(account.asset);
-      } else {
-        await this.setCurrency(c);
-      }
-
-      this.currency = c;
-
-      this.$nextTick(() => {
-        this.inputAmount = ((this.amount * this.rate) / SATS).toFixed(
-          this.decimals
-        );
-      });
-    },
     update(m) {
       let amount = f(this.inputAmount);
       if (isNaN(amount)) amount = 0;

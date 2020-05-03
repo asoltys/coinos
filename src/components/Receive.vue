@@ -61,10 +61,12 @@ export default {
 
   computed: {
     currencies() {
-      let currencies = this.user.accounts.map(a => a.ticker);
-      if (this.user.account.ticker === 'BTC')
-        currencies = [...currencies, 'SAT', ...this.user.currencies];
-      return currencies;
+        return ['SAT', 'BTC', 
+          ...[
+            ...this.user.currencies,
+            ...this.user.accounts.map(a => a.ticker).filter(a => a !== 'BTC'),
+          ].sort()
+        ];
     },
     invoice: sync('invoice'),
     loading: sync('loading'),
