@@ -75,9 +75,9 @@ export default {
     this.currency =
       this.user.account.ticker !== 'BTC'
         ? this.user.account.ticker
-        : this.currencies.includes(this.user.currency)
+        : this.fiat
         ? this.user.currency
-        : 'SAT';
+        : this.user.unit;
     this.inputAmount =
       this.fiat && this.fiatAmount
         ? this.fiatAmount
@@ -85,12 +85,7 @@ export default {
   },
 
   computed: {
-    fiat() {
-      return (
-        this.user.account.ticker === 'BTC' &&
-        !['SAT', 'BTC'].includes(this.currency)
-      );
-    },
+    fiat: sync('fiat'),
     decimals() {
       if (this.user.account.ticker !== 'BTC')
         return this.user.account.precision;
@@ -140,6 +135,7 @@ export default {
   methods: {
     setCurrency(c) {
       this.currency = c;
+      this.fiat = this.user.currencies.includes(c);
 
       this.$nextTick(() => {
         this.inputAmount = ((this.amount * this.rate) / SATS).toFixed(
