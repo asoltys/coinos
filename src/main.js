@@ -5,13 +5,11 @@ import App from './App';
 import router from './router';
 import store from './store';
 import FastClick from 'fastclick';
-import FBSignInButton from 'vue-facebook-signin-button';
 import coinos from './plugins/coinos';
 import vuetify from './plugins/vuetify';
 
 Axios.defaults.baseURL = '/api';
 
-Vue.use(FBSignInButton);
 Vue.use(VueAxios, Axios);
 Vue.use(coinos);
 
@@ -21,27 +19,6 @@ const app = new Vue({
   vuetify,
   store,
 }).$mount('#app');
-
-if (window.location.protocol !== 'file:') {
-  window.fbAsyncInit = function() {
-    window.FB.init({
-      appId: process.env.VUE_APP_FACEBOOK,
-      cookie: false,
-      status: true,
-      xfbml: true,
-      version: 'v5.0',
-    });
-  };
-  (function(d, s, id) {
-    var js,
-      fjs = d.getElementsByTagName(s)[0];
-    if (d.getElementById(id)) return;
-    js = d.createElement(s);
-    js.id = id;
-    js.src = 'https://connect.facebook.net/en_US/sdk.js';
-    fjs.parentNode.insertBefore(js, fjs);
-  })(document, 'script', 'facebook-jssdk');
-}
 
 if ('addEventListener' in document) {
   document.addEventListener(

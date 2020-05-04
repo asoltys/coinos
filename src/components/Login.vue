@@ -56,16 +56,6 @@
             <v-icon class="mr-1">account_balance_wallet</v-icon>
             New Account
           </v-btn>
-          <v-btn color="#4267b2" class="wide">
-            <facebook />
-            <fb-signin-button
-              :params="fbSignInParams"
-              @success="onSignInSuccess"
-              @error="onSignInError"
-            >
-              Facebook Login
-            </fb-signin-button>
-          </v-btn>
         </v-form>
       </v-card-text>
     </v-card>
@@ -76,13 +66,12 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 import Flash from 'vue-material-design-icons/Flash';
-import Facebook from 'vue-material-design-icons/Facebook';
 import Login from 'vue-material-design-icons/Login';
 import Water from 'vue-material-design-icons/Water';
 import { sync } from 'vuex-pathify';
 
 export default {
-  components: { Facebook, Flash, Login, Water },
+  components: { Flash, Login, Water },
 
   props: {
     logout: {
@@ -93,10 +82,6 @@ export default {
 
   data() {
     return {
-      fbSignInParams: {
-        scope: 'email,user_friends',
-        return_scopes: true,
-      },
       loggingIn: false,
       form: {
         username: '',
@@ -112,15 +97,7 @@ export default {
   },
 
   methods: {
-    ...mapActions(['login', 'facebookLogin', 'createUser']),
-
-    onSignInSuccess(res) {
-      this.facebookLogin(res);
-    },
-
-    onSignInError(error) {
-      console.log('Facebook login failed', error);
-    },
+    ...mapActions(['login', 'createUser']),
 
     submit(e) {
       this.login(this.form);
@@ -149,8 +126,4 @@ a
 
 .v-text-field
   font-size 18px
-
-.fb-signin-button
-  padding: 4px 8px;
-  border-radius: 3px;
 </style>

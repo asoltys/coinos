@@ -1,20 +1,25 @@
 <template>
-  <div class="mb-2 text-center">
-    <span class="display-2 font-weight-black">{{ $format(user.account.balance) }} </span>
-      <v-btn
-        class="black--text unitToggle"
-        color="white"
-        @click="shiftAccount"
-        >{{ ticker }}</v-btn>
-    <h3 v-if="!isNaN(animatedRate) && isBtc" class="d-flex flex-wrap justify-center">
-      <div class="fiat yellow--text display-1">{{ fiat | format }}</div>
-      <v-btn
-        class="toggle black--text"
-        color="yellow"
-        @click="shiftCurrency"
-        >{{ user.currency }}</v-btn
-      >
-      <div class="rate">
+  <div class="mb-2">
+    <div class="d-flex">
+      <div class="display-2 font-weight-black flex-grow-1 text-right mr-2">
+        {{ $format(user.account.balance, precision) }}
+      </div>
+      <div class="text-left flex-grow-1 my-auto">
+        <currency-list :currency="ticker" :currencies="currencies" />
+      </div>
+    </div>
+    <h3
+      v-if="!isNaN(animatedRate) && isBtc"
+      class="d-flex flex-wrap justify-center"
+    >
+      <div class="fiat yellow--text display-1 my-auto">{{ fiat | format }}</div>
+      <div class="mx-1">
+        <currency-list
+          :currency="user.currency"
+          :currencies="user.currencies"
+        />
+      </div>
+      <div class="mt-auto mb-1">
         <span>
           @
           <span class="font-weight-black yellow--text">{{
@@ -24,11 +29,10 @@
         </span>
       </div>
     </h3>
-    <div
-                class="red--text"
-      v-if="user.account.pending"
-    >
-      <span class="display-1 font-weight-black">{{ $format(user.account.pending) }} </span>
+    <div class="red--text" v-if="user.account.pending">
+      <span class="display-1 font-weight-black"
+        >{{ $format(user.account.pending) }}
+      </span>
       <span class="headline">UNCONFIRMED</span>
     </div>
   </div>
@@ -38,10 +42,13 @@
 import { mapGetters } from 'vuex';
 import { TweenLite } from 'gsap';
 import { call } from 'vuex-pathify';
+import CurrencyList from './CurrencyList';
 
 const SATS = 100000000;
 
 export default {
+  components: { CurrencyList },
+
   props: { payobj: { type: Object } },
 
   data() {
@@ -60,18 +67,25 @@ export default {
   },
 
   computed: {
+    currencies() {
+      return ['SAT', ...this.user.accounts.map(a => a.ticker)];
+    },
     ...mapGetters(['rate', 'user']),
     ticker() {
       return this.isBtc ? this.user.unit : this.user.account.ticker;
     },
     isBtc() {
       return this.user.account.ticker === 'BTC';
-    }, 
+    },
     fiat() {
       return (this.user.account.balance / SATS) * this.animatedRate;
     },
     pendingFiat() {
       return (this.user.account.pending / SATS) * this.animatedRate;
+    },
+    precision() {
+      if (this.user.unit === 'SAT') return 0;
+      else return this.user.account.precision;
     },
     animatedRate() {
       return parseFloat(this.tweenedRate).toFixed(2);
@@ -95,23 +109,3 @@ export default {
   },
 };
 </script>
-
-<style lang="stylus" scoped>
-.fiat
-  margin-top -6px
-
-.rate
-  margin-top 2px
-
-.toggle
-  margin auto 0.25rem !important
-  margin-top 0 !important
-  height 1.75rem !important
-  min-width 3rem !important
-  width 3rem !important
-
-.unitToggle
-  margin-top -25px
-  max-height 34px !important
-  margin-left -8px
-</style>

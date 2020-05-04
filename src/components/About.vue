@@ -12,7 +12,7 @@
           here that you can begin using right away.
         </p>
 
-        <div v-if="more">
+        <div>
           <p>
             The bitcoin to US dollar exchange rate is streamed every second from
             <a href="https://binance.com/">Binance</a> and converted to other
@@ -31,65 +31,25 @@
 
           <p class="mb-4">
             Coinos is developed by
-            <a href="https://adamsoltys.com/">Adam Soltys</a>. I will not be
-            held responsible for any loss of funds resulting from the use of
-            this software.
+            <a href="https://adamsoltys.com/">Adam Soltys</a>.
           </p>
-          <social />
-          <lightning-node />
         </div>
-        <v-btn
-          @click="more = true"
-          v-if="!more"
-          class="d-block mx-auto black--text mb-2"
-          color="yellow"
-        >
-          <v-icon class="mr-1">expand_more</v-icon>
-          <span>More Details</span>
-        </v-btn>
+          <social />
       </v-card-text>
     </v-card>
-
-        <div class="embed-responsive embed-responsive-16by9">
-          <iframe
-            class="embed-responsive-item"
-            title="Coinos Bitcoin Wallet"
-            src="https://www.youtube.com/embed/6Om9-7qqxmY?rel=0&amp;showinfo=0&amp;VQ=HD1024"
-            allowfullscreen
-          ></iframe>
-    </div>
-
+          <lightning-node />
     <stats />
-    <privacy-policy />
   </div>
 </template>
 
 <script>
 import { mapActions } from 'vuex';
-import PrivacyPolicy from './PrivacyPolicy';
 import Stats from './Stats';
 import LightningNode from './LightningNode';
 import Social from './Social';
 
 export default {
-  components: { LightningNode, PrivacyPolicy, Social, Stats },
-  data() {
-    return {
-      playerOptions: {
-        poster: '/intro.png',
-        autoplay: false,
-        controls: true,
-        sources: [
-          {
-            type: 'video/mp4',
-            src:
-              'https://skynet.adamsoltys.com/AAAXCwYEUgNvZ77YVTJiX0NopwU08k1j0f0AjXxrpC7kBA',
-          },
-        ],
-      },
-      more: false,
-    };
-  },
+  components: { LightningNode, Social, Stats },
 
   methods: {
     ...mapActions(['createUser', 'snack']),
@@ -102,45 +62,6 @@ export default {
 <style lang="stylus" scoped>
 .v-application a
   text-decoration none
-
-.embed-responsive {
-  position: relative;
-  display: block;
-  width: 100%;
-  padding: 0;
-  overflow: hidden;
-}
-.embed-responsive::before {
-  display: block;
-  content: "";
-}
-.embed-responsive .embed-responsive-item,
-.embed-responsive iframe,
-.embed-responsive embed,
-.embed-responsive object,
-.embed-responsive video {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border: 0;
-}
-
-.embed-responsive-21by9::before {
-  padding-top: 42.8571428571%;
-}
-
-.embed-responsive-16by9::before {
-  padding-top: 56.25%;
-}
-
-.embed-responsive-4by3::before {
-  padding-top: 75%;
-}
-
-.embed-responsive-1by1::before {
-  padding-top: 100%;
-}
 </style>
+
+
