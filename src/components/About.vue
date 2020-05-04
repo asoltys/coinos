@@ -14,19 +14,17 @@
 
         <div>
           <p>
-            The bitcoin to US dollar exchange rate is streamed every second from
-            <a href="https://binance.com/">Binance</a> and converted to other
-            currencies using FX rates fetched once a day from
-            <a href="https://fixer.io/">Fixer</a>.
+            Deposit via the
+            <a href="https://bitcoin.org">bitcoin</a>,
+            <a href="https://blockstream.com/liquid/">liquid</a> or
+            <a href="http://lightning.network/">lightning</a> networks and withdraw on any network regardless of how your funds were deposited. There are no fees besides on-chain transaction fees which can be customized.
           </p>
 
           <p>
-            Deposit and withdraw via the
-            <a href="https://bitcoin.org">bitcoin</a>,
-            <a href="https://blockstream.com/liquid/">liquid</a> or
-            <a href="http://lightning.network/">lightning</a> networks. You can
-            use coinos to easily move funds between these three networks without
-            any addtional fees beyond the customizable on-chain transaction fee.
+            The bitcoin to US dollar exchange rate is streamed every second from
+            <a href="https://binance.com/">Binance</a> and converted to other
+            currencies using rates from
+            <a href="https://fixer.io/">Fixer</a>.
           </p>
 
           <p class="mb-4">

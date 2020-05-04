@@ -45,7 +45,7 @@
             <v-list-item-title>User Balances</v-list-item-title>
           </v-list-item-content>
           <v-list-item-action class="title">
-            {{ stats.user }}
+            {{ user }}
           </v-list-item-action>
         </v-list-item>
       </v-list>
@@ -71,6 +71,9 @@ export default {
       let assets = Object.keys(this.stats.assets);
       assets.shift();
       return assets;
+    },
+    user() {
+      return this.stats.accounts.find(a => a.asset === process.env.VUE_APP_LBTC).total;
     },
     loading: get('loading'),
     stats: get('stats'),
