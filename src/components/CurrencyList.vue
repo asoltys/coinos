@@ -5,7 +5,7 @@
         currency
       }}</v-btn>
     </template>
-    <v-list>
+    <v-list v-if="currencies.length">
       <v-list-item v-for="c in currencies" :key="c" @click="() => select(c)">
         <v-list-item-title :class="`${color(c)}--text`">{{ c }}</v-list-item-title>
       </v-list-item>
@@ -39,7 +39,7 @@ export default {
 
       if (account) {
         await this.shiftAccount(account.asset);
-      } else if (currency) {
+      } else if (currency || c === 'SAT') {
         await this.shiftAccount(process.env.VUE_APP_LBTC);
         await this.setCurrency(c);
       }

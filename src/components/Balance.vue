@@ -5,7 +5,7 @@
         {{ $format(user.account.balance, precision) }}
       </div>
       <div class="text-left flex-grow-1 my-auto">
-        <currency-list :currency="ticker" :currencies="currencies" />
+        <currency-list :currency="ticker" :currencies="cryptos" />
       </div>
     </div>
     <h3
@@ -16,7 +16,7 @@
       <div class="mx-1">
         <currency-list
           :currency="user.currency"
-          :currencies="user.currencies"
+          :currencies="fiats"
         />
       </div>
       <div class="mt-auto mb-1">
@@ -67,8 +67,11 @@ export default {
   },
 
   computed: {
-    currencies() {
-      return ['SAT', ...this.user.accounts.map(a => a.ticker)];
+    cryptos() {
+      return [this.ticker === 'SAT' ? 'BTC' : 'SAT', ...this.user.accounts.map(a => a.ticker).filter(a => a !== this.user.account.ticker)];
+    },
+    fiats() {
+      return this.user.currencies.filter(c => c !== this.user.currency);
     },
     ...mapGetters(['rate', 'user']),
     ticker() {
