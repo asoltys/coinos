@@ -284,10 +284,9 @@ export default new Vuex.Store({
 
         let unit = p.account.ticker;
         if (unit === 'BTC') unit = user.unit;
-        let precision = user.unit === 'SAT' ? 0 : user.account.precision;
 
         if (p.amount > 0)
-          dispatch('snack', `Received ${format(p.amount + p.tip, precision)} ${unit}`);
+          dispatch('snack', `Received ${format(p.amount + p.tip, p.account.precision)} ${unit}`);
         commit('addPayment', p);
       });
 

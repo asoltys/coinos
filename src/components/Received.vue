@@ -48,7 +48,7 @@ let bs = 'https://blockstream.info';
 export default {
   computed: {
     total() {
-      return this.$format(this.payment.amount + this.payment.tip);
+      return this.$format(this.payment.amount + this.payment.tip, this.payment.account.precision);
     },
     ticker() {
       let { ticker } = this.payment.account;
