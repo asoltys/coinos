@@ -6,7 +6,7 @@
     <div class="pa-4">
       <div class="mb-2 text-center">
         <div>
-          <span class="display-1">{{ total }}</span>
+          <span class="display-1">{{ $format(total, precision) }}</span>
           {{ ticker }}
           <span v-if="payment.account.ticker === 'BTC'" class="ml-2 yellow--text">
             <span class="display-1">{{ fiat(total) }}</span>
@@ -27,8 +27,6 @@
         </div>
       </div>
 
-      <pre v-if="details">{{ payment.txid }}</pre>
-
       <v-btn @click="back" class="mr-2">
         <v-icon class="mr-2">arrow_back</v-icon><span>Send Another</span>
       </v-btn>
@@ -47,35 +45,33 @@ export default {
     payment: { type: Object },
   },
 
-  data() {
-    return {
-      details: false,
-    };
-  },
-
   computed: {
+    ...mapGetters(['user']),
     fee() {
       return this.$format(this.payment.fee || 0);
     },
-    ...mapGetters(['user']),
     ticker() {
       let { ticker } = this.payment.account;
-      if (ticker === 'BTC') return 'SAT';
+      if (ticker === 'BTC') return this.user.unit;
       return ticker;
+    },
+    precision() {
+      let { precision } = this.payment.account;
+      if (this.payment.account.ticker === 'BTC' && this.user.unit === 'SAT') precision = 0;
+      return precision;
     },
     total() {
       let total = Math.abs(this.payment.amount);
-      if (this.payment.account.ticker === 'BTC') total -= this.payment.fee;
-      return this.$format(total);
+      if (this.payment.account.ticker === 'BTC') {
+        total -= this.payment.fee;
+      } 
+
+      return total;
     },
   },
 
   methods: {
     ...mapActions(['snack']),
-
-    toggleDetails() {
-      this.details = !this.details;
-    },
 
     fiat(n) {
       if (!n || isNaN(n)) return '0.00';

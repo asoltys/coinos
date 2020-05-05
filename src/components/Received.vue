@@ -48,11 +48,14 @@ let bs = 'https://blockstream.info';
 export default {
   computed: {
     total() {
-      return this.$format(this.payment.amount + this.payment.tip, this.payment.account.precision);
+      let { precision } = this.payment.account;
+      if (this.payment.account.ticker === 'BTC' && this.user.unit === 'SAT') precision = 0;
+
+      return this.$format(this.payment.amount + this.payment.tip, precision);
     },
     ticker() {
       let { ticker } = this.payment.account;
-      if (ticker === 'BTC') return 'SAT';
+      if (ticker === 'BTC') return this.user.unit;
       return ticker;
     },
     isBtc() {

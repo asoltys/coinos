@@ -286,7 +286,10 @@ export default new Vuex.Store({
         if (unit === 'BTC') unit = user.unit;
 
         if (p.amount > 0)
-          dispatch('snack', `Received ${format(p.amount + p.tip, p.account.precision)} ${unit}`);
+          dispatch(
+            'snack',
+            `Received ${format(p.amount + p.tip, p.account.precision)} ${unit}`
+          );
         commit('addPayment', p);
       });
 
@@ -411,7 +414,11 @@ export default new Vuex.Store({
 
       if (payreq) {
         try {
-          let res = await Vue.axios.post('/lightning/send', { amount, payreq, route });
+          let res = await Vue.axios.post('/lightning/send', {
+            amount,
+            payreq,
+            route,
+          });
           commit('payment', res.data);
         } catch (e) {
           commit('error', e.response.data);
@@ -615,6 +622,9 @@ export default new Vuex.Store({
         if (text.slice(0, 10) === 'lightning:') text = text.slice(10);
         let payreq = text.toLowerCase();
         let payobj = bolt11.decode(payreq);
+
+        if (user.account.ticker !== 'BTC')
+          await dispatch('shiftAccount', process.env.VUE_APP_LBTC);
 
         commit('amount', payobj.satoshis);
         commit('network', 'lightning');

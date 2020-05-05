@@ -5,14 +5,9 @@
     <v-content v-show="scanning">
       <div class="text-center" v-if="webscanning">
         <qrcode-stream class="mt-4" @decode="handleScan"></qrcode-stream>
-        <v-btn @click="handleScan" class="mr-2 my-2">Cancel</v-btn>
-        <v-btn class="my-2 mr-2" @click="paste">
-          <v-icon class="mr-1">assignment</v-icon>
-          <span>Paste</span>
-        </v-btn>
-        <v-btn class="my-2" @click="generate">
-          <v-icon class="mr-1">crop_free</v-icon>
-          <span>Generate</span>
+        <v-btn @click="handleScan" class="mr-2 my-2">
+          <v-icon class="mr-1" color="red">cancel</v-icon>
+          Cancel
         </v-btn>
       </div>
     </v-content>
@@ -109,14 +104,6 @@ export default {
 
   methods: {
     ...mapActions(['init', 'handleScan', 'showText']),
-
-    async paste() {
-      this.handleScan(await navigator.clipboard.readText());
-    },
-
-    async generate() {
-      this.showText(await navigator.clipboard.readText());
-    },
 
     async install() {
       const { outcome } = await this.prompt.prompt();

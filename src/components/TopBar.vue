@@ -3,7 +3,7 @@
     <v-toolbar-title
       dark
       @click="goHome"
-      class="display-2"
+      class="display-2 unselectable"
       style="cursor: pointer"
       >coin<span class="yellow--text">os</span></v-toolbar-title
     >
@@ -74,3 +74,13 @@ export default {
   },
 };
 </script>
+
+<style lang="stylus" scoped>
+.unselectable 
+  -webkit-touch-callout none
+  -webkit-user-select none
+  -khtml-user-select none
+  -moz-user-select none
+  -ms-user-select none
+  user-select none
+</style>

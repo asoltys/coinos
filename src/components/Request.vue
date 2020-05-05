@@ -62,15 +62,15 @@
             @click.native="showcode = !showcode"
             class="mr-2 mb-2 mb-sm-0 wide"
           >
-            <v-icon v-if="showcode">crop_free</v-icon>
-            <v-icon v-else>code</v-icon>
+            <qrcode v-if="showcode" class="mr-1" />
+            <v-icon v-else class="mr-1">code</v-icon>
             <span>{{ code }}</span>
           </v-btn>
           <v-btn @click.native="() => copy(invoice.text)" class="wide mr-2 mb-2 mb-sm-0">
-            <v-icon>content_copy</v-icon><span>Copy</span>
+            <v-icon class="mr-1">content_copy</v-icon><span>Copy</span>
           </v-btn>
           <v-btn v-if="invoice.method === 'bitcoin'" @click="address" class="wide">
-            <v-icon>refresh</v-icon><span>Address</span>
+            <v-icon class="mr-1">refresh</v-icon><span>Address</span>
           </v-btn>
         </div>
       </v-card>
@@ -85,11 +85,12 @@ import { get, sync } from 'vuex-pathify';
 import Copy from '../mixins/Copy';
 import FullScreen from '../mixins/FullScreen';
 import Tippad from './TipPad';
+import Qrcode from 'vue-material-design-icons/Qrcode';
 
 const SATS = 100000000;
 
 export default {
-  components: { Tippad },
+  components: { Qrcode, Tippad },
   mixins: [Copy, FullScreen],
   props: {
     clear: { type: Function },

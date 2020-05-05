@@ -80,7 +80,7 @@
                   auto-grow
                 >
                   <template v-slot:append>
-                    <v-btn @click="explore(link)" class="ml-1" icon>
+                    <v-btn v-if="link" @click="explore(link)" class="ml-1" icon>
                       <v-icon class="mr-1">open_in_new</v-icon>
                     </v-btn>
                     <v-btn @click="() => copy(hash)" class="ml-1" icon>
