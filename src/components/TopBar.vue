@@ -8,7 +8,7 @@
       >coin<span class="yellow--text">os</span></v-toolbar-title
     >
     <v-spacer></v-spacer>
-    <v-menu class="ml-2" v-if="user && user.name" offset-y nudge-bottom="1">
+    <v-menu class="ml-2" v-if="user && user.username" offset-y nudge-bottom="1">
       <template v-slot:activator="{ on }">
         <v-btn v-on="on">
           <v-avatar class="mr-2" v-if="user.pic" size="30">
@@ -16,7 +16,7 @@
           </v-avatar>
           <v-icon v-else>person</v-icon>
           <span class="truncate">{{
-            user.fbtoken ? user.name : user.username
+            user.username
           }}</span>
         </v-btn>
       </template>

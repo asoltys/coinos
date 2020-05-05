@@ -270,14 +270,6 @@ export default new Vuex.Store({
       });
       commit('socket', s);
 
-      s.on('emailVerified', () => {
-        dispatch('snack', 'Your email has been verified');
-      });
-
-      s.on('phoneVerified', () => {
-        dispatch('snack', 'Your phone number has been verified');
-      });
-
       s.on('payment', p => {
         commit('payment', p);
         let { user } = getters;

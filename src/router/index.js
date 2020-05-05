@@ -4,7 +4,6 @@ import Home from '../components/Home';
 import About from '../components/About';
 import Assets from '../components/Assets';
 import Login from '../components/Login';
-import Register from '../components/Register';
 import Payments from '../components/Payments';
 import Send from '../components/Send';
 import Receive from '../components/Receive';
@@ -12,14 +11,12 @@ import Buy from '../components/Buy';
 import Market from '../components/Market';
 import Contacts from '../components/Contacts';
 import Settings from '../components/Settings';
-import Forgot from '../components/Forgot';
 import Text from '../components/Text';
 
 const routes = [
   { path: '/', component: Login, props: { logout: false } },
   { path: '/home', component: Home },
   { path: '/login', component: Login, props: { logout: false } },
-  { path: '/register', component: Register },
   { path: '/payments', component: Payments },
   { name: 'send', path: '/send', component: Send, props: true },
   { path: '/receive', component: Receive },
@@ -30,7 +27,6 @@ const routes = [
   { path: '/about', component: About },
   { path: '/assets', component: Assets },
   { path: '/settings', component: Settings },
-  { path: '/forgot', component: Forgot },
   { path: '/text', component: Text },
   { path: '/logout', component: Login, props: { logout: true } },
   {
@@ -39,7 +35,6 @@ const routes = [
     props: route => ({
       username: route.params.username,
       token: route.params.token,
-      email: true,
     }),
   },
   {

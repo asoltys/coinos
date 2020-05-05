@@ -103,7 +103,7 @@
             <div class="text-right">
               <v-btn @click="submit">
                 <v-icon class="mr-1 yellow--text">check</v-icon>
-                <span>Save</span>
+                <span>save</span>
               </v-btn>
             </div>
           </v-form>
@@ -113,17 +113,7 @@
     <v-card>
       <v-card-text>
         <v-form @keyup.native.enter="submit">
-          <v-alert
-            class="mb-4"
-            color="info"
-            icon="info"
-            v-model="verifyingEmail"
-            dismissible
-            transition="scale-transition"
-            >An email has been sent with a link for you to click on</v-alert
-          >
           <v-text-field
-            v-if="!user.fbtoken"
             label="Username"
             v-model="form.username"
             type="text"
@@ -170,7 +160,6 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import validator from 'email-validator';
 import SetPin from './SetPin';
 import qr from 'qrcode';
 import PincodeInput from 'vue-pincode-input';
@@ -202,15 +191,9 @@ export default {
         passconfirm: '',
         currency: '',
         currencies: '',
-        email: '',
-        phone: '',
-        phoneCode: '',
         pin: '',
-        notify: 'Email',
         twofa: false,
       },
-      verifyingEmail: false,
-      verifyingPhone: false,
     };
   },
 
