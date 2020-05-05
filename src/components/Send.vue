@@ -5,7 +5,7 @@
       <Balance />
       <sent v-if="payment" v-bind="{ back, payment }" />
       <template v-else>
-        <div v-if="!(payobj || payuser || address)">
+        <div v-if="!(payobj || address)">
           <v-textarea
             class="my-4"
             label="Address or Invoice:"
@@ -37,14 +37,6 @@
               <v-icon class="mr-1">assignment</v-icon>
               <span>Paste</span>
             </v-btn>
-            <v-btn
-              class="mr-2 mb-2 flex-grow-1"
-              v-if="user.fbtoken"
-              @click="$router.push('/contacts')"
-            >
-              <v-icon class="mr-1">person</v-icon>
-              <span>Address Book</span>
-            </v-btn>
             <v-btn @click="back" class="mr-2 flex-grow-1">
               <v-icon>arrow_back</v-icon><span>Go Back</span>
             </v-btn>
@@ -71,16 +63,6 @@
           </div>
         </template>
         <div v-else>
-          <send-to-user v-bind="{ payuser }" />
-          <numpad
-            v-if="payuser"
-            class="mb-2"
-            @done="stopEditingAmount"
-            :currencies="currencies"
-            :initialRate="rate"
-            :initialAmount="0"
-            @input="updateAmount"
-          />
           <recipient
             v-bind="{ address, amount, fiatAmount, scannedBalance }"
             @editingAmount="startEditingAmount"
@@ -120,7 +102,6 @@ import Numpad from './NumPad';
 import Recipient from './Recipient';
 import Sent from './Sent';
 import PaymentDetails from './PaymentDetails';
-import SendToUser from './SendToUser';
 import Qrcode from 'vue-material-design-icons/Qrcode';
 import Copy from '../mixins/Copy';
 
@@ -129,7 +110,6 @@ export default {
   components: {
     Balance,
     Numpad,
-    SendToUser,
     Sent,
     PaymentDetails,
     Qrcode,
@@ -179,7 +159,6 @@ export default {
       'payment',
       'payreq',
       'payobj',
-      'payuser',
       'rate',
       'scannedBalance',
     ]),
@@ -228,7 +207,6 @@ export default {
     back() {
       this.to = '';
       if (this.payreq || this.address) return this.clearPayment();
-      if (this.payuser) return this.$router.push('/contacts');
       return this.$router.push('/home');
     },
   },
@@ -240,7 +218,6 @@ export default {
 
   mounted() {
     this.init();
-    this.$store.commit('payuser', this.$route.query.payuser);
     const vw = Math.max(
       document.documentElement.clientWidth,
       window.innerWidth || 0

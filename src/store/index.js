@@ -73,7 +73,6 @@ const state = {
   payments: [],
   payobj: null,
   payreq: '',
-  payuser: '',
   pin: '',
   prompt2fa: false,
   rate: 0,
@@ -162,30 +161,6 @@ export default new Vuex.Store({
 
       await dispatch('init');
       if (router.currentRoute.path !== '/home') go('/home');
-    },
-
-    async facebookLogin({ commit, state, dispatch }, data) {
-      let res;
-
-      switch (data.status) {
-        case 'connected':
-          let user = data;
-          user.authResponse.token = state.twofa;
-          commit('user', user);
-
-          try {
-            res = await Vue.axios.post('/facebookLogin', user.authResponse);
-            commit('user', res.data.user);
-            commit('token', res.data.token);
-            await dispatch('init');
-            go('/home');
-            break;
-          } catch (e) {
-            if (e.response.data.startsWith('2fa')) {
-              commit('prompt2fa', true);
-            }
-          }
-      }
     },
 
     async getNewAddress({ commit, dispatch, state }) {
@@ -402,7 +377,7 @@ export default new Vuex.Store({
       commit('loading', true);
       commit('error', null);
 
-      let { address, amount, asset, tx, payreq, payuser, route } = getters;
+      let { address, amount, asset, tx, payreq, route } = getters;
 
       if (payreq) {
         try {
@@ -410,16 +385,6 @@ export default new Vuex.Store({
             amount,
             payreq,
             route,
-          });
-          commit('payment', res.data);
-        } catch (e) {
-          commit('error', e.response.data);
-        }
-      } else if (payuser) {
-        try {
-          let res = await Vue.axios.post('/lightning/user', {
-            payuser,
-            amount,
           });
           commit('payment', res.data);
         } catch (e) {
@@ -470,7 +435,6 @@ export default new Vuex.Store({
       commit('address', '');
       commit('payment', null);
       commit('payobj', null);
-      commit('payuser', null);
       commit('amount', null);
       commit('fiatAmount', null);
       commit('error', null);

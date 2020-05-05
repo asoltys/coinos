@@ -7,9 +7,6 @@ import Login from '../components/Login';
 import Payments from '../components/Payments';
 import Send from '../components/Send';
 import Receive from '../components/Receive';
-import Buy from '../components/Buy';
-import Market from '../components/Market';
-import Contacts from '../components/Contacts';
 import Settings from '../components/Settings';
 import Text from '../components/Text';
 
@@ -21,31 +18,11 @@ const routes = [
   { name: 'send', path: '/send', component: Send, props: true },
   { path: '/receive', component: Receive },
   { path: '/receive', component: Receive },
-  { path: '/buy', component: Buy },
-  { path: '/market', component: Market },
-  { path: '/contacts', component: Contacts },
   { path: '/about', component: About },
   { path: '/assets', component: Assets },
   { path: '/settings', component: Settings },
   { path: '/text', component: Text },
   { path: '/logout', component: Login, props: { logout: true } },
-  {
-    path: '/verifyEmail/:username/:token',
-    component: Home,
-    props: route => ({
-      username: route.params.username,
-      token: route.params.token,
-    }),
-  },
-  {
-    path: '/verifyPhone/:username/:token',
-    component: Home,
-    props: route => ({
-      username: route.params.username,
-      token: route.params.token,
-      phone: true,
-    }),
-  },
 ];
 
 Vue.use(VueRouter);

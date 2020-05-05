@@ -33,7 +33,6 @@ export default {
   },
   methods: {
     login: call('login'),
-    facebookLogin: call('facebookLogin'),
   },
   watch: {
     prompt2fa(v) { 
@@ -43,9 +42,7 @@ export default {
     twofa(v) {
       if (v.length === 6) {
         this.prompt2fa = false;
-        console.log(this.user);
-        if (this.user && this.user.authResponse) this.facebookLogin(this.user);
-        else this.login(this.user);
+        this.login(this.user);
       } 
     },
   },

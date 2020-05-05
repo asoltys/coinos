@@ -1,5 +1,5 @@
 <template>
-  <v-menu v-if="user && user.name" offset-y nudge-bottom="1">
+  <v-menu offset-y nudge-bottom="1">
     <template v-slot:activator="{ on }">
       <v-btn v-on="on" class="black--text" :color="color(currency)">{{
         currency
