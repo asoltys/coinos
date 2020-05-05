@@ -17,10 +17,11 @@
                   'display-1': !$vuetify.breakpoint.xs,
                 }"
                >
-            {{ $format(a.balance, a.precision) }}
-            <div v-if="a.pending" class="title red--text">
-              {{ a.pending }} unconfirmed
-            </div>
+               {{ $format(a.balance, a.precision) }} <span v-if="a.pending" class="red--text" :class="{
+                  'body-1': $vuetify.breakpoint.xsOnly,
+                  'title': !$vuetify.breakpoint.xs,
+                }"
+               >(+{{ $format(a.pending, a.precision) }})</span>
           </div>
           <v-btn
             class="flex-grow-0 ml-2 black--text"
