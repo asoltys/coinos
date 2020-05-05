@@ -12,7 +12,10 @@
       </div>
     </v-content>
     <v-content v-show="!scanning" style="background: #333">
-      <transition name="fade" mode="out-in" appear>
+      <transition
+        name="fade"
+        mode="in"
+      >
         <v-container class="mr-3" style="margin-bottom: 50px !important">
           <v-alert
             class="mb-2"
@@ -24,22 +27,10 @@
           >
           <two-fa />
 
-          <v-progress-linear v-if="initializing" indeterminate />
-          <router-view v-else :key="$route.path" />
+          <transition name="fade">
+            <router-view v-if="!initializing" :key="$route.path" />
+          </transition>
 
-          <div class="text-center pa-4">
-            <v-btn
-              v-if="
-                ['/', '/settings', '/about'].includes($route.path) &&
-                  promptInstall
-              "
-              class="wide mb-2 mr-1"
-              @click="install"
-            >
-              <v-icon class="mr-1" color="green">stay_current_portrait</v-icon
-              ><span>Add to Home Screen</span>
-            </v-btn>
-          </div>
         </v-container>
       </transition>
     </v-content>
@@ -208,5 +199,4 @@ body
 
   *
     color black !important
-
 </style>
