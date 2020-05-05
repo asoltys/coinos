@@ -12,9 +12,9 @@
         Payment Received!
       </v-alert>
       <div class="d-flex justify-center">
-        <div class="mr-2">
-          <span class="display-1">{{ total }}</span>
-          {{ ticker }}
+        <div class="mr-2 d-flex">
+          <div class="display-1 mr-1 my-auto">{{ total }}</div>
+          <v-btn @click="select(ticker)" color="white" class="black--text my-auto">{{ ticker }}</v-btn>
         </div>
         <div>
           <span v-if="payment.account.ticker === 'BTC'" class="yellow--text">
@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import { get } from 'vuex-pathify';
+import { get, call } from 'vuex-pathify';
 
 const SATS = 100000000;
 const f = parseFloat;
@@ -83,6 +83,10 @@ export default {
     user: get('user'),
   },
   methods: {
+    select() {
+      this.shiftAccount(this.user.accounts.find(a => a.ticker === this.ticker).asset);
+    },
+    shiftAccount: call('shiftAccount'),
     explore(link) {
       window.open(link, '_blank');
     },
