@@ -14,7 +14,7 @@
     <v-content v-show="!scanning" style="background: #333">
       <transition
         name="fade"
-        mode="in"
+        mode="in-out"
       >
         <v-container class="mr-3" style="margin-bottom: 50px !important">
           <v-alert

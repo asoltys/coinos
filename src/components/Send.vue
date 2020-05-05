@@ -69,6 +69,7 @@
             @back="back"
           />
           <payment-details
+            v-if="payobj"
             :payobj="payobj"
             v-bind="{ amount, fiatAmount }"
             @editingAmount="startEditingAmount"
