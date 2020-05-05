@@ -1,5 +1,8 @@
 <template>
-  <v-menu offset-y nudge-bottom="1">
+  <v-btn v-if="currencies.length === 1" class="black--text" :color="color(currency)" @click="() => select(currencies[0])">{{
+        currency
+      }}</v-btn>
+  <v-menu v-else offset-y nudge-bottom="1">
     <template v-slot:activator="{ on }">
       <v-btn v-on="on" class="black--text" :color="color(currency)">{{
         currency
