@@ -12,6 +12,13 @@
       <tor class="mr-1" /> Tor Hidden Service
     </v-btn>
     <v-btn
+      color="#1DA1F2"
+      class="flex-grow-1 mr-2 mb-2 wide"
+      @click="go('https://twitter.com/coinoswallet')"
+    >
+      <twitter class="mr-1" /> Twitter
+    </v-btn>
+    <v-btn
       color="#179cde"
       class="flex-grow-1 mr-2 mb-2 wide"
       @click="go('https://t.me/coinos')"
@@ -35,9 +42,10 @@
 import Discord from 'vue-material-design-icons/Discord';
 import Telegram from 'vue-material-design-icons/Telegram';
 import Tor from 'vue-material-design-icons/Tor';
+import Twitter from 'vue-material-design-icons/Twitter';
 
 export default {
-  components: { Discord, Telegram, Tor },
+  components: { Discord, Telegram, Tor, Twitter },
   methods: {
     go(url) {
       window.location.href = url;

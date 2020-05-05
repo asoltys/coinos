@@ -27,7 +27,7 @@
           </v-list-item-action>
           <v-list-item-content>About</v-list-item-content>
         </v-list-item>
-        <v-list-item v-if="user && user.accounts.length > 1" @click="$go('/assets')">
+        <v-list-item v-if="user && user.accounts && user.accounts.length > 1" @click="$go('/assets')">
           <v-list-item-action>
             <v-icon>account_balance_wallet</v-icon>
           </v-list-item-action>
