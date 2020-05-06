@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card class="mb-2">
     <v-card-title class="pb-0">Server Funds</v-card-title>
     <v-progress-linear v-if="loading" indeterminate />
     <v-card-text v-else-if="stats" class="white--text">

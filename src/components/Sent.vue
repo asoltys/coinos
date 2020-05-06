@@ -8,8 +8,8 @@
         <div>
           <span class="display-1">{{ $format(total, precision) }}</span>
           {{ ticker }}
-          <span v-if="payment.account.ticker === 'BTC'" class="ml-2 yellow--text">
-            <span class="display-1">{{ fiat(total) }}</span>
+          <span v-if="payment.account.ticker === 'BTC'" class="yellow--text">
+            <span class="title">{{ fiat(total) }}</span>
             {{ payment.currency }}
           </span>
         </div>
@@ -20,8 +20,8 @@
           <span class="headline grey--text">Fee: </span>
           <span class="display-1">{{ fee }}</span>
           {{ user.unit }}
-          <span v-if="payment.account.ticker === 'BTC'" class="ml-2 yellow--text">
-            <span class="display-1">{{ fiat(payment.fee) }}</span>
+          <span v-if="payment.account.ticker === 'BTC'" class="yellow--text">
+            <span class="title">{{ fiat(payment.fee) }}</span>
             {{ payment.currency }}
           </span>
         </div>

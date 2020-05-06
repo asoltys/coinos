@@ -32,16 +32,20 @@
         </v-btn>
       </template>
     </v-text-field>
-    <div class="text-center">
+    <div v-if="fee !== null" class="text-center">
       <div>
         <span class="headline grey--text">+ Routing Fee: </span>
-        <span class="headline">{{ fee }}</span> SAT
+        <span class="headline">{{ fee }}</span> {{ user.unit }}
       </div>
     </div>
-    <div class="text-center font-weight-bold">to</div>
-    <div class="code my-2 text-center">
-      {{ payobj.payeeNodeKey }}
-    </div>
+    <div class="text-center font-weight-bold my-2">to</div>
+            <v-textarea label="Lightning Node" :value="payobj.payeeNodeKey" rows="1" auto-grow>
+              <template v-slot:append>
+                <v-btn @click="() => copy(payobj.payeeNodeKey)" icon>
+                  <v-icon class="mr-1">content_copy</v-icon>
+                </v-btn>
+              </template>
+            </v-textarea>
   </v-card>
 </template>
 
@@ -49,7 +53,11 @@
 import date from 'date-fns';
 import { mapGetters } from 'vuex';
 import { call, sync } from 'vuex-pathify';
+import Copy from '../mixins/Copy';
+
 export default {
+  mixins: [Copy],
+
   props: {
     amount: { type: Number },
     fiatAmount: { type: String },
@@ -73,8 +81,8 @@ export default {
       else return this.user.account.ticker;
     },
     fee() {
-      if (!this.route) return 0;
-      return parseInt(this.route.total_amt) - this.amount;
+      if (!this.route) return null;
+      return this.$format(parseInt(this.route.total_amt) - this.amount);
     },
     fiat: sync('fiat'),
   },

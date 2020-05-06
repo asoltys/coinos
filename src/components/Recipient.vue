@@ -1,5 +1,5 @@
 <template>
-  <v-card class="elevation-1 pa-2 my-4" v-if="address">
+  <v-card class="elevation-1 pa-2 mb-2" v-if="address">
     <v-textarea
       rows="1"
       label="Recipient"

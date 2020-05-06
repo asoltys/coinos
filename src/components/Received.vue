@@ -11,22 +11,28 @@
       <v-alert v-else class="headline text-center black--text" color="yellow">
         Payment Received!
       </v-alert>
-      <div class="d-flex justify-center">
+      <div class="d-flex justify-center display-1">
         <div class="mr-2 d-flex">
-          <div class="display-1 mr-1 my-auto">{{ total }}</div>
-          <v-btn @click="select(ticker)" color="white" class="black--text my-auto">{{ ticker }}</v-btn>
+          <div class="mr-1 my-auto">{{ total }}</div>
+          <div class="my-auto">
+            <v-btn @click="select(ticker)" color="white" class="black--text">{{
+              ticker
+            }}</v-btn>
+          </div>
         </div>
-        <div>
-          <span v-if="payment.account.ticker === 'BTC'" class="yellow--text">
-            <span v-if="invoice.amount === payment.amount" class="display-1">{{
+        <div class="d-flex">
+          <div
+            v-if="payment.account.ticker === 'BTC'"
+            class="yellow--text mr-1 my-auto"
+          >
+            <span v-if="invoice.amount === payment.amount">{{
               fiatTotal
             }}</span>
-            <span v-else class="display-1">{{ fiat }}</span>
-            <span v-if="invoice.amount === payment.amount">
-              {{ invoice.currency }}</span
-            >
-            <span v-else> {{ user.currency }}</span>
-          </span>
+            <span v-else>{{ fiat }}</span>
+          </div>
+          <div class="my-auto">
+            <currency-list :currency="currency" :currencies="[]" />
+          </div>
         </div>
       </div>
       <div class="text-center">
@@ -39,6 +45,7 @@
 </template>
 
 <script>
+import CurrencyList from './CurrencyList';
 import { get, call } from 'vuex-pathify';
 
 const SATS = 100000000;
@@ -46,10 +53,17 @@ const f = parseFloat;
 let bs = 'https://blockstream.info';
 
 export default {
+  components: { CurrencyList },
   computed: {
+    currency() {
+      return this.invoice.amount === this.payment.amount
+        ? this.invoice.currency
+        : this.user.currency;
+    },
     total() {
       let { precision } = this.payment.account;
-      if (this.payment.account.ticker === 'BTC' && this.user.unit === 'SAT') precision = 0;
+      if (this.payment.account.ticker === 'BTC' && this.user.unit === 'SAT')
+        precision = 0;
 
       return this.$format(this.payment.amount + this.payment.tip, precision);
     },
@@ -84,7 +98,9 @@ export default {
   },
   methods: {
     select() {
-      this.shiftAccount(this.user.accounts.find(a => a.ticker === this.ticker).asset);
+      this.shiftAccount(
+        this.user.accounts.find(a => a.ticker === this.ticker).asset
+      );
     },
     shiftAccount: call('shiftAccount'),
     explore(link) {

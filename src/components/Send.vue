@@ -75,7 +75,31 @@
             @editingAmount="startEditingAmount"
           />
           <div v-if="!loading">
-            <div class="d-flex flex-wrap">
+          <v-card class="elevation-1 mb-4 pa-4" v-if="recipient">
+            <v-card-text class="white--text text-center">
+              <div class="title mb-2">Known Recipient: <span class="yellow--text display-1">{{ recipient.username }}</span></div>
+              <div>
+              <v-btn
+                class="black--text order-first order-sm-last mb-2 mr-2 flex-grow-1"
+                color="yellow"
+                dark
+                @click="sendInternal"
+              >
+                <v-icon class="mr-1">forward</v-icon
+                ><span>No-Fee Internal Transfer</span>
+              </v-btn>
+              <v-btn
+                class="order-first order-sm-last mb-2 flex-grow-1"
+                color="green"
+                dark
+                @click="sendPayment"
+              >
+                <v-icon class="mr-1">send</v-icon><span>Pay Normally</span>
+              </v-btn>
+              </div>
+            </v-card-text>
+          </v-card>
+            <div v-else class="d-flex flex-wrap">
               <v-btn
                 class="order-first order-sm-last mb-2 flex-grow-1"
                 color="green"
@@ -161,6 +185,7 @@ export default {
       'payreq',
       'payobj',
       'rate',
+      'recipient',
       'scannedBalance',
     ]),
   },
@@ -170,6 +195,7 @@ export default {
       'clearPayment',
       'estimateFee',
       'handleScan',
+      'sendInternal',
       'sendPayment',
       'setCurrency',
       'showText',

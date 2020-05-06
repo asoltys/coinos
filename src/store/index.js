@@ -78,6 +78,7 @@ const state = {
   rate: 0,
   rates: null,
   received: 0,
+  recipient: null,
   route: null,
   scan: '',
   scanning: false,
@@ -248,6 +249,10 @@ export default new Vuex.Store({
       });
       commit('socket', s);
 
+      s.on('to', r => {
+        commit('recipient', r);
+      });
+
       s.on('payment', p => {
         commit('payment', p);
         let { user } = getters;
@@ -291,7 +296,7 @@ export default new Vuex.Store({
               }
             } else {
               dispatch('logout');
-            } 
+            }
             resolve();
           });
         });
@@ -378,6 +383,22 @@ export default new Vuex.Store({
       commit('loadingFee', false);
     },
 
+    async sendInternal({ commit, dispatch, getters }) {
+      let { amount, recipient: { username }, user } = getters;
+      let asset = user.account.asset;
+
+      try {
+        let res = await Vue.axios.post('/send', {
+          amount,
+          asset,
+          username
+        });
+        commit('payment', res.data);
+      } catch (e) {
+        commit('error', e.response.data);
+      }
+    },
+
     async sendPayment({ commit, dispatch, getters }) {
       commit('loading', true);
       commit('error', null);
@@ -444,6 +465,7 @@ export default new Vuex.Store({
       commit('fiatAmount', null);
       commit('error', null);
       commit('route', null);
+      commit('recipient', null);
     },
 
     async addInvoice({ commit, state }, method) {
@@ -570,7 +592,8 @@ export default new Vuex.Store({
         let res = await Vue.axios.post('/lightning/query', { payreq, amount });
         if (res.data.routes.length) commit('route', res.data.routes[0]);
       } catch (e) {
-        commit('error', e);
+        if (e.response.data.includes('too large')) return;
+        commit('error', e.response.data);
       }
     },
 
@@ -588,6 +611,7 @@ export default new Vuex.Store({
           await dispatch('shiftAccount', process.env.VUE_APP_LBTC);
 
         commit('amount', payobj.satoshis);
+        commit('fiatAmount', ((payobj.satoshis * getters.rate) / SATS).toFixed(2));
         commit('network', 'lightning');
         commit('payobj', payobj);
         commit('payreq', payreq);

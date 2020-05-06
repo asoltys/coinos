@@ -76,8 +76,10 @@
 
 <script>
 import { get, sync, call } from 'vuex-pathify';
+import Copy from '../mixins/Copy';
 
 export default {
+  mixins: [Copy],
   computed: {
     user: sync('user'),
   },
