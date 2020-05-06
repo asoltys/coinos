@@ -176,7 +176,7 @@ export default new Vuex.Store({
     async getStats({ commit }) {
       commit('loading', true);
       try {
-        const stats = (await Vue.axios.get('/balances')).data;
+        const stats = (await Vue.axios.get('/info')).data;
         commit('stats', stats);
       } catch (e) {
         commit('error', e.response.data);
