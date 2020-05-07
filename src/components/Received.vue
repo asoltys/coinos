@@ -20,11 +20,8 @@
             }}</v-btn>
           </div>
         </div>
-        <div class="d-flex">
-          <div
-            v-if="payment.account.ticker === 'BTC'"
-            class="yellow--text mr-1 my-auto"
-          >
+        <div v-if="payment.account.ticker === 'BTC'" class="d-flex">
+          <div class="yellow--text mr-1 my-auto">
             <span v-if="invoice.amount === payment.amount">{{
               fiatTotal
             }}</span>
