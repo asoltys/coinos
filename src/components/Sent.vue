@@ -9,7 +9,7 @@
           <span class="display-1">{{ $format(total, precision) }}</span>
           {{ ticker }}
           <span v-if="payment.account.ticker === 'BTC'" class="yellow--text">
-            <span class="title">{{ fiat(total) }}</span>
+            <span class="display-1">{{ fiat(total) }}</span>
             {{ payment.currency }}
           </span>
         </div>
