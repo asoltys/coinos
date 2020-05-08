@@ -39,7 +39,7 @@
       </div>
     </div>
     <div class="text-center font-weight-bold my-2">to</div>
-            <v-textarea label="Lightning Node" :value="payobj.payeeNodeKey" rows="1" auto-grow>
+            <v-textarea label="Lightning Node" :value="payobj.payeeNodeKey" rows="1" auto-grow readonly>
               <template v-slot:append>
                 <v-btn @click="() => copy(payobj.payeeNodeKey)" icon>
                   <v-icon class="mr-1">content_copy</v-icon>
@@ -88,22 +88,12 @@ export default {
   },
 
   methods: {
-    queryRoutes: call('queryRoutes'),
     toggle() {
       if (this.user.account.ticker !== 'BTC') return;
       this.fiat = !this.fiat;
     },
     setAmount() {
       this.$emit('editingAmount');
-    },
-  },
-
-  watch: {
-    amount: {
-      immediate: true,
-      handler(v) {
-        if (v) this.queryRoutes(v);
-      },
     },
   },
 };

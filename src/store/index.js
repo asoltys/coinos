@@ -586,17 +586,6 @@ export default new Vuex.Store({
       }
     },
 
-    async queryRoutes({ commit, getters }, amount) {
-      let { payreq } = getters;
-      try {
-        let res = await Vue.axios.post('/lightning/query', { payreq, amount });
-        if (res.data.routes.length) commit('route', res.data.routes[0]);
-      } catch (e) {
-        if (e.response.data.includes('too large')) return;
-        commit('error', e.response.data);
-      }
-    },
-
     async handleScan({ commit, dispatch, getters }, text) {
       await dispatch('clearPayment');
       commit('scanning', false);

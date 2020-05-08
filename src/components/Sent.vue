@@ -4,26 +4,34 @@
       >Sent!</v-alert
     >
     <div class="pa-4">
-      <div class="mb-2 text-center">
-        <div>
+      <div class="mb-2">
+        <div class="d-flex justify-center">
+          <div class="mr-2">
           <span class="display-1">{{ $format(total, precision) }}</span>
           {{ ticker }}
+          </div>
+          <div>
           <span v-if="payment.account.ticker === 'BTC'" class="yellow--text">
             <span class="display-1">{{ fiat(total) }}</span>
             {{ payment.currency }}
           </span>
+          </div>
         </div>
       </div>
 
       <div class="mb-4 text-center">
-        <div>
-          <span class="headline grey--text">Fee: </span>
+        <div class="d-flex justify-center">
+          <div class="mr-2">
+          <span class="headline grey--text text--lighten-2">+ Fee: </span>
           <span class="display-1">{{ fee }}</span>
           {{ user.unit }}
+          </div>
+          <div>
           <span v-if="payment.account.ticker === 'BTC'" class="yellow--text">
-            <span class="title">{{ fiat(payment.fee) }}</span>
+            <span class="display-1">{{ fiat(payment.fee) }}</span>
             {{ payment.currency }}
           </span>
+          </div>
         </div>
       </div>
 
