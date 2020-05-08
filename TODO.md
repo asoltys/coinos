@@ -1,46 +1,46 @@
-- scroll to password and username fields
-- show fiat amounts on send page for amount and fee
-- support toggling between SAT and BTC units
-- show wallet balances, user count on about page
-- require pin on send
-- more payment details, "from", "fees"
-- upload db backups to sia
-- add notes to invoices and payments
-- lightning static chanel backups
-- require current password and pin on settings change
-- show fixed payment rate on sent page not fluctuating global rate
-- update elements to get 0.1 sat fees and support decimals in fee rate dialog
-- host coinos and nodes as tor services
-- unsaved settings values get overridden on pin set or when transaction confirms or any user update comes in
-- private key scanning
-- make 3rd party api calls optional
 - make all nodes/payment methods optional depending on if config settings exist
-- exchange rate percent modifier
-- zero-amount lightning invoices for sending arbitrary amounts
-- nfc tap
+- payments csv export
+- psbt tx export with no fee output
+- more payment details, "from", "fees", use text fields
+- record/show fee of received payments
+- unsaved settings values get overridden on pin set or when transaction confirms or any user update comes in
+- lnurl support for pay, withdraw, auth
+- push notifications
+- require pin on send
+- require current password and pin on settings change
+- add notes to invoices and payments
+- private key scanning
 - print-friendly sent payment receipts
-- configurable developer fees
 - docker image, make self-hosting easy
-- payments filters and csv export
 - use coinos names in payment history and sent/received dialog
-- detect internal payments and prompt to avoid on-chain or lightning
+- use payment component from payments page on sent/received pages
 
 long term
-- push notifications
+- nfc tap
+- hardware wallet auth
+- biometric auth
+- lightning static channel backups
+- social features
   - show users online, allow approved merchants to push invoices to them
   - show users you've transacted with at the top
   - allow pushing between anyone you've transacted with
-- c-lightning backend
+- configurable developer fees
+- exchange rate percent modifier
+- payment filtering and better paging
+- more stats, total user accounts, number/volume of payments
+- persist stats to db every 5 minutes
+- stats time series
 - create account on the fly from URL or localStorage uuid token
 - accept lnd spontaneous payments with memo to indicate recipient account
 - send to email/phone/social media
 - sms api
-- payment total audit payment totals in db should match user balances
 - channel/wallet rebalancing, connect to exchange for auto topup
 - public username url for push payments/donations
-- multipart payments
-- psbt support
-- liquid assets payments
+- generate invoices from url params
+  - coinos.io/<userid|username>/2000sat
+  - coinos.io/<userid|username>/10usd
+  - coinos.io/lightning/<userid|username>/10
+  - coinos.io/liquid/<userid|username>/10<assetid>
 - liquid issue new assets
 - liquid atomic swaps starting with tether
 - token markets and orderbooks
@@ -48,7 +48,6 @@ long term
 - non-custodial PK/HD/watchonly bitcoin/liquid accounts
 - build elementsjs-lib
 - open channel and peering requests, maybe for a fee
-- sia storage front end, skynet ui
 - multisig accounts, tapscript
 - coinjoin, payjoin
 - show unconfirmed outgoing payments
@@ -59,6 +58,7 @@ abandoned
 - send lnd self payments instead of running 2 nodes (causes routing fees)
 - svelte frontend
 - sqlite backend // kind of supported by sequelize already
+- sia storage front end, skynet ui
 
 done
 
@@ -82,3 +82,29 @@ done
 - better docs on about page
 - currency select box is janky when typing or clicking out
 - small amounts have scientific notation when viewing code
+- scroll to password and username fields
+- fee rate slider
+- show fiat amounts on send page for amount and fee
+- update elements to get 0.1 sat fees and support decimals in fee rate dialog
+- support toggling between SAT and BTC units
+- show wallet balances, user count on about page
+- show btc on request page if selected
+- liquid tx not detected (had to install zmq-devel and compile elements with zmq support)
+- set fee rate and slider to the default estimate 
+- support legacy receiving addresses and segwit wrapped p2sh
+- show fixed payment rate on sent page not fluctuating global rate
+- liquid assets payments
+- c-lightning backend
+- show ln payment proof and hash
+- respect asset precision
+- assets list unconfirmed amount formatting
+- move network logo to main payment header
+- qr generate move to send page, not camera scan
+- don't generate qr on typing into to field, just display a button to click
+- qr generate button doesn't work after one use unless you navigate away and back
+- spacing between asset and balance columns on assets list 
+- upload db backups to sia
+- host coinos and nodes as tor services
+- zero-amount lightning invoices for sending arbitrary amounts
+- detect internal payments and prompt to avoid on-chain or lightning
+- multipart payments
