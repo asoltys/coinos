@@ -132,6 +132,7 @@ export default new Vuex.Store({
           commit('loading', false);
         } else if (attempts > 5) {
           go('/');
+          commit('user', null);
           commit('initializing', false);
           commit('loading', false);
         } else {
@@ -145,7 +146,7 @@ export default new Vuex.Store({
         commit('assets', (await Vue.axios.get('/assets')).data);
       } catch (e) {
         l(e);
-        commit('error', 'Problem fetching assets');
+        commit('error', 'Problem connecting to server');
       }
     },
 
@@ -158,7 +159,7 @@ export default new Vuex.Store({
         commit('user', res.data.user);
         commit('token', res.data.token);
       } catch (e) {
-        if (e.response.data.startsWith('2fa')) commit('prompt2fa', true);
+        if (e.response && e.response.data.startsWith('2fa')) commit('prompt2fa', true);
         else commit('error', 'Login failed');
         return;
       }
@@ -306,7 +307,7 @@ export default new Vuex.Store({
       });
     },
 
-    async createUser({ commit, dispatch }, user = {}) {
+    async createUser({ commit, dispatch }, token) {
       let length = 8,
         charset =
           'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
@@ -316,13 +317,11 @@ export default new Vuex.Store({
         username += charset.charAt(Math.floor(Math.random() * n));
       }
 
-      user.username = username;
-
       try {
-        await Vue.axios.post('/register', user);
-        dispatch('login', user);
+        await Vue.axios.post('/register', { username, token });
+        dispatch('login', { username });
       } catch (e) {
-        commit('error', e.response.data);
+        commit('error', e);
       }
     },
 

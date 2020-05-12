@@ -5,10 +5,10 @@
         <p>
           Coinos is a bitcoin wallet app. You can
           <a href="https://github.com/asoltys/coinos"
-            >run it on your own server</a
+            >download the code and run it on your own server</a
           >
           or
-          <a @click="createUser">create a free account</a>
+          create a free account
           here that you can begin using right away.
         </p>
 
@@ -50,7 +50,7 @@ export default {
   components: { LightningNode, Social, Stats },
 
   methods: {
-    ...mapActions(['createUser', 'snack']),
+    ...mapActions(['snack']),
   },
 
   async mounted() {},

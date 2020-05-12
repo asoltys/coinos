@@ -95,6 +95,7 @@ export default {
         password: '',
       },
       showlogout: false,
+      token: null,
     };
   },
 
@@ -109,7 +110,7 @@ export default {
 
     register() {
       this.loading = true;
-      this.createUser();
+      this.createUser(this.token);
     },
 
     submit(e) {
@@ -129,6 +130,14 @@ export default {
     if (window.innerWidth > 600 && this.$refs.username) {
       this.$refs.username.focus();
     }
+
+    let _this = this;
+
+    grecaptcha.ready(function() {
+      grecaptcha.execute('6Ld1F_UUAAAAALyhgcusNcUZQFr6HD4iz6gQVTc0', {action: 'homepage'}).then(function(token) {
+        _this.token = token;
+      });
+    });
   },
 };
 </script>
