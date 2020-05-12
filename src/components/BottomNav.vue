@@ -14,7 +14,7 @@
         <span>Receive</span>
         <v-icon class="mr-1">get_app</v-icon>
       </v-btn>
-      <v-btn class="flex-grow-1" text @click="scan">
+      <v-btn class="flex-grow-1" text @click="$go('/scanner')">
         <span>Scan</span>
         <v-icon>camera_alt</v-icon>
       </v-btn>
@@ -49,8 +49,6 @@ export default {
       this.$go('/home');
       window.scrollTo(0, 0);
     },
-
-    ...mapActions(['scan']),
   },
 };
 </script>

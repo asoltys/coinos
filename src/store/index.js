@@ -80,8 +80,6 @@ const state = {
   received: 0,
   recipient: null,
   route: null,
-  scan: '',
-  scanning: false,
   scannedBalance: null,
   stats: null,
   snack: '',
@@ -104,7 +102,6 @@ export default new Vuex.Store({
   actions: {
     async init({ commit, getters, dispatch, state }) {
       commit('initializing', true);
-      commit('scanning', false);
       commit('error', '');
       let token = window.sessionStorage.getItem('token');
 
@@ -554,40 +551,10 @@ export default new Vuex.Store({
       await Vue.axios.post('/shiftAccount', { asset });
     },
 
-    async scan({ commit, dispatch }) {
-      commit('scanning', true);
-
-      if (window.QRScanner) {
-        window.QRScanner.prepare(err => {
-          if (err) {
-            console.error(err);
-            return;
-          }
-
-          window.QRScanner.show(() => {
-            document.querySelector('#app').style.display = 'none';
-            document.querySelector('#camcontrols').style.display = 'block';
-
-            window.QRScanner.scan((err, res) => {
-              if (err) {
-                l(err);
-              } else {
-                dispatch('handleScan', res);
-              }
-
-              document.querySelector('#app').style.display = 'block';
-              document.querySelector('#camcontrols').style.display = 'none';
-
-              window.QRScanner.destroy();
-            });
-          });
-        });
-      }
-    },
-
     async handleScan({ commit, dispatch, getters }, text) {
+      if (typeof text !== 'string') return router.go(-1);
+
       await dispatch('clearPayment');
-      commit('scanning', false);
       let { user } = getters;
 
       try {
@@ -603,10 +570,6 @@ export default new Vuex.Store({
         commit('network', 'lightning');
         commit('payobj', payobj);
         commit('payreq', payreq);
-
-        if (payobj.satoshis) {
-          await dispatch('queryRoutes');
-        }
 
         go({ name: 'send', params: { keep: true } });
         return;

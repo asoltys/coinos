@@ -1,18 +1,21 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-const Home = () => import('../components/Home');
+
 const About = () => import('../components/About');
 const Assets = () => import('../components/Assets');
+const Home = () => import('../components/Home');
 const Login = () => import('../components/Login');
 const Payments = () => import('../components/Payments');
-const Send = () => import('../components/Send');
 const Receive = () => import('../components/Receive');
+const Scanner = () => import('../components/Scanner');
+const Send = () => import('../components/Send');
 const Settings = () => import('../components/Settings');
 const Text = () => import('../components/Text');
 
 const routes = [
   { path: '/', component: Login, props: { logout: false } },
   { path: '/home', component: Home },
+  { path: '/scanner', component: Scanner },
   { path: '/login', component: Login, props: { logout: false } },
   { path: '/payments', component: Payments },
   { name: 'send', path: '/send', component: Send, props: true },

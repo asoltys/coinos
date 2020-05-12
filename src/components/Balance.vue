@@ -111,10 +111,7 @@ export default {
       let i = setInterval(() => {
         let delta = diff * ease(t / 15);
         this.tweenedRate = (oldRate - delta).toFixed(2);
-        if (t > 15) {
-          clearInterval(i);
-          console.log(this.tweenedRate);
-        }
+        if (t > 15) clearInterval(i);
         t++;
       }, 50);
     },
