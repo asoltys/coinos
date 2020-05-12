@@ -14,10 +14,7 @@
     >
       <div class="fiat yellow--text display-1 my-auto">{{ fiat | format }}</div>
       <div class="mx-1">
-        <currency-list
-          :currency="user.currency"
-          :currencies="fiats"
-        />
+        <currency-list :currency="user.currency" :currencies="fiats" />
       </div>
       <div class="mt-auto mb-1">
         <span>
@@ -40,10 +37,10 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import { TweenLite } from 'gsap';
 import { call } from 'vuex-pathify';
 import CurrencyList from './CurrencyList';
 
+const ease = t => --t * t * t + 1;
 const SATS = 100000000;
 
 export default {
@@ -68,7 +65,12 @@ export default {
 
   computed: {
     cryptos() {
-      return [this.ticker === 'SAT' ? 'BTC' : 'SAT', ...this.user.accounts.map(a => a.ticker).filter(a => a !== this.user.account.ticker)];
+      return [
+        this.ticker === 'SAT' ? 'BTC' : 'SAT',
+        ...this.user.accounts
+          .map(a => a.ticker)
+          .filter(a => a !== this.user.account.ticker),
+      ];
     },
     fiats() {
       return this.user.currencies.filter(c => c !== this.user.currency);
@@ -101,9 +103,20 @@ export default {
   },
 
   watch: {
-    rate(rate) {
-      let tweenedRate = rate;
-      TweenLite.to(this.$data, 0.5, { tweenedRate });
+    rate(newRate) {
+      let t = 0;
+      let oldRate = parseFloat(this.tweenedRate);
+      let diff = oldRate - newRate;
+
+      let i = setInterval(() => {
+        let delta = diff * ease(t / 15);
+        this.tweenedRate = (oldRate - delta).toFixed(2);
+        if (t > 15) {
+          clearInterval(i);
+          console.log(this.tweenedRate);
+        }
+        t++;
+      }, 50);
     },
   },
 

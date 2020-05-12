@@ -3508,6 +3508,7 @@ __metadata:
     vue: ^2.6.10
     vue-axios: ^2.1.4
     vue-cli-plugin-vuetify: ^0.6.3
+    vue-cli-plugin-webpack-bundle-analyzer: ~2.0.0
     vue-material-design-icons: ^3.3.1
     vue-pincode-input: ^0.0.4
     vue-qrcode-reader: ^2.0.1
@@ -12770,6 +12771,15 @@ fsevents@~2.1.2:
   version: 0.6.3
   resolution: "vue-cli-plugin-vuetify@npm:0.6.3"
   checksum: 2/25533e5b4130014cc0572ef861b3a0840c4b0400212d8c9b44ac380aea5a492c8008dbf8840e2429b5f3b5c784b02ff384ee7b00474bbabab5eb339222a76f14
+  languageName: node
+  linkType: hard
+
+"vue-cli-plugin-webpack-bundle-analyzer@npm:~2.0.0":
+  version: 2.0.0
+  resolution: "vue-cli-plugin-webpack-bundle-analyzer@npm:2.0.0"
+  dependencies:
+    webpack-bundle-analyzer: ^3.6.0
+  checksum: 2/532a23ec8e77496080b6142afdc0ac52576baa12c3ed3982b041c935b287d3cd9819855c786f715599286e3a2235385f3613a8136a57b1a804d9335a384d37eb
   languageName: node
   linkType: hard
 

@@ -1,11 +1,11 @@
 <template>
   <v-btn v-if="currencies.length === 1" class="black--text" :color="color(currency)" @click="() => select(currencies[0])">{{
-        currency
+        display
       }}</v-btn>
   <v-menu v-else offset-y nudge-bottom="1">
     <template v-slot:activator="{ on }">
       <v-btn v-on="on" class="black--text" :color="color(currency)">{{
-        currency
+        display
       }}</v-btn>
     </template>
     <v-list v-if="currencies.length">
@@ -24,6 +24,12 @@ export default {
     currencies: { type: Array },
   },
 
+  data() {
+    return {
+      display: this.currency,
+    } 
+  },
+
   computed: {
     user: get('user'),
   },
@@ -37,6 +43,8 @@ export default {
     setCurrency: call('setCurrency'),
     toggleUnit: call('toggleUnit'),
     async select(c) {
+      this.display = c;
+
       let account = this.user.accounts.find(a => a.ticker === c);
       let currency = this.user.currencies.find(cr => cr === c);
 
