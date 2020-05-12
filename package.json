@@ -4,8 +4,9 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
+    "build": "vue-cli-service build --report",
     "buildtor": "vue-cli-service build --mode tor",
+    "stage": "vue-cli-service build --mode staging",
     "lint": "vue-cli-service lint",
     "format": "prettier --write '**/*.{js,mjs,json,vue,gql}'",
     "start": "npm run serve",

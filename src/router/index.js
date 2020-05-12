@@ -1,14 +1,14 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import Home from '../components/Home';
-import About from '../components/About';
-import Assets from '../components/Assets';
-import Login from '../components/Login';
-import Payments from '../components/Payments';
-import Send from '../components/Send';
-import Receive from '../components/Receive';
-import Settings from '../components/Settings';
-import Text from '../components/Text';
+const Home = () => import('../components/Home');
+const About = () => import('../components/About');
+const Assets = () => import('../components/Assets');
+const Login = () => import('../components/Login');
+const Payments = () => import('../components/Payments');
+const Send = () => import('../components/Send');
+const Receive = () => import('../components/Receive');
+const Settings = () => import('../components/Settings');
+const Text = () => import('../components/Text');
 
 const routes = [
   { path: '/', component: Login, props: { logout: false } },
