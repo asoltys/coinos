@@ -50,6 +50,7 @@ export default {
 
   data() {
     return {
+      interval: null,
       tweenedRate: null,
     };
   },
@@ -108,10 +109,11 @@ export default {
       let oldRate = parseFloat(this.tweenedRate);
       let diff = oldRate - newRate;
 
-      let i = setInterval(() => {
+      clearInterval(this.interval);
+      this.interval = setInterval(() => {
         let delta = diff * ease(t / 100);
         this.tweenedRate = (oldRate - delta).toFixed(2);
-        if (t > 100) clearInterval(i);
+        if (t > 100) clearInterval(this.interval);
         t++;
       }, 10);
     },

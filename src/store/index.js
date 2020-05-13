@@ -602,6 +602,8 @@ export default new Vuex.Store({
         commit('payobj', payobj);
         commit('payreq', payreq);
 
+        await Vue.axios.post('/lightning/query', { payreq });
+
         go({ name: 'send', params: { keep: true } });
         return;
       } catch (e) {

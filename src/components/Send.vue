@@ -63,45 +63,19 @@
           </div>
         </template>
         <div v-else>
-          <recipient
+          <transaction
             v-bind="{ address, amount, fiatAmount, scannedBalance }"
             @editingAmount="startEditingAmount"
             @back="back"
           />
-          <payment-details
+          <lightning-payment
             v-if="payobj"
             :payobj="payobj"
             v-bind="{ amount, fiatAmount }"
             @editingAmount="startEditingAmount"
           />
           <div v-if="!loading">
-            <v-card class="elevation-1 mb-4 pa-4" v-if="recipient">
-              <v-card-text class="white--text text-center">
-                <div class="title">Sending to</div>
-                <div class="headline yellow--text mb-2">
-                  {{ recipient.username }}
-                </div>
-                <div>
-                  <v-btn
-                    class="black--text order-first order-sm-last mb-2 mr-2 flex-grow-1"
-                    color="yellow"
-                    dark
-                    @click="sendInternal"
-                  >
-                    <v-icon class="mr-1">forward</v-icon
-                    ><span>Free Internal Transfer</span>
-                  </v-btn>
-                  <v-btn
-                    class="order-first order-sm-last mb-2 flex-grow-1"
-                    color="green"
-                    dark
-                    @click="sendPayment"
-                  >
-                    <v-icon class="mr-1">send</v-icon><span>Pay Normally</span>
-                  </v-btn>
-                </div>
-              </v-card-text>
-            </v-card>
+            <recipient v-if="recipient" @internal="sendInternal" @pay="sendPayment" />
             <div v-else class="d-flex flex-wrap">
               <v-btn
                 class="order-first order-sm-last mb-2 flex-grow-1"
@@ -125,11 +99,14 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import { sync } from 'vuex-pathify';
+
 import Balance from './Balance';
 import Numpad from './NumPad';
+import LightningPayment from './LightningPayment';
 import Recipient from './Recipient';
 import Sent from './Sent';
-import PaymentDetails from './PaymentDetails';
+import Transaction from './Transaction';
+
 import Qrcode from 'vue-material-design-icons/Qrcode';
 import Copy from '../mixins/Copy';
 
@@ -137,11 +114,12 @@ export default {
   mixins: [Copy],
   components: {
     Balance,
+    LightningPayment,
     Numpad,
-    Sent,
-    PaymentDetails,
     Qrcode,
     Recipient,
+    Sent,
+    Transaction,
   },
 
   filters: {
