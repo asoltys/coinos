@@ -2,7 +2,16 @@
   <v-app id="app">
     <top-bar />
     <snack-bar />
-    <v-content style="background: #333">
+    <v-content v-show="scanning">
+      <div class="text-center" v-if="webscanning">
+        <qrcode-stream class="mt-4" @decode="handleScan"></qrcode-stream>
+        <v-btn @click="handleScan" class="mr-2 my-2">
+          <v-icon class="mr-1" color="red">cancel</v-icon>
+          Cancel
+        </v-btn>
+      </div>
+    </v-content>
+    <v-content v-show="!scanning" style="background: #333">
       <v-container class="mr-3" style="margin-bottom: 50px !important">
         <v-alert
           class="mb-2"
@@ -13,6 +22,7 @@
           >{{ error }}</v-alert
         >
         <two-fa />
+
         <router-view v-if="!initializing" :key="$route.path" />
       </v-container>
     </v-content>
@@ -26,12 +36,13 @@ import BottomNav from './components/BottomNav';
 import SnackBar from './components/SnackBar';
 import TopBar from './components/TopBar';
 import { mapGetters } from 'vuex';
+import { QrcodeStream } from 'vue-qrcode-reader';
 import Window from './window';
 import TwoFa from './components/TwoFa';
 import paths from './paths';
 
 export default {
-  components: { BottomNav, SnackBar, TopBar, TwoFa },
+  components: { BottomNav, SnackBar, TopBar, TwoFa, QrcodeStream },
 
   data() {
     return {
@@ -40,7 +51,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['initializing', 'loading', 'user']),
+    ...mapGetters(['initializing', 'loading', 'scanning', 'user']),
 
     publicPath() {
       return paths.includes(this.$route.path);
@@ -52,6 +63,10 @@ export default {
 
     promptInstall() {
       return this.prompt && !this.installed;
+    },
+
+    webscanning() {
+      return this.scanning && !window.QRScanner;
     },
 
     error: {

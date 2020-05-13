@@ -34,12 +34,6 @@ export default {
     user: get('user'),
   },
 
-  watch: {
-    currency(v) {
-      this.display = v;
-    },
-  },
-
   methods: {
     color(c) {
       let tickers = this.user.accounts.map(a => a.ticker);

@@ -50,6 +50,7 @@
 </template>
 
 <script>
+import date from 'date-fns';
 import { mapGetters } from 'vuex';
 import { call, sync } from 'vuex-pathify';
 import Copy from '../mixins/Copy';

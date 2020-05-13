@@ -31,11 +31,6 @@ const Receive = () =>
     /* webpackChunkName: "receive" */
     '../components/Receive'
   );
-const Scanner = () =>
-  import(
-    /* webpackChunkName: "scanner" */
-    '../components/Scanner'
-  );
 const Send = () =>
   import(
     /* webpackChunkName: "send" */
@@ -55,7 +50,6 @@ const Text = () =>
 const routes = [
   { path: '/', component: Login, props: { logout: false } },
   { path: '/home', component: Home },
-  { path: '/scanner', component: Scanner },
   { path: '/login', component: Login, props: { logout: false } },
   { path: '/payments', component: Payments },
   { name: 'send', path: '/send', component: Send, props: true },
