@@ -247,7 +247,8 @@ export default new Vuex.Store({
     async setupSockets({ commit, getters, state, dispatch }) {
       if (state.socket) return;
       return new Promise((resolve, reject) => {
-        const ws = new WebSocket(`ws://${location.host}/ws`);
+        const proto = process.env.NODE_ENV === "production" ? "wss://" : "ws://";
+        const ws = new WebSocket(`${proto}${location.host}/ws`);
 
         ws.onopen = () => {
           ws.send(getters.token);
@@ -271,15 +272,17 @@ export default new Vuex.Store({
               let p = data;
               commit('payment', p);
 
+              let precision = p.account.precision;
               let unit = p.account.ticker;
               if (unit === 'BTC') unit = getters.user.unit;
+              if (unit === 'SAT') precision = 0;
 
               if (p.amount > 0)
                 dispatch(
                   'snack',
                   `Received ${format(
                     p.amount + p.tip,
-                    p.account.precision
+                    precision
                   )} ${unit}`
                 );
               commit('addPayment', p);
