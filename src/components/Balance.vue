@@ -40,7 +40,7 @@ import { mapGetters } from 'vuex';
 import { call } from 'vuex-pathify';
 import CurrencyList from './CurrencyList';
 
-const ease = t => --t * t * t + 1;
+const ease = t => t<.5 ? 8*t*t*t*t : 1-8*(--t)*t*t*t;
 const SATS = 100000000;
 
 export default {
@@ -109,11 +109,11 @@ export default {
       let diff = oldRate - newRate;
 
       let i = setInterval(() => {
-        let delta = diff * ease(t / 15);
+        let delta = diff * ease(t / 100);
         this.tweenedRate = (oldRate - delta).toFixed(2);
-        if (t > 15) clearInterval(i);
+        if (t > 100) clearInterval(i);
         t++;
-      }, 50);
+      }, 10);
     },
   },
 

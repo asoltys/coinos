@@ -2,18 +2,6 @@
   <div v-if="!initializing">
     <v-progress-linear v-if="loading" indeterminate />
     <div v-else>
-      <v-alert
-        class="black--text mb-4"
-        color="yellow"
-        v-model="showlogout"
-        value="showlogout"
-        dismissible
-        transition="scale-transition"
-      >
-        <template v-slot:prepend>
-          <v-icon class="mr-2" color="black">info</v-icon>
-        </template>
-      </v-alert>
       <div class="text-center">
         <h2>
           Send and receive
@@ -94,7 +82,6 @@ export default {
         username: '',
         password: '',
       },
-      showlogout: false,
       token: null,
     };
   },
@@ -115,7 +102,6 @@ export default {
 
     submit(e) {
       this.login(this.form);
-      this.showlogout = false;
     },
   },
 
@@ -126,7 +112,6 @@ export default {
   },
 
   mounted() {
-    this.showlogout = this.logout;
     if (window.innerWidth > 600 && this.$refs.username) {
       this.$refs.username.focus();
     }

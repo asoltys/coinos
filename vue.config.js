@@ -14,8 +14,9 @@ module.exports = IS_PRODUCTION
             pathRewrite: { '^/api': '' },
             secure: false,
           },
-          '/socket.io': {
+          '/ws': {
             target: 'http://localhost:3119',
+            pathRewrite: { '^/ws': '' },
             ws: true,
           },
         },

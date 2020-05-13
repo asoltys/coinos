@@ -3,27 +3,18 @@
     <top-bar />
     <snack-bar />
     <v-content style="background: #333">
-      <transition
-        name="fade"
-        mode="in-out"
-      >
-        <v-container class="mr-3" style="margin-bottom: 50px !important">
-          <v-alert
-            class="mb-2"
-            v-if="error"
-            color="error"
-            dismissible
-            transition="scale-transition"
-            >{{ error }}</v-alert
-          >
-          <two-fa />
-
-          <transition name="fade">
-            <router-view v-if="!initializing" :key="$route.path" />
-          </transition>
-
-        </v-container>
-      </transition>
+      <v-container class="mr-3" style="margin-bottom: 50px !important">
+        <v-alert
+          class="mb-2"
+          v-if="error"
+          color="error"
+          dismissible
+          transition="scale-transition"
+          >{{ error }}</v-alert
+        >
+        <two-fa />
+        <router-view v-if="!initializing" :key="$route.path" />
+      </v-container>
     </v-content>
     <bottom-nav v-if="user && user.address" />
   </v-app>
@@ -128,16 +119,6 @@ export default {
 .toolbar__title
   cursor pointer
 
-.fade-transition
-  &-leave-active
-    position: absolute
-
-  &-enter-active, &-leave, &-leave-to
-    transition: $primary-transition
-
-  &-enter, &-leave-to
-    opacity: 0
-
 img.logo
   cursor pointer
   max-height 40px
@@ -145,12 +126,6 @@ img.logo
 img.fx
   width 30px
   height 30px
-
-.fade-enter-active
-  transition: opacity 0.3s
-
-.fade-enter
-  opacity: 0
 
 #app
   margin auto

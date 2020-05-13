@@ -1,11 +1,10 @@
-import socketio from 'socket.io-client';
 import Vue from 'vue';
 import Vuex from 'vuex';
 import bech32 from 'bech32';
 import bip21 from 'bip21';
 import bolt11 from 'bolt11';
 import router from '../router';
-import { address as BitcoinAddress } from 'bitcoinjs-lib';
+import validate from 'bitcoin-address-validation';
 import pathify, { make } from 'vuex-pathify';
 import paths from '../paths';
 import format from '../format';
@@ -112,7 +111,11 @@ export default new Vuex.Store({
 
       if (token && token !== 'null') {
         commit('token', token);
-        await dispatch('setupSockets');
+        try {
+          await dispatch('setupSockets');
+        } catch(e) {
+          l("failed to setup sockets");
+        } 
       }
 
       let attempts = 0;
@@ -156,7 +159,8 @@ export default new Vuex.Store({
         commit('user', res.data.user);
         commit('token', res.data.token);
       } catch (e) {
-        if (e.response && e.response.data.startsWith('2fa')) commit('prompt2fa', true);
+        if (e.response && e.response.data.startsWith('2fa'))
+          commit('prompt2fa', true);
         else commit('error', 'Login failed');
         return;
       }
@@ -231,7 +235,7 @@ export default new Vuex.Store({
       commit('token', null);
       commit('pin', null);
       commit('user', null);
-      if (state.socket) state.socket.disconnect();
+      if (state.socket) state.socket.close();
       commit('socket', null);
       go('/');
     },
@@ -242,65 +246,82 @@ export default new Vuex.Store({
 
     async setupSockets({ commit, getters, state, dispatch }) {
       if (state.socket) return;
-      let s = socketio('/', {
-        query: { token: state.token },
-      });
-      commit('socket', s);
-
-      s.on('to', r => {
-        commit('recipient', r);
-      });
-
-      s.on('payment', p => {
-        commit('payment', p);
-        let { user } = getters;
-
-        let unit = p.account.ticker;
-        if (unit === 'BTC') unit = user.unit;
-
-        if (p.amount > 0)
-          dispatch(
-            'snack',
-            `Received ${format(p.amount + p.tip, p.account.precision)} ${unit}`
-          );
-        commit('addPayment', p);
-      });
-
-      s.on('payments', p => commit('payments', p));
-
-      s.on('rates', rates => {
-        if (!rates) return;
-        commit('rates', rates);
-        commit('rate', rates[state.user.currency]);
-      });
-
-      s.on('otpsecret', otpsecret =>
-        commit('user', { ...state.user, otpsecret })
-      );
-      s.on('user', user => {
-        commit('user', user);
-      });
-
       return new Promise((resolve, reject) => {
-        s.on('connected', () => {
-          s.emit('getuser', {}, user => {
-            if (user) {
-              commit('user', user);
-              if (
-                router.currentRoute.path === '/login' ||
-                router.currentRoute.path === '/'
-              ) {
-                go('/home');
-              }
-            } else {
-              dispatch('logout');
-            }
-            resolve();
-          });
-        });
+        const ws = new WebSocket(`ws://${location.host}/ws`);
 
-        s.on('connect_failed', reject);
-        s.on('error', reject);
+        ws.onopen = () => {
+          ws.send(getters.token);
+          commit('socket', ws);
+          resolve();
+        };
+
+        ws.onerror = () => {
+          commit('error', "Couldn't establish socket connection");
+          reject();
+        };
+
+        ws.onmessage = (msg) => {
+          let { type, data } = JSON.parse(msg.data);
+          switch (type) {
+            case 'to':
+              commit('recipient', data);
+              break;
+
+            case 'payment':
+              let p = data;
+              commit('payment', p);
+
+              let unit = p.account.ticker;
+              if (unit === 'BTC') unit = getters.user.unit;
+
+              if (p.amount > 0)
+                dispatch(
+                  'snack',
+                  `Received ${format(
+                    p.amount + p.tip,
+                    p.account.precision
+                  )} ${unit}`
+                );
+              commit('addPayment', p);
+              break;
+
+            case 'payments':
+              commit('payments', data);
+              break;
+
+            case 'rates':
+              const rates = data;
+              if (!rates) return;
+              commit('rates', rates);
+              if (getters.user && getters.user.currency)
+                commit('rate', rates[getters.user.currency]);
+              break;
+
+            case 'otpsecret':
+              commit('user', { ...state.user, otpsecret: data });
+              break;
+
+            case 'user':
+              commit('user', data);
+              break;
+
+            case 'login':
+              let user = data;
+              if (user) {
+                commit('user', user);
+                if (
+                  router.currentRoute.path === '/login' ||
+                  router.currentRoute.path === '/'
+                ) {
+                  go('/home');
+                }
+              } else {
+                dispatch('logout');
+              }
+              resolve();
+              break;
+          }
+        };
       });
     },
 
@@ -380,14 +401,18 @@ export default new Vuex.Store({
     },
 
     async sendInternal({ commit, dispatch, getters }) {
-      let { amount, recipient: { username }, user } = getters;
+      let {
+        amount,
+        recipient: { username },
+        user,
+      } = getters;
       let asset = user.account.asset;
 
       try {
         let res = await Vue.axios.post('/send', {
           amount,
           asset,
-          username
+          username,
         });
         commit('payment', res.data);
       } catch (e) {
@@ -566,7 +591,10 @@ export default new Vuex.Store({
           await dispatch('shiftAccount', process.env.VUE_APP_LBTC);
 
         commit('amount', payobj.satoshis);
-        commit('fiatAmount', ((payobj.satoshis * getters.rate) / SATS).toFixed(2));
+        commit(
+          'fiatAmount',
+          ((payobj.satoshis * getters.rate) / SATS).toFixed(2)
+        );
         commit('network', 'lightning');
         commit('payobj', payobj);
         commit('payreq', payreq);
@@ -609,14 +637,11 @@ export default new Vuex.Store({
         return;
       }
 
-      try {
-        BitcoinAddress.fromBase58Check(text);
+      if (validate(text)) {
         commit('address', text);
         commit('network', 'bitcoin');
         go({ name: 'send', params: { keep: true } });
         return;
-      } catch (e) {
-        /**/
       }
 
       // Liquid
