@@ -31,6 +31,11 @@ const Receive = () =>
     /* webpackChunkName: "receive" */
     '../components/Receive'
   );
+const Scan = () =>
+  import(
+    /* webpackChunkName: "send" */
+    '../components/Scan'
+  );
 const Send = () =>
   import(
     /* webpackChunkName: "send" */
@@ -49,17 +54,18 @@ const Text = () =>
 
 const routes = [
   { path: '/', component: Login, props: { logout: false } },
-  { path: '/home', component: Home },
-  { path: '/login', component: Login, props: { logout: false } },
-  { path: '/payments', component: Payments },
-  { name: 'send', path: '/send', component: Send, props: true },
-  { path: '/receive', component: Receive },
-  { path: '/receive', component: Receive },
   { path: '/about', component: About },
   { path: '/assets', component: Assets },
+  { path: '/home', component: Home },
+  { path: '/login', component: Login, props: { logout: false } },
+  { path: '/logout', component: Login, props: { logout: true } },
+  { path: '/payments', component: Payments },
+  { path: '/receive', component: Receive },
+  { path: '/receive', component: Receive },
+  { path: '/scan', component: Scan },
+  { name: 'send', path: '/send', component: Send, props: true },
   { path: '/settings', component: Settings },
   { path: '/text', component: Text },
-  { path: '/logout', component: Login, props: { logout: true } },
 ];
 
 Vue.use(VueRouter);
