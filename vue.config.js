@@ -8,7 +8,7 @@ module.exports = IS_PRODUCTION
           openAnalyzer: false,
         },
       },
-  }
+    }
   : {
       runtimeCompiler: true,
       devServer: {

@@ -1,16 +1,56 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 
-const About = () => import('../components/About');
-const Assets = () => import('../components/Assets');
-const Home = () => import('../components/Home');
-const Login = () => import('../components/Login');
-const Payments = () => import('../components/Payments');
-const Receive = () => import('../components/Receive');
-const Scanner = () => import('../components/Scanner');
-const Send = () => import('../components/Send');
-const Settings = () => import('../components/Settings');
-const Text = () => import('../components/Text');
+const About = () =>
+  import(
+    /* webpackChunkName: "about" */
+    '../components/About'
+  );
+const Assets = () =>
+  import(
+    /* webpackChunkName: "assets" */
+    '../components/Assets'
+  );
+const Home = () =>
+  import(
+    /* webpackChunkName: "home" */
+    '../components/Home'
+  );
+const Login = () =>
+  import(
+    /* webpackChunkName: "login" */
+    '../components/Login'
+  );
+const Payments = () =>
+  import(
+    /* webpackChunkName: "payments" */
+    '../components/Payments'
+  );
+const Receive = () =>
+  import(
+    /* webpackChunkName: "receive" */
+    '../components/Receive'
+  );
+const Scanner = () =>
+  import(
+    /* webpackChunkName: "scanner" */
+    '../components/Scanner'
+  );
+const Send = () =>
+  import(
+    /* webpackChunkName: "send" */
+    '../components/Send'
+  );
+const Settings = () =>
+  import(
+    /* webpackChunkName: "settings" */
+    '../components/Settings'
+  );
+const Text = () =>
+  import(
+    /* webpackChunkName: "text" */
+    '../components/Text'
+  );
 
 const routes = [
   { path: '/', component: Login, props: { logout: false } },
