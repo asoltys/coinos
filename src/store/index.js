@@ -277,7 +277,6 @@ export default new Vuex.Store({
 
           switch (type) {
             case 'to':
-              console.log("got recipient", data);
               commit('recipient', data);
             break;
 

@@ -28,7 +28,6 @@ export default {
   methods: {
     stop() {
       this.$refs.video.srcObject.getTracks().map(t => t.stop());
-      this.handleScan();
     },
     handleScan: call('handleScan'),
 
@@ -63,7 +62,10 @@ export default {
             inversionAttempts: 'dontInvert',
           });
 
-          if (code) this.handleScan(code.data);
+          if (code) {
+            this.handleScan(code.data);
+            this.stop();
+          } 
         });
       }
 
@@ -87,7 +89,7 @@ export default {
   },
 
   beforeDestroy() {
-    this.$refs.video.srcObject.getTracks().map(t => t.stop());
+    this.stop();
   } 
 };
 </script>
