@@ -112,6 +112,17 @@ export default new Vuex.Store({
         commit('token', token);
         try {
           await dispatch('setupSockets');
+          const poll = async () => {
+            if (getters.socket.readyState !== 1) {
+              try {
+                await dispatch('setupSockets');
+              } catch(e) {
+              } 
+            }
+            setTimeout(poll, 5000);
+          };
+          poll();
+          
         } catch(e) {
           l("failed to setup sockets");
         } 
@@ -244,19 +255,20 @@ export default new Vuex.Store({
     },
 
     async setupSockets({ commit, getters, state, dispatch }) {
-      if (state.socket) return;
+      if (state.socket && state.socket.readyState === 1) return;
       return new Promise((resolve, reject) => {
         const proto = process.env.NODE_ENV === "production" ? "wss://" : "ws://";
         const ws = new WebSocket(`${proto}${location.host}/ws`);
 
         ws.onopen = () => {
           ws.send(getters.token);
+          commit('error', null);
           commit('socket', ws);
           resolve();
         };
 
         ws.onerror = () => {
-          commit('error', "Couldn't establish socket connection");
+          commit('error', "Problem connecting to server");
           reject();
         };
 

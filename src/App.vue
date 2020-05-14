@@ -42,7 +42,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['initializing', 'loading', 'user']),
+    ...mapGetters(['initializing', 'loading', 'user', 'socket']),
 
     publicPath() {
       return paths.includes(this.$route.path);
