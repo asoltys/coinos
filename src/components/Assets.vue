@@ -2,7 +2,7 @@
   <div>
     <v-expansion-panels accordion>
       <v-expansion-panel v-for="a in user.accounts" :key="a.asset">
-        <v-expansion-panel-header ripple class="d-flex flex-wrap" expand-icon="">
+        <v-expansion-panel-header ripple class="d-flex" expand-icon="">
           <div class="asset d-flex flex-grow-1"
                :class="{
                   'body-1': $vuetify.breakpoint.xsOnly,
@@ -25,7 +25,7 @@
           </div>
           <v-btn
             class="flex-grow-0 ml-2 black--text"
-            @click="() => select(a.asset)"
+            @click.prevent="() => select(a.asset)"
             color="yellow"
           >
             <v-icon>forward</v-icon>

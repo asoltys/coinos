@@ -15,6 +15,7 @@
         <two-fa />
 
         <router-view v-if="!initializing" :key="$route.path" />
+        <v-progress-linear v-else indeterminate />
       </v-container>
     </v-content>
     <bottom-nav v-if="user && user.address" />

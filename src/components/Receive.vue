@@ -22,7 +22,7 @@
         <v-btn
           class="flex-grow-1 mb-2 mr-1"
           @click="addInvoice('bitcoin')"
-          :disabled="user.account.ticker !== 'BTC'"
+          :disabled="!isBtc"
         >
           <img class="mr-1" src="../assets/bitcoin.png" width="30px" />
           <span>Bitcoin</span>
@@ -31,7 +31,7 @@
         <v-btn
           class="flex-grow-1 mb-2 mr-1"
           @click="addInvoice('lightning')"
-          :disabled="user.account.ticker !== 'BTC' || invoice.amount <= 0"
+          :disabled="!isBtc || invoice.amount <= 0"
         >
           <flash fillColor="yellow" />
           <span>Lightning</span>
@@ -60,7 +60,12 @@ export default {
   components: { Balance, Flash, Numpad, Received, Request, Water },
 
   computed: {
+    isBtc() {
+      return this.user.account && this.user.account.ticker === 'BTC'
+    },
     currencies() {
+      if (!(this.user.accounts && this.user.currencies)) return [];
+
       return [
         'SAT',
         'BTC',

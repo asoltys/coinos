@@ -25,6 +25,7 @@
 import { mapGetters, mapActions } from 'vuex';
 import Balance from './Balance';
 import Payments from './Payments';
+import { sync } from 'vuex-pathify';
 
 export default {
   components: { Balance, Payments },
@@ -39,7 +40,12 @@ export default {
     },
   },
 
-  computed: mapGetters(['rate', 'user']),
+  computed: {
+    ...mapGetters(['rate', 'user']),
+    initializing: sync('initializing'),
+    loading: sync('loading'),
+  },
+
   methods: mapActions(['snack']),
 };
 </script>

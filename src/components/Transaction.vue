@@ -158,7 +158,6 @@ export default {
     setFee() {
       this.adjusting = !this.adjusting;
     },
-    estimateFee: call('estimateFee'),
     shiftAccount: call('shiftAccount'),
   },
   mounted() {

@@ -20,7 +20,7 @@
     </div>
     <div v-else>
       <div class="d-flex display-1 text-center justify-center">
-        <div class="flex-grow-1">{{ tip }} <span class="body-1">SAT</span></div>
+        <div class="flex-grow-1">{{ tip }} <span class="body-1">{{ ticker }}</span></div>
         <div class="flex-grow-1">{{ percent }}%</div>
         <div v-if="user.account.ticker === 'BTC'" class="flex-grow-1 yellow--text">
           {{ fiatTip }} <span class="body-1">{{ invoice.currency }}</span>
@@ -67,6 +67,12 @@ export default {
   },
 
   computed: {
+    isBtc() {
+      return this.user.account.ticker === 'BTC';
+    }, 
+    ticker() {
+      return this.isBtc ? this.user.unit : this.user.account.ticker;
+    },
     invoice: get('invoice'),
     user: get('user'),
   },
