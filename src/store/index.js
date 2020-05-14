@@ -79,8 +79,6 @@ const state = {
   received: 0,
   recipient: null,
   route: null,
-  scan: '',
-  scannedBalance: null,
   stats: null,
   snack: '',
   socket: null,

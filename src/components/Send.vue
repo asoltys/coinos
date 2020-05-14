@@ -64,7 +64,7 @@
         </template>
         <div v-else>
           <transaction
-            v-bind="{ address, amount, fiatAmount, scannedBalance }"
+            v-bind="{ address, amount, fiatAmount }"
             @editingAmount="startEditingAmount"
             @back="back"
           />
@@ -167,7 +167,6 @@ export default {
       'payobj',
       'rate',
       'recipient',
-      'scannedBalance',
     ]),
   },
 

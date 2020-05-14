@@ -61,5 +61,11 @@ export default {
       this.$emit('currency', c);
     },
   },
+
+  watch: {
+    currency(v) {
+      this.display = v;
+    },
+  },
 };
 </script>
