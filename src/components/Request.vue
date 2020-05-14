@@ -13,6 +13,7 @@
               @click="toggleUnit"
               >{{ ticker }}</v-btn
             >
+            <span class="print body-1">{{ ticker }}</span>
           </div>
           <div v-if="isBtc" class="yellow--text display-1">
             <span>{{ invoice.fiatAmount }}</span>
@@ -23,12 +24,13 @@
                   @click="shiftCurrency"
                   >{{ invoice.currency }}</v-btn
                 >
+            <span class="print body-1">{{ invoice.currency }}</span>
           </div>
         </div>
       </div>
       <h1 v-else class="text-center font-weight-black">Receiving Address</h1>
       <v-card class="pa-3 text-center mb-2">
-        <div v-if="showcode" class="code mb-4">{{ invoice.text }}</div>
+        <div class="code mb-4" :class="{ print: !showcode }">{{ invoice.text }}</div>
         <canvas
           id="qr"
           v-show="!showcode"

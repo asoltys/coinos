@@ -262,10 +262,12 @@ export default new Vuex.Store({
 
         ws.onmessage = (msg) => {
           let { type, data } = JSON.parse(msg.data);
+
           switch (type) {
             case 'to':
+              console.log("got recipient", data);
               commit('recipient', data);
-              break;
+            break;
 
             case 'payment':
               let p = data;

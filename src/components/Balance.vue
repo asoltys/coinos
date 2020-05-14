@@ -1,5 +1,5 @@
 <template>
-  <div class="mb-2 text-center">
+  <div class="mb-2 text-center no-print">
     <div class="d-flex">
       <div class="display-2 font-weight-black flex-grow-1 text-right mr-2">
         {{ $format(user.account.balance, precision) }}

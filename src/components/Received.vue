@@ -18,6 +18,7 @@
             <v-btn @click="select(ticker)" color="white" class="black--text">{{
               ticker
             }}</v-btn>
+            <span class="print">{{ ticker }}</span>
           </div>
         </div>
         <div v-if="payment.account.ticker === 'BTC'" class="d-flex">

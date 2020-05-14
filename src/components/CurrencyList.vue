@@ -1,12 +1,16 @@
 <template>
-  <v-btn v-if="currencies.length === 1" class="black--text" :color="color(currency)" @click="() => select(currencies[0])">{{
+  <div v-if="currencies.length === 1">
+  <v-btn class="black--text" :color="color(currency)" @click="() => select(currencies[0])">{{
         display
       }}</v-btn>
+    <span class="print black--text">{{ display }}</span>
+  </div>
   <v-menu v-else offset-y nudge-bottom="1">
     <template v-slot:activator="{ on }">
       <v-btn v-on="on" class="black--text" :color="color(currency)">{{
         display
       }}</v-btn>
+      <span class="print black--text">{{ display }}</span>
     </template>
     <v-list v-if="currencies.length">
       <v-list-item v-for="c in currencies" :key="c" @click="() => select(c)">
@@ -69,3 +73,9 @@ export default {
   },
 };
 </script>
+
+<style lang="stylus" scoped>
+  @media print
+    .omg
+      display block !important
+</style>

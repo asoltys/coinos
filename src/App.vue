@@ -156,8 +156,15 @@ body
   .container
     max-width 1000px !important
 
+@media screen
+  .print
+    display none
+
 @media print
-  .v-btn, header, #footer
+  .no-print
+    display none
+
+  .v-btn, header, #footer, .snack
     display none !important
 
   .v-card
