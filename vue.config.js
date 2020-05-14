@@ -10,6 +10,11 @@ module.exports = IS_PRODUCTION
       },
     }
   : {
+      pluginOptions: {
+        webpackBundleAnalyzer: {
+          analyzerMode: "disabled",
+        },
+      },
       runtimeCompiler: true,
       devServer: {
         host: '0.0.0.0',
