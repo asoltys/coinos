@@ -67,6 +67,7 @@ const state = {
   loading: false,
   loadingFee: false,
   network: null,
+  networks: [],
   orders: [],
   payment: null,
   payments: [],
@@ -276,6 +277,10 @@ export default new Vuex.Store({
           let { type, data } = JSON.parse(msg.data);
 
           switch (type) {
+            case 'networks':
+              commit('networks', data);
+            break;
+
             case 'to':
               commit('recipient', data);
             break;
@@ -594,44 +599,51 @@ export default new Vuex.Store({
     async handleScan({ commit, dispatch, getters }, text) {
       if (typeof text !== 'string') return router.go(-1);
       await dispatch('clearPayment');
-      let { user } = getters;
+      let { networks, user } = getters;
 
-      try {
-        if (text.slice(0, 10) === 'lightning:') text = text.slice(10);
-        let payreq = text.toLowerCase();
-        let payobj = bolt11.decode(payreq);
+      if (networks.includes('lightning')) {
+        try {
+          if (text.slice(0, 10) === 'lightning:') text = text.slice(10);
+          let payreq = text.toLowerCase();
+          let payobj = bolt11.decode(payreq);
 
-        if (user.account.ticker !== 'BTC')
-          await dispatch('shiftAccount', process.env.VUE_APP_LBTC);
+          if (user.account.ticker !== 'BTC')
+            await dispatch('shiftAccount', process.env.VUE_APP_LBTC);
 
-        commit('amount', payobj.satoshis);
-        commit(
-          'fiatAmount',
-          ((payobj.satoshis * getters.rate) / SATS).toFixed(2)
-        );
-        commit('network', 'lightning');
-        commit('payobj', payobj);
-        commit('payreq', payreq);
+          commit('amount', payobj.satoshis);
+          commit(
+            'fiatAmount',
+            ((payobj.satoshis * getters.rate) / SATS).toFixed(2)
+          );
+          commit('network', 'lightning');
+          commit('payobj', payobj);
+          commit('payreq', payreq);
 
-        await Vue.axios.post('/lightning/query', { payreq });
+          await Vue.axios.post('/lightning/query', { payreq });
 
-        go({ name: 'send', params: { keep: true } });
-        return;
-      } catch (e) {
-        if (e.response) commit('error', e.response.data);
+          go({ name: 'send', params: { keep: true } });
+          return;
+        } catch (e) {
+          if (e.response) commit('error', e.response.data);
+        }
       }
+
 
       let url;
       try {
+      if (networks.includes('bitcoin')) {
         url = bip21.decode(text);
         commit('network', 'bitcoin');
         url.options.asset = BTC;
+      }
       } catch (e) {
+        if (networks.includes('liquid')) {
         try {
           url = bip21.decode(text, 'liquidnetwork');
           commit('network', 'liquid');
         } catch (e) {
           /**/
+        }
         }
       }
 
@@ -653,7 +665,7 @@ export default new Vuex.Store({
         return;
       }
 
-      if (validate(text)) {
+      if (networks.includes('bitcoin') && validate(text)) {
         commit('address', text);
         commit('network', 'bitcoin');
         go({ name: 'send', params: { keep: true } });
@@ -662,25 +674,16 @@ export default new Vuex.Store({
 
       // Liquid
       if (
+        networks.includes('liquid') && (
         text.startsWith('Az') ||
         text.startsWith('lq1') ||
         text.startsWith('VJL') ||
-        text.startsWith('VT')
+        text.startsWith('VT'))
       ) {
         commit('address', text);
         commit('network', 'liquid');
         go({ name: 'send', params: { keep: true } });
         return;
-      }
-
-      try {
-        bech32.decode(text);
-        commit('address', text);
-        commit('network', 'bitcoin');
-        go({ name: 'send', params: { keep: true } });
-        return;
-      } catch (e) {
-        /**/
       }
     },
 

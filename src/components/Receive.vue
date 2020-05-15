@@ -20,24 +20,33 @@
 
       <div class="d-flex flex-wrap buttons">
         <v-btn
+          v-if="networks.includes('bitcoin')"
           class="flex-grow-1 mb-2 mr-1"
           @click="addInvoice('bitcoin')"
           :disabled="!isBtc"
+          :style="buttonStyle"
         >
           <img class="mr-1" src="../assets/bitcoin.png" width="30px" />
           <span>Bitcoin</span>
         </v-btn>
 
         <v-btn
+          v-if="networks.includes('lightning')"
           class="flex-grow-1 mb-2 mr-1"
           @click="addInvoice('lightning')"
           :disabled="!isBtc || invoice.amount <= 0"
+          :style="buttonStyle"
         >
           <flash fillColor="yellow" />
           <span>Lightning</span>
         </v-btn>
 
-        <v-btn class="flex-grow-1 mr-0" @click="addInvoice('liquid')">
+        <v-btn
+          v-if="networks.includes('liquid')"
+          class="flex-grow-1 mr-0"
+          @click="addInvoice('liquid')"
+          :style="buttonStyle"
+        >
           <water fillColor="#00aaee" />
           <span>Liquid</span>
         </v-btn>
@@ -60,8 +69,13 @@ export default {
   components: { Balance, Flash, Numpad, Received, Request, Water },
 
   computed: {
+    buttonStyle() {
+      return {
+        maxWidth: `${(100 / this.networks.length).toFixed(0)}%`,
+      };
+    },
     isBtc() {
-      return this.user.account && this.user.account.ticker === 'BTC'
+      return this.user.account && this.user.account.ticker === 'BTC';
     },
     currencies() {
       if (!(this.user.accounts && this.user.currencies)) return [];
@@ -69,12 +83,15 @@ export default {
       return [
         'SAT',
         'BTC',
-        ...[...this.user.accounts.map(a => a.ticker).filter(a => a !== 'BTC')].sort(),
+        ...[
+          ...this.user.accounts.map(a => a.ticker).filter(a => a !== 'BTC'),
+        ].sort(),
         ...[...this.user.currencies].sort(),
       ];
     },
     invoice: sync('invoice'),
     loading: sync('loading'),
+    networks: get('networks'),
     payment: get('payment'),
     rate: get('rate'),
     received: sync('received'),
@@ -123,9 +140,6 @@ canvas
 
 .buttons
   width: 100%;
-
-.buttons .v-btn
-  max-width 33%
 
 @media (max-width: 600px)
   .buttons .v-btn
