@@ -9,7 +9,7 @@
       auto-grow
     >
       <template v-slot:append>
-        <v-btn @click="$emit('back')" class="ml-1" icon>
+        <v-btn @click="clearPayment" class="ml-1" icon>
           <v-icon class="mr-1">clear</v-icon>
         </v-btn>
         <v-btn @click="explore" class="ml-1" icon>
@@ -32,7 +32,7 @@
       label="Amount"
       v-model="displayAmount"
       readonly
-      @click="setAmount"
+      @click="$emit('edit')"
     >
       <template v-slot:append>
         <v-btn
@@ -138,6 +138,7 @@ export default {
       let { asset } = this.user.accounts.find(a => a.id === id);
       this.shiftAccount(asset);
     },
+    clearPayment: call('clearPayment'),
     toggle() {
       if (this.user.account.ticker !== 'BTC') return;
       this.fiat = !this.fiat;
@@ -151,9 +152,6 @@ export default {
     },
     select(e) {
       if (!e.target.readOnly) e.target.select();
-    },
-    setAmount() {
-      this.$emit('editingAmount');
     },
     setFee() {
       this.adjusting = !this.adjusting;

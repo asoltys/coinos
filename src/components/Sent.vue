@@ -35,7 +35,7 @@
         </div>
       </div>
 
-      <v-btn @click="back" class="mr-2">
+      <v-btn @click="clearPayment" class="mr-2">
         <v-icon class="mr-2">arrow_back</v-icon><span>Send Another</span>
       </v-btn>
       <v-btn v-if="payment.txid" @click="link(payment.txid)">
@@ -49,7 +49,6 @@
 import { mapGetters, mapActions } from 'vuex';
 export default {
   props: {
-    back: { type: Function },
     payment: { type: Object },
   },
 
@@ -79,7 +78,7 @@ export default {
   },
 
   methods: {
-    ...mapActions(['snack']),
+    ...mapActions(['clearPayment', 'snack']),
 
     fiat(n) {
       if (!n || isNaN(n)) return '0.00';

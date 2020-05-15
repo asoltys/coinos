@@ -92,7 +92,7 @@ export default {
       this.fiat = !this.fiat;
     },
     setAmount() {
-      this.$emit('editingAmount');
+      this.$emit('editing');
     },
   },
 };
