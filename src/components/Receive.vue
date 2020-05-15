@@ -71,7 +71,7 @@ export default {
   computed: {
     buttonStyle() {
       return {
-        maxWidth: `${(100 / this.networks.length).toFixed(0)}%`,
+        maxWidth: `${(100 / (window.innerWidth < 600 ? 1 : this.networks.length)).toFixed(0)}%`,
       };
     },
     isBtc() {
