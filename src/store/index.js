@@ -114,7 +114,7 @@ export default new Vuex.Store({
         try {
           await dispatch('setupSockets');
           const poll = async () => {
-            if (getters.socket.readyState !== 1) {
+            if (!getters.socket || getters.socket.readyState !== 1) {
               try {
                 await dispatch('setupSockets');
               } catch(e) {
@@ -596,7 +596,18 @@ export default new Vuex.Store({
       await Vue.axios.post('/shiftAccount', { asset });
     },
 
+    async getRecipient({ commit, dispatch, getters }, username) {
+      try {
+        const user = (await Vue.axios.get(`/users/${username}`)).data;
+        commit('error', null);
+        commit('recipient', user);
+      } catch(e) {
+        commit('error', 'User not found');
+      } 
+    },
+
     async handleScan({ commit, dispatch, getters }, text) {
+      if (!text) return;
       if (typeof text !== 'string') return router.go(-1);
       await dispatch('clearPayment');
       let { networks, user } = getters;

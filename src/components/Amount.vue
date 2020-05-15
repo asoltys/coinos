@@ -33,6 +33,7 @@ export default {
     amount: sync('amount'),
     currency: sync('currency'),
     fiatAmount: sync('fiatAmount'),
+    rate: get('rate'),
     currencies() {
       let user = this.user;
       if (user.account.ticker === 'BTC') {

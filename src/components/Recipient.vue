@@ -13,15 +13,16 @@
           @click="$emit('internal')"
         >
           <v-icon class="mr-1">forward</v-icon
-          ><span>Free Internal Transfer</span>
+          ><span>coinos pay</span>
         </v-btn>
         <v-btn
+                  v-if="address || payobj"
           class="order-first order-sm-last mb-2 flex-grow-1"
           color="green"
           dark
           @click="$emit('pay')"
         >
-          <v-icon class="mr-1">send</v-icon><span>Pay Normally</span>
+          <v-icon class="mr-1">send</v-icon><span>Pay</span>
         </v-btn>
       </div>
     </v-card-text>
@@ -32,6 +33,8 @@
 import { get } from 'vuex-pathify';
 export default {
   computed: {
+    address: get('address'),
+    payobj: get('payobj'),
     recipient: get('recipient'),
   },
 };

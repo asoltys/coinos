@@ -80,7 +80,7 @@ export default {
     this.inputAmount =
       this.fiat && this.fiatAmount
         ? this.fiatAmount
-        : this.initialAmount || '_';
+        : this.$format(this.initialAmount) || '_';
   },
 
   computed: {
@@ -118,7 +118,8 @@ export default {
           return 1;
           break;
         default:
-          return this.rates[this.currency];
+          if (this.rates[this.currency]) return this.rates[this.currency]
+          else return 1;
           break;
       }
     },
@@ -145,9 +146,16 @@ export default {
       this.currency = c;
 
       this.$nextTick(() => {
-        this.inputAmount = ((this.amount * this.rate) / SATS).toFixed(
-          this.decimals
-        );
+        if (this.fiat) {
+          this.inputAmount = ((this.amount * this.rate) / SATS).toFixed(
+            this.decimals
+          );
+        }
+        else {
+          this.inputAmount = (this.amount / this.divisor).toFixed(this.decimals);
+        } 
+
+        this.$refs.amount.blur();
       });
     },
     convert(n) {
@@ -163,9 +171,7 @@ export default {
           this.amount = parseInt(n);
           this.fiatAmount = f((n * this.globalRate) / SATS).toFixed(2);
         } else {
-          this.amount = parseInt(
-            parseFloat(n).toFixed(this.user.account.precision) * this.divisor
-          );
+          this.amount = Math.round(n * this.divisor);
           this.fiatAmount = f((this.amount * this.globalRate) / SATS).toFixed(
             2
           );
@@ -202,7 +208,6 @@ export default {
       this.inputAmount = amount.toFixed(this.decimals);
 
       this.$nextTick(() => {
-        this.convert(amount);
         this.$emit('input', this.amount, this.fiatAmount, this.currency);
       });
     },

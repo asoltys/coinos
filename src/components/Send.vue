@@ -5,7 +5,7 @@
       <Balance />
       <sent v-if="payment" v-bind="{ payment }" />
       <template v-else>
-        <to v-if="!(payobj || address)" />
+        <to v-if="!(payobj || address || recipient)" />
         <amount v-else-if="editing" @edit="edit" @done="done" />
         <payment-details v-else @edit="edit" />
       </template>
@@ -54,10 +54,11 @@ export default {
     ...mapGetters([
       'address',
       'loading',
-      'user',
       'payment',
       'payreq',
       'payobj',
+      'recipient',
+      'user',
     ]),
   },
 

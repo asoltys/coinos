@@ -1,6 +1,7 @@
 <template>
-  <v-card class="elevation-1 pa-2 mb-2" v-if="address">
+  <v-card class="elevation-1 pa-2 mb-2" v-if="address || recipient">
     <v-textarea
+      v-if="address"
       rows="1"
       label="Recipient"
       v-model="address"
@@ -47,6 +48,7 @@
       </template>
     </v-text-field>
     <v-text-field
+      v-if="address"
       :loading="loadingFee"
       label="Fee"
       v-model="displayFee"
@@ -130,6 +132,7 @@ export default {
     loadingFee: get('loadingFee'),
     network: get('network'),
     rate: get('rate'),
+    recipient: get('recipient'),
     user: get('user'),
     tx: get('tx'),
   },

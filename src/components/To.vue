@@ -22,16 +22,31 @@
         </v-btn>
       </template>
     </v-textarea>
-    <v-chip v-if="to.length > 0" class="black--text mb-2" color="white">
-      <v-icon color="black" left>warning</v-icon>
-      Can't parse address or payment request
-    </v-chip>
-    <div class="d-flex flex-wrap">
+    <div class="d-flex">
       <v-btn v-if="canPaste" class="mr-2 mb-2 flex-grow-1" @click="paste">
         <v-icon class="mr-1">assignment</v-icon>
         <span>Paste</span>
       </v-btn>
     </div>
+    <v-form @submit.prevent="() => getRecipient(username)">
+      <v-text-field
+        class="my-4"
+        label="Username:"
+        v-model="username"
+        clearable
+        :error="to.length > 0"
+      />
+      <div class="d-flex">
+        <v-btn
+          class="flex-grow-1 ml-1 black--text"
+          color="primary"
+          @click="() => getRecipient(username)"
+        >
+          <v-icon class="mr-1">send</v-icon>
+          Go
+        </v-btn>
+      </div>
+    </v-form>
   </div>
 </template>
 
@@ -45,6 +60,7 @@ export default {
   mixins: [Copy],
   data() {
     return {
+      username: '',
       to: '',
     };
   },
@@ -52,6 +68,7 @@ export default {
     canPaste: () => navigator.clipboard,
   },
   methods: {
+    getRecipient: call('getRecipient'),
     handleScan: call('handleScan'),
     showText: call('showText'),
     async paste() {
@@ -65,6 +82,6 @@ export default {
       window.innerWidth || 0
     );
     if (vw > 600 && this.$refs.to) this.$refs.to.focus();
-  } 
-} 
+  },
+};
 </script>
