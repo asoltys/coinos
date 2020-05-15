@@ -173,7 +173,4 @@ body
 
   *
     color black !important
-
-.grecaptcha-badge
-  display none
 </style>
