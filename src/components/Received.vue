@@ -74,7 +74,9 @@ export default {
       return this.payment.account.ticker === 'BTC';
     },
     fiatTotal() {
-      return (f(this.invoice.fiatAmount) + f(this.invoice.fiatTip)).toFixed(2);
+      let amount = f(this.invoice.fiatAmount || 0);
+      let tip = f(this.invoice.fiatTip || 0);
+      return (amount + tip).toFixed(2);
     },
     fiat() {
       return (
