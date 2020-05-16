@@ -63,7 +63,7 @@
           class="toggle black--text mt-auto"
           :color="fiat ? 'yellow' : 'white'"
           @click.prevent="toggle"
-          >{{ user.unit }}</v-btn
+          >{{ currency }}</v-btn
         >
         <v-btn icon @click="() => copy(displayFee)" class="ml-1" text>
           <v-icon class="mr-1">content_copy</v-icon>
