@@ -11,7 +11,7 @@
       hide-details
       @input="() => handleScan(to)"
       ref="to"
-      :error="to.length > 0"
+      :error="to && to.length > 0"
     >
       <template v-if="to.length" v-slot:append>
         <v-btn icon @click="() => showText(to)" class="ml-1" text>

@@ -3,7 +3,7 @@
     <v-card-text class="white--text text-center">
       <div class="title">Sending to</div>
       <div class="headline yellow--text mb-2">
-        {{ recipient.username }}
+        {{ payment.recipient.username }}
       </div>
       <div>
         <v-btn
@@ -16,7 +16,7 @@
           ><span>coinos pay</span>
         </v-btn>
         <v-btn
-                  v-if="address || payobj"
+                  v-if="payment.address || payment.payobj"
           class="order-first order-sm-last mb-2 flex-grow-1"
           color="green"
           dark
@@ -33,9 +33,7 @@
 import { get } from 'vuex-pathify';
 export default {
   computed: {
-    address: get('address'),
-    payobj: get('payobj'),
-    recipient: get('recipient'),
+    payment: get('payment'),
   },
 };
 </script>

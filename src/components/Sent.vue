@@ -7,14 +7,14 @@
       <div class="mb-2">
         <div class="d-flex justify-center">
           <div class="mr-2">
-          <span class="display-1">{{ $format(total, precision) }}</span>
-          {{ ticker }}
+            <span class="display-1">{{ $format(total, precision) }}</span>
+            {{ ticker }}
           </div>
           <div>
-          <span v-if="payment.account.ticker === 'BTC'" class="yellow--text">
-            <span class="display-1">{{ fiat(total) }}</span>
-            {{ payment.currency }}
-          </span>
+            <span v-if="payment.account.ticker === 'BTC'" class="yellow--text">
+              <span class="display-1">{{ fiat(total) }}</span>
+              {{ payment.currency }}
+            </span>
           </div>
         </div>
       </div>
@@ -22,15 +22,15 @@
       <div class="mb-4 text-center">
         <div class="d-flex justify-center">
           <div class="mr-2">
-          <span class="headline grey--text text--lighten-2">+ Fee: </span>
-          <span class="display-1">{{ fee }}</span>
-          {{ user.unit }}
+            <span class="headline grey--text text--lighten-2">+ Fee: </span>
+            <span class="display-1">{{ fee }}</span>
+            {{ user.unit }}
           </div>
           <div>
-          <span v-if="payment.account.ticker === 'BTC'" class="yellow--text">
-            <span class="display-1">{{ fiat(payment.fee) }}</span>
-            {{ payment.currency }}
-          </span>
+            <span v-if="payment.account.ticker === 'BTC'" class="yellow--text">
+              <span class="display-1">{{ fiat(payment.fee) }}</span>
+              {{ payment.currency }}
+            </span>
           </div>
         </div>
       </div>
@@ -46,39 +46,38 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
-export default {
-  props: {
-    payment: { type: Object },
-  },
+import { get, call } from 'vuex-pathify';
 
+export default {
   computed: {
-    ...mapGetters(['user']),
     fee() {
       return this.$format(this.payment.fee || 0);
+    },
+    payment: get('payment'),
+    precision() {
+      let { precision } = this.payment.account;
+      if (this.payment.account.ticker === 'BTC' && this.user.unit === 'SAT')
+        precision = 0;
+      return precision;
     },
     ticker() {
       let { ticker } = this.payment.account;
       if (ticker === 'BTC') return this.user.unit;
       return ticker;
     },
-    precision() {
-      let { precision } = this.payment.account;
-      if (this.payment.account.ticker === 'BTC' && this.user.unit === 'SAT') precision = 0;
-      return precision;
-    },
     total() {
       let total = Math.abs(this.payment.amount);
       if (this.payment.account.ticker === 'BTC') {
         total -= this.payment.fee;
-      } 
+      }
 
       return total;
     },
+    user: get('user'),
   },
 
   methods: {
-    ...mapActions(['clearPayment', 'snack']),
+    clearPayment: call('clearPayment'),
 
     fiat(n) {
       if (!n || isNaN(n)) return '0.00';
@@ -94,6 +93,8 @@ export default {
         bs += '/testnet';
       window.location = `${bs}/tx/${tx}`;
     },
+
+    snack: call('snack'),
   },
 };
 </script>

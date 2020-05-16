@@ -3,9 +3,9 @@
     <v-progress-linear v-if="loading" indeterminate />
     <template v-else>
       <Balance />
-      <sent v-if="payment" v-bind="{ payment }" />
+      <sent v-if="payment.sent" />
       <template v-else>
-        <to v-if="!(payobj || address || recipient)" />
+        <to v-if="!(payment.payobj || payment.address || payment.recipient)" />
         <amount v-else-if="editing" @edit="edit" @done="done" />
         <payment-details v-else @edit="edit" />
       </template>
@@ -52,12 +52,8 @@ export default {
 
   computed: {
     ...mapGetters([
-      'address',
       'loading',
       'payment',
-      'payreq',
-      'payobj',
-      'recipient',
       'user',
     ]),
   },

@@ -7,7 +7,7 @@
 
       <v-card-text>
         <v-slider
-          v-model="feeRate"
+          v-model="payment.feeRate"
           :min="min"
           :max="max"
           class="align-center"
@@ -15,7 +15,7 @@
         >
           <template v-slot:append>
             <v-text-field
-              v-model="feeRate"
+              v-model="payment.feeRate"
               class="mt-0 pt-0"
               type="text"
               suffix="sat/kb"
@@ -47,14 +47,13 @@ export default {
     };
   },
   computed: {
-    feeRate: sync('feeRate'),
     min() {
-      return this.network === 'bitcoin' ? 1000 : 100;
+      return this.payment.network === 'bitcoin' ? 1000 : 100;
     },
     max() {
-      return this.network === 'bitcoin' ? 50000 : 5000;
+      return this.payment.network === 'bitcoin' ? 50000 : 5000;
     },
-    network: get('network'),
+    payment: sync('payment'),
   },
   methods: {
     estimateFee: call('estimateFee'),

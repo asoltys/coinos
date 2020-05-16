@@ -1,14 +1,17 @@
 <template>
-  <v-card class="elevation-1 pa-2 mb-2" v-if="address || recipient">
+  <v-card class="elevation-1 pa-2 mb-2">
     <v-textarea
-      v-if="address"
+      v-if="recipient"
       rows="1"
       label="Recipient"
-      v-model="address"
-      :readonly="!editingAddress"
+      v-model="recipient"
       @focus="select"
+      readonly
       auto-grow
     >
+      <template v-slot:prepend-inner>
+        <network-icon :network="payment.network" />
+      </template>
       <template v-slot:append>
         <v-btn @click="clearPayment" class="ml-1" icon>
           <v-icon class="mr-1">clear</v-icon>
@@ -16,14 +19,14 @@
         <v-btn @click="explore" class="ml-1" icon>
           <v-icon class="mr-1">open_in_new</v-icon>
         </v-btn>
-        <v-btn @click="() => copy(address)" class="ml-1" icon>
+        <v-btn @click="() => copy(recipient)" class="ml-1" icon>
           <v-icon class="mr-1">content_copy</v-icon>
         </v-btn>
       </template>
     </v-textarea>
     <v-select
       label="Asset"
-      v-if="network === 'liquid'"
+      v-if="payment.network === 'liquid'"
       v-model="user.account_id"
       @input="changeAsset"
       :items="accounts"
@@ -48,7 +51,7 @@
       </template>
     </v-text-field>
     <v-text-field
-      v-if="address"
+      v-if="payment.address"
       :loading="loadingFee"
       label="Fee"
       v-model="displayFee"
@@ -75,12 +78,13 @@
 import { call, get, sync } from 'vuex-pathify';
 import SetFee from './SetFee';
 import Copy from '../mixins/Copy';
+import NetworkIcon from './NetworkIcon';
 
 const SATS = 100000000;
 const bs = 'https://blockstream.info';
 
 export default {
-  components: { SetFee },
+  components: { NetworkIcon, SetFee },
   mixins: [Copy],
   props: {
     amount: { type: Number },
@@ -90,10 +94,14 @@ export default {
     return {
       asset: null,
       adjusting: false,
-      editingAddress: false,
     };
   },
   computed: {
+    recipient() {
+      let { address, payobj } = this.payment;
+      if (payobj) return payobj.payeeNodeKey;
+      return address;
+    },
     accounts() {
       return this.user.accounts.map(a => ({ text: a.name, value: a.id }));
     },
@@ -104,13 +112,12 @@ export default {
       if (this.isBtc) return this.fiat ? this.user.currency : this.user.unit;
       else return this.user.account.ticker;
     },
-    address: sync('address'),
     displayAmount() {
       return this.fiat
-        ? this.fiatAmount
+        ? this.payment.fiatAmount
         : this.user.unit === 'SAT'
-        ? this.amount
-        : this.$format(this.amount);
+        ? this.payment.amount
+        : this.$format(this.payment.amount);
     },
     displayFee() {
       return this.fiat
@@ -120,21 +127,19 @@ export default {
         : this.$format(this.fee, 8);
     },
     fee() {
-      if (this.tx) return parseInt(this.tx.fee * SATS);
+      if (this.payment.tx) return parseInt(this.payment.tx.fee * SATS);
+      else if (this.payment.route) return this.$format(parseInt(this.route.total_amt) - this.payment.amount);
       else return null;
     },
     fiatFee() {
       if (!this.fee) return null;
       return ((this.fee * this.rate) / SATS).toFixed(2);
     },
-    feeRate: sync('feeRate'),
     fiat: sync('fiat'),
     loadingFee: get('loadingFee'),
-    network: get('network'),
+    payment: sync('payment'),
     rate: get('rate'),
-    recipient: get('recipient'),
     user: get('user'),
-    tx: get('tx'),
   },
   methods: {
     changeAsset(id) {
@@ -149,8 +154,8 @@ export default {
     explore() {
       this.$nextTick(function() {
         if (this.network === 'bitcoin')
-          window.open(`${bs}/address/${this.address}`);
-        else window.open(`${bs}/liquid/address/${this.address}`);
+          window.open(`${bs}/address/${this.payment.address}`);
+        else window.open(`${bs}/liquid/address/${this.payment.address}`);
       });
     },
     select(e) {

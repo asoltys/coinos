@@ -4,7 +4,7 @@
       class="mb-2"
       @done="$emit('done')"
       :currencies="currencies"
-      :initialAmount="amount"
+      :initialAmount="payment.amount"
       :initialRate="rate"
       @input="updateAmount"
     />
@@ -30,9 +30,7 @@ export default {
     Numpad,
   },
   computed: {
-    amount: sync('amount'),
     currency: sync('currency'),
-    fiatAmount: sync('fiatAmount'),
     rate: get('rate'),
     currencies() {
       let user = this.user;
@@ -41,12 +39,13 @@ export default {
       }
       return [user.account.ticker];
     },
+    payment: get('payment'),
     user: get('user'),
   },
   methods: {
     updateAmount(amount, fiatAmount, currency) {
-      this.amount = amount;
-      this.fiatAmount = fiatAmount;
+      this.payment.amount = amount;
+      this.payment.fiatAmount = fiatAmount;
       this.currency = currency;
     },
 

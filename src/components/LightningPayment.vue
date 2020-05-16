@@ -1,13 +1,13 @@
 <template>
-  <v-card class="elevation-1 my-2 pa-4" v-if="payobj">
+  <v-card class="elevation-1 my-2 pa-4">
     <div class="text-center font-weight-bold">Pay</div>
-    <div v-if="payobj.satoshis" class="d-flex justify-center">
+    <div v-if="payment.payobj.satoshis" class="d-flex justify-center">
       <div class="mr-2">
-        <span class="display-1">{{ payobj.satoshis }}</span> SAT
+        <span class="display-1">{{ payment.payobj.satoshis }}</span> SAT
       </div>
       <div>
         <span class="yellow--text">
-          <span class="display-1">{{ fiatAmount }}</span>
+          <span class="display-1">{{ payment.fiatAmount }}</span>
           {{ user.currency }}
         </span>
       </div>
@@ -39,9 +39,9 @@
       </div>
     </div>
     <div class="text-center font-weight-bold my-2">to</div>
-            <v-textarea label="Lightning Node" :value="payobj.payeeNodeKey" rows="1" auto-grow readonly>
+            <v-textarea label="Lightning Node" :value="payment.payobj.payeeNodeKey" rows="1" auto-grow readonly>
               <template v-slot:append>
-                <v-btn @click="() => copy(payobj.payeeNodeKey)" icon>
+                <v-btn @click="() => copy(payment.payobj.payeeNodeKey)" icon>
                   <v-icon class="mr-1">content_copy</v-icon>
                 </v-btn>
               </template>
@@ -50,27 +50,19 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
-import { call, sync } from 'vuex-pathify';
+import { get, call, sync } from 'vuex-pathify';
 import Copy from '../mixins/Copy';
 
 export default {
   mixins: [Copy],
 
-  props: {
-    amount: { type: Number },
-    fiatAmount: { type: String },
-    payobj: { type: Object },
-  },
-
   computed: {
-    ...mapGetters(['rate', 'route', 'user']),
     displayAmount() {
       return this.fiat
-        ? this.fiatAmount
+        ? this.payment.fiatAmount
         : this.user.unit === 'SAT'
-        ? this.amount
-        : this.$format(this.amount);
+        ? this.payment.amount
+        : this.$format(this.payment.amount);
     },
     isBtc() {
       return this.user.account.ticker === 'BTC';
@@ -80,10 +72,13 @@ export default {
       else return this.user.account.ticker;
     },
     fee() {
-      if (!this.route) return null;
-      return this.$format(parseInt(this.route.total_amt) - this.amount);
+      if (!this.payment.route) return null;
+      return this.$format(parseInt(this.route.total_amt) - this.payment.amount);
     },
     fiat: sync('fiat'),
+    payment: get('payment'),
+    rate: get('rate'),
+    user: get('user'),
   },
 
   methods: {

@@ -92,7 +92,7 @@ export default {
       if (!this.isBtc) bs += '/liquid';
       return `${bs}/tx/${payment.hash}`;
     },
-    payment: get('payment'),
+    payment: get('received'),
     rate: get('rate'),
     user: get('user'),
   },
