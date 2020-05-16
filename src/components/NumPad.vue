@@ -129,6 +129,7 @@ export default {
 
   watch: {
     inputAmount(v) {
+      if (v === '_') return;
       this.convert(v);
       this.$nextTick(() => {
         if (
@@ -137,6 +138,9 @@ export default {
         )
           this.inputAmount = '_';
       });
+
+      if (!this.amount) this.amount = 0;
+      if (!this.fiatAmount) this.fiatAmount = 0;
       this.$emit('input', this.amount, this.fiatAmount, this.currency);
     },
   },
@@ -205,11 +209,8 @@ export default {
       }
 
       if (m === 'C') amount = 0;
-      this.inputAmount = amount.toFixed(this.decimals);
 
-      this.$nextTick(() => {
-        this.$emit('input', this.amount, this.fiatAmount, this.currency);
-      });
+      this.inputAmount = amount.toFixed(this.decimals);
     },
   },
 };

@@ -440,6 +440,8 @@ export default new Vuex.Store({
       } = getters;
       let asset = user.account.asset;
 
+      if (amount <= 0) return commit('error', 'Amount must be greater than zero');
+
       try {
         let res = await Vue.axios.post('/send', {
           amount,
