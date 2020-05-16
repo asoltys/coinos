@@ -102,7 +102,7 @@ export default new Vuex.Store({
     async init({ commit, getters, dispatch, state }) {
       commit('initializing', true);
       commit('error', '');
-      let token = window.sessionStorage.getItem('token');
+      let token = getters.token || window.sessionStorage.getItem('token');
 
       if (!token) {
         let cookie = `; ${document.cookie}`.match(';\\s*token=([^;]+)');
@@ -114,10 +114,11 @@ export default new Vuex.Store({
         try {
           await dispatch('setupSockets');
           const poll = async () => {
-            if (!getters.socket || getters.socket.readyState !== 1) {
+            if (token && (!getters.socket || getters.socket.readyState !== 1)) {
               try {
                 await dispatch('setupSockets');
               } catch(e) {
+                /**/
               } 
             }
             setTimeout(poll, 5000);
@@ -125,7 +126,7 @@ export default new Vuex.Store({
           poll();
           
         } catch(e) {
-          l("failed to setup sockets");
+          l("failed to setup sockets", e.message);
         } 
       }
 
@@ -256,7 +257,7 @@ export default new Vuex.Store({
     },
 
     async setupSockets({ commit, getters, state, dispatch }) {
-      if (state.socket && state.socket.readyState === 1) return;
+      if (!getters.token || (state.socket && state.socket.readyState === 1)) return;
       return new Promise((resolve, reject) => {
         const proto = process.env.NODE_ENV === "production" ? "wss://" : "ws://";
         const ws = new WebSocket(`${proto}${location.host}/ws`);
