@@ -28,7 +28,7 @@
         <span>Paste</span>
       </v-btn>
     </div>
-    <v-form @submit.prevent="() => getRecipient(username)">
+    <v-form @submit.prevent="sendToUser">
       <v-text-field
         class="my-4"
         label="Username:"
@@ -39,7 +39,7 @@
         <v-btn
           class="flex-grow-1 ml-1 black--text"
           color="primary"
-          @click="() => getRecipient(username)"
+          @click="sendToUser"
         >
           <v-icon class="mr-1">send</v-icon>
           Go
@@ -69,6 +69,10 @@ export default {
   methods: {
     getRecipient: call('getRecipient'),
     handleScan: call('handleScan'),
+    sendToUser() {
+      this.getRecipient(this.username);
+      this.$emit('edit');
+    },
     showText: call('showText'),
     async paste() {
       this.to = await navigator.clipboard.readText();

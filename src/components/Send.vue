@@ -5,7 +5,7 @@
       <Balance />
       <sent v-if="payment.sent" />
       <template v-else>
-        <to v-if="!(payment.payobj || payment.address || payment.recipient)" />
+        <to v-if="!(payment.payobj || payment.address || payment.recipient)" @edit="edit" />
         <amount v-else-if="editing" @edit="edit" @done="done" />
         <payment-details v-else @edit="edit" />
       </template>
