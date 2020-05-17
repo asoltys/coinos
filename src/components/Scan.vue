@@ -6,7 +6,7 @@
       <canvas class="flex-grow-1" v-else ref="canvas" />
     </div>
     <div class="d-flex">
-      <v-btn @click="stop" class="mr-2 my-2 flex-grow-1">
+      <v-btn @click="cancel" class="mr-2 my-2 flex-grow-1">
         <v-icon class="mr-1" color="red">cancel</v-icon>
         Cancel
       </v-btn>
@@ -26,6 +26,10 @@ export default {
   },
 
   methods: {
+    cancel() {
+      this.stop();
+      this.$router.go(-1);
+    },
     stop() {
       this.$refs.video.srcObject.getTracks().map(t => t.stop());
     },
