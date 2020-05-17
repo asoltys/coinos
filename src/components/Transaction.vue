@@ -37,7 +37,6 @@
       v-model="displayAmount"
       readonly
       @click="$emit('edit')"
-      :error="!displayAmount || parseFloat(displayAmount) <= 0"
     >
       <template v-slot:append>
         <v-btn
