@@ -23,16 +23,18 @@
                 }"
                >(+{{ $format(a.pending, a.precision) }})</span>
           </div>
+        </v-expansion-panel-header>
+        <v-expansion-panel-content class="text-left">
+          <div class="d-flex">
           <v-btn
-            class="flex-grow-0 ml-2 black--text"
+            class="mx-auto mb-2 black--text"
             @click.prevent="() => select(a.asset)"
             color="yellow"
           >
             <v-icon>forward</v-icon>
-            <span class="d-none d-sm-inline">Payments</span>
+            <span>Payments</span>
           </v-btn>
-        </v-expansion-panel-header>
-        <v-expansion-panel-content class="text-left">
+          </div>
           <v-card class="pa-4" style="background: #333">
             <v-alert
               v-if="success[a.asset]"
