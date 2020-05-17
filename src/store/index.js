@@ -144,8 +144,10 @@ export default new Vuex.Store({
 
         if (getters.user && getters.user.currency && getters.rate) {
           if (path === '/') go('/home');
-          commit('initializing', false);
-          commit('loading', false);
+          setTimeout(() => {
+            commit('initializing', false);
+            commit('loading', false);
+          }, 200);
         } else if (paths.includes(path)) {
           commit('initializing', false);
           commit('loading', false);
