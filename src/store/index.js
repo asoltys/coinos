@@ -354,7 +354,7 @@ export default new Vuex.Store({
       });
     },
 
-    async createUser({ commit, dispatch }) {
+    async createUser({ commit, dispatch }, token) {
       let length = 8,
         charset =
           'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
@@ -365,7 +365,7 @@ export default new Vuex.Store({
       }
 
       try {
-        await Vue.axios.post('/register', { username });
+        await Vue.axios.post('/register', { username, token });
         dispatch('login', { username });
       } catch (e) {
         commit('error', e);
