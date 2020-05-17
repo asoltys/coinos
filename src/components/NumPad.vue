@@ -165,14 +165,14 @@ export default {
     convert(n) {
       if (this.fiat) {
         this.fiatAmount = f(this.inputAmount).toFixed(this.decimals);
-        this.amount = parseInt(
+        this.amount = Math.round(
           ((parseFloat(this.fiatAmount) * SATS) / this.rate).toFixed(
             this.decimals
           )
         );
       } else {
         if (this.currency === 'SAT') {
-          this.amount = parseInt(n);
+          this.amount = Math.round(n);
           this.fiatAmount = f((n * this.globalRate) / SATS).toFixed(2);
         } else {
           this.amount = Math.round(n * this.divisor);
@@ -185,10 +185,10 @@ export default {
     done(e) {
       let amount = e.target.value;
       if (this.fiat)
-        this.amount = parseInt(
+        this.amount = Math.round(
           ((amount * SATS) / this.rate).toFixed(this.decimals)
         );
-      else this.amount = parseInt(amount);
+      else this.amount = Math.round(amount);
       this.$emit('done');
     },
 
