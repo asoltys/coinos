@@ -64,6 +64,7 @@ import Flash from 'vue-material-design-icons/Flash';
 import Login from 'vue-material-design-icons/Login';
 import Water from 'vue-material-design-icons/Water';
 import { sync } from 'vuex-pathify';
+const IS_PRODUCTION = !['development', 'test'].includes(process.env.NODE_ENV);
 
 export default {
   components: { Flash, Login, Water },
@@ -118,11 +119,17 @@ export default {
 
     let _this = this;
 
-    window.grecaptcha.ready(function() {
-      window.grecaptcha.execute('6Ld1F_UUAAAAALyhgcusNcUZQFr6HD4iz6gQVTc0', {action: 'homepage'}).then(function(token) {
-        _this.token = token;
+    if (IS_PRODUCTION) {
+      window.grecaptcha.ready(function() {
+        window.grecaptcha
+          .execute(process.env.VUE_APP_RECAPTCHA, {
+            action: 'homepage',
+          })
+          .then(function(token) {
+            _this.token = token;
+          });
       });
-    });
+    }
   },
 };
 </script>
