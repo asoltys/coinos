@@ -34,7 +34,7 @@
           v-if="networks.includes('lightning')"
           class="flex-grow-1 mb-2 mr-1"
           @click="addInvoice('lightning')"
-          :disabled="!isBtc || invoice.amount <= 0"
+          :disabled="!isBtc"
           :style="buttonStyle"
         >
           <flash fillColor="yellow" />
