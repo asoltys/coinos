@@ -57,27 +57,48 @@
             >
               Settings saved successfully
             </v-alert>
-            <v-textarea label="Id" :value="a.asset" rows="1" auto-grow readonly>
-              <template v-slot:append>
-                <v-btn @click="() => copy(a.asset)" icon class="ml-1">
-                  <v-icon class="mr-1">content_copy</v-icon>
+            <v-form @submit.prevent="() => submit(a)">
+              <v-textarea
+                label="Id"
+                :value="a.asset"
+                rows="1"
+                auto-grow
+                readonly
+              >
+                <template v-slot:append>
+                  <v-btn @click="() => copy(a.asset)" icon class="ml-1">
+                    <v-icon class="mr-1">content_copy</v-icon>
+                  </v-btn>
+                </template>
+              </v-textarea>
+              <v-text-field
+                label="Name"
+                v-model="a.name"
+                rows="1"
+                auto-grow
+                :readonly="a.asset === BTC"
+              />
+              <v-text-field
+                label="Ticker"
+                v-model="a.ticker"
+                rows="1"
+                auto-grow
+                :readonly="a.asset === BTC"
+              />
+              <v-text-field
+                label="Precision"
+                v-model="a.precision"
+                type="number"
+                @input="e => limit(e, a)"
+                :readonly="a.asset === BTC"
+              />
+              <div class="text-right">
+                <v-btn type="submit">
+                  <v-icon class="mr-1 yellow--text">check</v-icon>
+                  <span>save</span>
                 </v-btn>
-              </template>
-            </v-textarea>
-            <v-textarea label="Name" v-model="a.name" rows="1" auto-grow />
-            <v-textarea label="Ticker" v-model="a.ticker" rows="1" auto-grow />
-            <v-text-field
-              label="Precision"
-              v-model="a.precision"
-              type="number"
-              @input="e => limit(e, a)"
-            />
-            <div class="text-right">
-              <v-btn @click="() => submit(a)">
-                <v-icon class="mr-1 yellow--text">check</v-icon>
-                <span>save</span>
-              </v-btn>
-            </div>
+              </div>
+            </v-form>
           </v-card>
         </v-expansion-panel-content>
       </v-expansion-panel>
@@ -97,6 +118,7 @@
 <script>
 import { get, sync, call } from 'vuex-pathify';
 import Copy from '../mixins/Copy';
+const BTC = process.env.VUE_APP_LBTC;
 
 export default {
   mixins: [Copy],

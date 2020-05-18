@@ -72,13 +72,8 @@ export default {
 
   methods: {
     issueAsset: call('issueAsset'),
-    async submit() {
-      try {
-        await this.issueAsset(this.asset);
-        this.$go('/assets');
-      } catch (e) {
-        /**/
-      }
+    submit() {
+      this.issueAsset(this.asset);
     },
     limit(e) {
       if (e < 0) this.$nextTick(() => (this.asset.precision = 0));

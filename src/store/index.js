@@ -359,8 +359,9 @@ export default new Vuex.Store({
     async issueAsset({ commit, dispatch }, asset) {
       try {
         await Vue.axios.post('/assets', asset);
+        go('/assets'); 
       } catch(e) {
-        commit('error', e);
+        commit('error', e.response ? e.response.data : e.message);
       } 
     },
 

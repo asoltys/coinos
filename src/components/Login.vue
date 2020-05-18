@@ -118,8 +118,8 @@ export default {
 
     let _this = this;
 
-    grecaptcha.ready(function() {
-      grecaptcha.execute('6Ld1F_UUAAAAALyhgcusNcUZQFr6HD4iz6gQVTc0', {action: 'homepage'}).then(function(token) {
+    window.grecaptcha.ready(function() {
+      window.grecaptcha.execute('6Ld1F_UUAAAAALyhgcusNcUZQFr6HD4iz6gQVTc0', {action: 'homepage'}).then(function(token) {
         _this.token = token;
       });
     });
