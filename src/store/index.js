@@ -356,6 +356,14 @@ export default new Vuex.Store({
       });
     },
 
+    async issueAsset({ commit, dispatch }, asset) {
+      try {
+        await Vue.axios.post('/assets', asset);
+      } catch(e) {
+        commit('error', e);
+      } 
+    },
+
     async createUser({ commit, dispatch }, token) {
       let length = 8,
         charset =

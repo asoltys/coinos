@@ -1,39 +1,48 @@
 <template>
   <div>
-    <v-expansion-panels accordion>
+    <v-expansion-panels accordion class="mb-2">
       <v-expansion-panel v-for="a in user.accounts" :key="a.asset">
         <v-expansion-panel-header ripple class="d-flex" expand-icon="">
-          <div class="asset d-flex flex-grow-1"
-               :class="{
-                  'body-1': $vuetify.breakpoint.xsOnly,
-                  'title': !$vuetify.breakpoint.xs,
-                }"
-               >
-            <div class="mb-1">{{ a.name }} <span class="yellow--text">({{ a.ticker }})</span></div>
+          <div
+            class="asset d-flex flex-grow-1"
+            :class="{
+              'body-1': $vuetify.breakpoint.xsOnly,
+              title: !$vuetify.breakpoint.xs,
+            }"
+          >
+            <div class="mb-1">
+              {{ a.name }} <span class="yellow--text">({{ a.ticker }})</span>
+            </div>
           </div>
-          <div class="flex-grow-1 text-right"
-               :class="{
-                  'body-1': $vuetify.breakpoint.xsOnly,
-                  'display-1': !$vuetify.breakpoint.xs,
-                }"
-               >
-               {{ $format(a.balance, a.precision) }} <span v-if="a.pending" class="red--text" :class="{
-                  'body-1': $vuetify.breakpoint.xsOnly,
-                  'title': !$vuetify.breakpoint.xs,
-                }"
-               >(+{{ $format(a.pending, a.precision) }})</span>
+          <div
+            class="flex-grow-1 text-right"
+            :class="{
+              'body-1': $vuetify.breakpoint.xsOnly,
+              'display-1': !$vuetify.breakpoint.xs,
+            }"
+          >
+            {{ $format(a.balance, a.precision) }}
+            <span
+              v-if="a.pending"
+              class="orange--text text--lighten-4"
+              :class="{
+                'body-1': $vuetify.breakpoint.xsOnly,
+                title: !$vuetify.breakpoint.xs,
+              }"
+              >({{ $format(a.pending, a.precision) }} pending)</span
+            >
           </div>
         </v-expansion-panel-header>
         <v-expansion-panel-content class="text-left">
           <div class="d-flex">
-          <v-btn
-            class="mx-auto mb-2 black--text"
-            @click.prevent="() => select(a.asset)"
-            color="yellow"
-          >
-            <v-icon>forward</v-icon>
-            <span>Payments</span>
-          </v-btn>
+            <v-btn
+              class="mx-auto mb-2 black--text"
+              @click.prevent="() => select(a.asset)"
+              color="yellow"
+            >
+              <v-icon>forward</v-icon>
+              <span>Payments</span>
+            </v-btn>
           </div>
           <v-card class="pa-4" style="background: #333">
             <v-alert
@@ -48,7 +57,7 @@
             >
               Settings saved successfully
             </v-alert>
-            <v-textarea label="Id" :value="a.asset" rows="1" auto-grow>
+            <v-textarea label="Id" :value="a.asset" rows="1" auto-grow readonly>
               <template v-slot:append>
                 <v-btn @click="() => copy(hash)" icon>
                   <v-icon class="mr-1">content_copy</v-icon>
@@ -61,7 +70,7 @@
               label="Precision"
               v-model="a.precision"
               type="number"
-              @input="(e) => limit(e, a)"
+              @input="e => limit(e, a)"
             />
             <div class="text-right">
               <v-btn @click="() => submit(a)">
@@ -73,6 +82,15 @@
         </v-expansion-panel-content>
       </v-expansion-panel>
     </v-expansion-panels>
+
+    <v-btn
+      class="mx-auto mb-2 black--text"
+      @click="$go('/asset')"
+      color="yellow"
+    >
+      <v-icon>add</v-icon>
+      <span>New</span>
+    </v-btn>
   </div>
 </template>
 
@@ -92,8 +110,8 @@ export default {
   },
   methods: {
     limit(e, a) {
-      if (e < 0) this.$nextTick(() => a.precision = 0);
-      if (e > 8) this.$nextTick(() => a.precision = 8);
+      if (e < 0) this.$nextTick(() => (a.precision = 0));
+      if (e > 8) this.$nextTick(() => (a.precision = 8));
     },
     async submit(a) {
       try {

@@ -6,6 +6,11 @@ const About = () =>
     /* webpackChunkName: "about" */
     '../components/About'
   );
+const Asset = () =>
+  import(
+    /* webpackChunkName: "asset" */
+    '../components/Asset'
+  );
 const Assets = () =>
   import(
     /* webpackChunkName: "assets" */
@@ -55,6 +60,7 @@ const Text = () =>
 const routes = [
   { path: '/', component: Login, props: { logout: false } },
   { path: '/about', component: About },
+  { path: '/asset', component: Asset },
   { path: '/assets', component: Assets },
   { path: '/home', component: Home },
   { path: '/login', component: Login, props: { logout: false } },
