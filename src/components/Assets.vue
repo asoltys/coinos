@@ -127,6 +127,7 @@ export default {
   },
   data() {
     return {
+      BTC,
       success: {},
     };
   },
