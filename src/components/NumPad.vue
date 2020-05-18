@@ -2,7 +2,7 @@
   <div>
     <div class="d-flex">
       <v-text-field
-        class="display-1 flex-grow-1 mb-1"
+        class="headline flex-grow-1 mb-1"
         hide-details="auto"
         v-model="inputAmount"
         @focus="e => e.target.select()"
