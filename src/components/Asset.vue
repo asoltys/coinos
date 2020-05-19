@@ -64,7 +64,7 @@ export default {
         ticker: '',
         precision: 8,
         asset_amount: 100,
-        token_amount: 1,
+        token_amount: 0,
         domain: '',
       },
     };
