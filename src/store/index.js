@@ -256,7 +256,7 @@ export default new Vuex.Store({
       return new Promise((resolve, reject) => {
         if (!getters.token) return reject();
         if (getters.socket && getters.socket.readyState === 1) return resolve();
-        else if (!getters.socket || getters.socket.readyState === 3) {
+        else if (!getters.socket) {
           const proto =
             process.env.NODE_ENV === 'production' ? 'wss://' : 'ws://';
           const ws = new WebSocket(`${proto}${location.host}/ws`);
@@ -355,6 +355,8 @@ export default new Vuex.Store({
           };
         }
         else {
+          getters.socket.close();
+          commit('socket', null);
           setTimeout(() => dispatch('setupSockets'), 1000);
         } 
       });
