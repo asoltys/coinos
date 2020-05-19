@@ -1,7 +1,7 @@
 <template>
   <div>
-    <v-progress-linear v-if="loading || initializing" indeterminate />
-    <v-form v-else @submit.prevent="submit" class="mt-4">
+    <v-progress-linear v-if="submitted" indeterminate />
+    <v-form v-show="!submitted" v-else @submit.prevent="submit" class="mt-4">
       <h2>New Account</h2>
       <v-text-field
         label="Username"
@@ -15,6 +15,7 @@
         label="Confirm Password"
         v-model="form.confirm"
         type="password"
+        :error="form.confirm !== '' && form.confirm !== form.password"
       />
 
       <img :src="challenge" style="max-width: 100%" />
@@ -34,6 +35,7 @@ const IS_PRODUCTION = !['development', 'test'].includes(process.env.NODE_ENV);
 export default {
   data() {
     return {
+      submitted: false,
       form: {
         username: '',
         password: '',
@@ -46,39 +48,49 @@ export default {
 
   computed: {
     challenge: get('challenge'),
-    initializing: get('initializing'),
-    loading: sync('loading'),
+    error: get('error'),
   },
 
   methods: {
     createUser: call('createUser'),
     getChallenge: call('getChallenge'),
     submit() {
-      this.loading = true;
-      this.createUser(this.form);
+      this.submitted = true;
+      if (this.form.confirm === this.form.password) this.createUser(this.form);
+    },
+    captcha() {
+      let _this = this;
+      if (window.grecaptcha) {
+        window.grecaptcha.ready(() => {
+          window.grecaptcha
+            .execute(process.env.VUE_APP_RECAPTCHA, {
+              action: 'homepage',
+            })
+            .then(token => {
+              _this.form.token = token;
+            });
+        });
+      } else {
+        setTimeout(this.captcha, 1000);
+      }
     },
   },
 
+  watch: {
+    error(v) {
+      this.submitted = false;
+    } 
+  },
+
   mounted() {
-    const s = document.createElement('script');
-    s.setAttribute(
-      'src',
-      'https://www.google.com/recaptcha/api.js?render=6Ld1F_UUAAAAALyhgcusNcUZQFr6HD4iz6gQVTc0'
-    );
-    document.head.appendChild(s);
-
-    let _this = this;
-
     if (IS_PRODUCTION) {
-      window.grecaptcha.ready(() => {
-        window.grecaptcha
-          .execute(process.env.VUE_APP_RECAPTCHA, {
-            action: 'homepage',
-          })
-          .then(token => {
-            _this.form.token = token;
-          });
-      });
+      const s = document.createElement('script');
+      s.setAttribute(
+        'src',
+        'https://www.google.com/recaptcha/api.js?render=6Ld1F_UUAAAAALyhgcusNcUZQFr6HD4iz6gQVTc0'
+      );
+      document.head.appendChild(s);
+      this.captcha();
     }
 
     this.getChallenge();

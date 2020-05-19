@@ -65,7 +65,7 @@ export default {
   },
 
   watch: {
-    $route(nv, ov) {
+    $route() {
       if (!this.socket || !this.user) this.init();
     },
   },
