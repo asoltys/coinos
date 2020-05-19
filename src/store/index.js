@@ -71,6 +71,7 @@ const state = {
   addressTypes,
   asset: BTC,
   assets: [],
+  challenge: '',
   channels: [],
   error: '',
   fiat: true,
@@ -116,12 +117,13 @@ export default new Vuex.Store({
         if (cookie && cookie[1]) token = cookie[1];
       }
 
+
       if (token && token !== 'null') {
         commit('token', token);
         try {
           await dispatch('setupSockets');
         } catch (e) {
-          l('failed to setup sockets', e.message);
+          l('failed to setup sockets', e);
         }
       }
 
@@ -131,7 +133,7 @@ export default new Vuex.Store({
         const { path } = router.currentRoute;
 
         if (getters.user && getters.user.currency && getters.rate) {
-          if (path === '/') go('/home');
+          if (path === '/' || path === '/register') go('/home');
           setTimeout(() => {
             commit('initializing', false);
             commit('loading', false);
@@ -159,9 +161,19 @@ export default new Vuex.Store({
       }
     },
 
+    async getChallenge({ commit, getters, dispatch }) {
+      try {
+        let res = await Vue.axios.get('/challenge');
+        commit('challenge', res.data);
+      } catch (e) {
+        commit('error', e.response ? e.response.data : e.message);
+      }
+    },
+
     async login({ commit, dispatch, state }, user) {
       commit('user', user);
       user.token = state.twofa;
+
       try {
         let res = await Vue.axios.post('/login', user);
 
@@ -175,6 +187,7 @@ export default new Vuex.Store({
       }
 
       await dispatch('init');
+
       if (router.currentRoute.path !== '/home') go('/home');
     },
 
@@ -245,6 +258,7 @@ export default new Vuex.Store({
       commit('pin', null);
       commit('user', null);
       if (state.socket) state.socket.close();
+      commit('socket', null);
       go('/');
     },
 
@@ -358,6 +372,7 @@ export default new Vuex.Store({
           getters.socket.close();
           commit('socket', null);
           setTimeout(() => dispatch('setupSockets'), 1000);
+          reject();
         } 
       });
     },
@@ -371,21 +386,12 @@ export default new Vuex.Store({
       }
     },
 
-    async createUser({ commit, dispatch }, token) {
-      let length = 8,
-        charset =
-          'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
-        username = 'Guest-';
-
-      for (let i = 0, n = charset.length; i < length; ++i) {
-        username += charset.charAt(Math.floor(Math.random() * n));
-      }
-
+    async createUser({ commit, dispatch }, user) {
       try {
-        await Vue.axios.post('/register', { username, token });
-        dispatch('login', { username });
+        await Vue.axios.post('/register', { user });
+        dispatch('login', user);
       } catch (e) {
-        commit('error', e);
+        commit('error', e.response ? e.response.data : e.message);
       }
     },
 

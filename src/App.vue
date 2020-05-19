@@ -13,7 +13,6 @@
           >{{ error }}</v-alert
         >
         <two-fa />
-
         <router-view v-if="!initializing" :key="$route.path" />
         <v-progress-linear v-else indeterminate />
       </v-container>
@@ -23,11 +22,10 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { get, call, sync } from 'vuex-pathify';
 import BottomNav from './components/BottomNav';
 import SnackBar from './components/SnackBar';
 import TopBar from './components/TopBar';
-import { mapGetters } from 'vuex';
 import Window from './window';
 import TwoFa from './components/TwoFa';
 import paths from './paths';
@@ -42,7 +40,10 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['initializing', 'loading', 'user', 'socket']),
+    initializing: get('initializing'),
+    loading: get('loading'),
+    socket: get('socket'),
+    user: get('user'),
 
     publicPath() {
       return paths.includes(this.$route.path);
@@ -60,39 +61,23 @@ export default {
       return this.scanning && !window.QRScanner;
     },
 
-    error: {
-      get() {
-        return this.$store.getters.error;
-      },
-      set(v) {
-        this.$store.commit('SET_ERROR', v);
-      },
-    },
+    error: sync('error'),
   },
 
   watch: {
-    $route() {
-      this.init();
+    $route(nv, ov) {
+      if (!this.socket || !this.user) this.init();
     },
   },
 
   methods: {
-    ...mapActions(['init', 'handleScan', 'showText']),
+    init: call('init'),
+    handleScan: call('handleScan'),
+    showText: call('showText'),
 
     async install() {
       const { outcome } = await this.prompt.prompt();
       if (outcome === 'accepted') this.installed = true;
-    },
-
-    addEvent(object, type, callback) {
-      if (object == null || typeof object == 'undefined') return;
-      if (object.addEventListener) {
-        object.addEventListener(type, callback, false);
-      } else if (object.attachEvent) {
-        object.attachEvent('on' + type, callback);
-      } else {
-        object['on' + type] = callback;
-      }
     },
   },
 

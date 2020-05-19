@@ -36,6 +36,11 @@ const Receive = () =>
     /* webpackChunkName: "receive" */
     '../components/Receive'
   );
+const Register = () =>
+  import(
+    /* webpackChunkName: "register" */
+    '../components/Register'
+  );
 const Scan = () =>
   import(
     /* webpackChunkName: "send" */
@@ -67,7 +72,7 @@ const routes = [
   { path: '/logout', component: Login, props: { logout: true } },
   { path: '/payments', component: Payments },
   { path: '/receive', component: Receive },
-  { path: '/receive', component: Receive },
+  { path: '/register', component: Register },
   { path: '/scan', component: Scan },
   { name: 'send', path: '/send', component: Send, props: true },
   { path: '/settings', component: Settings },

@@ -43,7 +43,7 @@
               Sign in
             </v-btn>
             <v-btn
-              @click="register"
+              @click="$go('/register')"
               color="green"
               class="mr-2 mb-2 mb-sm-0 wide"
             >
@@ -64,7 +64,6 @@ import Flash from 'vue-material-design-icons/Flash';
 import Login from 'vue-material-design-icons/Login';
 import Water from 'vue-material-design-icons/Water';
 import { sync } from 'vuex-pathify';
-const IS_PRODUCTION = !['development', 'test'].includes(process.env.NODE_ENV);
 
 export default {
   components: { Flash, Login, Water },
@@ -83,7 +82,6 @@ export default {
         username: '',
         password: '',
       },
-      token: null,
     };
   },
 
@@ -94,12 +92,7 @@ export default {
   },
 
   methods: {
-    ...mapActions(['login', 'createUser']),
-
-    register() {
-      this.loading = true;
-      this.createUser(this.token);
-    },
+    ...mapActions(['login']),
 
     submit(e) {
       this.login(this.form);
@@ -115,20 +108,6 @@ export default {
   mounted() {
     if (window.innerWidth > 600 && this.$refs.username) {
       this.$refs.username.focus();
-    }
-
-    let _this = this;
-
-    if (IS_PRODUCTION) {
-      window.grecaptcha.ready(function() {
-        window.grecaptcha
-          .execute(process.env.VUE_APP_RECAPTCHA, {
-            action: 'homepage',
-          })
-          .then(function(token) {
-            _this.token = token;
-          });
-      });
     }
   },
 };
