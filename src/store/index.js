@@ -120,18 +120,6 @@ export default new Vuex.Store({
         commit('token', token);
         try {
           await dispatch('setupSockets');
-          const poll = async () => {
-            let { socket, token } = getters;
-            if (token && (!socket || socket.readyState !== 1)) {
-              try {
-                await dispatch('setupSockets');
-              } catch (e) {
-                /**/
-              }
-            }
-            setTimeout(poll, 5000);
-          };
-          poll();
         } catch (e) {
           l('failed to setup sockets', e.message);
         }
@@ -266,103 +254,122 @@ export default new Vuex.Store({
     },
 
     async setupSockets({ commit, getters, dispatch }) {
-      let { socket, token } = getters;
-      if (!token || (socket && socket.readyState === 1)) return;
-
       return new Promise((resolve, reject) => {
-        const proto =
-          process.env.NODE_ENV === 'production' ? 'wss://' : 'ws://';
-        const ws = new WebSocket(`${proto}${location.host}/ws`);
-
-        ws.onopen = () => {
-          ws.send(getters.token);
-          commit('error', null);
-          commit('socket', ws);
-          resolve();
-        };
-
-        ws.onerror = () => {
-          commit('error', 'Problem connecting to server');
+        if (!getters.token) {
           reject();
-        };
+        } 
+        if (getters.socket && getters.socket.readyState === 1) return resolve();
+        else if (!getters.socket || getters.socket.readyState === 3) {
+          const proto =
+            process.env.NODE_ENV === 'production' ? 'wss://' : 'ws://';
+          const ws = new WebSocket(`${proto}${location.host}/ws`);
 
-        ws.onmessage = msg => {
-          let { type, data } = JSON.parse(msg.data);
+          ws.onopen = () => {
+            ws.send(getters.token);
+            commit('error', null);
+            commit('socket', ws);
+            resolve();
+          };
 
-          switch (type) {
-            case 'login':
-              let user = data;
-              if (user) {
-                commit('user', user);
-                if (
-                  router.currentRoute.path === '/login' ||
-                  router.currentRoute.path === '/'
-                ) {
-                  go('/home');
+          ws.onerror = () => {
+            commit('error', 'Problem connecting to server');
+            commit('socket', null);
+            ws.close();
+            reject();
+          };
+
+          ws.onclose = (e) => {
+            const poll = () => setTimeout(async () => {
+              try {
+                await dispatch('setupSockets');
+              } catch(e) {
+                poll();
+              } 
+            } , 1000);
+            poll();
+          };
+
+          ws.onmessage = msg => {
+            let { type, data } = JSON.parse(msg.data);
+
+            switch (type) {
+              case 'login':
+                let user = data;
+                if (user) {
+                  commit('user', user);
+                  if (
+                    router.currentRoute.path === '/login' ||
+                    router.currentRoute.path === '/'
+                  ) {
+                    go('/home');
+                  }
+                } else {
+                  dispatch('logout');
                 }
-              } else {
-                dispatch('logout');
-              }
-              resolve();
-              break;
+                resolve();
+                break;
 
-            case 'networks':
-              commit('networks', data);
-              break;
+              case 'networks':
+                commit('networks', data);
+                break;
 
-            case 'payment':
-              let p = data;
-              commit('received', p);
+              case 'payment':
+                let p = data;
+                commit('received', p);
 
-              let precision = p.account.precision;
-              let unit = p.account.ticker;
-              if (unit === 'BTC') unit = getters.user.unit;
-              if (unit === 'SAT') precision = 0;
+                let precision = p.account.precision;
+                let unit = p.account.ticker;
+                if (unit === 'BTC') unit = getters.user.unit;
+                if (unit === 'SAT') precision = 0;
 
-              if (p.amount > 0)
-                dispatch(
-                  'snack',
-                  `Received ${format(p.amount + p.tip, precision)} ${unit}`
-                );
-              commit('addPayment', p);
-              break;
+                if (p.amount > 0)
+                  dispatch(
+                    'snack',
+                    `Received ${format(p.amount + p.tip, precision)} ${unit}`
+                  );
+                commit('addPayment', p);
+                break;
 
-            case 'payments':
-              commit('payments', data);
-              break;
+              case 'payments':
+                commit('payments', data);
+                break;
 
-            case 'rates':
-              const rates = data;
-              if (!rates) return;
-              commit('rates', rates);
-              if (getters.user && getters.user.currency)
-                commit('rate', rates[getters.user.currency]);
-              break;
+              case 'rates':
+                const rates = data;
+                if (!rates) return;
+                commit('rates', rates);
+                if (getters.user && getters.user.currency)
+                  commit('rate', rates[getters.user.currency]);
+                break;
 
-            case 'otpsecret':
-              commit('user', { ...state.user, otpsecret: data });
-              break;
+              case 'otpsecret':
+                commit('user', { ...state.user, otpsecret: data });
+                break;
 
-            case 'to':
-              let { payment } = getters;
-              payment.recipient = data;
-              break;
+              case 'to':
+                let { payment } = getters;
+                payment.recipient = data;
+                break;
 
-            case 'user':
-              commit('user', data);
-              break;
-          }
-        };
+              case 'user':
+                commit('user', data);
+                break;
+            }
+          };
+        }
+        else {
+          setTimeout(() => dispatch('setupSockets'), 1000);
+        } 
       });
     },
 
     async issueAsset({ commit, dispatch }, asset) {
       try {
         await Vue.axios.post('/assets', asset);
-        go('/assets'); 
-      } catch(e) {
+        go('/assets');
+      } catch (e) {
         commit('error', e.response ? e.response.data : e.message);
-      } 
+      }
     },
 
     async createUser({ commit, dispatch }, token) {
@@ -451,7 +458,8 @@ export default new Vuex.Store({
       } = getters;
       let asset = user.account.asset;
 
-      if (amount <= 0) return commit('error', 'Amount must be greater than zero');
+      if (amount <= 0)
+        return commit('error', 'Amount must be greater than zero');
 
       try {
         let res = await Vue.axios.post('/send', {
@@ -643,7 +651,10 @@ export default new Vuex.Store({
             await dispatch('shiftAccount', process.env.VUE_APP_LBTC);
 
           payment.amount = payment.payobj.satoshis;
-          payment.fiatAmount = ((payment.payobj.satoshis * getters.rate) / SATS).toFixed(2);
+          payment.fiatAmount = (
+            (payment.payobj.satoshis * getters.rate) /
+            SATS
+          ).toFixed(2);
           payment.network = 'LNBTC';
 
           await Vue.axios.post('/lightning/query', { payreq });
@@ -682,7 +693,9 @@ export default new Vuex.Store({
 
         if (url.options.amount) {
           payment.amount = parseInt((url.options.amount * SATS).toFixed(0));
-          payment.fiatAmount = ((payment.amount * getters.rate) / SATS).toFixed(2);
+          payment.fiatAmount = ((payment.amount * getters.rate) / SATS).toFixed(
+            2
+          );
         }
 
         await dispatch('estimateFee');
