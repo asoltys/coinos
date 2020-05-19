@@ -245,7 +245,6 @@ export default new Vuex.Store({
       commit('pin', null);
       commit('user', null);
       if (state.socket) state.socket.close();
-      commit('socket', null);
       go('/');
     },
 
@@ -255,9 +254,7 @@ export default new Vuex.Store({
 
     async setupSockets({ commit, getters, dispatch }) {
       return new Promise((resolve, reject) => {
-        if (!getters.token) {
-          reject();
-        } 
+        if (!getters.token) return reject();
         if (getters.socket && getters.socket.readyState === 1) return resolve();
         else if (!getters.socket || getters.socket.readyState === 3) {
           const proto =
@@ -283,7 +280,7 @@ export default new Vuex.Store({
               try {
                 await dispatch('setupSockets');
               } catch(e) {
-                poll();
+                if (getters.token) poll();
               } 
             } , 1000);
             poll();
