@@ -117,11 +117,10 @@ export default new Vuex.Store({
         if (cookie && cookie[1]) token = cookie[1];
       }
 
-
       if (token && token !== 'null') {
         commit('token', token);
         try {
-          await dispatch('setupSockets');
+          dispatch('setupSockets');
         } catch (e) {
           l('failed to setup sockets', e);
         }
@@ -267,113 +266,98 @@ export default new Vuex.Store({
     },
 
     async setupSockets({ commit, getters, dispatch }) {
-      return new Promise((resolve, reject) => {
-        if (!getters.token) return reject();
-        if (getters.socket && getters.socket.readyState === 1) return resolve();
-        else if (!getters.socket) {
-          const proto =
-            process.env.NODE_ENV === 'production' ? 'wss://' : 'ws://';
-          const ws = new WebSocket(`${proto}${location.host}/ws`);
-
-          ws.onopen = () => {
-            ws.send(getters.token);
-            commit('error', null);
-            commit('socket', ws);
-            resolve();
-          };
-
-          ws.onerror = () => {
-            commit('error', 'Problem connecting to server');
-            commit('socket', null);
-            ws.close();
-            reject();
-          };
-
-          ws.onclose = (e) => {
-            commit('socket', null);
-            const poll = () => setTimeout(async () => {
-              try {
-                await dispatch('setupSockets');
-              } catch(e) {
-                if (getters.token) poll();
-              } 
-            } , 1000);
-            poll();
-          };
-
-          ws.onmessage = msg => {
-            let { type, data } = JSON.parse(msg.data);
-
-            switch (type) {
-              case 'login':
-                let user = data;
-                if (user) {
-                  commit('user', user);
-                  if (
-                    router.currentRoute.path === '/login' ||
-                    router.currentRoute.path === '/'
-                  ) {
-                    go('/home');
-                  }
-                } else {
-                  dispatch('logout');
-                }
-                resolve();
-                break;
-
-              case 'networks':
-                commit('networks', data);
-                break;
-
-              case 'payment':
-                let p = data;
-                commit('received', p);
-
-                let precision = p.account.precision;
-                let unit = p.account.ticker;
-                if (unit === 'BTC') unit = getters.user.unit;
-                if (unit === 'SAT') precision = 0;
-
-                if (p.amount > 0)
-                  dispatch(
-                    'snack',
-                    `Received ${format(p.amount + p.tip, precision)} ${unit}`
-                  );
-                commit('addPayment', p);
-                break;
-
-              case 'payments':
-                commit('payments', data);
-                break;
-
-              case 'rates':
-                const rates = data;
-                if (!rates) return;
-                commit('rates', rates);
-                if (getters.user && getters.user.currency)
-                  commit('rate', rates[getters.user.currency]);
-                break;
-
-              case 'otpsecret':
-                commit('user', { ...state.user, otpsecret: data });
-                break;
-
-              case 'to':
-                let { payment } = getters;
-                payment.recipient = data;
-                break;
-
-              case 'user':
-                commit('user', data);
-                break;
-            }
-          };
-        }
+      const proto = process.env.NODE_ENV === 'production' ? 'wss://' : 'ws://';
+      if (!getters.token) return;
+      if (getters.socket) {
+        if (getters.socket.readyState === 1) return;
         else {
-          getters.socket.close();
-          reject();
+          commit('socket', null);
         } 
-      });
+      } 
+      let ws = new WebSocket(`${proto}${location.host}/ws`);
+      commit('socket', ws);
+
+      ws.onopen = () => {
+        ws.send(getters.token);
+        commit('error', null);
+      };
+
+      ws.onerror = () => {
+        commit('error', 'Problem connecting to server');
+        ws.close();
+      };
+
+      ws.onclose = e => {
+        ws = null;
+        setTimeout(() => dispatch('setupSockets'), 100);
+      };
+
+      ws.onmessage = msg => {
+        let { type, data } = JSON.parse(msg.data);
+
+        switch (type) {
+          case 'login':
+            let user = data;
+            if (user) {
+              commit('user', user);
+              if (
+                router.currentRoute.path === '/login' ||
+                router.currentRoute.path === '/'
+              ) {
+                go('/home');
+              }
+            } else {
+              dispatch('logout');
+            }
+            break;
+
+          case 'networks':
+            commit('networks', data);
+            break;
+
+          case 'payment':
+            let p = data;
+            commit('received', p);
+
+            let precision = p.account.precision;
+            let unit = p.account.ticker;
+            if (unit === 'BTC') unit = getters.user.unit;
+            if (unit === 'SAT') precision = 0;
+
+            if (p.amount > 0)
+              dispatch(
+                'snack',
+                `Received ${format(p.amount + p.tip, precision)} ${unit}`
+              );
+            commit('addPayment', p);
+            break;
+
+          case 'payments':
+            commit('payments', data);
+            break;
+
+          case 'rates':
+            const rates = data;
+            if (!rates) return;
+            commit('rates', rates);
+            if (getters.user && getters.user.currency)
+              commit('rate', rates[getters.user.currency]);
+            break;
+
+          case 'otpsecret':
+            commit('user', { ...state.user, otpsecret: data });
+            break;
+
+          case 'to':
+            let { payment } = getters;
+            payment.recipient = data;
+            break;
+
+          case 'user':
+            commit('user', data);
+            break;
+        }
+      };
     },
 
     async issueAsset({ commit, dispatch }, asset) {
