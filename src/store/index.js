@@ -26,7 +26,8 @@ const isLiquid = address =>
   address.startsWith('Az') ||
   address.startsWith('lq1') ||
   address.startsWith('VJL') ||
-  address.startsWith('VT');
+  address.startsWith('VT') ||
+  address.startsWith('XR');
 
 const l = console.log;
 const go = path => {
@@ -272,8 +273,8 @@ export default new Vuex.Store({
         if (getters.socket.readyState === 1) return;
         else {
           commit('socket', null);
-        } 
-      } 
+        }
+      }
       let ws = new WebSocket(`${proto}${location.host}/ws`);
       commit('socket', ws);
 
@@ -634,6 +635,16 @@ export default new Vuex.Store({
           let payreq = text.toLowerCase();
           payment.payreq = payreq;
           payment.payobj = bolt11.decode(payment.payreq);
+          let { coinType } = payment.payobj;
+
+          l(coinType, process.env.NODE_ENV);
+          if (process.env.NODE_ENV === "production" && coinType !== "bitcoin") {
+            dispatch('clearPayment');
+            throw new Error(`Wrong network, '${coinType}' instead of 'bitcoin'`);
+          } else if (coinType !== "regtest") {
+            dispatch('clearPayment');
+            throw new Error(`Wrong network, '${coinType}' instead of 'regtest'`);
+          } 
 
           if (user.account.ticker !== 'BTC')
             await dispatch('shiftAccount', process.env.VUE_APP_LBTC);
@@ -650,7 +661,7 @@ export default new Vuex.Store({
           go({ name: 'send', params: { keep: true } });
           return;
         } catch (e) {
-          if (e.response) commit('error', e.response.data);
+          commit('error', e.response ? e.response.data : e.message);
         }
       }
 
@@ -704,7 +715,8 @@ export default new Vuex.Store({
         (text.startsWith('Az') ||
           text.startsWith('lq1') ||
           text.startsWith('VJL') ||
-          text.startsWith('VT'))
+          text.startsWith('VT') ||
+          text.startsWith('XR'))
       ) {
         payment.address = text;
         payment.network = 'LBTC';
