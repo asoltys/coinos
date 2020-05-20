@@ -290,6 +290,7 @@ export default new Vuex.Store({
           };
 
           ws.onclose = (e) => {
+            commit('socket', null);
             const poll = () => setTimeout(async () => {
               try {
                 await dispatch('setupSockets');
@@ -370,8 +371,6 @@ export default new Vuex.Store({
         }
         else {
           getters.socket.close();
-          commit('socket', null);
-          setTimeout(() => dispatch('setupSockets'), 1000);
           reject();
         } 
       });
