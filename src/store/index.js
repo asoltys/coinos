@@ -27,7 +27,10 @@ const isLiquid = address =>
   address.startsWith('lq1') ||
   address.startsWith('VJL') ||
   address.startsWith('VT') ||
-  address.startsWith('XR');
+  address.startsWith('XR') ||
+  address.startsWith('XR') || 
+  ((address.startsWith('H') || address.startsWith('G')) && address.length === 34)
+;
 
 const l = console.log;
 const go = path => {
@@ -712,7 +715,7 @@ export default new Vuex.Store({
           text.startsWith('lq1') ||
           text.startsWith('VJL') ||
           text.startsWith('VT') ||
-          text.startsWith('XR'))
+          text.startsWith('XR') || ((text.startsWith('H') || text.startsWith('G')) && text.length === 34))
       ) {
         payment.address = text;
         payment.network = 'LBTC';
