@@ -71,6 +71,13 @@
       </template>
     </v-text-field>
     <set-fee :adjusting="adjusting" />
+
+      <div class="d-flex">
+        <v-btn @click="() => copy(psbt)" class="ml-auto">
+          <v-icon class="mr-1">content_copy</v-icon>
+          Copy Psbt
+        </v-btn>
+        </div>
   </v-card>
 </template>
 
@@ -97,6 +104,7 @@ export default {
     };
   },
   computed: {
+    psbt: get('psbt'),
     recipient() {
       let { address, payobj } = this.payment;
       if (payobj) return payobj.payeeNodeKey;
@@ -128,7 +136,6 @@ export default {
     },
     fee() {
       if (this.payment.tx) return parseInt(this.payment.tx.fee * SATS);
-      else if (this.payment.route) return this.$format(parseInt(this.route.total_amt) - this.payment.amount);
       else return null;
     },
     fiatFee() {

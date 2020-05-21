@@ -86,6 +86,7 @@ const state = {
   orders: [],
   payment: JSON.parse(blankPayment),
   payments: [],
+  psbt: null,
   pin: '',
   prompt2fa: false,
   rate: 0,
@@ -204,7 +205,7 @@ export default new Vuex.Store({
         const stats = (await Vue.axios.get('/info')).data;
         commit('stats', stats);
       } catch (e) {
-        commit('error', e.response.data);
+        commit('error', e.response ? e.response.data : e.message);
       }
 
       commit('loading', false);
@@ -386,22 +387,9 @@ export default new Vuex.Store({
         if (res.data.token) commit('token', res.data.token);
         return true;
       } catch (e) {
-        commit('error', e.response.data);
+        commit('error', e.response ? e.response.data : e.message);
         return false;
       }
-    },
-
-    async getFriends({ commit }) {
-      commit('loading', true);
-
-      try {
-        let res = await Vue.axios.get('/friends');
-        commit('friends', res.data);
-      } catch (e) {
-        commit('error', e.response.data);
-      }
-
-      commit('loading', false);
     },
 
     async estimateFee({ commit, getters }) {
@@ -420,8 +408,9 @@ export default new Vuex.Store({
             let res = await Vue.axios.post('/liquid/fee', params);
             payment.feeRate = res.data.feeRate;
             payment.tx = res.data.tx;
+            commit('psbt', res.data.psbt);
           } catch (e) {
-            commit('error', e.message);
+            commit('error', e.response ? e.response.data : e.message);
           }
         } else {
           try {
@@ -429,7 +418,7 @@ export default new Vuex.Store({
             payment.feeRate = res.data.feeRate;
             payment.tx = res.data.tx;
           } catch (e) {
-            commit('error', e.response.data);
+            commit('error', e.response ? e.response.data : e.message);
           }
         }
       }
@@ -637,14 +626,21 @@ export default new Vuex.Store({
           payment.payobj = bolt11.decode(payment.payreq);
           let { coinType } = payment.payobj;
 
-          l(coinType, process.env.NODE_ENV);
-          if (process.env.NODE_ENV === "production" && coinType !== "bitcoin") {
+          if (process.env.NODE_ENV === 'production' && coinType !== 'bitcoin') {
             dispatch('clearPayment');
-            throw new Error(`Wrong network, '${coinType}' instead of 'bitcoin'`);
-          } else if (coinType !== "regtest") {
+            commit(
+              'error',
+              `Wrong network, '${coinType}' instead of 'bitcoin'`
+            );
+            throw new Error();
+          } else if (coinType !== 'regtest') {
             dispatch('clearPayment');
-            throw new Error(`Wrong network, '${coinType}' instead of 'regtest'`);
-          } 
+            commit(
+              'error',
+              `Wrong network, '${coinType}' instead of 'regtest'`
+            );
+            throw new Error();
+          }
 
           if (user.account.ticker !== 'BTC')
             await dispatch('shiftAccount', process.env.VUE_APP_LBTC);
@@ -661,7 +657,7 @@ export default new Vuex.Store({
           go({ name: 'send', params: { keep: true } });
           return;
         } catch (e) {
-          commit('error', e.response ? e.response.data : e.message);
+          if (e.response) commit('error', e.response.data);
         }
       }
 
