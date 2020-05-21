@@ -72,12 +72,12 @@
     </v-text-field>
     <set-fee :adjusting="adjusting" />
 
-      <div class="d-flex">
-        <v-btn @click="() => copy(psbt)" class="ml-auto">
-          <v-icon class="mr-1">content_copy</v-icon>
-          Copy Psbt
-        </v-btn>
-        </div>
+    <div class="d-flex" v-if="psbt">
+      <v-btn @click="() => copy(psbt)" class="ml-auto">
+        <v-icon class="mr-1">content_copy</v-icon>
+        Copy Psbt
+      </v-btn>
+    </div>
   </v-card>
 </template>
 
