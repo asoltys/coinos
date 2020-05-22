@@ -26,7 +26,7 @@
     </v-textarea>
     <v-select
       label="Asset"
-      v-if="payment.network === 'liquid'"
+      v-if="payment.network === 'LBTC'"
       v-model="user.account_id"
       @input="changeAsset"
       :items="accounts"
