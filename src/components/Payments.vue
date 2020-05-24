@@ -22,7 +22,7 @@
               sign,
               color,
               fiat,
-              amount,
+              displayAmount: amount,
               tip,
               createdAt,
               updatedAt,
@@ -44,7 +44,7 @@
                   'headline': !$vuetify.breakpoint.xs,
                 }">
                   <span :class="color">{{ sign }}</span>
-                  {{ $format(Math.abs(amount), precision) }}
+                  {{ amount }}
                 </span>
 
                 <span>{{ ticker(account) }}</span>
@@ -88,6 +88,17 @@
                     </v-btn>
                   </template>
                 </v-textarea>
+                <v-text-field
+                  label="Amount"
+                  :value="amount"
+                  readonly
+                >
+                  <template v-slot:append>
+                    <v-btn @click="() => copy(amount)" class="ml-1" icon>
+                      <v-icon class="mr-1">content_copy</v-icon>
+                    </v-btn>
+                  </template>
+                </v-text-field>
                 <v-textarea
                   v-if="fee"
                   label="Fee"
@@ -192,6 +203,7 @@ export default {
         .map(p => {
           let o = JSON.parse(JSON.stringify(p));
           o.amount = p.amount + p.tip;
+          o.displayAmount = this.$format(Math.abs(o.amount), this.precision);
           o.fiat = ((p.amount * p.rate) / SATS).toFixed(2);
           o.tip = parseFloat((p.tip * p.rate) / SATS).toFixed(2);
           if (isNaN(o.tip) || o.tip <= 0) o.tip = null;
