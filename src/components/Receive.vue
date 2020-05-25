@@ -11,7 +11,7 @@
     </template>
     <div v-else>
       <numpad
-        @done="() => addInvoice('lightning')"
+        @done="addInvoice('lightning')"
         @input="updateAmount"
         :currencies="currencies"
         :initialAmount="invoice.amount"
@@ -131,13 +131,6 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-canvas
-  position relative
-  display block
-  height 100%
-  margin-left auto
-  margin-right auto
-
 .buttons
   width: 100%;
 

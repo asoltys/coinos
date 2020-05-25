@@ -27,7 +27,7 @@
           @click.prevent="toggle"
           >{{ currency }}</v-btn
         >
-        <v-btn icon @click="() => copy(displayAmount)" class="ml-1" text>
+        <v-btn icon @click="copy(displayAmount)" class="ml-1" text>
           <v-icon class="mr-1">content_copy</v-icon>
         </v-btn>
       </template>
@@ -41,7 +41,7 @@
     <div class="text-center font-weight-bold my-2">to</div>
             <v-textarea label="Lightning Node" :value="payment.payobj.payeeNodeKey" rows="1" auto-grow readonly>
               <template v-slot:append>
-                <v-btn @click="() => copy(payment.payobj.payeeNodeKey)" icon>
+                <v-btn @click="copy(payment.payobj.payeeNodeKey)" icon>
                   <v-icon class="mr-1">content_copy</v-icon>
                 </v-btn>
               </template>

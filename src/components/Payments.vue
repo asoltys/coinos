@@ -83,7 +83,7 @@
                     <v-btn v-if="link" @click="explore(link)" class="ml-1" icon>
                       <v-icon class="mr-1">open_in_new</v-icon>
                     </v-btn>
-                    <v-btn @click="() => copy(hash)" class="ml-1" icon>
+                    <v-btn @click="copy(hash)" class="ml-1" icon>
                       <v-icon class="mr-1">content_copy</v-icon>
                     </v-btn>
                   </template>
@@ -94,7 +94,7 @@
                   readonly
                 >
                   <template v-slot:append>
-                    <v-btn @click="() => copy(amount)" class="ml-1" icon>
+                    <v-btn @click="copy(amount)" class="ml-1" icon>
                       <v-icon class="mr-1">content_copy</v-icon>
                     </v-btn>
                   </template>
@@ -108,7 +108,7 @@
                   auto-grow
                 >
                   <template v-slot:append>
-                    <v-btn @click="() => copy(fee)" class="ml-1" icon>
+                    <v-btn @click="copy(fee)" class="ml-1" icon>
                       <v-icon class="mr-1">content_copy</v-icon>
                     </v-btn>
                   </template>
@@ -122,7 +122,7 @@
                   auto-grow
                 >
                   <template v-slot:append>
-                    <v-btn @click="() => copy(preimage)" class="ml-1" icon>
+                    <v-btn @click="copy(preimage)" class="ml-1" icon>
                       <v-icon class="mr-1">content_copy</v-icon>
                     </v-btn>
                   </template>

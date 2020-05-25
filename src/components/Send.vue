@@ -32,10 +32,6 @@ export default {
     To,
   },
 
-  filters: {
-    trim: w => w.substring(0, 12),
-  },
-
   props: {
     keep: {
       type: Boolean,

@@ -61,6 +61,7 @@ const blankPayment = JSON.stringify({
   asset: BTC,
   feeRate: null,
   fiatAmount: null,
+  method: null,
   network: null,
   payment: null,
   payobj: null,
@@ -512,11 +513,13 @@ export default new Vuex.Store({
       invoice.currency = state.user.currency;
       invoice.rate = state.rate;
       commit('invoice', invoice);
+      commit('error', null);
     },
 
     async clearPayment({ commit }) {
       let payment = JSON.parse(blankPayment);
       commit('payment', payment);
+      commit('error', null);
     },
 
     async addInvoice({ commit, state }, method) {

@@ -1,78 +1,75 @@
 <template>
   <div>
-    <v-textarea
-      class="my-4"
-      label="Address or Invoice:"
-      dark
-      v-model="to"
-      clearable
-      auto-grow
-      rows="1"
-      hide-details
-      @input="() => handleScan(to)"
-      ref="to"
-      :error="!!to && to.length > 0"
+    <v-form
+      v-if="
+        !payment.method ||
+          ['bitcoin', 'liquid', 'lightning'].includes(payment.method)
+      "
     >
-      <template v-if="to.length" v-slot:append>
-        <v-btn icon @click="() => showText(to)" class="ml-1" text>
-          <qrcode />
-        </v-btn>
-        <v-btn @click="() => copy(to)" class="ml-1" icon>
-          <v-icon class="mr-1">content_copy</v-icon>
-        </v-btn>
-      </template>
-    </v-textarea>
-    <div class="d-flex">
-      <v-btn v-if="canPaste" class="mr-2 mb-2 flex-grow-1" @click="paste">
-        <v-icon class="mr-1">assignment</v-icon>
-        <span>Paste</span>
-      </v-btn>
-    </div>
-    <v-form @submit.prevent="sendToUser">
-      <v-text-field
+      <v-textarea
         class="my-4"
-        label="Username:"
-        v-model="username"
-        clearable
-      />
-      <div class="d-flex">
-        <v-btn
-          class="flex-grow-1 ml-1 black--text"
-          color="primary"
-          @click="sendToUser"
-        >
-          <v-icon class="mr-1">send</v-icon>
-          Go
-        </v-btn>
-      </div>
+        :label="label"
+        v-model="to"
+        auto-grow
+        rows="1"
+        @input="handleScan(to)"
+        ref="to"
+        :error="!!to && to.length > 0"
+      >
+        <template v-slot:append>
+          <div v-if="to.length">
+            <v-btn icon @click="showText(to)" class="ml-1" text>
+              <qrcode />
+            </v-btn>
+          </div>
+
+          <v-btn v-if="canPaste" class="mr-2 mb-2 flex-grow-1" @click="paste">
+            <v-icon class="mr-1">assignment</v-icon>
+            <span>Paste</span>
+          </v-btn>
+        </template>
+      </v-textarea>
     </v-form>
+
+    <methods v-if="!payment.method"/>
+    <send-to-user v-if="payment.method === 'coinos'" />
+    <paper v-if="payment.method === 'paper'" />
+    <v-btn v-if="payment.method" @click="payment.method = null" class="mt-2 wide">
+      <v-icon>arrow_back</v-icon>
+      Back</v-btn
+    >
   </div>
 </template>
 
 <script>
-import { call } from 'vuex-pathify';
+import { get, call, sync } from 'vuex-pathify';
 import Copy from '../mixins/Copy';
 import Qrcode from 'vue-material-design-icons/Qrcode';
+import SendToUser from './SendToUser';
+import Paper from './Paper';
+import Methods from './Methods';
 
 export default {
-  components: { Qrcode },
+  components: { Paper, Qrcode, Methods, SendToUser },
   mixins: [Copy],
   data() {
     return {
-      username: '',
       to: '',
     };
   },
   computed: {
+    label() {
+      return 'Paste an Address, Key, Invoice or URL';
+    },
+    networks: get('networks'),
     canPaste: () => navigator.clipboard,
+    payment: sync('payment'),
   },
   methods: {
-    getRecipient: call('getRecipient'),
-    handleScan: call('handleScan'),
-    sendToUser() {
-      this.getRecipient(this.username);
-      this.$emit('edit');
+    generate() {
+      this.seed = generateMnemonic();
     },
+    handleScan: call('handleScan'),
     showText: call('showText'),
     async paste() {
       this.to = await navigator.clipboard.readText();
