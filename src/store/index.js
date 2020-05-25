@@ -61,6 +61,7 @@ const blankPayment = JSON.stringify({
   asset: BTC,
   feeRate: null,
   fiatAmount: null,
+  method: null,
   network: null,
   payment: null,
   payobj: null,

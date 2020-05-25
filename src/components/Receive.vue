@@ -11,7 +11,7 @@
     </template>
     <div v-else>
       <numpad
-        @done="() => addInvoice('lightning')"
+        @done="addInvoice('lightning')"
         @input="updateAmount"
         :currencies="currencies"
         :initialAmount="invoice.amount"

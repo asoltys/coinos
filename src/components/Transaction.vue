@@ -19,7 +19,7 @@
         <v-btn @click="explore" class="ml-1" icon>
           <v-icon class="mr-1">open_in_new</v-icon>
         </v-btn>
-        <v-btn @click="() => copy(recipient)" class="ml-1" icon>
+        <v-btn @click="copy(recipient)" class="ml-1" icon>
           <v-icon class="mr-1">content_copy</v-icon>
         </v-btn>
       </template>
@@ -45,7 +45,7 @@
           @click.prevent="toggle"
           >{{ currency }}</v-btn
         >
-        <v-btn icon @click="() => copy(displayAmount)" class="ml-1" text>
+        <v-btn icon @click="copy(displayAmount)" class="ml-1" text>
           <v-icon class="mr-1">content_copy</v-icon>
         </v-btn>
       </template>
@@ -65,7 +65,7 @@
           @click.prevent="toggle"
           >{{ currency }}</v-btn
         >
-        <v-btn icon @click="() => copy(displayFee)" class="ml-1" text>
+        <v-btn icon @click="copy(displayFee)" class="ml-1" text>
           <v-icon class="mr-1">content_copy</v-icon>
         </v-btn>
       </template>
@@ -73,7 +73,7 @@
     <set-fee :adjusting="adjusting" />
 
     <div class="d-flex" v-if="psbt">
-      <v-btn @click="() => copy(psbt)" class="ml-auto">
+      <v-btn @click="copy(psbt)" class="ml-auto">
         <v-icon class="mr-1">content_copy</v-icon>
         Copy {{ payment.network === 'bitcoin' ? 'PSBT' : 'PSET' }}
       </v-btn>

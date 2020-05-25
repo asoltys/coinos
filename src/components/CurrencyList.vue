@@ -1,6 +1,6 @@
 <template>
   <div v-if="currencies.length === 1">
-  <v-btn class="black--text" :color="color(currency)" @click="() => select(currencies[0])">{{
+  <v-btn class="black--text" :color="color(currency)" @click="select(currencies[0])">{{
         display
       }}</v-btn>
     <span class="print black--text">{{ display }}</span>
@@ -13,7 +13,7 @@
       <span class="print black--text">{{ display }}</span>
     </template>
     <v-list v-if="currencies.length">
-      <v-list-item v-for="c in currencies" :key="c" @click="() => select(c)">
+      <v-list-item v-for="c in currencies" :key="c" @click="select(c)">
         <v-list-item-title :class="`${color(c)}--text`">{{ c }}</v-list-item-title>
       </v-list-item>
     </v-list>

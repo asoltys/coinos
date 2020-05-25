@@ -12,7 +12,7 @@
           readonly
         >
           <template v-slot:append>
-            <v-btn @click="() => copy(text)" class="ml-1" icon>
+            <v-btn @click="copy(text)" class="ml-1" icon>
               <v-icon class="mr-1">content_copy</v-icon>
             </v-btn>
           </template>

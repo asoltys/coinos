@@ -31,15 +31,7 @@
       <h1 v-else class="text-center font-weight-black">Receiving Address</h1>
       <v-card class="pa-3 text-center mb-2">
         <div class="code mb-4" :class="{ print: !showcode }">{{ invoice.text }}</div>
-        <canvas
-          id="qr"
-          v-show="!showcode"
-          width="100"
-          height="100"
-          @click="fullscreen"
-          class="w-100 mx-auto mb-2"
-          style="cursor: pointer"
-        />
+        <qr v-if="!showcode" :text="invoice.text" />
         <div class="mb-2" v-if="invoice.amount <= 0 && invoice.network !== 'LNBTC'">
           <code class="black--text mb-2" :data-clipboard-text="invoice.text">{{
             invoice.text
@@ -68,7 +60,7 @@
             <v-icon v-else class="mr-1">code</v-icon>
             <span>{{ code }}</span>
           </v-btn>
-          <v-btn @click.native="() => copy(invoice.text)" class="wide mr-2 mb-2 mb-sm-0">
+          <v-btn @click.native="copy(invoice.text)" class="wide mr-2 mb-2 mb-sm-0">
             <v-icon class="mr-1">content_copy</v-icon><span>Copy</span>
           </v-btn>
           <v-btn v-if="invoice.method === 'bitcoin'" @click="address" class="wide">
@@ -81,19 +73,18 @@
 </template>
 
 <script>
-import qr from 'qrcode';
 import { mapActions } from 'vuex';
 import { get, sync } from 'vuex-pathify';
 import Copy from '../mixins/Copy';
-import FullScreen from '../mixins/FullScreen';
 import Tippad from './TipPad';
 import Qrcode from 'vue-material-design-icons/Qrcode';
+import Qr from './Qr';
 
 const SATS = 100000000;
 
 export default {
-  components: { Qrcode, Tippad },
-  mixins: [Copy, FullScreen],
+  components: { Qrcode, Qr, Tippad },
+  mixins: [Copy],
   props: {
     clear: { type: Function },
   },
@@ -122,28 +113,10 @@ export default {
     },
   },
 
-  mounted() {
-    this.draw();
-  },
-
   methods: {
     ...mapActions(['addInvoice', 'getNewAddress', 'shiftCurrency', 'snack', 'toggleUnit']),
     async address() {
       await this.getNewAddress();
-      this.draw();
-    },
-    draw() {
-      this.$nextTick(() => {
-        let canvas = document.getElementById('qr');
-        if (!canvas) return;
-
-        qr.toCanvas(canvas, this.invoice.text, e => {
-          if (e) console.log(e);
-        });
-
-        canvas.style.width = '35vh';
-        canvas.style.height = '35vh';
-      });
     },
 
     async setTip(tip, fiatTip) {
@@ -151,7 +124,6 @@ export default {
       this.invoice.tip = tip;
       this.invoice.fiatTip = fiatTip;
       await this.addInvoice();
-      this.draw();
     },
   },
 };
