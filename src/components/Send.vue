@@ -5,6 +5,7 @@
       <Balance />
       <sent v-if="payment.sent" />
       <template v-else>
+        <lightning-payment v-if="payment.payobj" />
         <to v-if="!(payment.payobj || payment.address || payment.recipient)" @edit="edit" />
         <amount v-else-if="editing" @edit="edit" @done="done" />
         <payment-details v-else @edit="edit" />
@@ -19,6 +20,7 @@ import { sync } from 'vuex-pathify';
 
 import Amount from './Amount';
 import Balance from './Balance';
+import LightningPayment from './LightningPayment';
 import PaymentDetails from './PaymentDetails';
 import Sent from './Sent';
 import To from './To';
@@ -27,6 +29,7 @@ export default {
   components: {
     Amount,
     Balance,
+    LightningPayment,
     PaymentDetails,
     Sent,
     To,
