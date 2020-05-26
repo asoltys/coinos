@@ -3,7 +3,7 @@
     <h1>QR Code</h1>
     <v-card>
       <v-card-text class="text-center">
-        <canvas id="qr" class="d-block mx-auto mb-4" @click="fullscreen" />
+        <qr :text="text" />
         <v-textarea
           label="QR Contents"
           :value="text"
@@ -25,31 +25,13 @@
 <script>
 import { get } from 'vuex-pathify';
 import Copy from '../mixins/Copy';
-import FullScreen from '../mixins/FullScreen';
-
-import qr from 'qrcode';
+import Qr from './Qr';
 
 export default {
-  mixins: [Copy, FullScreen],
+  components: { Qr },
+  mixins: [Copy],
   computed: {
     text: get('text'),
-  },
-  methods: {
-    draw(v) {
-      let canvas = document.getElementById('qr');
-      if (!canvas) return;
-      qr.toCanvas(canvas, v, e => {
-        if (e) console.log(e);
-      });
-    },
-  },
-  watch: {
-    text(v) {
-      this.draw(v);
-    },
-  },
-  mounted() {
-    this.draw(this.text);
   },
 };
 </script>

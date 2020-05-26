@@ -9,7 +9,6 @@
       Paper Wallet
     </v-btn>
     <v-btn
-      v-if="networks.includes('liquid')"
       class="flex-grow-1 mb-2 mr-1 wide"
       @click="payment.method = 'coinos'"
       :style="buttonStyle"
@@ -18,7 +17,7 @@
       <span>Coinos User</span>
     </v-btn>
     <v-btn
-              v-if="1===2"
+      v-if="1 === 2"
       class="flex-grow-1 mb-2 mr-1 wide"
       @click="payment.method = 'url'"
       :style="buttonStyle"
@@ -60,7 +59,7 @@ export default {
           return 'Paste an Address, Key, Invoice, Username, BOLT11, BIP21...';
       }
     },
-    networks: get('networks'),
+    nodes: get('nodes'),
     payment: sync('payment'),
   },
 };

@@ -56,6 +56,11 @@ const Settings = () =>
     /* webpackChunkName: "settings" */
     '../components/Settings'
   );
+const Sweep = () =>
+  import(
+    /* webpackChunkName: "sweep" */
+    '../components/Sweep'
+  );
 const Text = () =>
   import(
     /* webpackChunkName: "text" */
@@ -76,6 +81,7 @@ const routes = [
   { path: '/scan', component: Scan },
   { name: 'send', path: '/send', component: Send, props: true },
   { path: '/settings', component: Settings },
+  { path: '/sweep', component: Sweep },
   { path: '/text', component: Text },
 ];
 

@@ -20,7 +20,7 @@
 
       <div class="d-flex flex-wrap buttons">
         <v-btn
-          v-if="networks.includes('bitcoin')"
+          v-if="nodes.includes('bitcoin')"
           class="flex-grow-1 mb-2 mr-1"
           @click="addInvoice('bitcoin')"
           :disabled="!isBtc"
@@ -31,7 +31,7 @@
         </v-btn>
 
         <v-btn
-          v-if="networks.includes('lightning')"
+          v-if="nodes.includes('lightning')"
           class="flex-grow-1 mb-2 mr-1"
           @click="addInvoice('lightning')"
           :disabled="!isBtc"
@@ -42,7 +42,7 @@
         </v-btn>
 
         <v-btn
-          v-if="networks.includes('liquid')"
+          v-if="nodes.includes('liquid')"
           class="flex-grow-1 mr-0"
           @click="addInvoice('liquid')"
           :style="buttonStyle"
@@ -71,7 +71,7 @@ export default {
   computed: {
     buttonStyle() {
       return {
-        maxWidth: `${(100 / (window.innerWidth < 600 ? 1 : this.networks.length)).toFixed(0)}%`,
+        maxWidth: `${(100 / (window.innerWidth < 600 ? 1 : this.nodes.length)).toFixed(0)}%`,
       };
     },
     isBtc() {
@@ -91,7 +91,7 @@ export default {
     },
     invoice: sync('invoice'),
     loading: sync('loading'),
-    networks: get('networks'),
+    nodes: get('nodes'),
     payment: get('payment'),
     rate: get('rate'),
     received: sync('received'),

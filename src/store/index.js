@@ -5,6 +5,7 @@ import bip21 from 'bip21';
 import bolt11 from 'bolt11';
 import router from '../router';
 import validate from 'bitcoin-address-validation';
+import { ECPair, payments, networks } from 'bitcoinjs-lib';
 import pathify, { make } from 'vuex-pathify';
 import paths from '../paths';
 import format from '../format';
@@ -12,7 +13,7 @@ Vue.use(Vuex);
 
 const SATS = 100000000;
 
-const networks = {
+const methods = {
   bitcoin: 'BTC',
   liquid: 'LBTC',
   lightning: 'LNBTC',
@@ -79,6 +80,7 @@ const state = {
   assets: [],
   challenge: '',
   channels: [],
+  ecpair: null,
   error: '',
   fiat: true,
   friends: [],
@@ -87,7 +89,7 @@ const state = {
   initializing: false,
   loading: false,
   loadingFee: false,
-  networks: [],
+  nodes: [],
   orders: [],
   payment: JSON.parse(blankPayment),
   payments: [],
@@ -165,6 +167,9 @@ export default new Vuex.Store({
         l(e);
         commit('error', 'Problem connecting to server');
       }
+    },
+
+    async getAddress({ commit, getters, dispatch }) {
     },
 
     async getChallenge({ commit, getters, dispatch }) {
@@ -318,8 +323,8 @@ export default new Vuex.Store({
             }
             break;
 
-          case 'networks':
-            commit('networks', data);
+          case 'nodes':
+            commit('nodes', data);
             break;
 
           case 'payment':
@@ -530,7 +535,7 @@ export default new Vuex.Store({
 
       method = method || invoice.method;
       invoice.method = method;
-      invoice.network = networks[method];
+      invoice.network = methods[method];
 
       const url = address =>
         amount
@@ -623,9 +628,9 @@ export default new Vuex.Store({
       if (!text) return;
       if (typeof text !== 'string') return router.go(-1);
       await dispatch('clearPayment');
-      let { networks, payment, user } = getters;
+      let { nodes, payment, user } = getters;
 
-      if (networks.includes('lightning')) {
+      if (nodes.includes('lightning')) {
         try {
           if (text.slice(0, 10) === 'lightning:') text = text.slice(10);
           let payreq = text.toLowerCase();
@@ -640,7 +645,7 @@ export default new Vuex.Store({
               `Wrong network, '${coinType}' instead of 'bitcoin'`
             );
             throw new Error();
-          } else if (coinType !== 'regtest') {
+          } else if (process.env.NODE_ENV !== 'production' && coinType !== 'regtest') {
             dispatch('clearPayment');
             commit(
               'error',
@@ -670,13 +675,13 @@ export default new Vuex.Store({
 
       let url;
       try {
-        if (networks.includes('bitcoin')) {
+        if (nodes.includes('bitcoin')) {
           url = bip21.decode(text);
           payment.network = 'BTC';
           url.options.asset = BTC;
         }
       } catch (e) {
-        if (networks.includes('liquid')) {
+        if (nodes.includes('liquid')) {
           try {
             url = bip21.decode(text, 'liquidnetwork');
             payment.network = 'LBTC';
@@ -705,7 +710,7 @@ export default new Vuex.Store({
         return;
       }
 
-      if (networks.includes('bitcoin') && validate(text)) {
+      if (nodes.includes('bitcoin') && validate(text)) {
         payment.address = text;
         payment.network = 'BTC';
         go({ name: 'send', params: { keep: true } });
@@ -713,11 +718,23 @@ export default new Vuex.Store({
       }
 
       // Liquid
-      if (networks.includes('liquid') && isLiquid(text)) {
+      if (nodes.includes('liquid') && isLiquid(text)) {
         payment.address = text;
         payment.network = 'LBTC';
         go({ name: 'send', params: { keep: true } });
         return;
+      }
+
+      try {
+        const network =
+          process.env.NODE_ENV === 'production'
+            ? networks['bitcoin']
+            : networks['regtest'];
+        console.log(network);
+        let ecpair = ECPair.fromWIF(text, network);
+        commit('ecpair', ecpair);
+      } catch (e) {
+        console.log(e.message);
       }
     },
 

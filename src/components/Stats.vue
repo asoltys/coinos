@@ -4,7 +4,7 @@
     <v-progress-linear v-if="loading" indeterminate />
     <v-card-text v-else-if="stats" class="white--text">
       <v-list>
-        <v-list-item v-if="networks.includes('bitcoin')">
+        <v-list-item v-if="nodes.includes('bitcoin')">
           <v-list-item-avatar>
             <img class="ml-2" src="../assets/bitcoin.png" style="width: 25px; height: 25px" />
           </v-list-item-avatar>
@@ -15,7 +15,7 @@
             {{ stats.bitcoin }}
           </v-list-item-action>
         </v-list-item>
-        <v-list-item v-if="networks.includes('liquid')">
+        <v-list-item v-if="nodes.includes('liquid')">
           <v-list-item-avatar>
             <water class="ml-2"  fillColor="#00aaee" />
           </v-list-item-avatar>
@@ -26,7 +26,7 @@
             {{ stats.liquid }}
           </v-list-item-action>
         </v-list-item>
-        <v-list-item v-if="networks.includes('lightning')">
+        <v-list-item v-if="nodes.includes('lightning')">
           <v-list-item-avatar>
             <flash class="ml-2" fillColor="yellow" />
           </v-list-item-avatar>
@@ -76,7 +76,7 @@ export default {
       return this.stats.accounts.find(a => a.asset === process.env.VUE_APP_LBTC).total;
     },
     loading: get('loading'),
-    networks: get('networks'),
+    nodes: get('nodes'),
     stats: get('stats'),
   },
   methods: {

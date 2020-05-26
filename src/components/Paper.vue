@@ -1,4 +1,5 @@
 <template>
+  <v-card class="pa-4">
   <v-form @submit.prevent="sendPayment">
     <v-textarea label="Seed" v-model="seed" rows="1" auto-grow>
       <template v-slot:append>
@@ -69,6 +70,7 @@
       </v-btn>
     </div>
   </v-form>
+  </v-card>
 </template>
 
 <script>
@@ -85,7 +87,6 @@ import {
   payments,
   script,
 } from 'bitcoinjs-lib';
-import bigi from 'bigi';
 import bip38 from 'bip38';
 import wif from 'wif';
 import Printer from 'vue-material-design-icons/Printer';
@@ -111,7 +112,6 @@ export default {
   computed: {
     keyPair() {
       const hash = crypto.sha256(this.seed);
-      const d = bigi.fromBuffer(hash);
       return ECPair.fromPrivateKey(hash, {
         compressed: this.compressed,
         network,

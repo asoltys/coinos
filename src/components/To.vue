@@ -61,7 +61,6 @@ export default {
     label() {
       return 'Paste an Address, Key, Invoice or URL';
     },
-    networks: get('networks'),
     canPaste: () => navigator.clipboard,
     payment: sync('payment'),
   },
