@@ -59,12 +59,19 @@ export default {
     text: get('text'),
   },
   async mounted() {
+<<<<<<< HEAD
     const text = 'cNJniJnoufoEPnxeM1xAFAZ9WaUBQ5GhxDhmFvQCdLG3V3uB3d9t';
+=======
+    if (!this.ecpair) this.$go('/send');
+>>>>>>> sweep wip
     const network =
       process.env.NODE_ENV === 'production'
         ? networks['bitcoin']
         : networks['regtest'];
+<<<<<<< HEAD
     this.ecpair = ECPair.fromWIF(text, network);
+=======
+>>>>>>> sweep wip
     let { publicKey: pubkey } = this.ecpair;
     let { address } = payments.p2wpkh({ pubkey, network });
     let {
