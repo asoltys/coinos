@@ -20,6 +20,11 @@ module.exports = IS_PRODUCTION
         host: '0.0.0.0',
         disableHostCheck: true,
         proxy: {
+          '/api/electrs': {
+            target: 'http://localhost:3002',
+            pathRewrite: { '^/api/electrs': '' },
+            secure: false,
+          },
           '/api': {
             target: 'http://localhost:3119',
             pathRewrite: { '^/api': '' },

@@ -31,7 +31,8 @@ export default {
       this.$router.go(-1);
     },
     stop() {
-      this.$refs.video.srcObject.getTracks().map(t => t.stop());
+      if (this.$refs.video.srcObject)
+        this.$refs.video.srcObject.getTracks().map(t => t.stop());
     },
     handleScan: call('handleScan'),
 

@@ -667,7 +667,6 @@ export default new Vuex.Store({
           go({ name: 'send', params: { keep: true } });
           return;
         } catch (e) {
-          console.log(e.message);
           if (e.response) commit('error', e.response.data);
         }
       }
@@ -729,9 +728,9 @@ export default new Vuex.Store({
           process.env.NODE_ENV === 'production'
             ? networks['bitcoin']
             : networks['regtest'];
-        console.log(network);
         let ecpair = ECPair.fromWIF(text, network);
         commit('ecpair', ecpair);
+        go('/sweep');
       } catch (e) {
         console.log(e.message);
       }

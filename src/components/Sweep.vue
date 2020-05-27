@@ -3,24 +3,14 @@
     <h1>Sweep Private Key</h1>
     <v-card>
       <v-card-text class="text-center">
-        <qr :text="text" />
-        <div class="mb-2 text-center no-print">
-          <div class="d-flex">
-            <div
-              class="display-2 font-weight-black flex-grow-1 text-right mr-2"
-            >
-              {{ $format(balance, 0) }}
-            </div>
-            <span>SAT</span>
+        <qr :text="address" />
+        <div class="display-2 font-weight-black white--text">
+          {{ $format(balance, 0) }}
+          <span>SAT</span>
+          <div class="fiat yellow--text display-1 my-auto">
+            {{ fiat }}
+            {{ user.currency }}
           </div>
-          <h3 class="d-flex flex-wrap justify-center">
-            <div class="fiat yellow--text display-1 my-auto">
-              {{ fiat }}
-            </div>
-            <div class="mx-1">
-              {{ user.currency }}
-            </div>
-          </h3>
         </div>
         <v-textarea
           label="Address"
@@ -60,7 +50,7 @@ export default {
   mixins: [Copy],
   computed: {
     fiat() {
-      return (this.balance * this.rate / SATS).toFixed(2);
+      return ((this.balance * this.rate) / SATS).toFixed(2);
     },
     ecpair: sync('ecpair'),
     error: sync('error'),
@@ -69,21 +59,21 @@ export default {
     text: get('text'),
   },
   async mounted() {
-      const text = 'cU4ejx1GSkG717knJAcvyNBnUxJruuyXsitVx4YBQg8no8KuiyUn';
-        const network =
-          process.env.NODE_ENV === 'production'
-            ? networks['bitcoin']
-            : networks['regtest'];
-        console.log(network);
-        this.ecpair = ECPair.fromWIF(text, network);
-      console.log(this.ecpair);
-      let { publicKey: pubkey } = this.ecpair;
-      let p2wpkh = payments.p2wpkh({ pubkey, network })
-      console.log(p2wpkh);
-      let res = await this.axios.get('/bitcoin/address', p2wpkh.address);
-      this.balance = res.data.balance;
-      this.utxos = res.data.utxos;
-    console.log('oy');
+    const text = 'cNJniJnoufoEPnxeM1xAFAZ9WaUBQ5GhxDhmFvQCdLG3V3uB3d9t';
+    const network =
+      process.env.NODE_ENV === 'production'
+        ? networks['bitcoin']
+        : networks['regtest'];
+    this.ecpair = ECPair.fromWIF(text, network);
+    let { publicKey: pubkey } = this.ecpair;
+    let { address } = payments.p2wpkh({ pubkey, network });
+    let {
+      data: {
+        chain_stats: { funded_txo_sum: balance },
+      },
+    } = await this.axios.get(`/electrs/address/${address}`);
+    this.address = address;
+    this.balance = balance;
     this.loading = false;
   },
 };
