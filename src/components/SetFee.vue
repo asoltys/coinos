@@ -48,10 +48,10 @@ export default {
   },
   computed: {
     min() {
-      return this.payment.network === 'bitcoin' ? 1000 : 100;
+      return this.payment.network === 'BTC' ? 1000 : 100;
     },
     max() {
-      return this.payment.network === 'bitcoin' ? 50000 : 5000;
+      return this.payment.network === 'BTC' ? 50000 : 5000;
     },
     payment: sync('payment'),
   },
@@ -59,7 +59,7 @@ export default {
     estimateFee: call('estimateFee'),
     close() {
       this.dialog = false;
-      this.estimateFee();
+      this.$emit('closed');
     },
   },
   watch: {

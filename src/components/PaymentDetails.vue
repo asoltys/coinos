@@ -3,6 +3,7 @@
     <transaction
       v-if="payment.address || payment.recipient"
       @edit="$emit('edit')"
+      @feeRate="estimateFee"
     />
     <div v-if="!loading">
       <recipient v-if="payment.recipient" @internal="sendInternal" @pay="sendPayment" />
@@ -38,6 +39,7 @@ export default {
   },
 
   methods: {
+    estimateFee: call('estimateFee'),
     sendInternal: call('sendInternal'),
     sendPayment: call('sendPayment'),
   },

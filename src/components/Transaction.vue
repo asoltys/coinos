@@ -1,5 +1,6 @@
 <template>
-  <v-card class="elevation-1 pa-2 mb-2">
+  <v-card class="elevation-1 pa-4 mb-2">
+    <qr :text="recipient" v-if="show" />
     <v-textarea
       v-if="recipient"
       rows="1"
@@ -15,6 +16,9 @@
       <template v-slot:append>
         <v-btn @click="clearPayment" class="ml-1" icon>
           <v-icon class="mr-1">clear</v-icon>
+        </v-btn>
+        <v-btn icon @click="show = !show" class="ml-1" text>
+          <qrcode />
         </v-btn>
         <v-btn @click="explore" class="ml-1" icon>
           <v-icon class="mr-1">open_in_new</v-icon>
@@ -70,7 +74,7 @@
         </v-btn>
       </template>
     </v-text-field>
-    <set-fee :adjusting="adjusting" />
+    <set-fee :adjusting="adjusting" @closed="$emit('feeRate')" />
 
     <div class="d-flex" v-if="psbt">
       <v-btn @click="copy(psbt)" class="ml-auto">
@@ -86,12 +90,14 @@ import { call, get, sync } from 'vuex-pathify';
 import SetFee from './SetFee';
 import Copy from '../mixins/Copy';
 import NetworkIcon from './NetworkIcon';
+import Qrcode from 'vue-material-design-icons/Qrcode';
+import Qr from './Qr';
 
 const SATS = 100000000;
 const bs = 'https://blockstream.info';
 
 export default {
-  components: { NetworkIcon, SetFee },
+  components: { NetworkIcon, SetFee, Qr, Qrcode },
   mixins: [Copy],
   props: {
     amount: { type: Number },
@@ -101,6 +107,7 @@ export default {
     return {
       asset: null,
       adjusting: false,
+      show: false,
     };
   },
   computed: {

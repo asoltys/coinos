@@ -5,7 +5,7 @@ import bip21 from 'bip21';
 import bolt11 from 'bolt11';
 import router from '../router';
 import validate from 'bitcoin-address-validation';
-import { ECPair, payments, networks } from 'bitcoinjs-lib';
+import { ECPair, payments, networks, Psbt } from 'bitcoinjs-lib';
 import pathify, { make } from 'vuex-pathify';
 import paths from '../paths';
 import format from '../format';
@@ -169,8 +169,7 @@ export default new Vuex.Store({
       }
     },
 
-    async getAddress({ commit, getters, dispatch }) {
-    },
+    async getAddress({ commit, getters, dispatch }) {},
 
     async getChallenge({ commit, getters, dispatch }) {
       try {
@@ -458,8 +457,53 @@ export default new Vuex.Store({
         res.data.sent = true;
         commit('payment', res.data);
       } catch (e) {
-        commit('error', e.response.data);
+        commit('error', e.response ? e.response.data : e.message);
       }
+    },
+
+    async buildSweepTx({ commit, dispatch, getters }, address) {
+      let { ecpair, payment } = getters;
+      let { address: target, amount, feeRate } = payment;
+      commit('error', null);
+
+      try {
+        let res = await Vue.axios.post('/bitcoin/sweep', {
+          address,
+          amount,
+          feeRate,
+          target,
+        });
+
+        let { psbt } = res.data;
+        psbt = Psbt.fromBase64(psbt)
+          .signAllInputs(ecpair)
+          .finalizeAllInputs()
+
+        payment.fee = psbt.getFee();
+        payment.tx = psbt.extractTransaction();
+        payment.tx.fee = payment.fee / SATS;
+        payment.txid = payment.tx.txid;
+        payment.feeRate = res.data.feeRate;
+
+        commit('payment', payment);
+      } catch (e) {
+        commit('error', e.response ? e.response.data : e.message);
+      }
+    },
+
+    async sweep({ commit, getters }) {
+      let { payment, rate, user } = getters;
+      let tx = payment.tx.toHex();
+      try {
+        await Vue.axios.post('/electrs/tx', tx);
+        payment.account = user.accounts.find(a => a.asset === BTC);
+        payment.sent = true;
+        payment.rate = rate;
+        payment.currency = user.currency;
+        payment.amount += payment.fee;
+      } catch(e) {
+        commit('error', e.response ? e.response.data : e.message);
+      } 
     },
 
     async sendPayment({ commit, dispatch, getters }) {
@@ -480,7 +524,7 @@ export default new Vuex.Store({
           res.data.sent = true;
           commit('payment', res.data);
         } catch (e) {
-          commit('error', e.response.data);
+          commit('error', e.response ? e.response.data : e.message);
         }
       } else if (address) {
         if (!tx) await dispatch('estimateFee');
@@ -497,7 +541,7 @@ export default new Vuex.Store({
             res.data.sent = true;
             commit('payment', res.data);
           } catch (e) {
-            commit('error', e.response.data);
+            commit('error', e.response ? e.response.data : e.message);
           }
         } else {
           try {
@@ -505,7 +549,7 @@ export default new Vuex.Store({
             res.data.sent = true;
             commit('payment', res.data);
           } catch (e) {
-            commit('error', e.response.data);
+            commit('error', e.response ? e.response.data : e.message);
           }
         }
       }
@@ -567,7 +611,7 @@ export default new Vuex.Store({
             });
             invoice.text = text;
           } catch (e) {
-            commit('error', e.response.data);
+            commit('error', e.response ? e.response.data : e.message);
           }
           break;
       }
@@ -576,7 +620,7 @@ export default new Vuex.Store({
         await Vue.axios.post(`/invoice`, { invoice });
         commit('invoice', invoice);
       } catch (e) {
-        commit('error', e.response.data);
+        commit('error', e.response ? e.response.data : e.message);
       }
     },
 
@@ -588,7 +632,7 @@ export default new Vuex.Store({
       try {
         await Vue.axios.post('/account', account);
       } catch (e) {
-        commit('error', e.response.data);
+        commit('error', e.response ? e.response.data : e.message);
       }
     },
 
@@ -645,7 +689,10 @@ export default new Vuex.Store({
               `Wrong network, '${coinType}' instead of 'bitcoin'`
             );
             throw new Error();
-          } else if (process.env.NODE_ENV !== 'production' && coinType !== 'regtest') {
+          } else if (
+            process.env.NODE_ENV !== 'production' &&
+            coinType !== 'regtest'
+          ) {
             dispatch('clearPayment');
             commit(
               'error',
