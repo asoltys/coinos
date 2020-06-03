@@ -43,6 +43,9 @@
       @click="$emit('edit')"
     >
       <template v-slot:append>
+        <v-btn v-if="max" @click="setMax" class="ml-1" text>
+          Max
+        </v-btn>
         <v-btn
           class="toggle black--text mt-auto"
           :color="fiat ? 'yellow' : 'white'"
@@ -102,6 +105,7 @@ export default {
   props: {
     amount: { type: Number },
     fiatAmount: { type: String },
+    max: { type: Number },
   },
   data() {
     return {
@@ -156,6 +160,11 @@ export default {
     user: get('user'),
   },
   methods: {
+    setMax() {
+      this.payment.amount = this.max;
+      this.payment.fiatAmount = (this.payment.amount * this.rate / SATS).toFixed(2);
+      this.$emit('feeRate');
+    },
     changeAsset(id) {
       let { asset } = this.user.accounts.find(a => a.id === id);
       this.shiftAccount(asset);

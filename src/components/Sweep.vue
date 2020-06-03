@@ -45,6 +45,10 @@
       <v-card v-if="!payment.address" class="pa-4 mb-2">
         <v-textarea label="Recipient" v-model="to" rows="1" auto-grow>
           <template v-slot:append>
+            <v-btn v-if="canPaste" class="mr-2 mb-2 flex-grow-1" @click="self">
+              <v-icon class="mr-1">person</v-icon>
+              <span>Self</span>
+            </v-btn>
             <v-btn v-if="canPaste" class="mr-2 mb-2 flex-grow-1" @click="paste">
               <v-icon class="mr-1">assignment</v-icon>
               <span>Paste</span>
@@ -57,6 +61,7 @@
         v-if="payment.address && !editing"
         @edit="editing = true"
         @feeRate="buildSweepTx(address)"
+        :max="balance"
       />
       <v-btn v-if="!editing" color="green" @click="submit">
         <v-icon class="mr-1">send</v-icon><span>Sweep</span>
@@ -109,6 +114,9 @@ export default {
     text: get('text'),
   },
   methods: {
+    self() {
+      this.to = this.user.address;
+    },
     buildSweepTx: call('buildSweepTx'),
     clearPayment: call('clearPayment'),
     clear() {
@@ -137,7 +145,6 @@ export default {
   },
   async mounted() {
     if (!this.ecpair || !this.ecpair.publicKey) return this.$go('/send');
-    this.ecpair = ECPair.fromWIF(text, network);
     await this.clearPayment();
     let { publicKey: pubkey } = this.ecpair;
     let { address } = payments.p2wpkh({ pubkey, network });

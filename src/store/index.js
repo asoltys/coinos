@@ -29,7 +29,6 @@ const isLiquid = text =>
   text.startsWith('VJL') ||
   text.startsWith('VT') ||
   text.startsWith('XR') ||
-  text.startsWith('XR') ||
   ((text.startsWith('H') || text.startsWith('G')) && text.length === 34) ||
   (text.startsWith('ert1q') && text.length === 43) ||
   (text.startsWith('ex1q') && text.length === 42);
@@ -462,7 +461,7 @@ export default new Vuex.Store({
     },
 
     async buildSweepTx({ commit, dispatch, getters }, address) {
-      let { ecpair, payment } = getters;
+      let { ecpair, payment, rate } = getters;
       let { address: target, amount, feeRate } = payment;
       commit('error', null);
 
@@ -474,11 +473,13 @@ export default new Vuex.Store({
           target,
         });
 
-        let { psbt } = res.data;
+        let { psbt, total } = res.data;
         psbt = Psbt.fromBase64(psbt)
           .signAllInputs(ecpair)
           .finalizeAllInputs()
 
+        payment.amount = total;
+        payment.fiatAmount = (total * rate / SATS).toFixed(2);
         payment.fee = psbt.getFee();
         payment.tx = psbt.extractTransaction();
         payment.tx.fee = payment.fee / SATS;
