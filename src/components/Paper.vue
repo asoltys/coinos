@@ -1,6 +1,7 @@
 <template>
   <v-card class="pa-4">
   <v-form @submit.prevent="sendPayment">
+    <div class="no-print">
     <v-textarea label="Seed" v-model="seed" rows="1" auto-grow>
       <template v-slot:append>
         <v-btn @click="copy(seed)" class="ml-1" icon>
@@ -11,6 +12,7 @@
         </v-btn>
       </template>
     </v-textarea>
+    </div>
     <qr :text="address" />
     <v-textarea label="Address" v-model="address" rows="1" auto-grow>
       <template v-slot:append>

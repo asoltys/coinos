@@ -476,10 +476,10 @@ export default new Vuex.Store({
         let { psbt, total } = res.data;
         psbt = Psbt.fromBase64(psbt)
           .signAllInputs(ecpair)
-          .finalizeAllInputs()
+          .finalizeAllInputs();
 
         payment.amount = total;
-        payment.fiatAmount = (total * rate / SATS).toFixed(2);
+        payment.fiatAmount = ((total * rate) / SATS).toFixed(2);
         payment.fee = psbt.getFee();
         payment.tx = psbt.extractTransaction();
         payment.tx.fee = payment.fee / SATS;
@@ -502,9 +502,9 @@ export default new Vuex.Store({
         payment.rate = rate;
         payment.currency = user.currency;
         payment.amount += payment.fee;
-      } catch(e) {
+      } catch (e) {
         commit('error', e.response ? e.response.data : e.message);
-      } 
+      }
     },
 
     async sendPayment({ commit, dispatch, getters }) {
@@ -769,6 +769,11 @@ export default new Vuex.Store({
         payment.network = 'LBTC';
         go({ name: 'send', params: { keep: true } });
         return;
+      }
+
+      if (text.startsWith('6P')) {
+        commit('text', text);
+        return go('/decrypt');
       }
 
       try {

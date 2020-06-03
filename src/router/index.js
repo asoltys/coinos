@@ -16,6 +16,11 @@ const Assets = () =>
     /* webpackChunkName: "assets" */
     '../components/Assets'
   );
+const Decrypt = () =>
+  import(
+    /* webpackChunkName: "home" */
+    '../components/Decrypt'
+  );
 const Home = () =>
   import(
     /* webpackChunkName: "home" */
@@ -72,6 +77,7 @@ const routes = [
   { path: '/about', component: About },
   { path: '/asset', component: Asset },
   { path: '/assets', component: Assets },
+  { path: '/decrypt', component: Decrypt },
   { path: '/home', component: Home },
   { path: '/login', component: Login, props: { logout: false } },
   { path: '/logout', component: Login, props: { logout: true } },
