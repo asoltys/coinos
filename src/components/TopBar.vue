@@ -45,6 +45,18 @@
           </v-list-item-action>
           <v-list-item-content>Logout</v-list-item-content>
         </v-list-item>
+        <v-list-item v-if="!prod" @click="generateBlock('bitcoin')">
+          <v-list-item-action>
+            <v-icon>sync</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>Generate Bitcoin</v-list-item-content>
+        </v-list-item>
+        <v-list-item v-if="!prod" @click="generateBlock('liquid')">
+          <v-list-item-action>
+            <v-icon>sync</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>Generate Liquid</v-list-item-content>
+        </v-list-item>
       </v-card>
     </v-menu>
     <v-btn icon v-else @click="$go('/about')">
@@ -55,7 +67,7 @@
 
 <script>
 import PowerSettingsIcon from 'vue-material-design-icons/PowerSettings';
-import { get, sync } from 'vuex-pathify';
+import { call, get, sync } from 'vuex-pathify';
 
 export default {
   components: { PowerSettingsIcon },
@@ -65,8 +77,12 @@ export default {
     },
     asset: sync('asset'),
     user: get('user'),
+    prod() {
+      return process.env.NODE_ENV === 'production'
+    },
   },
   methods: {
+    generateBlock: call('generateBlock'), 
     goHome() {
       if (this.user && this.user.address) this.$go('/home');
       else this.$go('/');

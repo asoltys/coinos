@@ -789,6 +789,10 @@ export default new Vuex.Store({
       }
     },
 
+    async generateBlock({ commit }, network) {
+      Vue.axios.get(`/${network}/generate`);
+    },
+
     async showText({ commit }, text) {
       commit('text', text);
       go('/text');
