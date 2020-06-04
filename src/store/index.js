@@ -478,8 +478,11 @@ export default new Vuex.Store({
           .signAllInputs(ecpair)
           .finalizeAllInputs();
 
-        payment.amount = total;
-        payment.fiatAmount = ((total * rate) / SATS).toFixed(2);
+        if (total) {
+          payment.amount = total;
+          payment.fiatAmount = ((total * rate) / SATS).toFixed(2);
+        }
+
         payment.fee = psbt.getFee();
         payment.tx = psbt.extractTransaction();
         payment.tx.fee = payment.fee / SATS;

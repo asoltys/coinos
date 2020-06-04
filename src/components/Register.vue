@@ -41,7 +41,6 @@ export default {
         password: '',
         confirm: '',
         response: '',
-        token: '',
       },
     };
   },
@@ -58,22 +57,6 @@ export default {
       this.submitted = true;
       if (this.form.confirm === this.form.password) this.createUser(this.form);
     },
-    captcha() {
-      let _this = this;
-      if (window.grecaptcha) {
-        window.grecaptcha.ready(() => {
-          window.grecaptcha
-            .execute(process.env.VUE_APP_RECAPTCHA, {
-              action: 'homepage',
-            })
-            .then(token => {
-              _this.form.token = token;
-            });
-        });
-      } else {
-        setTimeout(this.captcha, 1000);
-      }
-    },
   },
 
   watch: {
@@ -83,16 +66,6 @@ export default {
   },
 
   mounted() {
-    if (IS_PRODUCTION) {
-      const s = document.createElement('script');
-      s.setAttribute(
-        'src',
-        'https://www.google.com/recaptcha/api.js?render=6Ld1F_UUAAAAALyhgcusNcUZQFr6HD4iz6gQVTc0'
-      );
-      document.head.appendChild(s);
-      this.captcha();
-    }
-
     this.getChallenge();
     this.$refs.username.focus();
   },
