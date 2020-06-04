@@ -715,6 +715,8 @@ export default new Vuex.Store({
           ).toFixed(2);
           payment.network = 'LNBTC';
 
+          await Vue.axios.post('/lightning/query', { payreq });
+
           go({ name: 'send', params: { keep: true } });
           return;
         } catch (e) {

@@ -1,7 +1,7 @@
 <template>
   <div>
     <transaction
-      v-if="payment.address || payment.recipient"
+      v-if="!payment.payobj && (payment.address || payment.recipient)"
       @edit="$emit('edit')"
       @feeRate="estimateFee"
     />
