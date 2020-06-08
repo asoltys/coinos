@@ -18,8 +18,6 @@
         :error="form.confirm !== '' && form.confirm !== form.password"
       />
 
-      <img :src="challenge" style="max-width: 100%" />
-      <v-text-field label="Challenge Word" v-model="form.response" />
       <v-btn type="submit" color="green" class="mr-2 mb-2 mb-sm-0 wide">
         <v-icon class="mr-1">account_balance_wallet</v-icon>
         Register
@@ -46,13 +44,11 @@ export default {
   },
 
   computed: {
-    challenge: get('challenge'),
     error: get('error'),
   },
 
   methods: {
     createUser: call('createUser'),
-    getChallenge: call('getChallenge'),
     submit() {
       this.submitted = true;
       if (this.form.confirm === this.form.password) this.createUser(this.form);
@@ -66,7 +62,6 @@ export default {
   },
 
   mounted() {
-    this.getChallenge();
     this.$refs.username.focus();
   },
 };

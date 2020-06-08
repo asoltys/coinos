@@ -77,7 +77,6 @@ const state = {
   addressTypes,
   asset: BTC,
   assets: [],
-  challenge: '',
   channels: [],
   ecpair: null,
   error: '',
@@ -168,15 +167,6 @@ export default new Vuex.Store({
     },
 
     async getAddress({ commit, getters, dispatch }) {},
-
-    async getChallenge({ commit, getters, dispatch }) {
-      try {
-        let res = await Vue.axios.get('/challenge');
-        commit('challenge', res.data);
-      } catch (e) {
-        commit('error', e.response ? e.response.data : e.message);
-      }
-    },
 
     async login({ commit, dispatch, state }, user) {
       commit('user', user);
