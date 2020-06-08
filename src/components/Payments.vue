@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-progress-linear
-      v-if="initializing || loading"
+      v-if="initializing || loading || !user.payments"
       indeterminate
     ></v-progress-linear>
     <template v-else>
@@ -34,15 +34,14 @@
               class="justify-center justify-space-around flex-wrap"
               expand-icon=""
             >
-              <network-icon
-                class="flex-grow-0 mr-2 mt-1"
-                :network="network"
-              />
+              <network-icon class="flex-grow-0 mr-2 mt-1" :network="network" />
               <div class="flex-grow-1" style="white-space: nowrap;">
-                <span :class="{
-                  'body-1': $vuetify.breakpoint.xsOnly,
-                  'headline': !$vuetify.breakpoint.xs,
-                }">
+                <span
+                  :class="{
+                    'body-1': $vuetify.breakpoint.xsOnly,
+                    headline: !$vuetify.breakpoint.xs,
+                  }"
+                >
                   <span :class="color">{{ sign }}</span>
                   {{ amount }}
                 </span>
@@ -56,11 +55,13 @@
                   </span>
                 </div>
               </div>
-              <div class="text-right"
-                   :class="{
+              <div
+                class="text-right"
+                :class="{
                   'body-2': $vuetify.breakpoint.xsOnly,
                   'subtitle-2': !$vuetify.breakpoint.xs,
-                }">
+                }"
+              >
                 <v-chip v-if="!confirmed" color="red" class="mr-2">
                   <v-icon class="mr-1">warning</v-icon>
                   <span class="d-none d-sm-inline" title="UNCONFIRMED"
@@ -88,11 +89,7 @@
                     </v-btn>
                   </template>
                 </v-textarea>
-                <v-text-field
-                  label="Amount"
-                  :value="amount"
-                  readonly
-                >
+                <v-text-field label="Amount" :value="amount" readonly>
                   <template v-slot:append>
                     <v-btn @click="copy(amount)" class="ml-1" icon>
                       <v-icon class="mr-1">content_copy</v-icon>
@@ -131,13 +128,16 @@
             </v-expansion-panel-content>
           </v-expansion-panel>
         </v-expansion-panels>
-        <div class="d-flex">
+        <div class="my-2 d-flex flex-wrap">
           <v-btn
-            class="my-4 mx-auto"
-            v-if="filteredPayments.length >= 12 && !loaded"
+            class="flex-grow-1 mr-2 mb-2 mb-sm-0 wide"
+            v-if="user.payments.length >= 12 && !loaded"
             @click="more"
           >
-            <v-icon class="mr-1">get_app</v-icon><span>Load More</span>
+            <v-icon class="mr-1">refresh</v-icon><span>Load All</span>
+          </v-btn>
+          <v-btn @click="exportCSV" class="flex-grow-1 wide">
+            <v-icon class="mr-1">get_app</v-icon><span>Export CSV</span>
           </v-btn>
         </div>
       </div>
@@ -148,7 +148,7 @@
 <script>
 import { format, parse, isBefore } from 'date-fns';
 import { mapGetters } from 'vuex';
-import { call } from 'vuex-pathify';
+import { call, sync } from 'vuex-pathify';
 import bolt11 from 'bolt11';
 import colors from 'vuetify/lib/util/colors';
 import Copy from '../mixins/Copy';
@@ -181,25 +181,64 @@ export default {
       if (this.user.unit === 'SAT') return 0;
       else return undefined;
     },
-    ...mapGetters(['initializing', 'loading', 'payments', 'user']),
+    ...mapGetters(['initializing', 'user']),
+    loading: sync('loading'),
   },
 
   methods: {
     ticker(a) {
-      if (a.ticker === 'BTC') return this.user.unit;
+      if (!a || a.ticker === 'BTC') return this.user.unit;
       return a.ticker;
     },
     snack: call('snack'),
     loadPayments: call('loadPayments'),
 
-    more() {
-      this.loadPayments();
+    async exportCSV() {
+      if (!this.loaded) await this.more();
+      const keys = [
+        'hash',
+        'updatedAt',
+        'rate',
+        'currency',
+        'amount',
+        'fee',
+        'tip',
+      ];
+      const csv =
+        keys.map(k => `"${k}"`).join(',') +
+        '\n' +
+        this.user.payments
+          .map(r => keys.map(k => `"${r[k]}"`).join(','))
+          .join('\n');
+
+      const filename = 'payments.csv';
+      let blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      if (navigator.msSaveBlob) {
+        navigator.msSaveBlob(blob, filename);
+      } else {
+        let link = document.createElement('a');
+        if (link.download !== undefined) {
+          let url = URL.createObjectURL(blob);
+          link.setAttribute('href', url);
+          link.setAttribute('download', filename);
+          link.style.visibility = 'hidden';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        }
+      }
+    },
+
+    async more() {
+      this.loading = true;
+      await this.loadPayments();
       this.loaded = true;
+      this.loading = false;
     },
 
     filteredPayments() {
-      if (!this.payments.length) return [];
-      return this.payments
+      if (!this.user.payments.length) return [];
+      return this.user.payments
         .map(p => {
           let o = JSON.parse(JSON.stringify(p));
           o.amount = p.amount + p.tip;

@@ -39,13 +39,19 @@
       </div>
     </div>
     <div class="text-center font-weight-bold my-2">to</div>
-            <v-textarea label="Lightning Node" :value="payment.payobj.payeeNodeKey" rows="1" auto-grow readonly>
-              <template v-slot:append>
-                <v-btn @click="copy(payment.payobj.payeeNodeKey)" icon>
-                  <v-icon class="mr-1">content_copy</v-icon>
-                </v-btn>
-              </template>
-            </v-textarea>
+    <v-textarea
+      label="Lightning Node"
+      :value="payment.payobj.payeeNodeKey"
+      rows="1"
+      auto-grow
+      readonly
+    >
+      <template v-slot:append>
+        <v-btn @click="copy(payment.payobj.payeeNodeKey)" icon>
+          <v-icon class="mr-1">content_copy</v-icon>
+        </v-btn>
+      </template>
+    </v-textarea>
   </v-card>
 </template>
 
@@ -87,7 +93,7 @@ export default {
       this.fiat = !this.fiat;
     },
     setAmount() {
-      this.$emit('editing');
+      this.$emit('edit');
     },
   },
 };

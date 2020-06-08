@@ -107,7 +107,6 @@ const state = {
   user: {
     address: null,
     balance: null,
-    readonly: true,
   },
 };
 
@@ -271,8 +270,13 @@ export default new Vuex.Store({
       go('/');
     },
 
-    async loadPayments() {
-      Vue.axios.get('/payments');
+    async loadPayments({ state }) {
+      try {
+        let res = await Vue.axios.get('/payments');
+        state.user.payments = res.data;
+      } catch(e) {
+        commit('error', e.response ? e.response.data : e.message);
+      } 
     },
 
     async setupSockets({ commit, getters, dispatch }) {
@@ -307,15 +311,8 @@ export default new Vuex.Store({
 
         switch (type) {
           case 'login':
-            let user = data;
-            if (user) {
-              commit('user', user);
-              if (
-                router.currentRoute.path === '/login' ||
-                router.currentRoute.path === '/'
-              ) {
-                go('/home');
-              }
+            if (data) {
+              commit('user', data);
             } else {
               dispatch('logout');
             }
@@ -325,25 +322,35 @@ export default new Vuex.Store({
             commit('nodes', data);
             break;
 
+          case 'account':
+            commit('addAccount', data);
+            break;
+
           case 'payment':
             let p = data;
             commit('received', p);
 
-            let precision = p.account.precision;
-            let unit = p.account.ticker;
-            if (unit === 'BTC') unit = getters.user.unit;
+            let precision = 8;
+            let unit;
+
+            if (p.account) {
+              precision = p.account.precision;
+              unit = p.account.ticker;
+            }
+
+            if (!unit || unit === 'BTC') unit = getters.user.unit;
             if (unit === 'SAT') precision = 0;
 
             if (p.amount > 0)
               dispatch(
                 'snack',
-                `Received ${format(p.amount + p.tip, precision)} ${unit}`
+                `${p.confirmed ? 'Received' : 'Detected unconfirmed' } ${format(p.amount + p.tip, precision)} ${unit}`
               );
             commit('addPayment', p);
             break;
 
-          case 'payments':
-            commit('payments', data);
+          case 'accounts':
+            getters.user.accounts = data;
             break;
 
           case 'rates':
@@ -389,8 +396,14 @@ export default new Vuex.Store({
     },
 
     async updateUser({ commit, dispatch, state }, user) {
+      let params = {};
+      Object.keys(user).map(k => {
+        if (['payments', 'account'].includes(k)) return;
+        params[k] = user[k];
+      }); 
+
       try {
-        let res = await Vue.axios.post('/user', user);
+        let res = await Vue.axios.post('/user', params);
         commit('user', res.data.user);
         if (res.data.token) commit('token', res.data.token);
         return true;
@@ -809,6 +822,13 @@ export default new Vuex.Store({
   },
   mutations: {
     ...make.mutations(state),
+    addAccount(s, v) {
+      let index = s.user.accounts.findIndex(a => a.id === v.id);
+      if (index > -1) s.user.accounts[index] = v;
+      else s.user.accounts.unshift(v);
+      if (s.user.account.id === v.id) s.user.account = v;
+      s.user = JSON.parse(JSON.stringify(s.user));
+    },
     addPayment(s, v) {
       s.invoice.received += parseInt(Math.abs(v.amount));
       if (s.invoice.received >= s.invoice.amount) {
@@ -817,9 +837,11 @@ export default new Vuex.Store({
         s.invoice.fiatAmount = 0;
       }
 
-      let index = s.payments.findIndex(p => p.id === v.id);
-      if (index > -1) s.payments[index] = v;
-      else s.payments.unshift(v);
+      let index = s.user.payments.findIndex(p => p.id === v.id);
+      if (index > -1) s.user.payments[index] = v;
+      else s.user.payments.unshift(v);
+
+      s.user = JSON.parse(JSON.stringify(s.user));
     },
     error(s, v) {
       s.error = v;
@@ -832,13 +854,16 @@ export default new Vuex.Store({
       s.token = v;
     },
     user(s, v) {
-      if (v) {
+      if (v && s.user) {
         if (v.account && v.account.ticker !== 'BTC') s.fiat = false;
-        if (v.payments) s.payments = v.payments;
         if (v.currencies && !Array.isArray(v.currencies))
           v.currencies = JSON.parse(v.currencies);
-      }
-      s.user = v;
+        Object.keys(v).map(k => (s.user[k] = v[k]));
+        s.user = JSON.parse(JSON.stringify(s.user));
+      } else {
+        if (v) s.user = v;
+        else s.user = {};
+      } 
     },
   },
   getters: make.getters(state),

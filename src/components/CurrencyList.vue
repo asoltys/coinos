@@ -59,8 +59,9 @@ export default {
         await this.setCurrency(c);
       }
 
-      if (['BTC', 'SAT'].includes(c) && this.user.unit !== c)
+      if (['BTC', 'SAT'].includes(c) && this.user.unit !== c) {
         await this.toggleUnit();
+      }
 
       this.$emit('currency', c);
     },

@@ -5,7 +5,7 @@
       <Balance />
       <sent v-if="payment.sent" />
       <template v-else>
-        <lightning-payment v-if="payment.payobj" />
+        <lightning-payment v-if="payment.payobj && !editing" @edit="edit" />
         <to v-if="!(payment.payobj || payment.address || payment.recipient)" @edit="edit" />
         <amount v-else-if="editing" @edit="edit" @done="done" />
         <payment-details v-else @edit="edit" />

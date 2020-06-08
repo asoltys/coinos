@@ -17,7 +17,8 @@
           <v-icon v-else>person</v-icon>
           <span class="truncate">{{
             user.username
-          }}</span>
+          }}
+          </span>
         </v-btn>
       </template>
       <v-card tile class="mx-auto menu" max-width="400">

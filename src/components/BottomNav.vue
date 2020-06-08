@@ -20,7 +20,7 @@
       </v-btn>
       <v-btn
         class="flex-grow-1"
-        v-if="user && !user.readonly"
+        v-if="user"
         text
         @click="$go('/send?refresh')"
       >
