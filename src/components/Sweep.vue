@@ -28,9 +28,9 @@
             readonly
           >
             <template v-slot:append>
-        <v-btn @click="clear" class="ml-1" icon>
-          <v-icon class="mr-1">clear</v-icon>
-        </v-btn>
+              <v-btn @click="clear" class="ml-1" icon>
+                <v-icon class="mr-1">clear</v-icon>
+              </v-btn>
               <v-btn icon @click="show = !show" class="ml-1" text>
                 <qrcode />
               </v-btn>
@@ -121,8 +121,8 @@ export default {
     clearPayment: call('clearPayment'),
     clear() {
       this.ecpair = null;
-      this.$go('/send')
-    }, 
+      this.$go('/send');
+    },
     done() {
       this.editing = false;
       this.buildSweepTx(this.address);
