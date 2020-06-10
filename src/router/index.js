@@ -73,7 +73,7 @@ const Text = () =>
   );
 
 const routes = [
-  { path: '/', component: Login, props: { logout: false } },
+  { path: '/', component: Home, props: { logout: false } },
   { path: '/about', component: About },
   { path: '/asset', component: Asset },
   { path: '/assets', component: Assets },

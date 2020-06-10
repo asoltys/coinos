@@ -85,7 +85,7 @@ const state = {
   friends: [],
   invoice: JSON.parse(blankInvoice),
   invoices: [],
-  initializing: false,
+  initializing: true,
   loading: false,
   loadingFee: false,
   nodes: [],
@@ -115,8 +115,14 @@ export default new Vuex.Store({
   state,
   actions: {
     async init({ commit, getters, dispatch, state }) {
-      commit('initializing', true);
+      const { path } = router.currentRoute;
       commit('error', '');
+      if (path === '/login' || path === '/register') {
+        commit('initializing', false);
+        commit('loading', false);
+        return;
+      }
+
       let token = getters.token || window.sessionStorage.getItem('token');
 
       if (!token) {
@@ -127,37 +133,17 @@ export default new Vuex.Store({
       if (token && token !== 'null') {
         commit('token', token);
         try {
-          dispatch('setupSockets');
+          await dispatch('setupSockets');
+          commit('initializing', false);
+          commit('loading', false);
+          if (path === '/' || path === '/register') go('/home');
         } catch (e) {
           l('failed to setup sockets', e);
+          go('/login');
         }
-      }
-
-      let attempts = 0;
-      const initialize = () => {
-        attempts++;
-        const { path } = router.currentRoute;
-
-        if (getters.user && getters.user.currency && getters.rate) {
-          if (path === '/' || path === '/register') go('/home');
-          setTimeout(() => {
-            commit('initializing', false);
-            commit('loading', false);
-          }, 200);
-        } else if (paths.includes(path)) {
-          commit('initializing', false);
-          commit('loading', false);
-        } else if (attempts > 5) {
-          go('/');
-          commit('user', null);
-          commit('initializing', false);
-          commit('loading', false);
-        } else {
-          setTimeout(initialize, 500);
-        }
-      };
-
-      initialize();
+      } else {
+        if (path === '/') go('/login');
+      } 
 
       try {
         commit('assets', (await Vue.axios.get('/assets')).data);
@@ -274,107 +260,118 @@ export default new Vuex.Store({
       try {
         let res = await Vue.axios.get('/payments');
         state.user.payments = res.data;
-      } catch(e) {
+      } catch (e) {
         commit('error', e.response ? e.response.data : e.message);
-      } 
+      }
     },
 
     async setupSockets({ commit, getters, dispatch }) {
-      const proto = process.env.NODE_ENV === 'production' ? 'wss://' : 'ws://';
-      if (!getters.token) return;
-      if (getters.socket) {
-        if (getters.socket.readyState === 1) return;
-        else {
-          commit('socket', null);
+      await new Promise((resolve, reject) => {
+        setTimeout(reject, 5000);
+        const proto =
+          process.env.NODE_ENV === 'production' ? 'wss://' : 'ws://';
+        if (!getters.token) return reject();
+        if (getters.socket) {
+          if (getters.socket.readyState === 1) return resolve();
+          else {
+            commit('socket', null);
+          }
         }
-      }
-      let ws = new WebSocket(`${proto}${location.host}/ws`);
-      commit('socket', ws);
+        let ws = new WebSocket(`${proto}${location.host}/ws`);
+        commit('socket', ws);
 
-      ws.onopen = () => {
-        ws.send(getters.token);
-        commit('error', null);
-      };
+        ws.onopen = () => {
+          ws.send(getters.token);
+          commit('error', null);
+        };
 
-      ws.onerror = () => {
-        commit('error', 'Problem connecting to server');
-        ws.close();
-      };
+        ws.onerror = () => {
+          commit('error', 'Problem connecting to server');
+          ws.close();
+          reject();
+        };
 
-      ws.onclose = e => {
-        ws = null;
-        setTimeout(() => dispatch('setupSockets'), 100);
-      };
+        ws.onclose = async e => {
+          ws = null;
+          reject();
+            try {
+              await dispatch('setupSockets')
+            } catch (e) {}
+        };
 
-      ws.onmessage = msg => {
-        let { type, data } = JSON.parse(msg.data);
+        ws.onmessage = msg => {
+          let { type, data } = JSON.parse(msg.data);
 
-        switch (type) {
-          case 'login':
-            if (data) {
+          switch (type) {
+            case 'login':
+              if (data) {
+                commit('user', data);
+                resolve();
+              } else {
+                dispatch('logout');
+              }
+              break;
+
+            case 'nodes':
+              commit('nodes', data);
+              break;
+
+            case 'account':
+              commit('addAccount', data);
+              break;
+
+            case 'payment':
+              let p = data;
+              commit('received', p);
+
+              let precision = 8;
+              let unit;
+
+              if (p.account) {
+                precision = p.account.precision;
+                unit = p.account.ticker;
+              }
+
+              if (!unit || unit === 'BTC') unit = getters.user.unit;
+              if (unit === 'SAT') precision = 0;
+
+              if (p.amount > 0)
+                dispatch(
+                  'snack',
+                  `${
+                    p.confirmed ? 'Received' : 'Detected unconfirmed'
+                  } ${format(p.amount + p.tip, precision)} ${unit}`
+                );
+              commit('addPayment', p);
+              break;
+
+            case 'accounts':
+              getters.user.accounts = data;
+              break;
+
+            case 'rates':
+              const rates = data;
+              if (!rates) return;
+              commit('rates', rates);
+              if (getters.user && getters.user.currency)
+                commit('rate', rates[getters.user.currency]);
+              break;
+
+            case 'otpsecret':
+              commit('user', { ...state.user, otpsecret: data });
+              break;
+
+            case 'to':
+              let { payment } = getters;
+              payment.recipient = data;
+              break;
+
+            case 'user':
               commit('user', data);
-            } else {
-              dispatch('logout');
-            }
-            break;
-
-          case 'nodes':
-            commit('nodes', data);
-            break;
-
-          case 'account':
-            commit('addAccount', data);
-            break;
-
-          case 'payment':
-            let p = data;
-            commit('received', p);
-
-            let precision = 8;
-            let unit;
-
-            if (p.account) {
-              precision = p.account.precision;
-              unit = p.account.ticker;
-            }
-
-            if (!unit || unit === 'BTC') unit = getters.user.unit;
-            if (unit === 'SAT') precision = 0;
-
-            if (p.amount > 0)
-              dispatch(
-                'snack',
-                `${p.confirmed ? 'Received' : 'Detected unconfirmed' } ${format(p.amount + p.tip, precision)} ${unit}`
-              );
-            commit('addPayment', p);
-            break;
-
-          case 'accounts':
-            getters.user.accounts = data;
-            break;
-
-          case 'rates':
-            const rates = data;
-            if (!rates) return;
-            commit('rates', rates);
-            if (getters.user && getters.user.currency)
-              commit('rate', rates[getters.user.currency]);
-            break;
-
-          case 'otpsecret':
-            commit('user', { ...state.user, otpsecret: data });
-            break;
-
-          case 'to':
-            let { payment } = getters;
-            payment.recipient = data;
-            break;
-
-          case 'user':
-            commit('user', data);
-            break;
-        }
-      };
+              break;
+          }
+        };
+      });
     },
 
     async issueAsset({ commit, dispatch }, asset) {
@@ -400,7 +397,7 @@ export default new Vuex.Store({
       Object.keys(user).map(k => {
         if (['payments', 'account'].includes(k)) return;
         params[k] = user[k];
-      }); 
+      });
 
       try {
         let res = await Vue.axios.post('/user', params);
@@ -863,7 +860,7 @@ export default new Vuex.Store({
       } else {
         if (v) s.user = v;
         else s.user = {};
-      } 
+      }
     },
   },
   getters: make.getters(state),

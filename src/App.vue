@@ -80,10 +80,6 @@ export default {
       if (outcome === 'accepted') this.installed = true;
     },
   },
-
-  created() {
-    this.init();
-  },
 };
 </script>
 
