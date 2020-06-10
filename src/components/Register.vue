@@ -19,7 +19,11 @@
       />
 
       <img :src="challenge" style="max-width: 100%" />
-      <v-text-field label="Challenge Word" v-model="form.response" />
+      <v-text-field
+        label="Challenge Word"
+        v-model="form.response"
+        autocapitalize="none"
+      />
       <v-btn type="submit" color="green" class="mr-2 mb-2 mb-sm-0 wide">
         <v-icon class="mr-1">account_balance_wallet</v-icon>
         Register
@@ -62,7 +66,7 @@ export default {
   watch: {
     error(v) {
       this.submitted = false;
-    } 
+    },
   },
 
   mounted() {
