@@ -36,18 +36,18 @@
       </v-card-text>
     </v-card>
           <lightning-node />
-    <stats />
+    <info />
   </div>
 </template>
 
 <script>
 import { mapActions } from 'vuex';
-import Stats from './Stats';
+import Info from './Info';
 import LightningNode from './LightningNode';
 import Social from './Social';
 
 export default {
-  components: { LightningNode, Social, Stats },
+  components: { LightningNode, Social, Info },
 
   methods: {
     ...mapActions(['snack']),

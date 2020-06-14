@@ -83,6 +83,7 @@ const state = {
   error: '',
   fiat: true,
   friends: [],
+  info: null,
   invoice: JSON.parse(blankInvoice),
   invoices: [],
   initializing: true,
@@ -98,9 +99,9 @@ const state = {
   rate: 0,
   rates: null,
   received: JSON.parse(blankPayment),
-  stats: null,
   snack: '',
   socket: null,
+  subscription: null,
   text: '',
   token: null,
   twofa: '',
@@ -108,6 +109,8 @@ const state = {
     address: null,
     balance: null,
   },
+  versionMismatch: null,
+  version: null,
 };
 
 export default new Vuex.Store({
@@ -130,26 +133,47 @@ export default new Vuex.Store({
         if (cookie && cookie[1]) token = cookie[1];
       }
 
+      try {
+        let info = (await Vue.axios.get('/info')).data;
+        commit('assets', (await Vue.axios.get('/assets')).data);
+        commit('info', info);
+        commit('nodes', info.nodes);
+        commit('rates', info.rates);
+        commit('version', info.clientVersion.trim());
+      } catch (e) {
+        l(e);
+        commit('error', 'Problem connecting to server');
+      }
+
       if (token && token !== 'null') {
         commit('token', token);
+        let failures = 0;
         try {
-          await dispatch('setupSockets');
+          await dispatch('setupSocket');
+          const socketPoll = async () => {
+            try {
+              await dispatch('setupSocket');
+              failures = 0;
+            } catch (e) {
+              if (failures > 5) commit('error', 'Problem connecting to server');
+              else failures++;
+            }
+
+            if (getters.user && getters.token) setTimeout(socketPoll, 5000);
+          };
+          socketPoll();
+
           commit('initializing', false);
           commit('loading', false);
+
           if (path === '/' || path === '/register') go('/home');
         } catch (e) {
           l('failed to setup sockets', e);
           go('/login');
         }
       } else {
-        if (path === '/') go('/login');
-      } 
-
-      try {
-        commit('assets', (await Vue.axios.get('/assets')).data);
-      } catch (e) {
-        l(e);
-        commit('error', 'Problem connecting to server');
+        if (paths.includes(path)) commit('initializing', false);
+        else go('/login');
       }
     },
 
@@ -190,18 +214,6 @@ export default new Vuex.Store({
       state.addressTypes.push(type);
       state.invoice.address = (await Vue.axios.post('/address', { type })).data;
       dispatch('addInvoice');
-    },
-
-    async getStats({ commit }) {
-      commit('loading', true);
-      try {
-        const stats = (await Vue.axios.get('/info')).data;
-        commit('stats', stats);
-      } catch (e) {
-        commit('error', e.response ? e.response.data : e.message);
-      }
-
-      commit('loading', false);
     },
 
     async enable2fa(_, token) {
@@ -246,6 +258,8 @@ export default new Vuex.Store({
     },
 
     async logout({ commit, state }) {
+      let { subscription } = state;
+      Vue.axios.post('/logout', { subscription });
       document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
       window.sessionStorage.removeItem('token');
       commit('token', null);
@@ -253,6 +267,7 @@ export default new Vuex.Store({
       commit('user', null);
       if (state.socket) state.socket.close();
       commit('socket', null);
+      commit('subscription', null);
       go('/');
     },
 
@@ -265,7 +280,56 @@ export default new Vuex.Store({
       }
     },
 
-    async setupSockets({ commit, getters, dispatch }) {
+    async setupNotifications({ commit, getters, dispatch }) {
+      if (!('Notification' in window && process.env.VUE_APP_VAPID_PUBKEY)) {
+        return;
+      } else if (Notification.permission === 'granted') {
+        navigator.serviceWorker.ready
+          .then(function(registration) {
+            return registration.pushManager
+              .getSubscription()
+              .then(async function(subscription) {
+                if (subscription) {
+                  return subscription;
+                }
+
+                function urlBase64ToUint8Array(base64String) {
+                  const padding = '='.repeat(
+                    (4 - (base64String.length % 4)) % 4
+                  );
+                  const base64 = (base64String + padding)
+                    .replace(/-/g, '+')
+                    .replace(/_/g, '/');
+
+                  const rawData = window.atob(base64);
+                  const outputArray = new Uint8Array(rawData.length);
+
+                  for (let i = 0; i < rawData.length; ++i) {
+                    outputArray[i] = rawData.charCodeAt(i);
+                  }
+                  return outputArray;
+                }
+
+                const applicationServerKey = urlBase64ToUint8Array(
+                  process.env.VUE_APP_VAPID_PUBKEY
+                );
+
+                return registration.pushManager.subscribe({
+                  userVisibleOnly: true,
+                  applicationServerKey,
+                });
+              });
+          })
+          .then(function(subscription) {
+            Vue.axios.post('/subscribe', { subscription });
+            commit('subscription', subscription);
+          });
+      } else if (Notification.permission !== 'denied') {
+        Notification.requestPermission().then(() => dispatch('setupNotifications'));
+      } 
+    },
+
+    async setupSocket({ commit, getters, dispatch }) {
       await new Promise((resolve, reject) => {
         setTimeout(reject, 5000);
         const proto =
@@ -281,7 +345,7 @@ export default new Vuex.Store({
         commit('socket', ws);
 
         ws.onopen = () => {
-          ws.send(getters.token);
+          ws.send(JSON.stringify({ type: 'login', data: getters.token }));
           commit('error', null);
         };
 
@@ -294,26 +358,27 @@ export default new Vuex.Store({
         ws.onclose = async e => {
           ws = null;
           reject();
-            try {
-              await dispatch('setupSockets')
-            } catch (e) {}
+          try {
+            await dispatch('setupSocket');
+          } catch (e) {}
         };
 
         ws.onmessage = msg => {
           let { type, data } = JSON.parse(msg.data);
 
           switch (type) {
+            case 'version':
+              commit('version', data.trim());
+              break;
+
             case 'login':
               if (data) {
                 commit('user', data);
+                dispatch('setupNotifications');
                 resolve();
               } else {
                 dispatch('logout');
               }
-              break;
-
-            case 'nodes':
-              commit('nodes', data);
               break;
 
             case 'account':
@@ -321,28 +386,7 @@ export default new Vuex.Store({
               break;
 
             case 'payment':
-              let p = data;
-              commit('received', p);
-
-              let precision = 8;
-              let unit;
-
-              if (p.account) {
-                precision = p.account.precision;
-                unit = p.account.ticker;
-              }
-
-              if (!unit || unit === 'BTC') unit = getters.user.unit;
-              if (unit === 'SAT') precision = 0;
-
-              if (p.amount > 0)
-                dispatch(
-                  'snack',
-                  `${
-                    p.confirmed ? 'Received' : 'Detected unconfirmed'
-                  } ${format(p.amount + p.tip, precision)} ${unit}`
-                );
-              commit('addPayment', p);
+              commit('addPayment', data);
               break;
 
             case 'accounts':
@@ -827,7 +871,10 @@ export default new Vuex.Store({
       s.user = JSON.parse(JSON.stringify(s.user));
     },
     addPayment(s, v) {
-      s.invoice.received += parseInt(Math.abs(v.amount));
+      if (v.amount > 0) {
+        s.received = v;
+        s.invoice.received += parseInt(Math.abs(v.amount));
+      }
       if (s.invoice.received >= s.invoice.amount) {
         s.invoices.unshift(JSON.parse(JSON.stringify(s.invoice)));
         s.invoice.amount = 0;
@@ -862,6 +909,10 @@ export default new Vuex.Store({
         else s.user = {};
       }
     },
+    version(s, v) {
+      let version = process.env.VUE_APP_VERSION.trim();
+      if (v !== version) s.versionMismatch = `Server expected ${v} currently running ${version}`;
+    } 
   },
   getters: make.getters(state),
 });

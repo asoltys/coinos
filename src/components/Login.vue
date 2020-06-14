@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!initializing">
+  <div>
     <v-progress-linear v-if="loading" indeterminate />
     <div v-else>
       <div class="text-center">

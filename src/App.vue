@@ -6,6 +6,18 @@
       <v-container class="mr-3" style="margin-bottom: 50px !important">
         <v-alert
           class="mb-2"
+          v-if="versionMismatch"
+          color="error"
+          dismissible
+          transition="scale-transition"
+          >Version mismatch: {{ versionMismatch }}
+          <v-btn @click="refresh">
+            <v-icon left>refresh</v-icon>
+            Refresh</v-btn>
+        </v-alert
+        >
+        <v-alert
+          class="mb-2"
           v-if="error"
           color="error"
           dismissible
@@ -43,7 +55,8 @@ export default {
     initializing: get('initializing'),
     loading: get('loading'),
     socket: get('socket'),
-    user: get('user'),
+    user: sync('user'),
+    versionMismatch: get('versionMismatch'),
 
     publicPath() {
       return paths.includes(this.$route.path);
@@ -71,6 +84,10 @@ export default {
   },
 
   methods: {
+    refresh() {
+      window.location.reload(true);
+    },
+    updateUser: call('updateUser'),
     init: call('init'),
     handleScan: call('handleScan'),
     showText: call('showText'),

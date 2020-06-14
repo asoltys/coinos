@@ -22,10 +22,9 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
 import Balance from './Balance';
 import Payments from './Payments';
-import { sync } from 'vuex-pathify';
+import { get, call, sync } from 'vuex-pathify';
 
 export default {
   components: { Balance, Payments },
@@ -40,12 +39,21 @@ export default {
     },
   },
 
-  computed: {
-    ...mapGetters(['rate', 'user']),
-    initializing: sync('initializing'),
-    loading: sync('loading'),
+  data() {
+    return {
+      status: 'Notification Status Unknown',
+    };
   },
 
-  methods: mapActions(['snack']),
+  computed: {
+    initializing: sync('initializing'),
+    loading: sync('loading'),
+    rate: get('rate'),
+    user: get('user'),
+  },
+
+  methods: {
+    snack: call('snack'),
+  },
 };
 </script>

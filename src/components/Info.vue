@@ -2,7 +2,7 @@
   <v-card class="mb-2">
     <v-card-title class="pb-0">Server Funds</v-card-title>
     <v-progress-linear v-if="loading" indeterminate />
-    <v-card-text v-else-if="stats" class="white--text">
+    <v-card-text v-else-if="info" class="white--text">
       <v-list>
         <v-list-item v-if="nodes.includes('bitcoin')">
           <v-list-item-avatar>
@@ -12,7 +12,7 @@
             <v-list-item-title>Bitcoin</v-list-item-title>
           </v-list-item-content>
           <v-list-item-action class="title">
-            {{ stats.bitcoin }}
+            {{ info.bitcoin }}
           </v-list-item-action>
         </v-list-item>
         <v-list-item v-if="nodes.includes('liquid')">
@@ -23,7 +23,7 @@
             <v-list-item-title>Liquid</v-list-item-title>
           </v-list-item-content>
           <v-list-item-action class="title">
-            {{ stats.liquid }}
+            {{ info.liquid }}
           </v-list-item-action>
         </v-list-item>
         <v-list-item v-if="nodes.includes('lightning')">
@@ -34,7 +34,7 @@
             <v-list-item-title>Lightning</v-list-item-title>
           </v-list-item-content>
           <v-list-item-action class="title">
-            {{ stats.lnchannel }}
+            {{ info.lnchannel }}
           </v-list-item-action>
         </v-list-item>
         <v-list-item>
@@ -68,22 +68,16 @@ export default {
   },
   computed: {
     assets() {
-      let assets = Object.keys(this.stats.assets);
+      let assets = Object.keys(this.info.assets);
       assets.shift();
       return assets;
     },
     user() {
-      return this.stats.accounts.find(a => a.asset === process.env.VUE_APP_LBTC).total;
+      return this.info.accounts.find(a => a.asset === process.env.VUE_APP_LBTC).total;
     },
     loading: get('loading'),
     nodes: get('nodes'),
-    stats: get('stats'),
-  },
-  methods: {
-    getStats: call('getStats'),
-  },
-  mounted() {
-    this.getStats();
+    info: get('info'),
   },
 };
 </script>
