@@ -87,7 +87,7 @@ export default {
     link(tx) {
       let bs = 'https://blockstream.info';
       if (
-        process.env.NODE_ENV !== 'production' ||
+        this.$prod ||
         window.location.href.includes('test')
       )
         bs += '/testnet';

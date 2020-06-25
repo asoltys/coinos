@@ -16,7 +16,7 @@
 
 <script>
 import jsQR from 'jsqr';
-import { call } from 'vuex-pathify';
+import { get, call } from 'vuex-pathify';
 
 export default {
   data() {
@@ -24,6 +24,10 @@ export default {
       loading: false,
     };
   },
+
+  computed: {
+    stopScanning: get('stopScanning'),
+  }, 
 
   methods: {
     cancel() {
@@ -75,6 +79,12 @@ export default {
       }
 
       requestAnimationFrame(this.tick);
+    },
+  },
+
+  watch: {
+    stopScanning() {
+      this.stop();
     },
   },
 

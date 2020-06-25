@@ -1,9 +1,11 @@
-import format from "../format";
+import format from '../format';
+import { networks } from 'bitcoinjs-lib';
 
 const Coinos = {
   install(Vue, options) {
     (Vue.prototype.$format = function(n, p) {
-      if (p === undefined) p = this.user.unit === 'SAT' ? 0 : this.user.account.precision;
+      if (p === undefined)
+        p = this.user.unit === 'SAT' ? 0 : this.user.account.precision;
       return format(n, p);
     }),
       (Vue.prototype.$go = function(path) {
@@ -11,7 +13,12 @@ const Coinos = {
           .push(path)
           .then()
           .catch(() => {});
-      });
+      }),
+      (Vue.prototype.$network =
+        process.env.NODE_ENV === 'production'
+          ? networks['bitcoin']
+          : networks['regtest']),
+      (Vue.prototype.$prod = process.env.NODE_ENV === 'production');
   },
 };
 

@@ -110,7 +110,7 @@
         </div>
       </v-card-text>
     </v-card>
-    <v-card>
+    <v-card class="mb-2">
       <v-card-text>
         <v-form @keyup.native.enter="submit">
           <v-text-field
@@ -155,6 +155,7 @@
         </v-form>
       </v-card-text>
     </v-card>
+    <linking-keys />
   </div>
 </template>
 
@@ -165,10 +166,10 @@ import qr from 'qrcode';
 import PincodeInput from 'vue-pincode-input';
 import FullScreen from '../mixins/FullScreen';
 import VueScrollTo from 'vue-scrollto';
-
+import LinkingKeys from './LinkingKeys';
 
 export default {
-  components: { SetPin, PincodeInput },
+  components: { SetPin, PincodeInput, LinkingKeys },
   mixins: [FullScreen],
   data() {
     return {

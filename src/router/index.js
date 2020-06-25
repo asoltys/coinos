@@ -48,7 +48,7 @@ const Register = () =>
   );
 const Scan = () =>
   import(
-    /* webpackChunkName: "send" */
+    /* webpackChunkName: "scan" */
     '../components/Scan'
   );
 const Send = () =>

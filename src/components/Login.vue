@@ -21,7 +21,24 @@
       <v-divider class="mb-2" />
       <v-card>
         <v-card-text>
-          <v-form @submit.prevent="submit" class="mt-4">
+          <div v-if="result">
+            <qr :text="result.encoded" />
+            <v-textarea
+              v-if="result.encoded"
+              label="LNURL"
+              :value="result.encoded"
+              rows="1"
+              auto-grow
+              readonly
+            >
+              <template v-slot:append>
+                <v-btn @click="() => copy(result.encoded)" icon class="ml-1">
+                  <v-icon class="mr-1">content_copy</v-icon>
+                </v-btn>
+              </template>
+            </v-textarea>
+          </div>
+          <v-form v-else @submit.prevent="submit" class="mt-4">
             <v-text-field
               label="Username"
               v-model="form.username"
@@ -43,6 +60,14 @@
               Sign in
             </v-btn>
             <v-btn
+              @click="lnurl"
+              color="secondary"
+              class="mr-2 mb-2 mb-sm-0 wide"
+            >
+              <qrcode class="mr-1" />
+              LNURL Auth
+            </v-btn>
+            <v-btn
               @click="$go('/register')"
               color="green"
               class="mr-2 mb-2 mb-sm-0 wide"
@@ -62,11 +87,15 @@
 import { mapActions, mapGetters } from 'vuex';
 import Flash from 'vue-material-design-icons/Flash';
 import Login from 'vue-material-design-icons/Login';
+import Qrcode from 'vue-material-design-icons/Qrcode';
+import Qr from './Qr';
 import Water from 'vue-material-design-icons/Water';
-import { sync } from 'vuex-pathify';
+import { get, call, sync } from 'vuex-pathify';
+import Copy from '../mixins/Copy';
 
 export default {
-  components: { Flash, Login, Water },
+  components: { Flash, Login, Water, Qr, Qrcode },
+  mixins: [Copy],
 
   props: {
     logout: {
@@ -82,6 +111,7 @@ export default {
         username: '',
         password: '',
       },
+      result: null,
     };
   },
 
@@ -89,11 +119,40 @@ export default {
     ...mapGetters(['error', 'user', 'initializing']),
     loading: sync('loading'),
     twofa: sync('twofa'),
+    token: sync('token'),
   },
 
   methods: {
     ...mapActions(['login']),
+    init: call('init'),
+    getLoginUrl: call('getLoginUrl'),
+    async lnurl() {
+      try {
+        this.result = await this.getLoginUrl();
+        const proto =
+          process.env.NODE_ENV === 'production' ? 'wss://' : 'ws://';
+        let ws = new WebSocket(`${proto}${location.host}/ws`);
+        ws.onmessage = msg => {
+          let { type, data } = JSON.parse(msg.data);
 
+          switch (type) {
+            case 'connected':
+              ws.send(
+                JSON.stringify({ type: 'lnurl', data: this.result.secret })
+              );
+              break;
+
+            case 'token':
+              this.token = data;
+              ws.close();
+              this.$go('/home');
+              break;
+          }
+        };
+      } catch (e) {
+        console.log('socket error', e);
+      }
+    },
     submit(e) {
       this.login(this.form);
     },

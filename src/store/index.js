@@ -2,13 +2,47 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import bech32 from 'bech32';
 import bip21 from 'bip21';
+import { fromSeed } from 'bip32';
 import bolt11 from 'bolt11';
 import router from '../router';
 import validate from 'bitcoin-address-validation';
-import { ECPair, payments, networks, Psbt } from 'bitcoinjs-lib';
+import { crypto, ECPair, payments, networks, Psbt } from 'bitcoinjs-lib';
 import pathify, { make } from 'vuex-pathify';
 import paths from '../paths';
 import format from '../format';
+import { generateMnemonic } from 'bip39';
+import cryptojs from 'crypto-js';
+import { getParams } from 'js-lnurl';
+import sha256, { HMAC } from 'fast-sha256';
+import secp256k1 from 'secp256k1';
+
+const linkingKey = (domain, seed) => {
+  const root = fromSeed(Buffer.from(sha256(seed), 'hex'));
+  const hashingKey = root.derivePath("m/138'/0");
+  const hmac = new HMAC(hashingKey.privateKey);
+  const derivationMaterial = hmac.update(stringToUint8Array(domain)).digest();
+  const first4 = derivationMaterial.slice(0, 4);
+  return root.derivePath(
+    `m/138'/${first4[0]}/${first4[1]}/${first4[2]}/${first4[3]}`
+  );
+};
+
+const stringToUint8Array = str => {
+  return Uint8Array.from(str, x => x.charCodeAt(0));
+};
+
+const hexToUint8Array = hexString => {
+  return new Uint8Array(
+    hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16))
+  );
+};
+
+const bytesToHexString = bytes => {
+  return bytes.reduce(function(memo, i) {
+    return memo + ('0' + i.toString(16)).slice(-2); //padd with leading 0 if <16
+  }, '');
+};
+
 Vue.use(Vuex);
 
 const SATS = 100000000;
@@ -79,6 +113,7 @@ const state = {
   assets: [],
   challenge: '',
   channels: [],
+  channelRequest: null,
   ecpair: null,
   error: '',
   fiat: true,
@@ -89,6 +124,7 @@ const state = {
   initializing: true,
   loading: false,
   loadingFee: false,
+  lnurl: null,
   nodes: [],
   orders: [],
   payment: JSON.parse(blankPayment),
@@ -99,8 +135,10 @@ const state = {
   rate: 0,
   rates: null,
   received: JSON.parse(blankPayment),
+  seed: null,
   snack: '',
   socket: null,
+  stopScanning: false,
   subscription: null,
   text: '',
   token: null,
@@ -131,6 +169,12 @@ export default new Vuex.Store({
       if (!token) {
         let cookie = `; ${document.cookie}`.match(';\\s*token=([^;]+)');
         if (cookie && cookie[1]) token = cookie[1];
+      }
+
+      if (!token || token === 'null') {
+        if (paths.includes(path)) commit('initializing', false);
+        else go('/login');
+        return;
       }
 
       try {
@@ -171,9 +215,6 @@ export default new Vuex.Store({
           l('failed to setup sockets', e);
           go('/login');
         }
-      } else {
-        if (paths.includes(path)) commit('initializing', false);
-        else go('/login');
       }
     },
 
@@ -191,12 +232,40 @@ export default new Vuex.Store({
     async login({ commit, dispatch, state }, user) {
       commit('user', user);
       user.token = state.twofa;
+      const { password } = user;
+      const {
+        AES: aes,
+        enc: { Utf8 },
+      } = cryptojs;
 
       try {
         let res = await Vue.axios.post('/login', user);
+        let seed, token;
 
-        commit('user', res.data.user);
-        commit('token', res.data.token);
+        ({ token, user } = res.data);
+        commit('user', user);
+        commit('token', token);
+
+        if (user.seed) {
+          seed = aes.decrypt(user.seed, password).toString(Utf8);
+        } else {
+          seed = generateMnemonic();
+          user.seed = aes.encrypt(seed, password).toString();
+        }
+
+        if (!user.keys.length) {
+          const key = bytesToHexString(
+            secp256k1.publicKeyCreate(
+              linkingKey(window.location.hostname, seed).privateKey,
+              true
+            )
+          );
+          dispatch('addLinkingKey', key);
+        }
+
+        dispatch('updateUser', user);
+
+        commit('seed', seed);
       } catch (e) {
         if (e.response && e.response.data.startsWith('2fa'))
           commit('prompt2fa', true);
@@ -207,6 +276,10 @@ export default new Vuex.Store({
       await dispatch('init');
 
       if (router.currentRoute.path !== '/home') go('/home');
+    },
+
+    async addLinkingKey({}, key) {
+      const res = await Vue.axios.post('/keys', { key });
     },
 
     async getNewAddress({ commit, dispatch, state }) {
@@ -258,17 +331,20 @@ export default new Vuex.Store({
     },
 
     async logout({ commit, state }) {
+      commit('loading', true);
       let { subscription } = state;
-      Vue.axios.post('/logout', { subscription });
+      await Vue.axios.post('/logout', { subscription });
       document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
       window.sessionStorage.removeItem('token');
       commit('token', null);
       commit('pin', null);
       commit('user', null);
       if (state.socket) state.socket.close();
+      commit('seed', null);
       commit('socket', null);
       commit('subscription', null);
       go('/');
+      commit('loading', false);
     },
 
     async loadPayments({ state }) {
@@ -325,8 +401,10 @@ export default new Vuex.Store({
             commit('subscription', subscription);
           });
       } else if (Notification.permission !== 'denied') {
-        Notification.requestPermission().then(() => dispatch('setupNotifications'));
-      } 
+        Notification.requestPermission().then(() =>
+          dispatch('setupNotifications')
+        );
+      }
     },
 
     async setupSocket({ commit, getters, dispatch }) {
@@ -367,8 +445,20 @@ export default new Vuex.Store({
           let { type, data } = JSON.parse(msg.data);
 
           switch (type) {
-            case 'version':
-              commit('version', data.trim());
+            case 'account':
+              commit('addAccount', data);
+              break;
+
+            case 'accounts':
+              getters.user.accounts = data;
+              break;
+
+            case 'key':
+              commit('addKey', data);
+              break;
+
+            case 'payment':
+              commit('addPayment', data);
               break;
 
             case 'login':
@@ -381,16 +471,8 @@ export default new Vuex.Store({
               }
               break;
 
-            case 'account':
-              commit('addAccount', data);
-              break;
-
-            case 'payment':
-              commit('addPayment', data);
-              break;
-
-            case 'accounts':
-              getters.user.accounts = data;
+            case 'otpsecret':
+              commit('user', { ...state.user, otpsecret: data });
               break;
 
             case 'rates':
@@ -401,10 +483,6 @@ export default new Vuex.Store({
                 commit('rate', rates[getters.user.currency]);
               break;
 
-            case 'otpsecret':
-              commit('user', { ...state.user, otpsecret: data });
-              break;
-
             case 'to':
               let { payment } = getters;
               payment.recipient = data;
@@ -412,6 +490,10 @@ export default new Vuex.Store({
 
             case 'user':
               commit('user', data);
+              break;
+
+            case 'version':
+              commit('version', data.trim());
               break;
           }
         };
@@ -726,7 +808,21 @@ export default new Vuex.Store({
       }
     },
 
+    async generateChannelRequest({ commit }, { localAmt, pushAmt }) {
+      try {
+        let result = await Vue.axios.post('/lightning/channelRequest', {
+          localAmt,
+          pushAmt,
+        });
+        commit('channelRequest', result.data);
+      } catch (e) {
+        commit('error', e.response ? e.response.data : e.message);
+      }
+    },
+
     async handleScan({ commit, dispatch, getters }, text) {
+      commit('stopScanning', false);
+
       if (!text) return;
       if (typeof text !== 'string') return router.go(-1);
       await dispatch('clearPayment');
@@ -844,8 +940,78 @@ export default new Vuex.Store({
         commit('ecpair', ecpair);
         go('/sweep');
       } catch (e) {
-        console.log(e.message);
+        /* */
       }
+
+      if (text.toLowerCase().startsWith('lnurl')) {
+        const params = await getParams(text);
+        let { seed } = getters;
+        if (!seed) return dispatch('logout');
+
+        switch (params.tag) {
+          case 'channelRequest':
+            await dispatch('openChannel', params);
+            break;
+          case 'login':
+            try {
+              const key = linkingKey(params.domain, seed);
+              const signedMessage = secp256k1.ecdsaSign(
+                hexToUint8Array(params.k1),
+                key.privateKey
+              );
+              const signedMessageDER = secp256k1.signatureExport(
+                signedMessage.signature
+              );
+              const linkingKeyPub = secp256k1.publicKeyCreate(
+                key.privateKey,
+                true
+              );
+              const sig = bytesToHexString(signedMessageDER);
+
+              const response = await Vue.axios.post('/login', {
+                params,
+                sig,
+                key: bytesToHexString(linkingKeyPub),
+              });
+
+              if (response.data.status === "OK") {
+                commit('snack', 'Login success');
+              } else {
+                commit('error', response.status);
+              } 
+              
+              go('/home');
+            } catch (e) {
+              commit('error', e.response ? e.response.data : e.message);
+            }
+            break;
+        }
+      }
+
+      commit('stopScanning', true);
+    },
+
+    async getLoginUrl({ commit, getters }) {
+      const { user } = getters;
+      let url = '/loginUrl';
+      if (user.username) url += `?username=${user.username}`;
+      return (await Vue.axios.get(url)).data;
+    },
+
+    async openChannel({ commit, getters }, params) {
+      try {
+        let channelResult = await Vue.axios.post('/lightning/channel', {
+          params,
+        });
+        if (channelResult.data.status === 'OK') {
+          commit('snack', 'Open channel request submitted successfully');
+        } else {
+          throw new Error();
+        }
+      } catch (e) {
+        commit('error', 'Failed to open channel');
+      }
+      go('/');
     },
 
     async generateBlock({ commit }, network) {
@@ -868,6 +1034,12 @@ export default new Vuex.Store({
       if (index > -1) s.user.accounts[index] = v;
       else s.user.accounts.unshift(v);
       if (s.user.account.id === v.id) s.user.account = v;
+      s.user = JSON.parse(JSON.stringify(s.user));
+    },
+    addKey(s, v) {
+      let index = s.user.keys.findIndex(a => a.id === v.id);
+      if (index > -1) s.user.keys[index] = v;
+      else s.user.keys.unshift(v);
       s.user = JSON.parse(JSON.stringify(s.user));
     },
     addPayment(s, v) {
@@ -911,8 +1083,9 @@ export default new Vuex.Store({
     },
     version(s, v) {
       let version = process.env.VUE_APP_VERSION.trim();
-      if (v !== version) s.versionMismatch = `Server expected ${v} currently running ${version}`;
-    } 
+      if (v !== version)
+        s.versionMismatch = `Server expected ${v} currently running ${version}`;
+    },
   },
   getters: make.getters(state),
 });

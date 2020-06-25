@@ -25,6 +25,10 @@ module.exports = IS_PRODUCTION
             pathRewrite: { '^/api/electrs': '' },
             secure: false,
           },
+          '/lnurl': {
+            target: 'http://localhost:3118',
+            secure: false,
+          },
           '/api': {
             target: 'http://localhost:3119',
             pathRewrite: { '^/api': '' },

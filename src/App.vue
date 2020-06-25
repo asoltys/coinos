@@ -52,6 +52,7 @@ export default {
   },
 
   computed: {
+    seed: get('seed'),
     initializing: get('initializing'),
     loading: get('loading'),
     socket: get('socket'),

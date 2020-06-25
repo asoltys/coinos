@@ -74,7 +74,7 @@
 import { get, call, sync } from 'vuex-pathify';
 import Copy from '../mixins/Copy';
 import Qr from './Qr';
-import { networks, ECPair, payments } from 'bitcoinjs-lib';
+import { ECPair, payments } from 'bitcoinjs-lib';
 import Amount from './Amount';
 import Transaction from './Transaction';
 import Qrcode from 'vue-material-design-icons/Qrcode';
@@ -82,10 +82,6 @@ import validate from 'bitcoin-address-validation';
 import Sent from './Sent';
 
 const SATS = 100000000;
-const network =
-  process.env.NODE_ENV === 'production'
-    ? networks['bitcoin']
-    : networks['regtest'];
 
 export default {
   components: { Qrcode, Qr, Amount, Transaction, Sent },

@@ -24,12 +24,6 @@
 import bip38 from 'bip38';
 import { call, get, sync } from 'vuex-pathify';
 import wif from 'wif';
-import { networks } from 'bitcoinjs-lib';
-
-const network =
-  process.env.NODE_ENV === 'production'
-    ? networks['bitcoin']
-    : networks['regtest'];
 
 export default {
   data() {
@@ -53,7 +47,7 @@ export default {
           status => (this.percent = parseInt(status.percent))
         );
         this.handleScan(
-          wif.encode(network.wif, result.privateKey, result.compressed)
+          wif.encode(this.$network.wif, result.privateKey, result.compressed)
         );
       } catch (e) {
         this.error = 'Failed to decrypt private key';
