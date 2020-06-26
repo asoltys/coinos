@@ -129,6 +129,11 @@ export default {
     async lnurl() {
       try {
         this.result = await this.getLoginUrl();
+      } catch(e) {
+        return console.log('problem getting login url', e);
+      } 
+
+      try {
         const proto =
           process.env.NODE_ENV === 'production' ? 'wss://' : 'ws://';
         let ws = new WebSocket(`${proto}${location.host}/ws`);

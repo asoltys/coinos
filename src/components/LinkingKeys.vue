@@ -1,5 +1,5 @@
 <template>
-  <v-card class="mb-2">
+  <v-card v-if="user.keys.length" class="mb-2">
     <v-card-title>Linking Keys</v-card-title>
     <v-card-text>
       <v-list class="elevation-1 mb-2">
@@ -11,8 +11,13 @@
             <v-list-item-title>{{ hex }}</v-list-item-title>
           </v-list-item-content>
           <v-list-item-action>
-            <v-btn @click="copy(hex)" icon class="ml-1">
-              <v-icon class="mr-1">content_copy</v-icon>
+            <v-btn @click="copy(hex)" icon>
+              <v-icon>content_copy</v-icon>
+            </v-btn>
+          </v-list-item-action>
+          <v-list-item-action>
+            <v-btn @click="del(hex)" icon>
+              <v-icon>delete</v-icon>
             </v-btn>
           </v-list-item-action>
         </v-list-item>
@@ -59,6 +64,11 @@ export default {
     user: get('user'),
   },
   methods: {
+    del(hex) {
+      this.user.keys.splice(this.user.keys.findIndex(k => k.hex === hex), 1);
+      this.deleteLinkingKey(hex);
+    },
+    deleteLinkingKey: call('deleteLinkingKey'),
     getLoginUrl: call('getLoginUrl'),
     async add() {
       this.result = await this.getLoginUrl();

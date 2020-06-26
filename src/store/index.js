@@ -998,6 +998,10 @@ export default new Vuex.Store({
       return (await Vue.axios.get(url)).data;
     },
 
+    async deleteLinkingKey({}, hex) {
+      Vue.axios.post('/keys/delete', { hex });
+    },
+
     async openChannel({ commit, getters }, params) {
       try {
         let channelResult = await Vue.axios.post('/lightning/channel', {
