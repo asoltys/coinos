@@ -18,6 +18,7 @@ self.addEventListener('push', function(e) {
   const payload = e.data ? e.data.text() : '';
   var options = {
     body: payload,
+    badge: '/coinos.png',
     icon: '/coinos.png',
   };
   e.waitUntil(self.registration.showNotification('coinos', options));
