@@ -7,7 +7,6 @@
       <template v-else>
         <lightning-payment v-if="payment.payobj && !editing" @edit="edit" />
         <to v-if="!(payment.payobj || payment.address || payment.recipient)" @edit="edit" />
-        <amount v-else-if="editing" @edit="edit" @done="done" />
         <payment-details v-else @edit="edit" />
       </template>
     </template>
@@ -18,7 +17,6 @@
 import { mapGetters, mapActions } from 'vuex';
 import { sync } from 'vuex-pathify';
 
-import Amount from './Amount';
 import Balance from './Balance';
 import LightningPayment from './LightningPayment';
 import PaymentDetails from './PaymentDetails';
@@ -27,7 +25,6 @@ import To from './To';
 
 export default {
   components: {
-    Amount,
     Balance,
     LightningPayment,
     PaymentDetails,

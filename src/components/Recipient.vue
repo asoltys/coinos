@@ -12,7 +12,7 @@
           dark
           @click="$emit('internal')"
         >
-          <v-icon class="mr-1">forward</v-icon
+          <v-icon left>forward</v-icon
           ><span>coinos pay</span>
         </v-btn>
         <v-btn
@@ -22,7 +22,7 @@
           dark
           @click="$emit('pay')"
         >
-          <v-icon class="mr-1">send</v-icon><span>Pay</span>
+          <v-icon left>send</v-icon><span>Pay</span>
         </v-btn>
       </div>
     </v-card-text>

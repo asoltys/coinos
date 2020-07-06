@@ -15,19 +15,19 @@
       <v-card-text>
         <div class="d-flex flex-wrap justify-center">
           <v-btn @click="changePassword" class="mr-sm-2 mb-2">
-            <v-icon class="mr-1 yellow--text">lock</v-icon>
+            <v-icon left class="yellow--text">lock</v-icon>
             <span>{{ user.password ? 'Change' : 'Set' }} Password</span>
           </v-btn>
           <v-btn
             @click.stop="showPinDialog = !showPinDialog"
             class="mr-sm-2 mb-2"
           >
-            <v-icon class="mr-1 yellow--text">dialpad</v-icon>
+            <v-icon left class="yellow--text">dialpad</v-icon>
             {{ user.pin ? 'Change' : 'Set' }} PIN
           </v-btn>
           <set-pin @pin="pin" :showPinDialog="showPinDialog" />
           <v-btn @click="twofa">
-            <v-icon class="mr-1 yellow--text">stay_current_portrait</v-icon>
+            <v-icon left class="yellow--text">stay_current_portrait</v-icon>
             {{ user.twofa ? 'Disable' : 'Setup' }} 2FA
           </v-btn>
         </div>
@@ -53,7 +53,7 @@
                 :length="6"
               />
               <v-btn @click="disable">
-                <v-icon class="mr-1 red--text">cancel</v-icon>
+                <v-icon left class="red--text">cancel</v-icon>
                 <span>Disable</span>
               </v-btn>
             </div>
@@ -102,7 +102,7 @@
             />
             <div class="text-right">
               <v-btn @click="submit">
-                <v-icon class="mr-1 yellow--text">check</v-icon>
+                <v-icon left class="yellow--text">check</v-icon>
                 <span>save</span>
               </v-btn>
             </div>
@@ -148,7 +148,7 @@
 
           <div class="text-right">
             <v-btn @click="submit">
-              <v-icon class="mr-1 yellow--text">check</v-icon>
+              <v-icon left class="yellow--text">check</v-icon>
               <span>Save</span>
             </v-btn>
           </div>

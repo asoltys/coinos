@@ -63,7 +63,7 @@
                 }"
               >
                 <v-chip v-if="!confirmed" color="red" class="mr-2">
-                  <v-icon class="mr-1">warning</v-icon>
+                  <v-icon left>warning</v-icon>
                   <span class="d-none d-sm-inline" title="UNCONFIRMED"
                     >UNCONFIRMED</span
                   >
@@ -82,17 +82,17 @@
                 >
                   <template v-slot:append>
                     <v-btn v-if="link" @click="explore(link)" class="ml-1" icon>
-                      <v-icon class="mr-1">open_in_new</v-icon>
+                      <v-icon>open_in_new</v-icon>
                     </v-btn>
                     <v-btn @click="copy(hash)" class="ml-1" icon>
-                      <v-icon class="mr-1">content_copy</v-icon>
+                      <v-icon>content_copy</v-icon>
                     </v-btn>
                   </template>
                 </v-textarea>
                 <v-text-field label="Amount" :value="amount" readonly>
                   <template v-slot:append>
                     <v-btn @click="copy(amount)" class="ml-1" icon>
-                      <v-icon class="mr-1">content_copy</v-icon>
+                      <v-icon>content_copy</v-icon>
                     </v-btn>
                   </template>
                 </v-text-field>
@@ -106,7 +106,7 @@
                 >
                   <template v-slot:append>
                     <v-btn @click="copy(fee)" class="ml-1" icon>
-                      <v-icon class="mr-1">content_copy</v-icon>
+                      <v-icon>content_copy</v-icon>
                     </v-btn>
                   </template>
                 </v-textarea>
@@ -120,7 +120,7 @@
                 >
                   <template v-slot:append>
                     <v-btn @click="copy(preimage)" class="ml-1" icon>
-                      <v-icon class="mr-1">content_copy</v-icon>
+                      <v-icon>content_copy</v-icon>
                     </v-btn>
                   </template>
                 </v-textarea>
@@ -134,10 +134,10 @@
             v-if="user.payments.length >= 12 && !loaded"
             @click="more"
           >
-            <v-icon class="mr-1">refresh</v-icon><span>Load All</span>
+            <v-icon left>refresh</v-icon><span>Load All</span>
           </v-btn>
           <v-btn @click="exportCSV" class="flex-grow-1 wide">
-            <v-icon class="mr-1">get_app</v-icon><span>Export CSV</span>
+            <v-icon left>get_app</v-icon><span>Export CSV</span>
           </v-btn>
         </div>
       </div>

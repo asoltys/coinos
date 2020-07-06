@@ -71,6 +71,11 @@ const Text = () =>
     /* webpackChunkName: "text" */
     '../components/Text'
   );
+const Withdraw = () =>
+  import(
+    /* webpackChunkName: "text" */
+    '../components/Withdraw'
+  );
 
 const routes = [
   { path: '/', component: Home, props: { logout: false } },
@@ -89,6 +94,7 @@ const routes = [
   { path: '/settings', component: Settings },
   { path: '/sweep', component: Sweep },
   { path: '/text', component: Text },
+  { path: '/withdraw', component: Withdraw },
 ];
 
 Vue.use(VueRouter);

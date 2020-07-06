@@ -21,7 +21,7 @@
     <v-btn
       color="#179cde"
       class="flex-grow-1 mr-2 mb-2 wide"
-      @click="go('https://t.me/coinos')"
+      @click="go('https://t.me/coinoswallet')"
     >
       <telegram class="mr-1" /> Telegram
     </v-btn>

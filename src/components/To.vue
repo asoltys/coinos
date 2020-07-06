@@ -24,7 +24,7 @@
           </div>
 
           <v-btn v-if="canPaste" class="mr-2 mb-2 flex-grow-1" @click="paste">
-            <v-icon class="mr-1">assignment</v-icon>
+            <v-icon left>assignment</v-icon>
             <span>Paste</span>
           </v-btn>
         </template>
@@ -34,6 +34,7 @@
     <methods v-if="!payment.method"/>
     <send-to-user v-if="payment.method === 'coinos'" />
     <paper v-if="payment.method === 'paper'" />
+    <withdraw-url v-if="payment.method === 'url'" />
     <v-btn v-if="payment.method" @click="payment.method = null" class="mt-2 wide">
       <v-icon>arrow_back</v-icon>
       Back</v-btn
@@ -47,10 +48,11 @@ import Copy from '../mixins/Copy';
 import Qrcode from 'vue-material-design-icons/Qrcode';
 import SendToUser from './SendToUser';
 import Paper from './Paper';
+import WithdrawUrl from './WithdrawUrl';
 import Methods from './Methods';
 
 export default {
-  components: { Paper, Qrcode, Methods, SendToUser },
+  components: { WithdrawUrl, Paper, Qrcode, Methods, SendToUser },
   mixins: [Copy],
   data() {
     return {
@@ -59,7 +61,7 @@ export default {
   },
   computed: {
     label() {
-      return 'Paste an Address, Key, Invoice or URL';
+      return 'Address, Key, Invoice or URL';
     },
     canPaste: () => navigator.clipboard,
     payment: sync('payment'),

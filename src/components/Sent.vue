@@ -36,10 +36,10 @@
       </div>
 
       <v-btn @click="clearPayment" class="mr-2">
-        <v-icon class="mr-2">arrow_back</v-icon><span>Send Another</span>
+        <v-icon left>arrow_back</v-icon><span>Send Another</span>
       </v-btn>
       <v-btn v-if="payment.txid" @click="link(payment.txid)">
-        <v-icon class="mr-2">open_in_new</v-icon><span>Blockchain</span>
+        <v-icon left>open_in_new</v-icon><span>Blockchain</span>
       </v-btn>
     </div>
   </v-card>

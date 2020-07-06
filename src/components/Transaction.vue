@@ -15,16 +15,16 @@
       </template>
       <template v-slot:append>
         <v-btn @click="clearPayment" class="ml-1" icon>
-          <v-icon class="mr-1">clear</v-icon>
+          <v-icon>clear</v-icon>
         </v-btn>
         <v-btn icon @click="show = !show" class="ml-1" text>
           <qrcode />
         </v-btn>
         <v-btn @click="explore" class="ml-1" icon>
-          <v-icon class="mr-1">open_in_new</v-icon>
+          <v-icon>open_in_new</v-icon>
         </v-btn>
         <v-btn @click="copy(recipient)" class="ml-1" icon>
-          <v-icon class="mr-1">content_copy</v-icon>
+          <v-icon>content_copy</v-icon>
         </v-btn>
       </template>
     </v-textarea>
@@ -35,28 +35,7 @@
       @input="changeAsset"
       :items="accounts"
     />
-    <v-text-field
-      class="amount"
-      label="Amount"
-      v-model="displayAmount"
-      readonly
-      @click="$emit('edit')"
-    >
-      <template v-slot:append>
-        <v-btn v-if="max" @click="setMax" class="ml-1" text>
-          Max
-        </v-btn>
-        <v-btn
-          class="toggle black--text mt-auto"
-          :color="fiat ? 'yellow' : 'white'"
-          @click.prevent="toggle"
-          >{{ currency }}</v-btn
-        >
-        <v-btn icon @click="copy(displayAmount)" class="ml-1" text>
-          <v-icon class="mr-1">content_copy</v-icon>
-        </v-btn>
-      </template>
-    </v-text-field>
+    <amount v-model.number="payment.amount" :max="max" class="mb-2" @done="$emit('feeRate')" />
     <v-text-field
       v-if="payment.address"
       :loading="loadingFee"
@@ -68,12 +47,12 @@
       <template v-slot:append>
         <v-btn
           class="toggle black--text mt-auto"
-          :color="fiat ? 'yellow' : 'white'"
+          :color="user.fiat ? 'yellow' : 'white'"
           @click.prevent="toggle"
           >{{ currency }}</v-btn
         >
         <v-btn icon @click="copy(displayFee)" class="ml-1" text>
-          <v-icon class="mr-1">content_copy</v-icon>
+          <v-icon>content_copy</v-icon>
         </v-btn>
       </template>
     </v-text-field>
@@ -81,7 +60,7 @@
 
     <div class="d-flex" v-if="psbt">
       <v-btn @click="copy(psbt)" class="ml-auto">
-        <v-icon class="mr-1">content_copy</v-icon>
+        <v-icon left>content_copy</v-icon>
         Copy {{ payment.network === 'bitcoin' ? 'PSBT' : 'PSET' }}
       </v-btn>
     </div>
@@ -95,12 +74,13 @@ import Copy from '../mixins/Copy';
 import NetworkIcon from './NetworkIcon';
 import Qrcode from 'vue-material-design-icons/Qrcode';
 import Qr from './Qr';
+import Amount from './Amount';
 
 const SATS = 100000000;
 const bs = 'https://blockstream.info';
 
 export default {
-  components: { NetworkIcon, SetFee, Qr, Qrcode },
+  components: { Amount, NetworkIcon, SetFee, Qr, Qrcode },
   mixins: [Copy],
   props: {
     amount: { type: Number },
@@ -128,18 +108,11 @@ export default {
       return this.user.account.ticker === 'BTC';
     },
     currency() {
-      if (this.isBtc) return this.fiat ? this.user.currency : this.user.unit;
+      if (this.isBtc) return this.user.fiat ? this.user.currency : this.user.unit;
       else return this.user.account.ticker;
     },
-    displayAmount() {
-      return this.fiat
-        ? this.payment.fiatAmount
-        : this.user.unit === 'SAT'
-        ? this.payment.amount
-        : this.$format(this.payment.amount);
-    },
     displayFee() {
-      return this.fiat
+      return this.user.fiat
         ? this.fiatFee
         : this.user.unit === 'SAT'
         ? this.fee
@@ -153,18 +126,13 @@ export default {
       if (!this.fee) return null;
       return ((this.fee * this.rate) / SATS).toFixed(2);
     },
-    fiat: sync('fiat'),
     loadingFee: get('loadingFee'),
     payment: sync('payment'),
     rate: get('rate'),
     user: get('user'),
   },
   methods: {
-    setMax() {
-      this.payment.amount = this.max;
-      this.payment.fiatAmount = (this.payment.amount * this.rate / SATS).toFixed(2);
-      this.$emit('feeRate');
-    },
+    toggleFiat: call('toggleFiat'),
     changeAsset(id) {
       let { asset } = this.user.accounts.find(a => a.id === id);
       this.shiftAccount(asset);
@@ -172,7 +140,7 @@ export default {
     clearPayment: call('clearPayment'),
     toggle() {
       if (this.user.account.ticker !== 'BTC') return;
-      this.fiat = !this.fiat;
+      this.toggleFiat();
     },
     explore() {
       this.$nextTick(function() {

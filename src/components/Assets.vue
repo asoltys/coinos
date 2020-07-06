@@ -67,7 +67,7 @@
               >
                 <template v-slot:append>
                   <v-btn @click="() => copy(a.asset)" icon class="ml-1">
-                    <v-icon class="mr-1">content_copy</v-icon>
+                    <v-icon>content_copy</v-icon>
                   </v-btn>
                 </template>
               </v-textarea>
@@ -94,7 +94,7 @@
               />
               <div class="text-right">
                 <v-btn type="submit">
-                  <v-icon class="mr-1 yellow--text">check</v-icon>
+                  <v-icon left class="yellow--text">check</v-icon>
                   <span>save</span>
                 </v-btn>
               </div>

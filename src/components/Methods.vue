@@ -17,13 +17,12 @@
       <span>Coinos User</span>
     </v-btn>
     <v-btn
-      v-if="1 === 2"
       class="flex-grow-1 mb-2 mr-1 wide"
       @click="payment.method = 'url'"
       :style="buttonStyle"
     >
       <v-icon color="pink" left>card_giftcard</v-icon>
-      Gift URL
+      Voucher
     </v-btn>
   </div>
 </template>
@@ -56,7 +55,7 @@ export default {
         case 'lightning':
           return 'Address';
         default:
-          return 'Paste an Address, Key, Invoice, Username, BOLT11, BIP21...';
+          return 'Address, Key, Invoice, Username, BOLT11, BIP21...';
       }
     },
     nodes: get('nodes'),

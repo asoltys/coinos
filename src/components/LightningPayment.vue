@@ -23,12 +23,12 @@
       <template v-slot:append>
         <v-btn
           class="toggle black--text mt-auto"
-          :color="fiat ? 'yellow' : 'white'"
+          :color="user.fiat ? 'yellow' : 'white'"
           @click.prevent="toggle"
           >{{ currency }}</v-btn
         >
         <v-btn icon @click="copy(displayAmount)" class="ml-1" text>
-          <v-icon class="mr-1">content_copy</v-icon>
+          <v-icon>content_copy</v-icon>
         </v-btn>
       </template>
     </v-text-field>
@@ -48,7 +48,7 @@
     >
       <template v-slot:append>
         <v-btn @click="copy(payment.payobj.payeeNodeKey)" icon>
-          <v-icon class="mr-1">content_copy</v-icon>
+          <v-icon>content_copy</v-icon>
         </v-btn>
       </template>
     </v-textarea>
@@ -56,7 +56,7 @@
 </template>
 
 <script>
-import { get, call, sync } from 'vuex-pathify';
+import { call, get, sync } from 'vuex-pathify';
 import Copy from '../mixins/Copy';
 
 export default {
@@ -64,7 +64,7 @@ export default {
 
   computed: {
     displayAmount() {
-      return this.fiat
+      return this.user.fiat
         ? this.payment.fiatAmount
         : this.user.unit === 'SAT'
         ? this.payment.amount
@@ -74,14 +74,13 @@ export default {
       return this.user.account.ticker === 'BTC';
     },
     currency() {
-      if (this.isBtc) return this.fiat ? this.user.currency : this.user.unit;
+      if (this.isBtc) return this.user.fiat ? this.user.currency : this.user.unit;
       else return this.user.account.ticker;
     },
     fee() {
       if (!this.payment.route) return null;
       return this.$format(parseInt(this.route.total_amt) - this.payment.amount);
     },
-    fiat: sync('fiat'),
     payment: get('payment'),
     rate: get('rate'),
     user: get('user'),
@@ -90,8 +89,9 @@ export default {
   methods: {
     toggle() {
       if (this.user.account.ticker !== 'BTC') return;
-      this.fiat = !this.fiat;
+      this.toggleFiat();
     },
+    toggleFiat: call('toggleFiat'),
     setAmount() {
       this.$emit('edit');
     },

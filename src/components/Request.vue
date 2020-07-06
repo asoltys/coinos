@@ -45,10 +45,10 @@
             color="yellow"
           >
             <span v-if="invoice.tip"
-              ><v-icon class="mr-1">edit</v-icon><span>Edit Tip</span></span
+              ><v-icon left>edit</v-icon><span>Edit Tip</span></span
             >
             <span v-else
-              ><v-icon class="mr-1">add</v-icon><span>Add Tip</span></span
+              ><v-icon left>add</v-icon><span>Add Tip</span></span
             >
           </v-btn>
           <v-btn
@@ -61,10 +61,10 @@
             <span>{{ code }}</span>
           </v-btn>
           <v-btn @click.native="copy(invoice.text)" class="wide mr-2 mb-2 mb-sm-0">
-            <v-icon class="mr-1">content_copy</v-icon><span>Copy</span>
+            <v-icon left>content_copy</v-icon><span>Copy</span>
           </v-btn>
           <v-btn v-if="invoice.method === 'bitcoin'" @click="address" class="wide">
-            <v-icon class="mr-1">refresh</v-icon><span>Address</span>
+            <v-icon left>refresh</v-icon><span>Address</span>
           </v-btn>
         </div>
       </v-card>

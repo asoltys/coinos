@@ -23,6 +23,12 @@
         <v-card-text>
           <div v-if="result">
             <qr :text="result.encoded" />
+            <div class="d-flex">
+            <v-btn @click="window.location = `lightning:${result.encoded}`" class="mx-auto">
+                      <v-icon left color="yellow">open_in_new</v-icon>
+                      Open
+                    </v-btn>
+                    </div>
             <v-textarea
               v-if="result.encoded"
               label="LNURL"
@@ -33,7 +39,7 @@
             >
               <template v-slot:append>
                 <v-btn @click="() => copy(result.encoded)" icon class="ml-1">
-                  <v-icon class="mr-1">content_copy</v-icon>
+                  <v-icon>content_copy</v-icon>
                 </v-btn>
               </template>
             </v-textarea>
@@ -72,7 +78,7 @@
               color="green"
               class="mr-2 mb-2 mb-sm-0 wide"
             >
-              <v-icon class="mr-1">account_balance_wallet</v-icon>
+              <v-icon left>account_balance_wallet</v-icon>
               New Account
             </v-btn>
           </v-form>

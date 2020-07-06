@@ -14,7 +14,7 @@
           dark
           @click="done"
         >
-          <v-icon class="mr-1">check</v-icon><span>Done</span>
+          <v-icon left>check</v-icon><span>Done</span>
         </v-btn>
       </div>
     </div>

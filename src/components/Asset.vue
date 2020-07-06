@@ -41,7 +41,7 @@
       />
       <div class="text-right">
         <v-btn type="submit">
-          <v-icon class="mr-1 yellow--text">send</v-icon>
+          <v-icon left class="yellow--text">send</v-icon>
           <span>Go</span>
         </v-btn>
       </div>

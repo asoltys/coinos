@@ -74,22 +74,17 @@ export default {
   mounted() {
     this.rates = this.globalRates;
     this.currency =
-      this.fiat && this.currencies.includes(this.user.currency)
+      this.user.fiat && this.currencies.includes(this.user.currency)
         ? this.user.currency
         : this.user.account.ticker;
+    if (this.currency === 'BTC') this.currency = this.user.unit;
     this.inputAmount =
-      this.fiat && this.fiatAmount
+      this.user.fiat && this.fiatAmount
         ? this.fiatAmount
         : this.$format(this.initialAmount) || '_';
   },
 
   computed: {
-    fiat() {
-      return (
-        this.user.account.ticker === 'BTC' &&
-        !['SAT', 'BTC'].includes(this.currency)
-      );
-    },
     decimals() {
       if (this.user.account.ticker !== 'BTC')
         return this.user.account.precision;
@@ -150,7 +145,7 @@ export default {
       this.currency = c;
 
       this.$nextTick(() => {
-        if (this.fiat) {
+        if (this.user.fiat) {
           this.inputAmount = ((this.amount * this.rate) / SATS).toFixed(
             this.decimals
           );
@@ -163,7 +158,7 @@ export default {
       });
     },
     convert(n) {
-      if (this.fiat) {
+      if (this.user.fiat) {
         this.fiatAmount = f(this.inputAmount).toFixed(this.decimals);
         this.amount = Math.round(
           ((parseFloat(this.fiatAmount) * SATS) / this.rate).toFixed(
@@ -184,7 +179,7 @@ export default {
     },
     done(e) {
       let amount = e.target.value;
-      if (this.fiat)
+      if (this.user.fiat)
         this.amount = Math.round(
           ((amount * SATS) / this.rate).toFixed(this.decimals)
         );

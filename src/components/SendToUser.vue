@@ -13,7 +13,7 @@
           color="primary"
           @click="sendToUser"
         >
-          <v-icon class="mr-1">search</v-icon>
+          <v-icon left>search</v-icon>
           Find User
         </v-btn>
       </div>

@@ -35,7 +35,7 @@
       </div>
       <div class="text-center">
         <v-btn class="mt-2" v-if="payment.link" @click="explore(payment.link)">
-          <v-icon class="mr-1">open_in_new</v-icon><span>Explore</span>
+          <v-icon left>open_in_new</v-icon><span>Explore</span>
         </v-btn>
       </div>
     </v-card>
@@ -98,9 +98,10 @@ export default {
   },
   methods: {
     select() {
-      this.shiftAccount(
-        this.user.accounts.find(a => a.ticker === this.ticker).asset
-      );
+      const account = this.user.accounts.find(a => a.ticker === this.ticker);
+      const { asset } = account;
+      if (!asset) asset = 'BTC';
+      this.shiftAccount(asset);
     },
     shiftAccount: call('shiftAccount'),
     explore(link) {

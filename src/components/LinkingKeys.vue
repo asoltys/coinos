@@ -34,13 +34,13 @@
         >
           <template v-slot:append>
             <v-btn @click="() => copy(result.encoded)" icon class="ml-1">
-              <v-icon class="mr-1">content_copy</v-icon>
+              <v-icon>content_copy</v-icon>
             </v-btn>
           </template>
         </v-textarea>
       </div>
       <v-btn @click="add">
-        <v-icon class="mr-1 yellow--text">add</v-icon>
+        <v-icon left class="yellow--text">add</v-icon>
         <span>Add</span>
       </v-btn>
     </v-card-text>

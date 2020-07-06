@@ -116,7 +116,6 @@ const state = {
   channelRequest: null,
   ecpair: null,
   error: '',
-  fiat: true,
   friends: [],
   info: null,
   invoice: JSON.parse(blankInvoice),
@@ -319,6 +318,7 @@ export default new Vuex.Store({
       if (!(user.currencies.includes(currency) && rates[currency])) return;
       const rate = rates[currency];
 
+      user.fiat = true;
       user.currency = currency;
       invoice.currency = currency;
       invoice.rate = rate;
@@ -546,13 +546,15 @@ export default new Vuex.Store({
 
       let params = { address, amount, asset, feeRate };
 
+      l("estimating fee");
       if (address) {
         if (isLiquid(address)) {
           try {
-            let res = await Vue.axios.post('/liquid/fee', params);
-            payment.feeRate = res.data.feeRate;
-            payment.tx = res.data.tx;
-            commit('psbt', res.data.psbt);
+            let { data: { feeRate, tx, psbt }} = await Vue.axios.post('/liquid/fee', params);
+            payment.feeRate = feeRate;
+            payment.tx = tx;
+            l("fee rate", feeRate);
+            commit('psbt', psbt);
           } catch (e) {
             commit('error', e.response ? e.response.data : e.message);
           }
@@ -654,7 +656,7 @@ export default new Vuex.Store({
         payment: { address, amount, asset, tx, payreq, route },
       } = getters;
 
-      if (payreq.startsWith('ln')) {
+      if (payreq.startsWith('lnbc')) {
         try {
           let res = await Vue.axios.post('/lightning/send', {
             amount,
@@ -946,13 +948,13 @@ export default new Vuex.Store({
       if (text.toLowerCase().startsWith('lnurl')) {
         const params = await getParams(text);
         let { seed } = getters;
-        if (!seed) return dispatch('logout');
 
         switch (params.tag) {
           case 'channelRequest':
             await dispatch('openChannel', params);
             break;
           case 'login':
+            if (!seed) return dispatch('logout');
             try {
               const key = linkingKey(params.domain, seed);
               const signedMessage = secp256k1.ecdsaSign(
@@ -974,16 +976,20 @@ export default new Vuex.Store({
                 key: bytesToHexString(linkingKeyPub),
               });
 
-              if (response.data.status === "OK") {
+              if (response.data.status === 'OK') {
                 commit('snack', 'Login success');
               } else {
                 commit('error', response.status);
-              } 
-              
+              }
+
               go('/home');
             } catch (e) {
               commit('error', e.response ? e.response.data : e.message);
             }
+            break;
+          case 'withdrawRequest':
+            commit('lnurl', params);
+            go('/withdraw');
             break;
         }
       }
@@ -991,9 +997,30 @@ export default new Vuex.Store({
       commit('stopScanning', true);
     },
 
+    async toggleFiat({ commit, dispatch, getters }) {
+      getters.user.fiat = !getters.user.fiat;
+      dispatch('updateUser', getters.user);
+    },
+
+    async withdraw({ commit, getters }, amount) {
+      const { lnurl: params, } = getters;
+
+      try {
+        await Vue.axios.post('/withdraw', { amount, params });
+        go('/');
+      } catch (e) {
+        commit('error', e.response ? e.response.data : e.message);
+      }
+    },
+
+    async getWithdrawUrl({ commit, getters }, { min, max }) {
+      const { payment } = getters;
+      return (await Vue.axios.get(`/withdraw?min=${min}&max=${max}`)).data;
+    },
+
     async getLoginUrl({ commit, getters }) {
       const { user } = getters;
-      let url = '/loginUrl';
+      let url = '/login';
       if (user.username) url += `?username=${user.username}`;
       return (await Vue.axios.get(url)).data;
     },
@@ -1075,7 +1102,6 @@ export default new Vuex.Store({
     },
     user(s, v) {
       if (v && s.user) {
-        if (v.account && v.account.ticker !== 'BTC') s.fiat = false;
         if (v.currencies && !Array.isArray(v.currencies))
           v.currencies = JSON.parse(v.currencies);
         Object.keys(v).map(k => (s.user[k] = v[k]));

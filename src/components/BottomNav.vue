@@ -12,7 +12,7 @@
       </v-btn>
       <v-btn class="flex-grow-1" text @click="$go('/receive?refresh')">
         <span>Receive</span>
-        <v-icon class="mr-1">get_app</v-icon>
+        <v-icon>get_app</v-icon>
       </v-btn>
       <v-btn class="flex-grow-1" text @click="$go('/scan')">
         <span>Scan</span>

@@ -14,7 +14,7 @@
           dark
           @click="sendPayment"
         >
-          <v-icon class="mr-1">send</v-icon><span>Pay</span>
+          <v-icon left>send</v-icon><span>Pay</span>
         </v-btn>
       </div>
     </div>

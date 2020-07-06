@@ -7,7 +7,7 @@
     </div>
     <div class="d-flex">
       <v-btn @click="cancel" class="mr-2 my-2 flex-grow-1">
-        <v-icon class="mr-1" color="red">cancel</v-icon>
+        <v-icon left color="red">cancel</v-icon>
         Cancel
       </v-btn>
     </div>
