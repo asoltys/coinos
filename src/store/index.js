@@ -546,14 +546,16 @@ export default new Vuex.Store({
 
       let params = { address, amount, asset, feeRate };
 
-      l("estimating fee");
+      l('estimating fee');
       if (address) {
         if (isLiquid(address)) {
           try {
-            let { data: { feeRate, tx, psbt }} = await Vue.axios.post('/liquid/fee', params);
+            let {
+              data: { feeRate, tx, psbt },
+            } = await Vue.axios.post('/liquid/fee', params);
             payment.feeRate = feeRate;
             payment.tx = tx;
-            l("fee rate", feeRate);
+            l('fee rate', feeRate);
             commit('psbt', psbt);
           } catch (e) {
             commit('error', e.response ? e.response.data : e.message);
@@ -947,6 +949,11 @@ export default new Vuex.Store({
 
       if (text.toLowerCase().startsWith('lnurl')) {
         const params = await getParams(text);
+        if (params.status === 'ERROR') {
+          let json = params.reason.replace(/.*{/, '{');
+          return commit('error', JSON.parse(json).reason);
+        }
+
         let { seed } = getters;
 
         switch (params.tag) {
@@ -1003,7 +1010,8 @@ export default new Vuex.Store({
     },
 
     async withdraw({ commit, getters }, amount) {
-      const { lnurl: params, } = getters;
+      commit('loading', true);
+      const { lnurl: params } = getters;
 
       try {
         await Vue.axios.post('/withdraw', { amount, params });
@@ -1011,11 +1019,17 @@ export default new Vuex.Store({
       } catch (e) {
         commit('error', e.response ? e.response.data : e.message);
       }
+
+      commit('loading', false);
     },
 
     async getWithdrawUrl({ commit, getters }, { min, max }) {
       const { payment } = getters;
-      return (await Vue.axios.get(`/withdraw?min=${min}&max=${max}`)).data;
+      try {
+        return (await Vue.axios.get(`/withdraw?min=${min}&max=${max}`)).data;
+      } catch (e) {
+        commit('error', e.response ? e.response.data : e.message);
+      }
     },
 
     async getLoginUrl({ commit, getters }) {

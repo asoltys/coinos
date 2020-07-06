@@ -1,15 +1,24 @@
 <template>
-  <div v-if="lnurl">
-    <v-card class="elevation-1 my-2 pa-4">
-      <div class="text-center headline">{{ lnurl.defaultDescription }}</div>
-      <div class="d-flex justify-center">
-        <div class="mr-2 text-center">
-          <div><span class="yellow--text">Min:</span> <span class="headline">{{ lnurl.minWithdrawable }}</span> SAT</div>
-          <div><span class="yellow--text">Max:</span> <span class="headline">{{ lnurl.maxWithdrawable }}</span> SAT</div>
+  <div>
+    <v-progress-linear v-if="loading" indeterminate></v-progress-linear>
+    <div v-else-if="lnurl">
+      <v-card class="elevation-1 my-2 pa-4">
+        <div class="text-center headline">{{ lnurl.defaultDescription }}</div>
+        <div class="d-flex justify-center">
+          <div class="mr-2 text-center">
+            <div>
+              <span class="yellow--text">Min:</span>
+              <span class="headline">{{ min }}</span> SAT
+            </div>
+            <div>
+              <span class="yellow--text">Max:</span>
+              <span class="headline">{{ max }}</span>
+              SAT
+            </div>
+          </div>
         </div>
-      </div>
-    </v-card>
-    <amount v-model.number="amount" :max="lnurl.maxWithdrawable" class="mb-2" />
+      </v-card>
+      <amount v-model.number="amount" :max="max" class="mb-2" />
       <div class="d-flex">
         <v-btn
           class="black--text flex-grow-1"
@@ -20,6 +29,7 @@
           <v-icon left>send</v-icon><span>Withdraw</span>
         </v-btn>
       </div>
+    </div>
   </div>
 </template>
 
@@ -44,12 +54,18 @@ export default {
     withdraw: call('withdraw'),
   },
   computed: {
+    min() {
+      return Math.round(this.lnurl.minWithdrawable / 1000);
+    },
+    max() {
+      return Math.round(this.lnurl.maxWithdrawable / 1000);
+    },
+    loading: get('loading'),
     lnurl: get('lnurl'),
   },
   mounted() {
     if (!this.lnurl) return this.$go('/home');
-    console.log(this.lnurl.maxWithdrawable);
-    this.amount = this.lnurl.maxWithdrawable;
+    this.amount = this.max;
   },
 };
 </script>
