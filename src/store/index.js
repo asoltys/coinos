@@ -12,9 +12,10 @@ import paths from '../paths';
 import format from '../format';
 import { generateMnemonic } from 'bip39';
 import cryptojs from 'crypto-js';
-import { getParams } from 'js-lnurl';
 import sha256, { HMAC } from 'fast-sha256';
 import secp256k1 from 'secp256k1';
+
+const expectedType = process.env.VUE_APP_COINTYPE;
 
 const linkingKey = (domain, seed) => {
   const root = fromSeed(Buffer.from(sha256(seed), 'hex'));
@@ -510,12 +511,15 @@ export default new Vuex.Store({
     },
 
     async createUser({ commit, dispatch }, user) {
+      commit('error', null);
+      commit('loading', true);
       try {
         await Vue.axios.post('/register', { user });
         dispatch('login', user);
       } catch (e) {
         commit('error', e.response ? e.response.data : e.message);
       }
+      commit('loading', false);
     },
 
     async updateUser({ commit, dispatch, state }, user) {
@@ -834,30 +838,20 @@ export default new Vuex.Store({
 
       if (nodes.includes('lightning')) {
         try {
-          if (text.slice(0, 10) === 'lightning:') text = text.slice(10);
+          if (text.toLowerCase().slice(0, 10) === 'lightning:') text = text.slice(10);
           let payreq = text.toLowerCase();
           payment.payreq = payreq;
           payment.payobj = bolt11.decode(payment.payreq);
           let { coinType } = payment.payobj;
 
-          if (process.env.NODE_ENV === 'production' && coinType !== 'bitcoin') {
+          if (coinType !== expectedType) {
             dispatch('clearPayment');
             commit(
               'error',
-              `Wrong network, '${coinType}' instead of 'bitcoin'`
+              `Wrong network, '${coinType}' instead of '${expectedType}'`
             );
-            throw new Error();
-          } else if (
-            process.env.NODE_ENV !== 'production' &&
-            coinType !== 'regtest'
-          ) {
-            dispatch('clearPayment');
-            commit(
-              'error',
-              `Wrong network, '${coinType}' instead of 'regtest'`
-            );
-            throw new Error();
-          }
+            throw new Error("Wrong network");
+          } 
 
           if (user.account.ticker !== 'BTC')
             await dispatch('shiftAccount', process.env.VUE_APP_LBTC);
@@ -948,7 +942,8 @@ export default new Vuex.Store({
       }
 
       if (text.toLowerCase().startsWith('lnurl')) {
-        const params = await getParams(text);
+        text = text.toLowerCase();
+        const { data: params } = await Vue.axios.get(`/decode?text=${text}`);
         if (params.status === 'ERROR') {
           let json = params.reason.replace(/.*{/, '{');
           return commit('error', JSON.parse(json).reason);

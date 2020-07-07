@@ -1,7 +1,7 @@
 <template>
   <div>
-    <v-progress-linear v-if="submitted" indeterminate />
-    <v-form v-show="!submitted" v-else @submit.prevent="submit" class="mt-4">
+    <v-progress-linear v-if="loading" indeterminate />
+    <v-form v-else @submit.prevent="submit" class="mt-4">
       <h2>New Account</h2>
       <v-text-field
         label="Username"
@@ -51,21 +51,15 @@ export default {
 
   computed: {
     challenge: get('challenge'),
-    error: get('error'),
+    error: sync('error'),
+    loading: get('loading'),
   },
 
   methods: {
     createUser: call('createUser'),
     getChallenge: call('getChallenge'),
     submit() {
-      this.submitted = true;
       if (this.form.confirm === this.form.password) this.createUser(this.form);
-    },
-  },
-
-  watch: {
-    error(v) {
-      this.submitted = false;
     },
   },
 
