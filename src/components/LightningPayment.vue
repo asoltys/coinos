@@ -12,26 +12,7 @@
         </span>
       </div>
     </div>
-    <v-text-field
-      v-else
-      class="amount"
-      label="Amount"
-      v-model="displayAmount"
-      readonly
-      @click="setAmount"
-    >
-      <template v-slot:append>
-        <v-btn
-          class="toggle black--text mt-auto"
-          :color="user.fiat ? 'yellow' : 'white'"
-          @click.prevent="toggle"
-          >{{ currency }}</v-btn
-        >
-        <v-btn icon @click="copy(displayAmount)" class="ml-1" text>
-          <v-icon>content_copy</v-icon>
-        </v-btn>
-      </template>
-    </v-text-field>
+    <amount v-model.number="payment.amount" :max="max" class="mb-2" />
     <div v-if="fee !== null" class="text-center">
       <div>
         <span class="headline grey--text">+ Routing Fee: </span>
@@ -58,25 +39,13 @@
 <script>
 import { call, get, sync } from 'vuex-pathify';
 import Copy from '../mixins/Copy';
+import Amount from './Amount';
 
 export default {
   mixins: [Copy],
+  components: { Amount },
 
   computed: {
-    displayAmount() {
-      return this.user.fiat
-        ? this.payment.fiatAmount
-        : this.user.unit === 'SAT'
-        ? this.payment.amount
-        : this.$format(this.payment.amount);
-    },
-    isBtc() {
-      return this.user.account.ticker === 'BTC';
-    },
-    currency() {
-      if (this.isBtc) return this.user.fiat ? this.user.currency : this.user.unit;
-      else return this.user.account.ticker;
-    },
     fee() {
       if (!this.payment.route) return null;
       return this.$format(parseInt(this.route.total_amt) - this.payment.amount);
@@ -84,17 +53,6 @@ export default {
     payment: get('payment'),
     rate: get('rate'),
     user: get('user'),
-  },
-
-  methods: {
-    toggle() {
-      if (this.user.account.ticker !== 'BTC') return;
-      this.toggleFiat();
-    },
-    toggleFiat: call('toggleFiat'),
-    setAmount() {
-      this.$emit('edit');
-    },
   },
 };
 </script>
