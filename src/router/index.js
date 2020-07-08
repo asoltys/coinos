@@ -71,6 +71,11 @@ const Text = () =>
     /* webpackChunkName: "text" */
     '../components/Text'
   );
+const Pay = () =>
+  import(
+    /* webpackChunkName: "text" */
+    '../components/Pay'
+  );
 const Withdraw = () =>
   import(
     /* webpackChunkName: "text" */
@@ -94,6 +99,7 @@ const routes = [
   { path: '/settings', component: Settings },
   { path: '/sweep', component: Sweep },
   { path: '/text', component: Text },
+  { path: '/pay', component: Pay },
   { path: '/withdraw', component: Withdraw },
 ];
 

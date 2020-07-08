@@ -5,15 +5,26 @@
     <v-content style="background: #333">
       <v-container class="mr-3" style="margin-bottom: 50px !important">
         <v-alert
-          class="mb-2"
+          class="mb-2 black--text"
           v-if="versionMismatch"
-          color="error"
+          color="primary"
           dismissible
           transition="scale-transition"
-          >Version mismatch: {{ versionMismatch }}
+          >
+          <div class="d-flex">
+          <div class="my-auto flex-grow-1" @click="showVersion = !showVersion" style="cursor: pointer">
+            <v-icon color="black">info</v-icon>
+            coinos update detected
+          </div>
           <v-btn @click="refresh">
             <v-icon left>refresh</v-icon>
-            Refresh</v-btn>
+            Reload</v-btn>
+          </div>
+          <v-card class="mt-2" v-if="showVersion">
+            <v-card-text class="white--text">
+            {{ versionMismatch }}
+            </v-card-text>
+            </v-card>
         </v-alert
         >
         <v-alert
@@ -48,6 +59,7 @@ export default {
   data() {
     return {
       installed: false,
+      showVersion: false,
     };
   },
 

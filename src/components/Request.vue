@@ -17,39 +17,46 @@
           </div>
           <div v-if="isBtc" class="yellow--text display-1">
             <span>{{ invoice.fiatAmount }}</span>
-            <span v-if="invoice.tip">&nbsp;<span class="headline">+{{ invoice.fiatTip }}</span></span>
+            <span v-if="invoice.tip"
+              >&nbsp;<span class="headline">+{{ invoice.fiatTip }}</span></span
+            >
             <v-btn
-                  class="black--text toggle"
-                  color="yellow"
-                  @click="shiftCurrency"
-                  >{{ invoice.currency }}</v-btn
-                >
+              class="black--text toggle"
+              color="yellow"
+              @click="shiftCurrency"
+              >{{ invoice.currency }}</v-btn
+            >
             <span class="print body-1">{{ invoice.currency }}</span>
           </div>
         </div>
       </div>
       <h1 v-else class="text-center font-weight-black">Receiving Address</h1>
       <v-card class="pa-3 text-center mb-2">
-        <div class="code mb-4" :class="{ print: !showcode }">{{ invoice.text }}</div>
-        <qr v-if="!showcode" :text="invoice.text" />
-        <div class="mb-2" v-if="invoice.amount <= 0 && invoice.network !== 'LNBTC'">
+        <div class="code mb-4" :class="{ print: !showcode }">
+          {{ invoice.text }}
+        </div>
+        <lnurl v-if="result && result.encoded" :result="result" />
+        <qr v-else-if="!showcode" :text="invoice.text" />
+        <div
+          class="mb-2"
+          v-if="invoice.amount <= 0 && invoice.network !== 'LNBTC'"
+        >
           <code class="black--text mb-2" :data-clipboard-text="invoice.text">{{
             invoice.text
           }}</code>
         </div>
-        <div>
+        <div v-if="!result">
           <v-btn
             v-if="invoice.amount > 0"
             @click.native="tipping = true"
-            class="mr-2 mb-2 mb-sm-0 black--text wide"
-            color="yellow"
+            class="mr-2 mb-2 mb-sm-0 wide"
           >
-            <span v-if="invoice.tip"
-              ><v-icon left>edit</v-icon><span>Edit Tip</span></span
-            >
-            <span v-else
-              ><v-icon left>add</v-icon><span>Add Tip</span></span
-            >
+            <template v-if="invoice.tip">
+              <v-icon left>edit</v-icon><span>Edit Tip</span>
+            </template>
+            <template v-else>
+              <v-icon left>add</v-icon><span>Add Tip</span>
+            </template>
           </v-btn>
           <v-btn
             v-if="invoice.amount > 0 || invoice.network === 'LNBTC'"
@@ -60,10 +67,25 @@
             <v-icon v-else class="mr-1">code</v-icon>
             <span>{{ code }}</span>
           </v-btn>
-          <v-btn @click.native="copy(invoice.text)" class="wide mr-2 mb-2 mb-sm-0">
+          <v-btn
+            @click.native="copy(invoice.text)"
+            class="wide mr-2 mb-2 mb-sm-0"
+          >
             <v-icon left>content_copy</v-icon><span>Copy</span>
           </v-btn>
-          <v-btn v-if="invoice.method === 'bitcoin'" @click="address" class="wide">
+          <v-btn
+            v-if="invoice.network === 'LNBTC'"
+            @click.native="lnurl"
+            class="wide mr-2 mb-2 mb-sm-0"
+          >
+            <qrcode class="mr-1" />
+            LNURL
+          </v-btn>
+          <v-btn
+            v-if="invoice.method === 'bitcoin'"
+            @click="address"
+            class="wide"
+          >
             <v-icon left>refresh</v-icon><span>Address</span>
           </v-btn>
         </div>
@@ -79,11 +101,12 @@ import Copy from '../mixins/Copy';
 import Tippad from './TipPad';
 import Qrcode from 'vue-material-design-icons/Qrcode';
 import Qr from './Qr';
+import Lnurl from './Lnurl';
 
 const SATS = 100000000;
 
 export default {
-  components: { Qrcode, Qr, Tippad },
+  components: { Qrcode, Qr, Tippad, Lnurl },
   mixins: [Copy],
   props: {
     clear: { type: Function },
@@ -91,6 +114,7 @@ export default {
 
   data() {
     return {
+      result: null,
       showcode: false,
       tipping: false,
     };
@@ -102,7 +126,7 @@ export default {
     },
     isBtc() {
       return this.user.account.ticker === 'BTC';
-    }, 
+    },
     total() {
       return this.$format(this.invoice.amount + this.invoice.tip);
     },
@@ -114,7 +138,17 @@ export default {
   },
 
   methods: {
-    ...mapActions(['addInvoice', 'getNewAddress', 'shiftCurrency', 'snack', 'toggleUnit']),
+    ...mapActions([
+      'addInvoice',
+      'getNewAddress',
+      'getPaymentUrl',
+      'shiftCurrency',
+      'snack',
+      'toggleUnit',
+    ]),
+    async lnurl() {
+      this.result = await this.getPaymentUrl(this.invoice.amount);
+    },
     async address() {
       await this.getNewAddress();
     },

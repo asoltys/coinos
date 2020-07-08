@@ -1,27 +1,6 @@
 <template>
   <div>
-    <div v-if="result && result.encoded">
-      <qr :text="result.encoded" />
-      <div class="d-flex justify-center">
-        <v-btn @click="window.location = `lightning:${result.encoded}`">
-          <v-icon left color="yellow">open_in_new</v-icon>
-          Open
-        </v-btn>
-      </div>
-      <v-textarea
-        label="LNURL"
-        :value="result.encoded"
-        rows="1"
-        auto-grow
-        readonly
-      >
-        <template v-slot:append>
-          <v-btn @click="() => copy(result.encoded)" icon class="ml-1">
-            <v-icon>content_copy</v-icon>
-          </v-btn>
-        </template>
-      </v-textarea>
-    </div>
+    <lnurl v-if="result && result.encoded" :result="result" />
     <div v-else>
       <amount label="Minimum Withdrawal" v-model.number="min" :max="max" />
       <amount label="Maximum Withdrawal" v-model.number="max" :max="max" class="mb-2" />
@@ -42,12 +21,10 @@
 <script>
 import { get, call, sync } from 'vuex-pathify';
 import Amount from './Amount';
-import Qr from './Qr';
-import Copy from '../mixins/Copy';
+import Lnurl from './Lnurl';
 
 export default {
-  components: { Amount, Qr },
-  mixins: [Copy],
+  components: { Amount, Lnurl },
   data() {
     return {
       min: 1,

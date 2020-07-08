@@ -943,6 +943,7 @@ export default new Vuex.Store({
       }
 
       if (text.toLowerCase().startsWith('lnurl')) {
+        commit('loading', true);
         text = text.toLowerCase();
         const { data: params } = await Vue.axios.get(`/decode?text=${text}`);
         if (params.status === 'ERROR') {
@@ -994,7 +995,13 @@ export default new Vuex.Store({
             commit('lnurl', params);
             go('/withdraw');
             break;
+          case 'payRequest':
+            commit('lnurl', params);
+            go('/pay');
+            break;
         }
+
+        commit('loading', false);
       }
 
       commit('stopScanning', true);
@@ -1003,6 +1010,20 @@ export default new Vuex.Store({
     async toggleFiat({ commit, dispatch, getters }) {
       getters.user.fiat = !getters.user.fiat;
       dispatch('updateUser', getters.user);
+    },
+
+    async pay({ commit, getters }, amount) {
+      commit('loading', true);
+      const { lnurl: params } = getters;
+
+      try {
+        await Vue.axios.post('/pay', { amount, params });
+        go('/');
+      } catch (e) {
+        commit('error', e.response ? e.response.data : e.message);
+      }
+
+      commit('loading', false);
     },
 
     async withdraw({ commit, getters }, amount) {
@@ -1017,6 +1038,14 @@ export default new Vuex.Store({
       }
 
       commit('loading', false);
+    },
+
+    async getPaymentUrl({ commit, getters }, amount) {
+      try {
+        return (await Vue.axios.get(`/pay?amount=${amount}`)).data;
+      } catch (e) {
+        commit('error', e.response ? e.response.data : e.message);
+      }
     },
 
     async getWithdrawUrl({ commit, getters }, { min, max }) {
@@ -1124,7 +1153,7 @@ export default new Vuex.Store({
     version(s, v) {
       let version = process.env.VUE_APP_VERSION.trim();
       if (v !== version)
-        s.versionMismatch = `Server expected ${v} currently running ${version}`;
+        s.versionMismatch = `Server expects ${v}, currently running ${version}`;
     },
   },
   getters: make.getters(state),
