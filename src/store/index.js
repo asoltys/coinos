@@ -412,7 +412,7 @@ export default new Vuex.Store({
       await new Promise((resolve, reject) => {
         setTimeout(reject, 5000);
         const proto =
-          process.env.NODE_ENV === 'production' ? 'wss://' : 'ws://';
+          location.protocol === "https:" ? 'wss://' : 'ws://';
         if (!getters.token) return reject();
         if (getters.socket) {
           if (getters.socket.readyState === 1) return resolve();
