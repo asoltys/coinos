@@ -856,9 +856,10 @@ export default new Vuex.Store({
           if (user.account.ticker !== 'BTC')
             await dispatch('shiftAccount', process.env.VUE_APP_LBTC);
 
-          payment.amount = payment.payobj.satoshis;
+          let { satoshis, millisatoshis } = payment.payobj;
+          payment.amount = millisatoshis ? Math.round(millisatoshis / 1000) : satoshis;
           payment.fiatAmount = (
-            (payment.payobj.satoshis * getters.rate) /
+            (payment.amount * getters.rate) /
             SATS
           ).toFixed(2);
           payment.network = 'LNBTC';

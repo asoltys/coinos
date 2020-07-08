@@ -1,9 +1,9 @@
 <template>
   <v-card class="elevation-1 my-2 pa-4">
     <div class="text-center font-weight-bold">Pay</div>
-    <div v-if="payment.payobj.satoshis" class="d-flex justify-center">
+    <div v-if="payment.amount" class="d-flex justify-center">
       <div class="mr-2">
-        <span class="display-1">{{ payment.payobj.satoshis }}</span> SAT
+        <span class="display-1">{{ payment.amount }}</span> SAT
       </div>
       <div>
         <span class="yellow--text">
@@ -12,7 +12,7 @@
         </span>
       </div>
     </div>
-    <amount v-model.number="payment.amount" :max="max" class="mb-2" />
+    <amount v-else v-model.number="payment.amount" :max="max" class="mb-2" />
     <div v-if="fee !== null" class="text-center">
       <div>
         <span class="headline grey--text">+ Routing Fee: </span>

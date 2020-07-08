@@ -46,8 +46,6 @@ const SATS = 100000000;
 export default {
   components: { CurrencyList },
 
-  props: { payobj: { type: Object } },
-
   data() {
     return {
       interval: null,
