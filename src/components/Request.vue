@@ -74,7 +74,7 @@
             <v-icon left>content_copy</v-icon><span>Copy</span>
           </v-btn>
           <v-btn
-            v-if="invoice.network === 'LNBTC'"
+            v-if="invoice.network === 'LNBTC' && invoice.amount > 0"
             @click.native="lnurl"
             class="wide mr-2 mb-2 mb-sm-0"
           >
