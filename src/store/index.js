@@ -164,6 +164,18 @@ export default new Vuex.Store({
         return;
       }
 
+      try {
+        let info = (await Vue.axios.get('/info')).data;
+        commit('assets', (await Vue.axios.get('/assets')).data);
+        commit('info', info);
+        commit('nodes', info.nodes);
+        commit('rates', info.rates);
+        commit('version', info.clientVersion.trim());
+      } catch (e) {
+        l(e);
+        commit('error', 'Problem connecting to server');
+      }
+
       let token = getters.token || window.sessionStorage.getItem('token');
 
       if (!token) {
@@ -175,18 +187,6 @@ export default new Vuex.Store({
         if (paths.includes(path)) commit('initializing', false);
         else go('/login');
         return;
-      }
-
-      try {
-        let info = (await Vue.axios.get('/info')).data;
-        commit('assets', (await Vue.axios.get('/assets')).data);
-        commit('info', info);
-        commit('nodes', info.nodes);
-        commit('rates', info.rates);
-        commit('version', info.clientVersion.trim());
-      } catch (e) {
-        l(e);
-        commit('error', 'Problem connecting to server');
       }
 
       if (token && token !== 'null') {
@@ -991,6 +991,7 @@ export default new Vuex.Store({
               commit('error', e.response ? e.response.data : e.message);
             }
             break;
+
           case 'withdrawRequest':
             commit('lnurl', params);
             go('/withdraw');
