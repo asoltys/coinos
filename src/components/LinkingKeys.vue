@@ -22,23 +22,7 @@
           </v-list-item-action>
         </v-list-item>
       </v-list>
-      <div v-if="result">
-        <qr :text="result.encoded" />
-        <v-textarea
-          v-if="result.encoded"
-          label="LNURL"
-          :value="result.encoded"
-          rows="1"
-          auto-grow
-          readonly
-        >
-          <template v-slot:append>
-            <v-btn @click="() => copy(result.encoded)" icon class="ml-1">
-              <v-icon>content_copy</v-icon>
-            </v-btn>
-          </template>
-        </v-textarea>
-      </div>
+      <lnurl :result="result" />
       <v-btn @click="add">
         <v-icon left class="yellow--text">add</v-icon>
         <span>Add</span>
@@ -49,11 +33,11 @@
 
 <script>
 import { get, call } from 'vuex-pathify';
-import Qr from './Qr';
 import Copy from '../mixins/Copy';
+import Lnurl from './Lnurl';
 
 export default {
-  components: { Qr },
+  components: { Lnurl },
   mixins: [Copy],
   data() {
     return {

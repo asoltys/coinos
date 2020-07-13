@@ -41,22 +41,7 @@
             </v-btn>
           </template>
         </v-textarea>
-        <qr v-if="channelRequest" :text="channelRequest.encoded" />
-        <v-textarea
-          v-if="channelRequest"
-          label="LNURL Channel Request"
-          v-model="channelRequest.encoded"
-          readonly
-          auto-grow
-          class="body-2"
-          rows="1"
-        >
-          <template v-slot:append>
-            <v-btn icon @click="copy(channelRequest.encoded)" class="ml-1" text>
-              <v-icon>content_copy</v-icon>
-            </v-btn>
-          </template>
-        </v-textarea>
+        <lnurl :result="channelRequest" />
       </div>
       <div v-if="generating">
         <v-form @submit.prevent="generate">
@@ -84,9 +69,10 @@ import Copy from '../mixins/Copy';
 import Qrcode from 'vue-material-design-icons/Qrcode';
 import Flash from 'vue-material-design-icons/Flash';
 import Qr from './Qr';
+import Lnurl from './Lnurl';
 
 export default {
-  components: { Flash, Qrcode, Qr },
+  components: { Flash, Qrcode, Qr, Lnurl },
   mixins: [Copy],
   data() {
     return {

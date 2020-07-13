@@ -1109,8 +1109,10 @@ export default new Vuex.Store({
     },
     addKey(s, v) {
       let index = s.user.keys.findIndex(a => a.id === v.id);
+      console.log(index, v);
       if (index > -1) s.user.keys[index] = v;
       else s.user.keys.unshift(v);
+      console.log(s.user.keys);
       s.user = JSON.parse(JSON.stringify(s.user));
     },
     addPayment(s, v) {

@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-if="result && result.encoded">
       <qr :text="result.encoded" />
       <div class="d-flex justify-center">
         <v-btn @click="window.location = `lightning:${result.encoded}`">
