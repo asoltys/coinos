@@ -23,7 +23,7 @@ const app = new Vue({
 if ('addEventListener' in document) {
   document.addEventListener(
     'DOMContentLoaded',
-    function() {
+    async function() {
       FastClick.attach(document.body);
     },
     false

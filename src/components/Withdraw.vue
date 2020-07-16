@@ -26,7 +26,7 @@
           dark
           @click="submit"
         >
-          <v-icon left>send</v-icon><span>Withdraw</span>
+          <v-icon left>send</v-icon><span>Redeem</span>
         </v-btn>
       </div>
     </div>

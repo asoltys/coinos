@@ -14,6 +14,7 @@ import { generateMnemonic } from 'bip39';
 import cryptojs from 'crypto-js';
 import sha256, { HMAC } from 'fast-sha256';
 import secp256k1 from 'secp256k1';
+import { isUuid, uuid } from 'uuidv4';
 
 const expectedType = process.env.VUE_APP_COINTYPE;
 
@@ -115,6 +116,8 @@ const state = {
   challenge: '',
   channels: [],
   channelRequest: null,
+  readController: null,
+  writeController: null,
   ecpair: null,
   error: '',
   friends: [],
@@ -125,7 +128,9 @@ const state = {
   loading: false,
   loadingFee: false,
   lnurl: null,
+  nfcEnabled: false,
   nodes: [],
+  noNfc: false,
   orders: [],
   payment: JSON.parse(blankPayment),
   payments: [],
@@ -135,6 +140,7 @@ const state = {
   rate: 0,
   rates: null,
   received: JSON.parse(blankPayment),
+  reader: null,
   seed: null,
   snack: '',
   socket: null,
@@ -408,11 +414,48 @@ export default new Vuex.Store({
       }
     },
 
+    async startScanning({ commit, getters, dispatch }) {
+      const { reader } = getters;
+      try {
+        await reader.scan();
+        commit('nfcEnabled', true);
+      } catch (e) {
+        commit('noNfc', true);
+        commit('error', 'Failed to enable NFC');
+      }
+    },
+
+    async setupNfc({ commit, getters, dispatch }) {
+      if ('NDEFReader' in window) {
+        const reader = new NDEFReader();
+        const controller = new AbortController();
+        const signal = controller.signal;
+        commit('reader', reader);
+        commit('readController', controller);
+
+        reader.onreading = event => {
+          event.message.records.map(async r => {
+            const decoder = new TextDecoder('utf-8');
+            const text = decoder.decode(r.data);
+            const parsed = await dispatch('handleScan', text);
+            if (parsed === 'no') dispatch('showText', text);
+          });
+        };
+
+        const permissionStatus = await navigator.permissions.query({
+          name: 'nfc',
+        });
+
+        if (permissionStatus.state === 'granted') {
+          dispatch('startScanning');
+        }
+      }
+    },
+
     async setupSocket({ commit, getters, dispatch }) {
       await new Promise((resolve, reject) => {
         setTimeout(reject, 5000);
-        const proto =
-          location.protocol === "https:" ? 'wss://' : 'ws://';
+        const proto = location.protocol === 'https:' ? 'wss://' : 'ws://';
         if (!getters.token) return reject();
         if (getters.socket) {
           if (getters.socket.readyState === 1) return resolve();
@@ -719,8 +762,9 @@ export default new Vuex.Store({
       commit('error', null);
     },
 
-    async addInvoice({ commit, state }, method) {
-      const { invoice, user } = state;
+    async addInvoice({ commit, dispatch, state }, method) {
+      const { controller, invoice, user } = state;
+      if (controller) controller.abort();
 
       if (!invoice.amount) invoice.amount = null;
       const { amount, tip } = invoice;
@@ -728,6 +772,7 @@ export default new Vuex.Store({
       method = method || invoice.method;
       invoice.method = method;
       invoice.network = methods[method];
+      invoice.uuid = uuid();
 
       const url = address =>
         amount
@@ -770,6 +815,31 @@ export default new Vuex.Store({
       } catch (e) {
         commit('error', e.response ? e.response.data : e.message);
       }
+
+      dispatch('write', invoice.uuid);
+    },
+
+    async write({ commit, dispatch }, text) {
+      if ('NDEFWriter' in window) {
+        const controller = new AbortController();
+        const signal = controller.signal;
+        commit('writeController', controller);
+
+        const writer = new NDEFWriter();
+
+        l('writing', text);
+        try {
+          await writer.write(text, { signal });
+          dispatch('snack', 'Successfully wrote to NFC tag');
+        } catch (e) {
+          l('failed to write NFC tag', e);
+        }
+      }
+    },
+
+    async stopWriting({ getters }) {
+      const { controller } = getters;
+      controller.abort();
     },
 
     async paste({ commit, dispatch }) {
@@ -838,7 +908,8 @@ export default new Vuex.Store({
 
       if (nodes.includes('lightning')) {
         try {
-          if (text.toLowerCase().slice(0, 10) === 'lightning:') text = text.slice(10);
+          if (text.toLowerCase().slice(0, 10) === 'lightning:')
+            text = text.slice(10);
           let payreq = text.toLowerCase();
           payment.payreq = payreq;
           payment.payobj = bolt11.decode(payment.payreq);
@@ -850,18 +921,19 @@ export default new Vuex.Store({
               'error',
               `Wrong network, '${coinType}' instead of '${expectedType}'`
             );
-            throw new Error("Wrong network");
-          } 
+            throw new Error('Wrong network');
+          }
 
           if (user.account.ticker !== 'BTC')
             await dispatch('shiftAccount', process.env.VUE_APP_LBTC);
 
           let { satoshis, millisatoshis } = payment.payobj;
-          payment.amount = millisatoshis ? Math.round(millisatoshis / 1000) : satoshis;
-          payment.fiatAmount = (
-            (payment.amount * getters.rate) /
-            SATS
-          ).toFixed(2);
+          payment.amount = millisatoshis
+            ? Math.round(millisatoshis / 1000)
+            : satoshis;
+          payment.fiatAmount = ((payment.amount * getters.rate) / SATS).toFixed(
+            2
+          );
           payment.network = 'LNBTC';
 
           await Vue.axios.post('/lightning/query', { payreq });
@@ -1005,7 +1077,33 @@ export default new Vuex.Store({
         commit('loading', false);
       }
 
+      if (text.startsWith('w:')) {
+        try {
+          const { data: lnurl } = await Vue.axios.get(
+            `/url?code=${text.substr(2)}`
+          );
+          await dispatch('handleScan', lnurl);
+          return;
+        } catch (e) {
+          commit('error', e.response ? e.response.data : e.message);
+        }
+      }
+
+      if (isUuid(text)) {
+        try {
+          const { data: invoice } = await Vue.axios.get(
+            `/invoice?uuid=${text}`
+          );
+          await dispatch('handleScan', invoice.text);
+          return;
+        } catch (e) {
+          commit('error', e.response ? e.response.data : e.message);
+        }
+      }
+
       commit('stopScanning', true);
+
+      return 'no';
     },
 
     async toggleFiat({ commit, dispatch, getters }) {
@@ -1049,10 +1147,14 @@ export default new Vuex.Store({
       }
     },
 
-    async getWithdrawUrl({ commit, getters }, { min, max }) {
+    async getWithdrawUrl({ commit, dispatch, getters }, { min, max }) {
       const { payment } = getters;
       try {
-        return (await Vue.axios.get(`/withdraw?min=${min}&max=${max}`)).data;
+        const { data: withdrawUrl } = await Vue.axios.get(
+          `/withdraw?min=${min}&max=${max}`
+        );
+        dispatch('write', 'w:' + withdrawUrl.encoded.substr(64));
+        return withdrawUrl;
       } catch (e) {
         commit('error', e.response ? e.response.data : e.message);
       }

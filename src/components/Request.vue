@@ -145,6 +145,7 @@ export default {
       'shiftCurrency',
       'snack',
       'toggleUnit',
+      'stopWriting',
     ]),
     async lnurl() {
       this.result = await this.getPaymentUrl(this.invoice.amount);
@@ -159,6 +160,9 @@ export default {
       this.invoice.fiatTip = fiatTip;
       await this.addInvoice();
     },
+  },
+  beforeRouteLeave() {
+    this.stopWriting();
   },
 };
 </script>

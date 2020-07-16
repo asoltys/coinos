@@ -10,23 +10,27 @@
           color="primary"
           dismissible
           transition="scale-transition"
-          >
+        >
           <div class="d-flex">
-          <div class="my-auto flex-grow-1" @click="showVersion = !showVersion" style="cursor: pointer">
-            <v-icon color="black">info</v-icon>
-            coinos update detected
-          </div>
-          <v-btn @click="refresh">
-            <v-icon left>refresh</v-icon>
-            Reload</v-btn>
+            <div
+              class="my-auto flex-grow-1"
+              @click="showVersion = !showVersion"
+              style="cursor: pointer"
+            >
+              <v-icon color="black">info</v-icon>
+              coinos update detected
+            </div>
+            <v-btn @click="refresh">
+              <v-icon left>refresh</v-icon>
+              Reload</v-btn
+            >
           </div>
           <v-card class="mt-2" v-if="showVersion">
             <v-card-text class="white--text">
-            {{ versionMismatch }}
+              {{ versionMismatch }}
             </v-card-text>
-            </v-card>
-        </v-alert
-        >
+          </v-card>
+        </v-alert>
         <v-alert
           class="mb-2"
           v-if="error"
@@ -103,11 +107,16 @@ export default {
     init: call('init'),
     handleScan: call('handleScan'),
     showText: call('showText'),
+    setupNfc: call('setupNfc'),
 
     async install() {
       const { outcome } = await this.prompt.prompt();
       if (outcome === 'accepted') this.installed = true;
     },
+  },
+
+  mounted() {
+    this.setupNfc();
   },
 };
 </script>

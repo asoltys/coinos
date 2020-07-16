@@ -119,7 +119,7 @@
             type="text"
             @focus="scroll"
             ref="username"
-            />
+          />
 
           <v-autocomplete
             v-model="form.currencies"
@@ -156,11 +156,16 @@
       </v-card-text>
     </v-card>
     <linking-keys />
+      <v-btn @click="startScanning" v-if="hasNfc && !nfcEnabled" class="wide">
+        <v-icon color="yellow" left>nfc</v-icon>
+        Enable NFC
+        </v-btn>
   </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
+import { get, call, sync } from 'vuex-pathify';
 import SetPin from './SetPin';
 import qr from 'qrcode';
 import PincodeInput from 'vue-pincode-input';
@@ -200,14 +205,20 @@ export default {
 
   computed: {
     ...mapGetters(['error', 'rates', 'user']),
+    nfcEnabled: sync('nfcEnabled'),
+    noNfc: get('noNfc'),
+    hasNfc() {
+      return 'NDEFReader' in window && !this.noNfc
+    },
     currencies() {
       return this.rates ? Object.keys(this.rates).sort() : [];
     },
   },
 
   methods: {
-    scroll(e) { 
-      VueScrollTo.scrollTo(e.target, 100, { offset: -15 })
+    startScanning: call('startScanning'),
+    scroll(e) {
+      VueScrollTo.scrollTo(e.target, 100, { offset: -15 });
     },
     clear() {
       this.tokenKey += 'a';
@@ -260,7 +271,9 @@ export default {
       if (this.changingPassword)
         this.$nextTick(() => {
           this.$refs.password.focus();
-          VueScrollTo.scrollTo(this.$refs.password.$refs.input, 100, { offset: -15 })
+          VueScrollTo.scrollTo(this.$refs.password.$refs.input, 100, {
+            offset: -15,
+          });
         });
     },
     pin(pin) {
