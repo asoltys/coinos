@@ -42,6 +42,12 @@
         <two-fa />
         <router-view v-if="!initializing" :key="$route.path" />
         <v-progress-linear v-else indeterminate />
+        <div class="d-flex my-2">
+          <v-btn class="flex-grow-1" @click="install" v-if="promptInstall">
+            <v-icon left color="green">home</v-icon>
+            Add to Homescreen</v-btn
+          >
+        </div>
       </v-container>
     </v-content>
     <bottom-nav v-if="user && user.address" />
