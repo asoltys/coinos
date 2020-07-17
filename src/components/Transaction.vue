@@ -144,7 +144,7 @@ export default {
     },
     explore() {
       this.$nextTick(function() {
-        if (this.network === 'bitcoin')
+        if (this.payment.network === 'bitcoin')
           window.open(`${bs}/address/${this.payment.address}`);
         else window.open(`${bs}/liquid/address/${this.payment.address}`);
       });
