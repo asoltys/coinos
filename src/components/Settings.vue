@@ -156,10 +156,28 @@
       </v-card-text>
     </v-card>
     <linking-keys />
-      <v-btn @click="startScanning" v-if="hasNfc && !nfcEnabled" class="wide">
-        <v-icon color="yellow" left>nfc</v-icon>
+    <div class="d-flex my-2" v-if="promptInstall">
+      <v-btn class="flex-grow-1" @click="install">
+        <v-icon left color="green">home</v-icon>
+        Add to Homescreen
+      </v-btn>
+    </div>
+    <div class="d-flex my-2">
+      <v-btn
+        class="flex-grow-1"
+        @click="startScanning"
+        v-if="hasNfc && !nfcEnabled"
+      >
+        <v-icon color="pink" left>nfc</v-icon>
         Enable NFC
-        </v-btn>
+      </v-btn>
+    </div>
+    <div class="d-flex my-2" v-if="promptNotifications">
+      <v-btn class="flex-grow-1" @click="setupNotifications">
+        <v-icon color="yellow" left>notifications_active</v-icon>
+        Enable Notifications
+      </v-btn>
+    </div>
   </div>
 </template>
 
@@ -172,12 +190,14 @@ import PincodeInput from 'vue-pincode-input';
 import FullScreen from '../mixins/FullScreen';
 import VueScrollTo from 'vue-scrollto';
 import LinkingKeys from './LinkingKeys';
+import Window from '../window';
 
 export default {
   components: { SetPin, PincodeInput, LinkingKeys },
   mixins: [FullScreen],
   data() {
     return {
+      installed: false,
       tokenKey: 'a',
       twofaFail: false,
       token: '',
@@ -208,14 +228,31 @@ export default {
     nfcEnabled: sync('nfcEnabled'),
     noNfc: get('noNfc'),
     hasNfc() {
-      return 'NDEFReader' in window && !this.noNfc
+      return 'NDEFReader' in window && !this.noNfc;
     },
     currencies() {
       return this.rates ? Object.keys(this.rates).sort() : [];
     },
+    prompt() {
+      return Window.prompt;
+    },
+
+    promptInstall() {
+      return this.prompt && !this.installed;
+    },
+
+    promptNotifications() {
+      return (
+        'Notification' in window &&
+        process.env.VUE_APP_VAPID_PUBKEY &&
+        Notification.permission !== 'denied' &&
+        Notification.permission !== 'granted'
+      );
+    },
   },
 
   methods: {
+    setupNotifications: call('setupNotifications'),
     startScanning: call('startScanning'),
     scroll(e) {
       VueScrollTo.scrollTo(e.target, 100, { offset: -15 });
@@ -223,16 +260,6 @@ export default {
     clear() {
       this.tokenKey += 'a';
       this.token = '';
-    },
-    async disable() {
-      try {
-        this.twofaFail = false;
-        await this.disable2fa(this.token);
-        this.twofa();
-      } catch (e) {
-        this.twofaFail = true;
-      }
-      this.clear();
     },
     async enable() {
       try {
@@ -243,6 +270,10 @@ export default {
         this.twofaFail = true;
       }
       this.clear();
+    },
+    async install() {
+      const { outcome } = await this.prompt.prompt();
+      if (outcome === 'accepted') this.installed = true;
     },
     filterCurrencies() {
       this.form.currencies = this.form.currencies.filter(c =>

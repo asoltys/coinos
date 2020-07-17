@@ -42,12 +42,6 @@
         <two-fa />
         <router-view v-if="!initializing" :key="$route.path" />
         <v-progress-linear v-else indeterminate />
-        <div class="d-flex my-2">
-          <v-btn class="flex-grow-1" @click="install" v-if="promptInstall">
-            <v-icon left color="green">home</v-icon>
-            Add to Homescreen</v-btn
-          >
-        </div>
       </v-container>
     </v-content>
     <bottom-nav v-if="user && user.address" />
@@ -59,7 +53,6 @@ import { get, call, sync } from 'vuex-pathify';
 import BottomNav from './components/BottomNav';
 import SnackBar from './components/SnackBar';
 import TopBar from './components/TopBar';
-import Window from './window';
 import TwoFa from './components/TwoFa';
 import paths from './paths';
 
@@ -68,7 +61,6 @@ export default {
 
   data() {
     return {
-      installed: false,
       showVersion: false,
     };
   },
@@ -82,14 +74,6 @@ export default {
 
     publicPath() {
       return paths.includes(this.$route.path);
-    },
-
-    prompt() {
-      return Window.prompt;
-    },
-
-    promptInstall() {
-      return this.prompt && !this.installed;
     },
 
     webscanning() {
@@ -114,11 +98,6 @@ export default {
     handleScan: call('handleScan'),
     showText: call('showText'),
     setupNfc: call('setupNfc'),
-
-    async install() {
-      const { outcome } = await this.prompt.prompt();
-      if (outcome === 'accepted') this.installed = true;
-    },
   },
 
   mounted() {

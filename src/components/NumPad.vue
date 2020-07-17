@@ -30,7 +30,7 @@
         <template v-if="buttons[j + 3 * i - 4] !== '<'">{{
           buttons[j + 3 * i - 4]
         }}</template>
-        <v-icon v-else>undo</v-icon>
+        <v-icon v-else style="max-width: 14px">undo</v-icon>
       </v-btn>
     </div>
   </div>
@@ -217,4 +217,5 @@ export default {
   min-height 60px
   font-size 18px
   font-weight bolder
+  max-width 33%
 </style>

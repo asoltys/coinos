@@ -21,7 +21,7 @@
       <div class="d-flex flex-wrap buttons">
         <v-btn
           v-if="nodes.includes('bitcoin')"
-          class="flex-grow-1 mb-2 mr-1"
+          class="flex-grow-1 mb-1 mr-1"
           @click="addInvoice('bitcoin')"
           :disabled="!isBtc"
           :style="buttonStyle"
@@ -32,7 +32,7 @@
 
         <v-btn
           v-if="nodes.includes('lightning')"
-          class="flex-grow-1 mb-2 mr-1"
+          class="flex-grow-1 mb-1 mr-1"
           @click="addInvoice('lightning')"
           :disabled="!isBtc"
           :style="buttonStyle"

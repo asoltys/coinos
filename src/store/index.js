@@ -508,7 +508,6 @@ export default new Vuex.Store({
             case 'login':
               if (data) {
                 commit('user', data);
-                dispatch('setupNotifications');
                 resolve();
               } else {
                 dispatch('logout');
