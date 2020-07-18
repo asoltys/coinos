@@ -83,6 +83,7 @@ const blankInvoice = JSON.stringify({
   currency: '',
   fiatAmount: null,
   fiatTip: null,
+  memo: null,
   method: '',
   rate: 0,
   received: 0,
@@ -97,6 +98,7 @@ const blankPayment = JSON.stringify({
   asset: BTC,
   feeRate: null,
   fiatAmount: null,
+  memo: null,
   method: null,
   network: null,
   payment: null,
@@ -128,6 +130,7 @@ const state = {
   loading: false,
   loadingFee: false,
   lnurl: null,
+  memo: null,
   nfcEnabled: false,
   nodes: [],
   noNfc: false,
@@ -624,6 +627,7 @@ export default new Vuex.Store({
       let {
         payment: {
           amount,
+          memo,
           recipient: { username },
         },
         user,
@@ -637,6 +641,7 @@ export default new Vuex.Store({
         let res = await Vue.axios.post('/send', {
           amount,
           asset,
+          memo,
           username,
         });
         res.data.sent = true;
@@ -644,6 +649,11 @@ export default new Vuex.Store({
       } catch (e) {
         commit('error', e.response ? e.response.data : e.message);
       }
+    },
+
+    async updatePayment({ commit, dispatch, getters }, { id, memo }) {
+      const { socket } = getters;
+      socket.send(JSON.stringify({ type: 'updateMemo', data: { id, memo } }));
     },
 
     async buildSweepTx({ commit, dispatch, getters }, address) {
@@ -701,13 +711,14 @@ export default new Vuex.Store({
       commit('error', null);
 
       let {
-        payment: { address, amount, asset, tx, payreq, route },
+        payment: { address, amount, asset, memo, tx, payreq, route },
       } = getters;
 
       if (payreq.startsWith('lnbc')) {
         try {
           let res = await Vue.axios.post('/lightning/send', {
             amount,
+            memo,
             payreq,
             route,
           });
@@ -726,6 +737,7 @@ export default new Vuex.Store({
             let res = await Vue.axios.post('/liquid/send', {
               address,
               asset,
+              memo,
               tx,
             });
             res.data.sent = true;
@@ -735,7 +747,11 @@ export default new Vuex.Store({
           }
         } else {
           try {
-            let res = await Vue.axios.post('/bitcoin/send', { address, tx });
+            let res = await Vue.axios.post('/bitcoin/send', {
+              address,
+              memo,
+              tx,
+            });
             res.data.sent = true;
             commit('payment', res.data);
           } catch (e) {
@@ -766,17 +782,21 @@ export default new Vuex.Store({
       if (controller) controller.abort();
 
       if (!invoice.amount) invoice.amount = null;
-      const { amount, tip } = invoice;
+      const { amount, memo, tip } = invoice;
 
       method = method || invoice.method;
+      invoice.memo = memo;
       invoice.method = method;
       invoice.network = methods[method];
       invoice.uuid = uuid();
 
-      const url = address =>
-        amount
-          ? `${method}:${address}?amount=${((amount + tip) / SATS).toFixed(8)}`
-          : address;
+      const url = address => {
+        let url = amount || memo ? `${method}:${address}?` : address;
+        if (amount)
+          url += `amount=${((amount + tip) / SATS).toFixed(8)}${memo ? '&' : ''}`;
+        if (memo) url += `message=${memo}`;
+        return url;
+      };
 
       let address;
       switch (method) {
@@ -799,6 +819,7 @@ export default new Vuex.Store({
           try {
             let { data: text } = await Vue.axios.post(`/lightning/invoice`, {
               amount,
+              memo,
               tip,
             });
             invoice.text = text;
@@ -926,7 +947,9 @@ export default new Vuex.Store({
           if (user.account.ticker !== 'BTC')
             await dispatch('shiftAccount', process.env.VUE_APP_LBTC);
 
-          let { satoshis, millisatoshis } = payment.payobj;
+          let { tags, satoshis, millisatoshis } = payment.payobj;
+          let description = tags.find(t => t.tagName === 'description');
+          if (description) payment.memo = description.data;
           payment.amount = millisatoshis
             ? Math.round(millisatoshis / 1000)
             : satoshis;
@@ -963,14 +986,17 @@ export default new Vuex.Store({
       }
 
       if (url) {
-        let account = user.accounts.find(a => a.asset === url.options.asset);
+        let { amount, asset, message } = url.options;
+        let account = user.accounts.find(a => a.asset === asset);
         if (account) await dispatch('shiftAccount', account.asset);
         else return commit('error', 'Unrecognized asset');
 
         payment.address = url.address;
 
-        if (url.options.amount) {
-          payment.amount = parseInt((url.options.amount * SATS).toFixed(0));
+        if (message) payment.memo = message;
+
+        if (amount) {
+          payment.amount = parseInt((amount * SATS).toFixed(0));
           payment.fiatAmount = ((payment.amount * getters.rate) / SATS).toFixed(
             2
           );

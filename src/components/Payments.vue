@@ -18,6 +18,7 @@
               hash,
               preimage,
               id,
+              memo,
               payobj,
               sign,
               color,
@@ -124,6 +125,23 @@
                     </v-btn>
                   </template>
                 </v-textarea>
+                <v-textarea
+                  v-if="memo"
+                  label="Memo"
+                  :value="memo"
+                  rows="1"
+                  auto-grow
+                  :ref="'memo' + id"
+                  :success="success[id]"
+                  :readonly="success[id]"
+                >
+                  <template v-slot:append>
+                    <v-btn v-if="!success[id]" @click="updateMemo(id)" class="ml-1 mb-1" color="secondary">
+                      <v-icon left>update</v-icon>
+                      Save
+                    </v-btn>
+                  </template>
+                  </v-textarea>
               </v-card>
             </v-expansion-panel-content>
           </v-expansion-panel>
@@ -173,6 +191,7 @@ export default {
     return {
       copytext: '',
       loaded: false,
+      success: {},
     };
   },
 
@@ -186,6 +205,12 @@ export default {
   },
 
   methods: {
+    updatePayment: call('updatePayment'),
+    updateMemo(id) {
+      let memo = this.$refs[`memo${id}`][0].$refs.input.value;
+      this.updatePayment({ id, memo });
+      this.success[id] = true;
+    },
     ticker(a) {
       if (!a || a.ticker === 'BTC') return this.user.unit;
       return a.ticker;
@@ -297,4 +322,11 @@ code
 
 .v-chip
   cursor pointer
+
+.toggle
+  max-height 24px
+  margin-top -12px
+  margin-bottom 6px
+  min-width 44px !important
+  width 44px !important
 </style>

@@ -18,6 +18,13 @@
         :initialRate="rate"
       />
 
+      <v-textarea v-if="showingMemo" label="Memo" v-model="invoice.memo" rows="1" ref="memo" auto-grow auto-focus />
+        <div class="d-flex flex-wrap buttons" v-else>
+        <v-btn class="flex-grow-1 mb-1" @click="showMemo">
+          <v-icon left>note</v-icon>
+          Add Memo
+          </v-btn>
+          </div>
       <div class="d-flex flex-wrap buttons">
         <v-btn
           v-if="nodes.includes('bitcoin')"
@@ -68,10 +75,18 @@ import { get, call, sync } from 'vuex-pathify';
 export default {
   components: { Balance, Flash, Numpad, Received, Request, Water },
 
+  data() {
+    return {
+      showingMemo: false,
+    };
+  },
+
   computed: {
     buttonStyle() {
       return {
-        maxWidth: `${(100 / (window.innerWidth < 600 ? 1 : this.nodes.length)).toFixed(0)}%`,
+        maxWidth: `${(
+          100 / (window.innerWidth < 600 ? 1 : this.nodes.length)
+        ).toFixed(0)}%`,
       };
     },
     isBtc() {
@@ -92,13 +107,18 @@ export default {
     invoice: sync('invoice'),
     loading: sync('loading'),
     nodes: get('nodes'),
-    payment: get('payment'),
     rate: get('rate'),
     received: sync('received'),
     user: sync('user'),
   },
 
   methods: {
+    showMemo() {
+      this.showingMemo = true;
+      this.$nextTick(() => {
+        this.$refs.memo.focus();
+      }); 
+    },
     ...mapActions(['addInvoice', 'clearInvoice', 'snack', 'setCurrency']),
 
     updateAmount(amount, fiatAmount, currency) {

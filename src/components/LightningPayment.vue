@@ -33,6 +33,7 @@
         </v-btn>
       </template>
     </v-textarea>
+    <v-textarea label="Memo" v-model="payment.memo" rows="1" auto-grow />
   </v-card>
 </template>
 

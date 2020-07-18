@@ -39,7 +39,7 @@
         <qr v-else-if="!showcode" :text="invoice.text" />
         <div
           class="mb-2"
-          v-if="invoice.amount <= 0 && invoice.network !== 'LNBTC'"
+          v-if="invoice.amount <= 0 && !invoice.memo && invoice.network !== 'LNBTC'"
         >
           <code class="black--text mb-2" :data-clipboard-text="invoice.text">{{
             invoice.text
@@ -59,7 +59,7 @@
             </template>
           </v-btn>
           <v-btn
-            v-if="invoice.amount > 0 || invoice.network === 'LNBTC'"
+            v-if="invoice.amount > 0 || invoice.memo || invoice.network === 'LNBTC'"
             @click.native="showcode = !showcode"
             class="mr-2 mb-2 mb-sm-0 wide"
           >

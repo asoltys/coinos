@@ -35,7 +35,12 @@
       @input="changeAsset"
       :items="accounts"
     />
-    <amount v-model.number="payment.amount" :max="max" class="mb-2" @done="$emit('feeRate')" />
+    <amount
+      v-model.number="payment.amount"
+      :max="max"
+      class="mb-2"
+      @done="$emit('feeRate')"
+    />
     <v-text-field
       v-if="payment.address"
       :loading="loadingFee"
@@ -57,6 +62,8 @@
       </template>
     </v-text-field>
     <set-fee :adjusting="adjusting" @closed="$emit('feeRate')" />
+
+    <v-textarea label="Memo" v-model="payment.memo" rows="1" auto-grow />
 
     <div class="d-flex" v-if="psbt">
       <v-btn @click="copy(psbt)" class="ml-auto">
@@ -108,7 +115,8 @@ export default {
       return this.user.account.ticker === 'BTC';
     },
     currency() {
-      if (this.isBtc) return this.user.fiat ? this.user.currency : this.user.unit;
+      if (this.isBtc)
+        return this.user.fiat ? this.user.currency : this.user.unit;
       else return this.user.account.ticker;
     },
     displayFee() {
