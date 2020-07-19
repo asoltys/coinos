@@ -41,7 +41,7 @@
             </v-btn>
           </template>
         </v-textarea>
-        <lnurl :result="channelRequest" />
+        <lnurl :lnurl="channelRequest" />
       </div>
       <div v-if="generating">
         <v-form @submit.prevent="generate">

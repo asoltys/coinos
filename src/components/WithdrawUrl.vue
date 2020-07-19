@@ -1,9 +1,14 @@
 <template>
   <div>
-    <lnurl v-if="result && result.encoded" :result="result" />
+    <lnurl v-if="lnurl && lnurl.encoded" :lnurl="lnurl" />
     <div v-else>
       <amount label="Minimum Withdrawal" v-model.number="min" :max="max" />
-      <amount label="Maximum Withdrawal" v-model.number="max" :max="max" class="mb-2" />
+      <amount
+        label="Maximum Withdrawal"
+        v-model.number="max"
+        :max="max"
+        class="mb-2"
+      />
       <div class="d-flex">
         <v-btn
           class="black--text flex-grow-1"
@@ -29,14 +34,14 @@ export default {
     return {
       min: 1,
       max: null,
-      result: null,
+      lnurl: null,
     };
   },
   methods: {
     getWithdrawUrl: call('getWithdrawUrl'),
     async submit() {
       let { min, max } = this;
-      this.result = await this.getWithdrawUrl({ min, max });
+      this.lnurl = await this.getWithdrawUrl({ min, max });
     },
   },
   computed: {

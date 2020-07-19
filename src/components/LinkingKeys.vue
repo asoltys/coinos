@@ -22,8 +22,8 @@
           </v-list-item-action>
         </v-list-item>
       </v-list>
-      <lnurl :result="result" />
-      <v-btn @click="add">
+      <lnurl v-if="lnurl" :lnurl="lnurl" />
+      <v-btn @click="getLoginUrl">
         <v-icon left class="yellow--text">add</v-icon>
         <span>Add</span>
       </v-btn>
@@ -39,12 +39,8 @@ import Lnurl from './Lnurl';
 export default {
   components: { Lnurl },
   mixins: [Copy],
-  data() {
-    return {
-      result: null,
-    };
-  },
   computed: {
+    lnurl: get('lnurl'),
     user: get('user'),
   },
   methods: {
@@ -54,9 +50,6 @@ export default {
     },
     deleteLinkingKey: call('deleteLinkingKey'),
     getLoginUrl: call('getLoginUrl'),
-    async add() {
-      this.result = await this.getLoginUrl();
-    },
   },
 };
 </script>

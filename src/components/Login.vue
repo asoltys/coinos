@@ -21,29 +21,7 @@
       <v-divider class="mb-2" />
       <v-card>
         <v-card-text>
-          <div v-if="result">
-            <qr :text="result.encoded" />
-            <div class="d-flex">
-            <v-btn @click="window.location = `lightning:${result.encoded}`" class="mx-auto">
-                      <v-icon left color="yellow">open_in_new</v-icon>
-                      Open
-                    </v-btn>
-                    </div>
-            <v-textarea
-              v-if="result.encoded"
-              label="LNURL"
-              :value="result.encoded"
-              rows="1"
-              auto-grow
-              readonly
-            >
-              <template v-slot:append>
-                <v-btn @click="() => copy(result.encoded)" icon class="ml-1">
-                  <v-icon>content_copy</v-icon>
-                </v-btn>
-              </template>
-            </v-textarea>
-          </div>
+          <lnurl v-if="lnurl" :lnurl="lnurl" />
           <v-form v-else @submit.prevent="submit" class="mt-4">
             <v-text-field
               label="Username"
@@ -66,7 +44,7 @@
               Sign in
             </v-btn>
             <v-btn
-              @click="lnurl"
+              @click="lnurlAuth"
               color="secondary"
               class="mr-2 mb-2 mb-sm-0 wide"
             >
@@ -94,13 +72,13 @@ import { mapActions, mapGetters } from 'vuex';
 import Flash from 'vue-material-design-icons/Flash';
 import Login from 'vue-material-design-icons/Login';
 import Qrcode from 'vue-material-design-icons/Qrcode';
-import Qr from './Qr';
+import Lnurl from './Lnurl';
 import Water from 'vue-material-design-icons/Water';
 import { get, call, sync } from 'vuex-pathify';
 import Copy from '../mixins/Copy';
 
 export default {
-  components: { Flash, Login, Water, Qr, Qrcode },
+  components: { Flash, Login, Water, Qrcode, Lnurl },
   mixins: [Copy],
 
   props: {
@@ -117,12 +95,11 @@ export default {
         username: '',
         password: '',
       },
-      result: null,
     };
   },
 
   computed: {
-    ...mapGetters(['error', 'user', 'initializing']),
+    ...mapGetters(['error', 'user', 'initializing', 'lnurl']),
     loading: sync('loading'),
     twofa: sync('twofa'),
     token: sync('token'),
@@ -132,12 +109,11 @@ export default {
     ...mapActions(['login']),
     init: call('init'),
     getLoginUrl: call('getLoginUrl'),
-    async lnurl() {
+    async lnurlAuth() {
       try {
-        this.result = await this.getLoginUrl();
-      } catch(e) {
-        return console.log('problem getting login url', e);
-      } 
+        await this.getLoginUrl();
+
+        this.$nextTick(() => {
 
       try {
         const proto =
@@ -149,7 +125,7 @@ export default {
           switch (type) {
             case 'connected':
               ws.send(
-                JSON.stringify({ type: 'lnurl', data: this.result.secret })
+                JSON.stringify({ type: 'lnurl', data: this.lnurl.secret })
               );
               break;
 
@@ -163,6 +139,11 @@ export default {
       } catch (e) {
         console.log('socket error', e);
       }
+        }); 
+      } catch(e) {
+        return console.log('problem getting login url', e);
+      } 
+
     },
     submit(e) {
       this.login(this.form);

@@ -769,12 +769,14 @@ export default new Vuex.Store({
       invoice.rate = state.rate;
       commit('invoice', invoice);
       commit('error', null);
+      commit('lnurl', null);
     },
 
     async clearPayment({ commit }) {
       let payment = JSON.parse(blankPayment);
       commit('payment', payment);
       commit('error', null);
+      commit('lnurl', null);
     },
 
     async addInvoice({ commit, dispatch, state }, method) {
@@ -793,7 +795,9 @@ export default new Vuex.Store({
       const url = address => {
         let url = amount || memo ? `${method}:${address}?` : address;
         if (amount)
-          url += `amount=${((amount + tip) / SATS).toFixed(8)}${memo ? '&' : ''}`;
+          url += `amount=${((amount + tip) / SATS).toFixed(8)}${
+            memo ? '&' : ''
+          }`;
         if (memo) url += `message=${memo}`;
         return url;
       };
@@ -908,11 +912,14 @@ export default new Vuex.Store({
 
     async generateChannelRequest({ commit }, { localAmt, pushAmt }) {
       try {
-        let result = await Vue.axios.post('/lightning/channelRequest', {
-          localAmt,
-          pushAmt,
-        });
-        commit('channelRequest', result.data);
+        const { data: lnurl } = await Vue.axios.post(
+          '/lightning/channelRequest',
+          {
+            localAmt,
+            pushAmt,
+          }
+        );
+        commit('channelRequest', lnurl);
       } catch (e) {
         commit('error', e.response ? e.response.data : e.message);
       }
@@ -1039,79 +1046,84 @@ export default new Vuex.Store({
         /* */
       }
 
-      if (text.toLowerCase().startsWith('lnurl')) {
-        commit('loading', true);
-        text = text.toLowerCase();
-        const { data: params } = await Vue.axios.get(`/decode?text=${text}`);
-        if (params.status === 'ERROR') {
-          let json = params.reason.replace(/.*{/, '{');
-          return commit('error', JSON.parse(json).reason);
-        }
-
-        let { seed } = getters;
-
-        switch (params.tag) {
-          case 'channelRequest':
-            await dispatch('openChannel', params);
-            break;
-          case 'login':
-            if (!seed) return dispatch('logout');
-            try {
-              const key = linkingKey(params.domain, seed);
-              const signedMessage = secp256k1.ecdsaSign(
-                hexToUint8Array(params.k1),
-                key.privateKey
-              );
-              const signedMessageDER = secp256k1.signatureExport(
-                signedMessage.signature
-              );
-              const linkingKeyPub = secp256k1.publicKeyCreate(
-                key.privateKey,
-                true
-              );
-              const sig = bytesToHexString(signedMessageDER);
-
-              const response = await Vue.axios.post('/login', {
-                params,
-                sig,
-                key: bytesToHexString(linkingKeyPub),
-              });
-
-              if (response.data.status === 'OK') {
-                commit('snack', 'Login success');
-              } else {
-                commit('error', response.status);
-              }
-
-              go('/home');
-            } catch (e) {
-              commit('error', e.response ? e.response.data : e.message);
-            }
-            break;
-
-          case 'withdrawRequest':
-            commit('lnurl', params);
-            go('/withdraw');
-            break;
-          case 'payRequest':
-            commit('lnurl', params);
-            go('/pay');
-            break;
-        }
-
-        commit('loading', false);
-      }
-
-      if (text.startsWith('w:')) {
+      if (text.toLowerCase().startsWith('lnurl:')) {
         try {
           const { data: lnurl } = await Vue.axios.get(
-            `/url?code=${text.substr(2)}`
+            `/url?code=${text}`
           );
           await dispatch('handleScan', lnurl);
           return;
         } catch (e) {
           commit('error', e.response ? e.response.data : e.message);
         }
+      }
+
+      if (text.toLowerCase().startsWith('lnurl')) {
+        commit('loading', true);
+        text = text.toLowerCase();
+
+        try {
+          const { data: params } = await Vue.axios.get(`/decode?text=${text}`);
+          if (params.status === 'ERROR') {
+            let json = params.reason.replace(/.*{/, '{');
+            return commit('error', JSON.parse(json).reason);
+          }
+
+          let { seed } = getters;
+
+          switch (params.tag) {
+            case 'channelRequest':
+              await dispatch('openChannel', params);
+              break;
+            case 'login':
+              if (!seed) return dispatch('logout');
+              try {
+                const key = linkingKey(params.domain, seed);
+                const signedMessage = secp256k1.ecdsaSign(
+                  hexToUint8Array(params.k1),
+                  key.privateKey
+                );
+                const signedMessageDER = secp256k1.signatureExport(
+                  signedMessage.signature
+                );
+                const linkingKeyPub = secp256k1.publicKeyCreate(
+                  key.privateKey,
+                  true
+                );
+                const sig = bytesToHexString(signedMessageDER);
+
+                const response = await Vue.axios.post('/login', {
+                  params,
+                  sig,
+                  key: bytesToHexString(linkingKeyPub),
+                });
+
+                if (response.data.status === 'OK') {
+                  commit('snack', 'Login success');
+                } else {
+                  commit('error', response.status);
+                }
+
+                go('/home');
+              } catch (e) {
+                commit('error', e.response ? e.response.data : e.message);
+              }
+              break;
+
+            case 'withdrawRequest':
+              commit('lnurl', params);
+              go('/withdraw');
+              break;
+            case 'payRequest':
+              commit('lnurl', params);
+              go('/pay');
+              break;
+          }
+        } catch (e) {
+          commit('error', e.response ? e.response.data : e.message);
+        }
+
+        commit('loading', false);
       }
 
       if (isUuid(text)) {
@@ -1166,7 +1178,8 @@ export default new Vuex.Store({
 
     async getPaymentUrl({ commit, getters }, amount) {
       try {
-        return (await Vue.axios.get(`/pay?amount=${amount}`)).data;
+        const { data: lnurl } = await Vue.axios.get(`/pay?amount=${amount}`);
+        commit('lnurl', lnurl);
       } catch (e) {
         commit('error', e.response ? e.response.data : e.message);
       }
@@ -1178,8 +1191,18 @@ export default new Vuex.Store({
         const { data: withdrawUrl } = await Vue.axios.get(
           `/withdraw?min=${min}&max=${max}`
         );
-        dispatch('write', 'w:' + withdrawUrl.encoded.substr(64));
+
         return withdrawUrl;
+      } catch (e) {
+        commit('error', e.response ? e.response.data : e.message);
+      }
+    },
+
+    async createCode({ commit, dispatch }, lnurl) {
+      if (!lnurl) return;
+      try {
+        const { data: code } = await Vue.axios.post('/code', { lnurl });
+        dispatch('write', code.code);
       } catch (e) {
         commit('error', e.response ? e.response.data : e.message);
       }
@@ -1189,7 +1212,13 @@ export default new Vuex.Store({
       const { user } = getters;
       let url = '/login';
       if (user.username) url += `?username=${user.username}`;
-      return (await Vue.axios.get(url)).data;
+
+      try {
+        const { data: lnurl } = await Vue.axios.get(url);
+        commit('lnurl', lnurl);
+      } catch (e) {
+        commit('error', e.response ? e.response.data : e.message);
+      }
     },
 
     async deleteLinkingKey({}, hex) {

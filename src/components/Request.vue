@@ -32,10 +32,7 @@
       </div>
       <h1 v-else class="text-center font-weight-black">Receiving Address</h1>
       <v-card class="pa-3 text-center mb-2">
-        <div class="code mb-4" :class="{ print: !showcode }">
-          {{ invoice.text }}
-        </div>
-        <lnurl v-if="result && result.encoded" :result="result" />
+        <lnurl v-if="lnurl && lnurl.encoded" :lnurl="lnurl" />
         <qr v-else-if="!showcode" :text="invoice.text" />
         <div
           class="mb-2"
@@ -45,7 +42,10 @@
             invoice.text
           }}</code>
         </div>
-        <div v-if="!result">
+        <div v-if="!lnurl">
+          <div class="code mb-4" :class="{ print: !showcode }">
+            {{ invoice.text }}
+          </div>
           <v-btn
             v-if="invoice.amount > 0"
             @click.native="tipping = true"
@@ -75,7 +75,7 @@
           </v-btn>
           <v-btn
             v-if="invoice.network === 'LNBTC'"
-            @click.native="lnurl"
+            @click.native="getPaymentUrl(invoice.amount)"
             class="wide mr-2 mb-2 mb-sm-0"
           >
             <qrcode class="mr-1" />
@@ -114,7 +114,6 @@ export default {
 
   data() {
     return {
-      result: null,
       showcode: false,
       tipping: false,
     };
@@ -130,6 +129,7 @@ export default {
     total() {
       return this.$format(this.invoice.amount + this.invoice.tip);
     },
+    lnurl: get('lnurl'),
     invoice: get('invoice'),
     user: get('user'),
     code() {
@@ -147,9 +147,6 @@ export default {
       'toggleUnit',
       'stopWriting',
     ]),
-    async lnurl() {
-      this.result = await this.getPaymentUrl(this.invoice.amount);
-    },
     async address() {
       await this.getNewAddress();
     },

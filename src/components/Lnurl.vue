@@ -1,21 +1,21 @@
 <template>
-    <div v-if="result && result.encoded">
-      <qr :text="result.encoded" />
+    <div v-if="lnurl && lnurl.encoded">
+      <qr :text="lnurl.encoded" />
       <div class="d-flex justify-center">
-        <v-btn @click="window.location = `lightning:${result.encoded}`">
+        <v-btn @click="window.location = `lightning:${lnurl.encoded}`">
           <v-icon left color="yellow">open_in_new</v-icon>
           Open
         </v-btn>
       </div>
       <v-textarea
         label="LNURL"
-        :value="result.encoded"
+        :value="lnurl.encoded"
         rows="1"
         auto-grow
         readonly
       >
         <template v-slot:append>
-          <v-btn @click="() => copy(result.encoded)" icon class="ml-1">
+          <v-btn @click="() => copy(lnurl.encoded)" icon class="ml-1">
             <v-icon>content_copy</v-icon>
           </v-btn>
         </template>
@@ -26,12 +26,19 @@
 <script>
 import Qr from './Qr';
 import Copy from '../mixins/Copy';
+import { call } from 'vuex-pathify';
 
 export default {
   components: { Qr },
   mixins: [Copy],
   props: {
-    result: { type: Object, default: null },
+    lnurl: { type: Object, default: null },
+  },
+  methods: {
+    createCode: call('createCode'),
+  },
+  mounted() {
+    this.createCode(this.lnurl);
   },
 };
 </script>
