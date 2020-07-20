@@ -8,6 +8,7 @@
         @focus="e => e.target.select()"
         @keyup.enter="done"
         ref="amount"
+        placeholder="_"
         solo
       >
         <template v-slot:append>
@@ -63,7 +64,7 @@ export default {
     return {
       amount: this.initialAmount,
       fiatAmount: ((this.initialAmount / SATS) * this.initialRate).toFixed(2),
-      inputAmount: '_',
+      inputAmount: '',
       buttons: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '<', '0', 'C'],
       codes: Array.from(Array(10), (_, x) => x + 48),
       currency: '',
@@ -81,7 +82,7 @@ export default {
     this.inputAmount =
       this.user.fiat && this.fiatAmount
         ? this.fiatAmount
-        : this.$format(this.initialAmount) || '_';
+        : this.$format(this.initialAmount) || '';
   },
 
   computed: {
@@ -124,14 +125,14 @@ export default {
 
   watch: {
     inputAmount(v) {
-      if (v === '_') return;
+      if (v === '') return;
       this.convert(v);
       this.$nextTick(() => {
         if (
           !this.amount &&
           this.$refs.amount.$refs.input !== document.activeElement
         )
-          this.inputAmount = '_';
+          this.inputAmount = '';
       });
 
       if (!this.amount) this.amount = 0;
