@@ -35,6 +35,7 @@
     <send-to-user v-if="payment.method === 'coinos'" />
     <paper v-if="payment.method === 'paper'" />
     <withdraw-url v-if="payment.method === 'url'" />
+    <swap v-if="payment.method === 'swap'" />
     <v-btn v-if="payment.method" @click="payment.method = null" class="mt-2 wide">
       <v-icon>arrow_back</v-icon>
       Back</v-btn
@@ -48,11 +49,12 @@ import Copy from '../mixins/Copy';
 import Qrcode from 'vue-material-design-icons/Qrcode';
 import SendToUser from './SendToUser';
 import Paper from './Paper';
+import Swap from './Swap';
 import WithdrawUrl from './WithdrawUrl';
 import Methods from './Methods';
 
 export default {
-  components: { WithdrawUrl, Paper, Qrcode, Methods, SendToUser },
+  components: { WithdrawUrl, Paper, Qrcode, Methods, SendToUser, Swap },
   mixins: [Copy],
   data() {
     return {

@@ -24,6 +24,14 @@
       <v-icon color="pink" left>card_giftcard</v-icon>
       Voucher
     </v-btn>
+    <v-btn
+      class="flex-grow-1 mb-2 mr-1 wide"
+      @click="payment.method = 'swap'"
+      :style="buttonStyle"
+    >
+      <v-icon color="blue" left>swap_horiz</v-icon>
+      Swap
+    </v-btn>
   </div>
 </template>
 

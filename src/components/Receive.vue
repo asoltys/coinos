@@ -18,13 +18,24 @@
         :initialRate="rate"
       />
 
-      <v-textarea v-if="showingMemo" label="Memo" v-model="invoice.memo" rows="1" ref="memo" auto-grow auto-focus />
-        <div class="d-flex flex-wrap buttons" v-else>
+      <v-card class="mb-1" v-if="showingMemo">
+        <v-card-text>
+          <v-textarea
+            label="Memo"
+            v-model="invoice.memo"
+            rows="1"
+            ref="memo"
+            auto-grow
+            auto-focus
+          />
+        </v-card-text>
+      </v-card>
+      <div class="d-flex flex-wrap buttons" v-else>
         <v-btn class="flex-grow-1 mb-1" @click="showMemo">
           <v-icon left>note</v-icon>
           Add Memo
-          </v-btn>
-          </div>
+        </v-btn>
+      </div>
       <div class="d-flex flex-wrap buttons">
         <v-btn
           v-if="nodes.includes('bitcoin')"
@@ -117,7 +128,7 @@ export default {
       this.showingMemo = true;
       this.$nextTick(() => {
         this.$refs.memo.focus();
-      }); 
+      });
     },
     ...mapActions(['addInvoice', 'clearInvoice', 'snack', 'setCurrency']),
 

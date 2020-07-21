@@ -137,6 +137,7 @@ const state = {
   orders: [],
   payment: JSON.parse(blankPayment),
   payments: [],
+  proposal: null,
   psbt: null,
   pin: '',
   prompt2fa: false,
@@ -227,7 +228,15 @@ export default new Vuex.Store({
       }
     },
 
-    async getAddress({ commit, getters, dispatch }) {},
+    async propose({ commit, getters, dispatch }, { a1, a2, v1, v2 }) {
+      try {
+        let { data: { proposal: proposal } } = await Vue.axios.get(`/proposal?v1=${(v1 / SATS).toFixed(8)}&v2=${(v2 / SATS).toFixed(8)}&a1=${a1}&a2=${a2}`);
+        commit('proposal', proposal);
+        console.log("got proposal", proposal);
+      } catch (e) {
+        commit('error', e.response ? e.response.data : e.message);
+      }
+    },
 
     async getChallenge({ commit, getters, dispatch }) {
       try {
