@@ -12,7 +12,13 @@
         </span>
       </div>
     </div>
-    <amount v-else v-model.number="payment.amount" :max="max" class="mb-2" />
+    <amount
+      v-else
+      v-model.number="amount"
+      class="mb-2"
+      @done="payment.amount = amount"
+      @input="updateAmount"
+    />
     <div v-if="fee !== null" class="text-center">
       <div>
         <span class="headline grey--text">+ Routing Fee: </span>
@@ -45,7 +51,11 @@ import Amount from './Amount';
 export default {
   mixins: [Copy],
   components: { Amount },
-
+  data() {
+    return {
+      amount: 0,
+    };
+  },
   computed: {
     fee() {
       if (!this.payment.route) return null;
@@ -54,6 +64,14 @@ export default {
     payment: get('payment'),
     rate: get('rate'),
     user: get('user'),
+  },
+  methods: {
+    updateAmount(amount, fiatAmount, currency) {
+      console.log("updating amount", amount, fiatAmount, currency);
+      this.$nextTick(() => {
+        this.payment.fiatAmount = fiatAmount;
+      });
+    },
   },
 };
 </script>

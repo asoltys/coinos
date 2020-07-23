@@ -279,10 +279,9 @@ export default new Vuex.Store({
     async publish({ commit, getters, dispatch }) {
       const { proposal } = getters;
 
-      l(proposal);
       try {
         await Vue.axios.post('/publish', { id: proposal.id });
-        go('/proposals');
+        go('/swaps');
       } catch (e) {
         commit('error', e.response ? e.response.data : e.message);
       }

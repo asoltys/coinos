@@ -7,7 +7,7 @@
         :currencies="currencies"
         :initialAmount="value"
         :initialRate="rate"
-        @input="e => $emit('input', e)"
+        @input="(amount, fiatAmount, currency) => $emit('input', amount, fiatAmount, currency)"
         :key="editing"
       />
       <div class="d-flex">
@@ -80,9 +80,6 @@ export default {
     fiatAmount() {
       return ((this.value * this.rate) / SATS).toFixed(2);
     },
-    userUnit() {
-      return this.user.unit;
-    },
     assets: get('assets'),
     precision() {
       if (this.currency ) {
@@ -98,7 +95,6 @@ export default {
       return this.user.account.ticker === 'BTC';
     },
     displayAmount() {
-      console.log(this.user.fiat, this.fiatAmount, this.value, this.currency, this.user.currency);
       return this.user.fiat && !this.currency
         ? this.fiatAmount
         : this.user.unit === 'SAT'
@@ -131,11 +127,6 @@ export default {
       if (this.user.account.ticker !== 'BTC' || this.currency) return this.toggleUnit();
       this.toggleFiat();
     },
-  },
-  watch: {
-    userUnit(v) {
-      console.log("changed user unit");
-    }, 
   },
 };
 </script>

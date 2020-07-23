@@ -88,19 +88,21 @@ export default {
     return {
       loading: false,
       showcode: false,
-      a1: 'b2e15d0d7a0c94e4e2ce0fe6e8691b9e451377f6e46e8045a86f7c4b5d4f0f23',
-      a2: '85ea9dfb85f6b68ee24d513b79bfca22d4f63be9d1b36af9657759a44c4f4440',
-      v1: 6000,
-      v2: 8000,
+      a1: null,
+      a2: null,
+      v1: 0,
+      v2: 0,
     };
   },
 
   computed: {
     a1c() {
-      return this.user.accounts.find(a => a.asset === this.a1).ticker;
+      const account = this.user.accounts.find(a => a.asset === this.a1);
+      return account ? account.ticker : '';
     },
     a2c() {
-      return this.user.accounts.find(a => a.asset === this.a2).ticker;
+      const account = this.user.accounts.find(a => a.asset === this.a2);
+      return account ? account.ticker : '';
     },
     accounts() {
       return this.user.accounts.map(a => ({ text: a.name, value: a.asset }));
