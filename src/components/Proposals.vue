@@ -1,17 +1,24 @@
 <template>
   <v-expansion-panels accordion class="mb-2">
     <v-expansion-panel v-for="p in proposals" :key="p.id">
-      <v-expansion-panel-header ripple class="d-flex" expand-icon="">
-        <div class="title">
-          {{ p.v1 }}
-          <v-btn class="toggle ml-1" color="yellow">{{ format(p.a1) }}</v-btn>
-          <span class="body-1"> for </span>
-          {{ p.v2 }}
-          <v-btn class="toggle ml-1" color="yellow">{{ format(p.a2) }}</v-btn>
+      <v-expansion-panel-header ripple class="d-flex justify-between" expand-icon="">
+        <div class="title d-flex flex-wrap justify-around flex-grow-1">
+          <div class="d-flex no-wrap mr-1">
+            <div>
+            {{ p.v1 }}
+            </div>
+            <v-btn class="toggle ml-1" color="yellow">{{ format(p.a1) }}</v-btn>
+          </div>
+          <div class="flex-shrink-1 body-1 my-auto text-center mr-1">for</div>
+          <div class="flex-grow-1 d-flex no-wrap">
+            <div>
+            {{ p.v2 }}
+            </div>
+            <v-btn class="toggle ml-1" color="yellow">{{ format(p.a2) }}</v-btn>
+          </div>
         </div>
-        <v-spacer />
-        <div class="text-right">
-          <v-btn class="mr-1" @click.stop="download(p.text)" icon>
+        <div class="d-flex flex-grow-1 flex-nowrap text-right ml-auto">
+          <v-btn class="mr-1 ml-auto" @click.stop="download(p.text)" icon>
             <v-icon>get_app</v-icon>
           </v-btn>
           <v-btn class="mr-1" @click.stop="copy(p.text)" icon>
@@ -25,9 +32,10 @@
               <v-icon left>delete</v-icon>
               Delete
             </v-btn>
-            <v-btn v-else @click.stop="accept(p.id)" color="green">
-              <v-icon left>send</v-icon>
-              Accept
+            <v-btn v-else @click.stop="accept({ id: p.id })" color="green">
+              <v-icon class="d-none d-sm-inline-flex" left>send</v-icon>
+              <v-icon class="d-sm-none">send</v-icon>
+              <span class="d-none d-sm-inline">Accept</span>
             </v-btn>
           </span>
           <v-btn
@@ -103,8 +111,7 @@ export default {
 <style lang="stylus" scoped>
 .toggle
   color black
-  max-height 24px
-  margin-bottom 2px
+  max-height 2em
   min-width 44px !important
   width 44px !important
 </style>
