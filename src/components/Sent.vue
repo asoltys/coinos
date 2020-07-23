@@ -38,8 +38,8 @@
       <v-btn @click="clearPayment" class="mr-2">
         <v-icon left>arrow_back</v-icon><span>Send Another</span>
       </v-btn>
-      <v-btn v-if="payment.txid" @click="link(payment.txid)">
-        <v-icon left>open_in_new</v-icon><span>Blockchain</span>
+      <v-btn v-if="payment.network !== 'LNBTC'" @click.native="explore">
+        <v-icon left>open_in_new</v-icon><span>Explore</span>
       </v-btn>
     </div>
   </v-card>
@@ -84,14 +84,12 @@ export default {
       return ((n * this.payment.rate) / 100000000).toFixed(2);
     },
 
-    link(tx) {
-      let bs = 'https://blockstream.info';
-      if (
-        this.$prod ||
-        window.location.href.includes('test')
-      )
-        bs += '/testnet';
-      window.location = `${bs}/tx/${tx}`;
+    explore() {
+      let url = 'https://blockstream.info';
+      let { hash, network } = this.payment;
+      if (network === 'BTC') url += `/tx/${hash}`;
+      if (network === 'LBTC') url += `${bs}/liquid/tx/${hash}`;
+      window.open(url, '_blank');
     },
 
     snack: call('snack'),
