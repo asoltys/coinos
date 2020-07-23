@@ -38,10 +38,10 @@
       </v-card-text>
     </v-card>
     <div v-else>
-      <div class="d-flex mb-2">
-        <v-card class="flex-grow-1 mr-2">
+      <div class="d-flex flex-wrap flex-md-nowrap">
+        <v-card class="flex-grow-1 mr-md-2 mb-2">
           <v-card-text>
-            <h2 class="text-center">Trade</h2>
+            <h2 class="text-center white--text">Trade</h2>
             <v-select label="Asset" v-model="a1" :items="accounts" />
             <amount
               v-model.number="v1"
@@ -51,9 +51,9 @@
             />
           </v-card-text>
         </v-card>
-        <v-card class="flex-grow-1">
+        <v-card class="flex-grow-1 mb-2">
           <v-card-text>
-            <h2 class="text-center">For</h2>
+            <h2 class="text-center white--text">For</h2>
             <v-select label="Asset" v-model="a2" :items="accounts" />
             <amount
               v-model.number="v2"
