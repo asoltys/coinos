@@ -36,7 +36,7 @@
     <paper v-if="payment.method === 'paper'" />
     <withdraw-url v-if="payment.method === 'url'" />
     <swap v-if="payment.method === 'swap'" />
-    <v-btn v-if="payment.method" @click="payment.method = null" class="mt-2 wide">
+    <v-btn v-if="payment.method" @click="payment.method = null" class="my-2 wide">
       <v-icon>arrow_back</v-icon>
       Back</v-btn
     >

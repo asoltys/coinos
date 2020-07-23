@@ -6,6 +6,11 @@ const About = () =>
     /* webpackChunkName: "about" */
     '../components/About'
   );
+const Accept = () =>
+  import(
+    /* webpackChunkName: "accept" */
+    '../components/Accept'
+  );
 const Asset = () =>
   import(
     /* webpackChunkName: "asset" */
@@ -18,7 +23,7 @@ const Assets = () =>
   );
 const Decrypt = () =>
   import(
-    /* webpackChunkName: "home" */
+    /* webpackChunkName: "decrypt" */
     '../components/Decrypt'
   );
 const Home = () =>
@@ -73,18 +78,29 @@ const Text = () =>
   );
 const Pay = () =>
   import(
-    /* webpackChunkName: "text" */
+    /* webpackChunkName: "pay" */
     '../components/Pay'
+  );
+const Swap = () =>
+  import(
+    /* webpackChunkName: "swap" */
+    '../components/Swap'
+  );
+const Swaps = () =>
+  import(
+    /* webpackChunkName: "swaps" */
+    '../components/Swaps'
   );
 const Withdraw = () =>
   import(
-    /* webpackChunkName: "text" */
+    /* webpackChunkName: "withdraw" */
     '../components/Withdraw'
   );
 
 const routes = [
   { path: '/', component: Home, props: { logout: false } },
   { path: '/about', component: About },
+  { name: 'accept', path: '/accept', component: Accept, props: true },
   { path: '/asset', component: Asset },
   { path: '/assets', component: Assets },
   { path: '/decrypt', component: Decrypt },
@@ -100,6 +116,8 @@ const routes = [
   { path: '/sweep', component: Sweep },
   { path: '/text', component: Text },
   { path: '/pay', component: Pay },
+  { path: '/propose', component: Swap },
+  { path: '/swaps', component: Swaps },
   { path: '/withdraw', component: Withdraw },
 ];
 

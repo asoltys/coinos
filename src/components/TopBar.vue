@@ -34,6 +34,12 @@
           </v-list-item-action>
           <v-list-item-content>Assets</v-list-item-content>
         </v-list-item>
+        <v-list-item @click="$go('/swaps')">
+          <v-list-item-action>
+            <v-icon>swap_horiz</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>Swaps</v-list-item-content>
+        </v-list-item>
         <v-list-item @click="$go('/settings')">
           <v-list-item-action>
             <v-icon>settings</v-icon>

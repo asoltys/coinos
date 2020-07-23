@@ -8,6 +8,7 @@
         :initialAmount="value"
         :initialRate="rate"
         @input="e => $emit('input', e)"
+        :key="editing"
       />
       <div class="d-flex">
         <v-btn
@@ -33,6 +34,14 @@
           Max
         </v-btn>
         <v-btn
+          v-if="currency"
+          class="toggle black--text mt-auto"
+          :color="['SAT', 'BTC'].includes(currency) || user.unit === 'SAT' ? 'white' : '#0ae'"
+          @click.prevent="toggle"
+          >{{ user.unit === 'SAT' ? user.unit : currency }}</v-btn
+        >
+        <v-btn
+          v-else
           class="toggle black--text mt-auto"
           :color="user.fiat ? 'yellow' : 'white'"
           @click.prevent="toggle"
@@ -57,28 +66,47 @@ export default {
   components: { Numpad },
   mixins: [Copy],
   props: {
+    currency: { type: String, default: null },
     label: { type: String, default: 'Amount' },
     max: { type: Number, default: null },
     value: { type: Number, default: null },
   },
   data() {
     return {
-      fiatAmount: null,
       editing: false,
     };
   },
   computed: {
+    fiatAmount() {
+      return ((this.value * this.rate) / SATS).toFixed(2);
+    },
+    userUnit() {
+      return this.user.unit;
+    },
+    assets: get('assets'),
+    precision() {
+      if (this.currency ) {
+        let account = this.user.accounts.find(a => a.ticker === this.currency);
+        if (account) return account.precision;
+        else if (this.assets[this.currency]) {
+          return this.assets[this.currency].precision
+        }
+      } 
+      return 8;
+    },
     isBtc() {
       return this.user.account.ticker === 'BTC';
     },
     displayAmount() {
-      return this.user.fiat
+      console.log(this.user.fiat, this.fiatAmount, this.value, this.currency, this.user.currency);
+      return this.user.fiat && !this.currency
         ? this.fiatAmount
         : this.user.unit === 'SAT'
         ? this.value
-        : this.$format(this.value);
+        : this.$format(this.value, this.precision).toFixed(this.precision);
     },
     currencies() {
+      if (this.currency) return [this.currency, 'SAT'];
       let user = this.user;
       if (user.account.ticker === 'BTC') {
         return [...user.currencies, 'SAT', 'BTC'];
@@ -98,18 +126,16 @@ export default {
     setMax() {
       this.$emit('input', this.max);
     },
+    toggleUnit: call('toggleUnit'),
     toggle() {
-      if (this.user.account.ticker !== 'BTC') return;
+      if (this.user.account.ticker !== 'BTC' || this.currency) return this.toggleUnit();
       this.toggleFiat();
     },
   },
   watch: {
-    value(v) {
-      this.fiatAmount = ((this.value * this.rate) / SATS).toFixed(2);
-    } 
-  },
-  mounted() {
-    this.fiatAmount = ((this.value * this.rate) / SATS).toFixed(2);
+    userUnit(v) {
+      console.log("changed user unit");
+    }, 
   },
 };
 </script>
@@ -120,5 +146,4 @@ export default {
   margin-top -12px
   margin-bottom 6px
   min-width 44px !important
-  width 44px !important
 </style>

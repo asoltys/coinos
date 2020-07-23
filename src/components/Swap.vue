@@ -15,14 +15,23 @@
             </div>
           </v-card-text>
         </v-card>
-        <v-textarea v-if="showcode" :value="proposal" rows="20" />
-        <div v-else class="d-flex mb-2">
-          <div class="d-flex flex-grow-1">
-            <v-btn v-if="proposal" @click="download" class="flex-grow-1 mr-1">
+        <v-textarea v-if="showcode" :value="proposal.text" rows="20" />
+        <div class="d-flex flex-wrap mb-2">
+          <div class="d-flex flex-grow-1 mb-2">
+            <v-btn @click="download" class="flex-grow-1 mr-1">
               <v-icon left>get_app</v-icon><span>Download</span>
             </v-btn>
-            <v-btn v-if="proposal" @click="copy(proposal)" class="flex-grow-1">
+            <v-btn @click="copy(proposal.text)" class="flex-grow-1">
               <v-icon left>content_copy</v-icon><span>Copy</span>
+            </v-btn>
+          </div>
+          <div class="d-flex flex-grow-1" style="width: 100%">
+            <v-btn
+              @click="publish"
+              color="yellow"
+              class="black--text flex-grow-1"
+            >
+              <v-icon left>assignment</v-icon><span>Publish</span>
             </v-btn>
           </div>
         </div>
@@ -32,20 +41,34 @@
       <div class="d-flex mb-2">
         <v-card class="flex-grow-1 mr-2">
           <v-card-text>
+            <h2 class="text-center">Trade</h2>
             <v-select label="Asset" v-model="a1" :items="accounts" />
-            <amount v-model.number="v1" class="mb-2" />
+            <amount
+              v-model.number="v1"
+              class="mb-2"
+              :currency="a1c"
+              :key="a1c"
+            />
           </v-card-text>
         </v-card>
         <v-card class="flex-grow-1">
           <v-card-text>
+            <h2 class="text-center">For</h2>
             <v-select label="Asset" v-model="a2" :items="accounts" />
-            <amount v-model.number="v2" class="mb-2" />
+            <amount
+              v-model.number="v2"
+              class="mb-2"
+              :currency="a2c"
+              :key="a2c"
+            />
           </v-card-text>
         </v-card>
       </div>
-      <v-btn color="green" @click="submit" class="flex-grow-1">
-        <v-icon left>swap_horiz</v-icon><span>Swap</span>
-      </v-btn>
+      <div class="d-flex">
+        <v-btn color="green" @click="submit" class="flex-grow-1">
+          <v-icon left>assignment</v-icon><span>Generate Proposal</span>
+        </v-btn>
+      </div>
     </div>
   </div>
 </template>
@@ -73,6 +96,12 @@ export default {
   },
 
   computed: {
+    a1c() {
+      return this.user.accounts.find(a => a.asset === this.a1).ticker;
+    },
+    a2c() {
+      return this.user.accounts.find(a => a.asset === this.a2).ticker;
+    },
     accounts() {
       return this.user.accounts.map(a => ({ text: a.name, value: a.asset }));
     },
@@ -82,9 +111,10 @@ export default {
   },
 
   methods: {
+    publish: call('publish'),
     download() {
       const filename = 'proposal.txt';
-      const blob = new Blob([this.proposal], {
+      const blob = new Blob([this.proposal.text], {
         type: 'text/plain;charset=utf-8;',
       });
       if (navigator.msSaveBlob) {
@@ -116,7 +146,6 @@ export default {
   },
 
   mounted() {
-    console.log("mounting");
     this.proposal = null;
   },
 };

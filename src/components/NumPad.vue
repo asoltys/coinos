@@ -74,32 +74,36 @@ export default {
 
   mounted() {
     this.rates = this.globalRates;
-    this.currency =
-      this.user.fiat && this.currencies.includes(this.user.currency)
-        ? this.user.currency
-        : this.user.account.ticker;
-    if (this.currency === 'BTC') this.currency = this.user.unit;
+    this.currency = this.user.fiat && this.currencies.includes(this.user.currency)
+      ? this.user.currency
+      : this.user.unit === 'SAT'
+      ? 'SAT'
+      : !this.currencies.includes(this.user.currency)
+      ? this.currencies[0]
+      : this.user.account.ticker;
     this.inputAmount =
-      this.user.fiat && this.fiatAmount
+      this.currency === 'SAT'
+        ? this.initialAmount
+        : this.user.fiat && this.fiatAmount && this.currencies.includes(this.user.currency)
         ? this.fiatAmount
-        : this.$format(this.initialAmount) || '';
+        : parseFloat(this.$format(this.initialAmount, this.decimals)).toFixed(
+            this.decimals
+          ) || '';
   },
 
   computed: {
+    assets: get('assets'),
     decimals() {
+      if (this.currency === 'SAT') return 0;
+      let account = this.user.accounts.find(a => a.ticker === this.currency);
+      if (account) return account.precision;
+      else if (this.assets[this.currency]) {
+        return this.assets[this.currency].precision;
+      }
       if (this.user.account.ticker !== 'BTC')
         return this.user.account.precision;
 
-      switch (this.currency) {
-        case 'SAT':
-          return 0;
-          break;
-        case 'BTC':
-          return 8;
-          break;
-        default:
-          return 2;
-      }
+      return 2;
     },
     divisor() {
       return 10 ** this.decimals;
@@ -114,7 +118,7 @@ export default {
           return 1;
           break;
         default:
-          if (this.rates[this.currency]) return this.rates[this.currency]
+          if (this.rates[this.currency]) return this.rates[this.currency];
           else return 1;
           break;
       }
@@ -150,10 +154,11 @@ export default {
           this.inputAmount = ((this.amount * this.rate) / SATS).toFixed(
             this.decimals
           );
+        } else {
+          this.inputAmount = (this.amount / this.divisor).toFixed(
+            this.decimals
+          );
         }
-        else {
-          this.inputAmount = (this.amount / this.divisor).toFixed(this.decimals);
-        } 
 
         this.$refs.amount.blur();
       });

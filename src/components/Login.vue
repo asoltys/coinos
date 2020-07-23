@@ -62,8 +62,11 @@
           </v-form>
         </v-card-text>
       </v-card>
-      <div class="text-center my-2 d-flex flex-wrap justify-center"></div>
     </div>
+    <v-btn @click="$go('/swaps')" class="mt-2">
+      <v-icon left>swap_horiz</v-icon>
+      View Swap Proposals
+    </v-btn>
   </div>
 </template>
 
@@ -114,36 +117,34 @@ export default {
         await this.getLoginUrl();
 
         this.$nextTick(() => {
+          try {
+            const proto =
+              process.env.NODE_ENV === 'production' ? 'wss://' : 'ws://';
+            let ws = new WebSocket(`${proto}${location.host}/ws`);
+            ws.onmessage = msg => {
+              let { type, data } = JSON.parse(msg.data);
 
-      try {
-        const proto =
-          process.env.NODE_ENV === 'production' ? 'wss://' : 'ws://';
-        let ws = new WebSocket(`${proto}${location.host}/ws`);
-        ws.onmessage = msg => {
-          let { type, data } = JSON.parse(msg.data);
+              switch (type) {
+                case 'connected':
+                  ws.send(
+                    JSON.stringify({ type: 'lnurl', data: this.lnurl.secret })
+                  );
+                  break;
 
-          switch (type) {
-            case 'connected':
-              ws.send(
-                JSON.stringify({ type: 'lnurl', data: this.lnurl.secret })
-              );
-              break;
-
-            case 'token':
-              this.token = data;
-              ws.close();
-              this.$go('/home');
-              break;
+                case 'token':
+                  this.token = data;
+                  ws.close();
+                  this.$go('/home');
+                  break;
+              }
+            };
+          } catch (e) {
+            console.log('socket error', e);
           }
-        };
+        });
       } catch (e) {
-        console.log('socket error', e);
-      }
-        }); 
-      } catch(e) {
         return console.log('problem getting login url', e);
-      } 
-
+      }
     },
     submit(e) {
       this.login(this.form);

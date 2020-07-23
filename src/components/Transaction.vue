@@ -193,5 +193,4 @@ export default {
   margin-top -12px
   margin-bottom 6px
   min-width 44px !important
-  width 44px !important
 </style>

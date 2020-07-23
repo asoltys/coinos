@@ -1,8 +1,11 @@
 <template>
   <div v-if="currencies.length === 1">
-  <v-btn class="black--text" :color="color(currency)" @click="select(currencies[0])">{{
-        display
-      }}</v-btn>
+    <v-btn
+      class="black--text"
+      :color="color(currency)"
+      @click="select(currencies[0])"
+      >{{ display }}</v-btn
+    >
     <span class="print black--text">{{ display }}</span>
   </div>
   <v-menu v-else offset-y nudge-bottom="1">
@@ -14,7 +17,9 @@
     </template>
     <v-list v-if="currencies.length">
       <v-list-item v-for="c in currencies" :key="c" @click="select(c)">
-        <v-list-item-title :class="`${color(c)}--text`">{{ c }}</v-list-item-title>
+        <v-list-item-title :style="{ color: color(c) }">{{
+          c
+        }}</v-list-item-title>
       </v-list-item>
     </v-list>
   </v-menu>
@@ -31,7 +36,7 @@ export default {
   data() {
     return {
       display: this.currency,
-    } 
+    };
   },
 
   computed: {
@@ -41,7 +46,7 @@ export default {
   methods: {
     color(c) {
       let tickers = this.user.accounts.map(a => a.ticker);
-      return ['SAT', 'BTC', ...tickers].includes(c) ? 'white' : 'yellow';
+      return ['BTC', 'SAT'].includes(c) ? 'white' : tickers.includes(c) ? '#0ae' : 'yellow';
     },
     shiftAccount: call('shiftAccount'),
     setCurrency: call('setCurrency'),
@@ -74,9 +79,3 @@ export default {
   },
 };
 </script>
-
-<style lang="stylus" scoped>
-  @media print
-    .omg
-      display block !important
-</style>

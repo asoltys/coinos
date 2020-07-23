@@ -11,7 +11,7 @@
             }"
           >
             <div class="mb-1">
-              {{ a.name }} <span class="yellow--text">({{ a.ticker }})</span>
+              {{ a.name }} <v-btn class="toggle ml-1" :color="a.ticker === 'BTC' ? 'white' : '#0ae'">{{ a.ticker }}</v-btn>
             </div>
           </div>
           <div
@@ -157,4 +157,10 @@ export default {
 .asset
   max-width 70%
   word-wrap break-word
+
+.toggle
+  color black
+  max-height 24px
+  margin-bottom 2px
+  min-width 44px !important
 </style>

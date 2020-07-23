@@ -138,6 +138,7 @@ const state = {
   payment: JSON.parse(blankPayment),
   payments: [],
   proposal: null,
+  proposals: [],
   psbt: null,
   pin: '',
   prompt2fa: false,
@@ -228,11 +229,60 @@ export default new Vuex.Store({
       }
     },
 
+    async accept({ commit, getters, dispatch }, { id, text }) {
+      console.log(text);
+      try {
+        let { data: acceptance } = await Vue.axios.post('/accept', { id, text });
+        dispatch('snack', 'Swap completed');
+      } catch (e) {
+        commit('error', e.response ? e.response.data : e.message);
+      }
+    },
+
     async propose({ commit, getters, dispatch }, { a1, a2, v1, v2 }) {
       try {
-        let { data: { proposal: proposal } } = await Vue.axios.get(`/proposal?v1=${(v1 / SATS).toFixed(8)}&v2=${(v2 / SATS).toFixed(8)}&a1=${a1}&a2=${a2}`);
+        let {
+          data: { proposal },
+        } = await Vue.axios.get(
+          `/proposal?v1=${(v1 / SATS).toFixed(8)}&v2=${(v2 / SATS).toFixed(
+            8
+          )}&a1=${a1}&a2=${a2}`
+        );
         commit('proposal', proposal);
-        console.log("got proposal", proposal);
+      } catch (e) {
+        commit('error', e.response ? e.response.data : e.message);
+      }
+    },
+
+    async deleteProposal({ commit, state, dispatch }, id) {
+      const { proposals } = state;
+      try {
+        await Vue.axios.delete(`/proposal/${id}`);
+        proposals.splice(proposals.findIndex(p => p.id === id), 1);
+        state.proposals = JSON.parse(JSON.stringify(proposals));
+      } catch (e) {
+        commit('error', e.response ? e.response.data : e.message);
+      }
+    },
+
+    async getProposals({ commit, getters, dispatch }) {
+      commit('loading', true);
+      try {
+        const { data: proposals } = await Vue.axios.get('/proposals');
+        commit('proposals', proposals);
+      } catch (e) {
+        commit('error', e.response ? e.response.data : e.message);
+      }
+      commit('loading', false);
+    },
+
+    async publish({ commit, getters, dispatch }) {
+      const { proposal } = getters;
+
+      l(proposal);
+      try {
+        await Vue.axios.post('/publish', { id: proposal.id });
+        go('/proposals');
       } catch (e) {
         commit('error', e.response ? e.response.data : e.message);
       }
@@ -513,10 +563,6 @@ export default new Vuex.Store({
               commit('addKey', data);
               break;
 
-            case 'payment':
-              commit('addPayment', data);
-              break;
-
             case 'login':
               if (data) {
                 commit('user', data);
@@ -528,6 +574,14 @@ export default new Vuex.Store({
 
             case 'otpsecret':
               commit('user', { ...state.user, otpsecret: data });
+              break;
+
+            case 'payment':
+              commit('addPayment', data);
+              break;
+
+            case 'proposal':
+              commit('addProposal', data);
               break;
 
             case 'rates':
@@ -604,7 +658,6 @@ export default new Vuex.Store({
 
       let params = { address, amount, asset, feeRate };
 
-      l('estimating fee');
       if (address) {
         if (isLiquid(address)) {
           try {
@@ -613,7 +666,6 @@ export default new Vuex.Store({
             } = await Vue.axios.post('/liquid/fee', params);
             payment.feeRate = feeRate;
             payment.tx = tx;
-            l('fee rate', feeRate);
             commit('psbt', psbt);
           } catch (e) {
             commit('error', e.response ? e.response.data : e.message);
@@ -860,7 +912,6 @@ export default new Vuex.Store({
 
         const writer = new NDEFWriter();
 
-        l('writing', text);
         try {
           await writer.write(text, { signal });
           dispatch('snack', 'Successfully wrote to NFC tag');
@@ -1057,9 +1108,7 @@ export default new Vuex.Store({
 
       if (text.toLowerCase().startsWith('lnurl:')) {
         try {
-          const { data: lnurl } = await Vue.axios.get(
-            `/url?code=${text}`
-          );
+          const { data: lnurl } = await Vue.axios.get(`/url?code=${text}`);
           await dispatch('handleScan', lnurl);
           return;
         } catch (e) {
@@ -1265,6 +1314,12 @@ export default new Vuex.Store({
   },
   mutations: {
     ...make.mutations(state),
+    addProposal(s, v) {
+      let index = s.proposals.findIndex(p => p.id === v.id);
+      if (index > -1) s.proposals[index] = v;
+      else s.proposals.unshift(v);
+      s.proposals = JSON.parse(JSON.stringify(s.proposals));
+    },
     addAccount(s, v) {
       let index = s.user.accounts.findIndex(a => a.id === v.id);
       if (index > -1) s.user.accounts[index] = v;

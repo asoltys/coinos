@@ -1,1 +1,1 @@
-export default ['/login', '/about', '/register', '/forgot'];
+export default ['/login', '/about', '/register', '/forgot', '/swaps', '/accept'];
