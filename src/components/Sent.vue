@@ -67,7 +67,7 @@ export default {
     },
     total() {
       let total = Math.abs(this.payment.amount);
-      if (this.payment.account.ticker === 'BTC') {
+      if (this.payment.account.ticker === 'BTC' && this.payment.network !== 'LNBTC') {
         total -= this.payment.fee;
       }
 

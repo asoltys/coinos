@@ -67,7 +67,6 @@ export default {
   },
   methods: {
     updateAmount(amount, fiatAmount, currency) {
-      console.log("updating amount", amount, fiatAmount, currency);
       this.$nextTick(() => {
         this.payment.fiatAmount = fiatAmount;
       });

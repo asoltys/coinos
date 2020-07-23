@@ -7,7 +7,7 @@
         :currencies="currencies"
         :initialAmount="value"
         :initialRate="rate"
-        @input="(amount, fiatAmount, currency) => $emit('input', amount, fiatAmount, currency)"
+        @input="input"
         :key="editing"
       />
       <div class="d-flex">
@@ -114,6 +114,9 @@ export default {
     user: get('user'),
   },
   methods: {
+    input (amount, fiatAmount, currency) {
+      this.$emit('input', amount, fiatAmount, currency);
+    }, 
     done() {
       this.$emit('done');
       this.editing = false;
