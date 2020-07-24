@@ -167,6 +167,7 @@ export default new Vuex.Store({
   state,
   actions: {
     async init({ commit, getters, dispatch, state }) {
+      commit('assets', (await Vue.axios.get('/assets')).data);
       const { path } = router.currentRoute;
       commit('error', '');
       if (path === '/login' || path === '/register') {
@@ -177,7 +178,6 @@ export default new Vuex.Store({
 
       try {
         let info = (await Vue.axios.get('/info')).data;
-        commit('assets', (await Vue.axios.get('/assets')).data);
         commit('info', info);
         commit('nodes', info.nodes);
         commit('rates', info.rates);

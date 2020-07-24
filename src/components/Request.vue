@@ -9,7 +9,7 @@
             <span>{{ total }}</span>
             <v-btn
               class="black--text toggle"
-              color="white"
+              :color="color(ticker)"
               @click="toggleUnit"
               >{{ ticker }}</v-btn
             >
@@ -121,10 +121,7 @@ export default {
 
   computed: {
     ticker() {
-      return this.isBtc ? this.user.unit : this.user.account.ticker;
-    },
-    isBtc() {
-      return this.user.account.ticker === 'BTC';
+      return this.user.unit === 'BTC' ? this.user.account.ticker : 'SAT';
     },
     total() {
       return this.$format(this.invoice.amount + this.invoice.tip);
@@ -147,8 +144,17 @@ export default {
       'toggleUnit',
       'stopWriting',
     ]),
+
     async address() {
       await this.getNewAddress();
+    },
+
+    color(c) {
+      return ['BTC', 'SAT'].includes(c)
+        ? 'white'
+        : this.user.currencies.includes(c)
+        ? 'yellow'
+        : '#0ae';
     },
 
     async setTip(tip, fiatTip) {
@@ -182,6 +188,4 @@ export default {
   margin auto 0.25rem !important
   margin-top -0.3rem !important
   height 1.7rem !important
-  min-width 3rem !important
-  width 3rem !important
 </style>
