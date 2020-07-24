@@ -40,6 +40,7 @@
       :max="max"
       class="mb-2"
       @done="$emit('feeRate')"
+      :currency="currency"
       :key="currency"
     />
     <v-text-field
@@ -55,7 +56,7 @@
           class="toggle black--text mt-auto"
           :color="user.fiat ? 'yellow' : 'white'"
           @click.prevent="toggle"
-          >{{ currency }}</v-btn
+          >{{ user.unit }}</v-btn
         >
         <v-btn icon @click="copy(displayFee)" class="ml-1" text>
           <v-icon>content_copy</v-icon>
@@ -112,12 +113,8 @@ export default {
     accounts() {
       return this.user.accounts.map(a => ({ text: a.name, value: a.id }));
     },
-    isBtc() {
-      return this.user.account.ticker === 'BTC';
-    },
     currency() {
-      if (this.isBtc)
-        return this.user.fiat ? this.user.currency : this.user.unit;
+      if (this.user.account.ticker === 'BTC') return null;
       else return this.user.account.ticker;
     },
     displayFee() {

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-textarea label="Paste acceptance here" v-model="text" />
+    <v-textarea label="Base64 Encoded Acceptance Transaction" v-model="text" />
       <v-btn @click="accept({ id, text })">Accept</v-btn>
   </div>
 </template>
