@@ -230,15 +230,18 @@ export default new Vuex.Store({
     },
 
     async accept({ commit, getters, dispatch }, { id, text }) {
+      commit('loading', true);
       try {
         let { data: acceptance } = await Vue.axios.post('/accept', {
           id,
           text,
         });
         dispatch('snack', 'Swap completed');
+        go('/swaps');
       } catch (e) {
         commit('error', e.response ? e.response.data : e.message);
       }
+      commit('loading', false);
     },
 
     async propose({ commit, getters, dispatch }, { a1, a2, v1, v2 }) {
