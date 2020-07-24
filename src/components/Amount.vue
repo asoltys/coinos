@@ -45,7 +45,7 @@
           class="toggle black--text mt-auto"
           :color="user.fiat ? 'yellow' : 'white'"
           @click.prevent="toggle"
-          >{{ user.fiat ? user.currency : user.unit }}</v-btn
+          >{{ user.fiat ? user.currency : user.account.ticker }}</v-btn
         >
         <v-btn icon @click="copy(displayAmount)" class="ml-1" text>
           <v-icon>content_copy</v-icon>
@@ -82,12 +82,12 @@ export default {
     },
     assets: get('assets'),
     precision() {
-      if (this.currency ) {
+      if (this.currency) {
         let account = this.user.accounts.find(a => a.ticker === this.currency);
         if (account) return account.precision;
-        else if (this.assets[this.currency]) {
-          return this.assets[this.currency].precision
-        }
+
+        let asset = Object.values(this.assets).find(a => a.ticker === this.currency);
+        if (asset) return asset.precision;
       } 
       return 8;
     },
@@ -95,11 +95,15 @@ export default {
       return this.user.account.ticker === 'BTC';
     },
     displayAmount() {
+      let { precision, value } = this;
+      if (!value) value = 0;
+      if (!precision && precision !== 0) precision = 8;
+
       return this.user.fiat && !this.currency
         ? this.fiatAmount
         : this.user.unit === 'SAT'
-        ? this.value
-        : this.$format(this.value, this.precision).toFixed(this.precision);
+        ? value
+        : parseFloat(this.$format(value, precision)).toFixed(precision);
     },
     currencies() {
       if (this.currency) return [this.currency, 'SAT'];

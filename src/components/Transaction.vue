@@ -40,6 +40,7 @@
       :max="max"
       class="mb-2"
       @done="$emit('feeRate')"
+      :key="currency"
     />
     <v-text-field
       v-if="payment.address"

@@ -1,18 +1,22 @@
 <template>
   <v-expansion-panels accordion class="mb-2">
     <v-expansion-panel v-for="p in proposals" :key="p.id">
-      <v-expansion-panel-header ripple class="d-flex justify-between" expand-icon="">
+      <v-expansion-panel-header
+        ripple
+        class="d-flex justify-between"
+        expand-icon=""
+      >
         <div class="title d-flex flex-wrap justify-around flex-grow-1">
           <div class="d-flex no-wrap mr-1">
             <div>
-            {{ p.v1 }}
+              {{ format(p.a1, p.v1) }}
             </div>
             <v-btn class="toggle ml-1" color="yellow">{{ format(p.a1) }}</v-btn>
           </div>
           <div class="flex-shrink-1 body-1 my-auto text-center mr-1">for</div>
           <div class="flex-grow-1 d-flex no-wrap">
             <div>
-            {{ p.v2 }}
+              {{ format(p.a2, p.v2) }}
             </div>
             <v-btn class="toggle ml-1" color="yellow">{{ format(p.a2) }}</v-btn>
           </div>
@@ -49,8 +53,39 @@
         </div>
       </v-expansion-panel-header>
       <v-expansion-panel-content class="text-left">
+        <v-textarea
+          label="Proposer Sends"
+          :value="p.a1"
+          rows="1"
+          auto-grow
+          readonly
+        >
+          <template v-slot:append>
+            <v-btn @click="() => copy(p.a1)" icon class="ml-1">
+              <v-icon>content_copy</v-icon>
+            </v-btn>
+          </template>
+        </v-textarea>
+        <v-textarea
+          label="Acceptor Sends"
+          :value="p.a2"
+          rows="1"
+          auto-grow
+          readonly
+        >
+          <template v-slot:append>
+            <v-btn @click="() => copy(p.a1)" icon class="ml-1">
+              <v-icon>content_copy</v-icon>
+            </v-btn>
+          </template>
+        </v-textarea>
         <acceptance v-if="accepting" />
-        <v-textarea v-else :value="p.text" rows="10" />
+        <v-textarea
+          label="Base64 Encoded Transaction Proposal"
+          v-else
+          :value="p.text"
+          rows="10"
+        />
       </v-expansion-panel-content>
     </v-expansion-panel>
   </v-expansion-panels>
@@ -100,9 +135,13 @@ export default {
         }
       }
     },
-    format(asset) {
-      if (this.assets[asset]) return this.assets[asset].ticker;
-      else return asset.substr(0, 3);
+    format(asset, value) {
+      let precision, ticker;
+      let obj = this.assets[asset];
+      if (obj) ({ precision, ticker } = obj);
+      if (value) return parseFloat(this.$format(value, precision)).toFixed(precision);
+      if (ticker) return ticker;
+      return asset.substr(0, 3);
     },
   },
 };
@@ -113,5 +152,4 @@ export default {
   color black
   max-height 2em
   min-width 44px !important
-  width 44px !important
 </style>

@@ -46,20 +46,21 @@
             <amount
               v-model.number="v1"
               class="mb-2"
-              :currency="a1c"
-              :key="a1c"
+              :currency="ticker(a1)"
+              :key="a1"
             />
           </v-card-text>
         </v-card>
         <v-card class="flex-grow-1 mb-2">
           <v-card-text>
             <h2 class="text-center white--text">For</h2>
-            <v-select label="Asset" v-model="a2" :items="accounts" />
+            <v-autocomplete label="Select" v-model="a2" :items="all" />
+            <v-textarea label="Asset" v-model="a2" auto-grow rows="1" />
             <amount
               v-model.number="v2"
               class="mb-2"
-              :currency="a2c"
-              :key="a2c"
+              :currency="ticker(a2)"
+              :key="a2"
             />
           </v-card-text>
         </v-card>
@@ -96,13 +97,14 @@ export default {
   },
 
   computed: {
-    a1c() {
-      const account = this.user.accounts.find(a => a.asset === this.a1);
-      return account ? account.ticker : '';
-    },
-    a2c() {
-      const account = this.user.accounts.find(a => a.asset === this.a2);
-      return account ? account.ticker : '';
+    assets: get('assets'),
+    all() {
+      return Object.keys(this.assets)
+        .map(asset => ({
+          text: `${this.assets[asset].ticker} - ${this.assets[asset].name}`,
+          value: asset,
+        }))
+        .sort((a, b) => ('' + a.text).localeCompare(b.text));
     },
     accounts() {
       return this.user.accounts.map(a => ({ text: a.name, value: a.asset }));
@@ -113,6 +115,9 @@ export default {
   },
 
   methods: {
+    ticker(asset) {
+      return this.assets[asset] ? this.assets[asset].ticker : '';
+    },
     publish: call('publish'),
     download() {
       const filename = 'proposal.txt';

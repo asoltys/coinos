@@ -114,7 +114,7 @@ const blankPayment = JSON.stringify({
 const state = {
   addressTypes,
   asset: BTC,
-  assets: [],
+  assets: {},
   challenge: '',
   channels: [],
   channelRequest: null,
@@ -230,9 +230,11 @@ export default new Vuex.Store({
     },
 
     async accept({ commit, getters, dispatch }, { id, text }) {
-      console.log(text);
       try {
-        let { data: acceptance } = await Vue.axios.post('/accept', { id, text });
+        let { data: acceptance } = await Vue.axios.post('/accept', {
+          id,
+          text,
+        });
         dispatch('snack', 'Swap completed');
       } catch (e) {
         commit('error', e.response ? e.response.data : e.message);
@@ -258,7 +260,10 @@ export default new Vuex.Store({
       const { proposals } = state;
       try {
         await Vue.axios.delete(`/proposal/${id}`);
-        proposals.splice(proposals.findIndex(p => p.id === id), 1);
+        proposals.splice(
+          proposals.findIndex(p => p.id === id),
+          1
+        );
         state.proposals = JSON.parse(JSON.stringify(proposals));
       } catch (e) {
         commit('error', e.response ? e.response.data : e.message);
@@ -365,7 +370,6 @@ export default new Vuex.Store({
     },
 
     async toggleUnit({ commit, dispatch, state }) {
-      if (state.user.account.ticker !== 'BTC') return;
       state.user.unit = state.user.unit === 'SAT' ? 'BTC' : 'SAT';
       dispatch('updateUser', state.user);
     },
@@ -565,6 +569,16 @@ export default new Vuex.Store({
             case 'login':
               if (data) {
                 commit('user', data);
+
+                data.accounts.map(({ asset, name, precision, ticker }) => {
+                  getters.assets[asset] = {
+                    ...getters.assets[asset],
+                    name,
+                    precision,
+                    ticker,
+                  };
+                });
+
                 resolve();
               } else {
                 dispatch('logout');
@@ -1328,10 +1342,8 @@ export default new Vuex.Store({
     },
     addKey(s, v) {
       let index = s.user.keys.findIndex(a => a.id === v.id);
-      console.log(index, v);
       if (index > -1) s.user.keys[index] = v;
       else s.user.keys.unshift(v);
-      console.log(s.user.keys);
       s.user = JSON.parse(JSON.stringify(s.user));
     },
     addPayment(s, v) {

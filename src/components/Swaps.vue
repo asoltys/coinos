@@ -4,7 +4,7 @@
 
     <v-progress-linear v-if="loading" indeterminate />
     <proposals v-else-if="pending.length" :proposals="pending" />
-    <v-alert v-else color="info" dismissible transition="scale-transition"
+    <v-alert v-else color="primary" class="black--text" transition="scale-transition"
       >No pending proposals found</v-alert
     >
 
@@ -15,9 +15,8 @@
 
     <v-btn
       v-if="user.id"
-      class="mx-auto mb-2 black--text"
+      class="mx-auto mb-2"
       @click="$go('/propose')"
-      color="yellow"
     >
       <v-icon>add</v-icon>
       <span>New</span>

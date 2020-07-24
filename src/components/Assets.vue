@@ -34,16 +34,6 @@
           </div>
         </v-expansion-panel-header>
         <v-expansion-panel-content class="text-left">
-          <div class="d-flex">
-            <v-btn
-              class="mx-auto mb-2 black--text"
-              @click.prevent="() => select(a.asset)"
-              color="yellow"
-            >
-              <v-icon>forward</v-icon>
-              <span>Payments</span>
-            </v-btn>
-          </div>
           <v-card class="pa-4" style="background: #333">
             <v-alert
               v-if="success[a.asset]"
@@ -93,9 +83,16 @@
                 :readonly="a.asset === BTC"
               />
               <div class="text-right">
-                <v-btn type="submit">
+                <v-btn type="submit" class="mr-1">
                   <v-icon left class="yellow--text">check</v-icon>
                   <span>save</span>
+                </v-btn>
+                <v-btn
+                   class="mr-1"
+                   @click.prevent="() => select(a.asset)"
+                   >
+                   <v-icon>line_weight</v-icon>
+                   <span>Payments</span>
                 </v-btn>
               </div>
             </v-form>

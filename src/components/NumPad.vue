@@ -92,14 +92,15 @@ export default {
   },
 
   computed: {
+    asset() {
+      return Object.values(this.assets).find(a => a.ticker === this.currency);
+    },
     assets: get('assets'),
     decimals() {
       if (this.currency === 'SAT') return 0;
       let account = this.user.accounts.find(a => a.ticker === this.currency);
       if (account) return account.precision;
-      else if (this.assets[this.currency]) {
-        return this.assets[this.currency].precision;
-      }
+      else if (this.asset) return this.asset.precision;
       if (this.user.account.ticker !== 'BTC')
         return this.user.account.precision;
 
@@ -107,6 +108,9 @@ export default {
     },
     divisor() {
       return 10 ** this.decimals;
+    },
+    fiat() {
+      return this.user.currencies.includes(this.currency);
     },
     globalRate: get('rate'),
     rate() {
@@ -150,7 +154,7 @@ export default {
       this.currency = c;
 
       this.$nextTick(() => {
-        if (this.user.fiat) {
+        if (this.fiat) {
           this.inputAmount = ((this.amount * this.rate) / SATS).toFixed(
             this.decimals
           );
@@ -164,7 +168,7 @@ export default {
       });
     },
     convert(n) {
-      if (this.user.fiat) {
+      if (this.fiat) {
         this.fiatAmount = f(this.inputAmount).toFixed(this.decimals);
         this.amount = Math.round(
           ((parseFloat(this.fiatAmount) * SATS) / this.rate).toFixed(
@@ -185,7 +189,7 @@ export default {
     },
     done(e) {
       let amount = e.target.value;
-      if (this.user.fiat)
+      if (this.fiat)
         this.amount = Math.round(
           ((amount * SATS) / this.rate).toFixed(this.decimals)
         );

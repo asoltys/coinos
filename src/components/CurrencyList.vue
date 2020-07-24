@@ -40,13 +40,17 @@ export default {
   },
 
   computed: {
+    assets: get('assets'),
     user: get('user'),
   },
 
   methods: {
     color(c) {
-      let tickers = this.user.accounts.map(a => a.ticker);
-      return ['BTC', 'SAT'].includes(c) ? 'white' : tickers.includes(c) ? '#0ae' : 'yellow';
+      return ['BTC', 'SAT'].includes(c)
+        ? 'white'
+        : this.user.currencies.includes(c)
+        ? 'yellow'
+        : '#0ae';
     },
     shiftAccount: call('shiftAccount'),
     setCurrency: call('setCurrency'),
@@ -64,7 +68,7 @@ export default {
         await this.setCurrency(c);
       }
 
-      if (['BTC', 'SAT'].includes(c) && this.user.unit !== c) {
+      if ((['BTC', 'SAT'].includes(c) && this.user.unit !== c) || (this.user.unit === 'SAT' && !currency)) {
         await this.toggleUnit();
       }
 

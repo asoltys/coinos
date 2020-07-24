@@ -38,7 +38,7 @@
       <v-btn @click="clearPayment" class="mr-2">
         <v-icon left>arrow_back</v-icon><span>Send Another</span>
       </v-btn>
-      <v-btn v-if="payment.network !== 'LNBTC'" @click.native="explore">
+      <v-btn v-if="['BTC', 'LBTC'].includes(payment.network)" @click.native="explore">
         <v-icon left>open_in_new</v-icon><span>Explore</span>
       </v-btn>
     </div>
