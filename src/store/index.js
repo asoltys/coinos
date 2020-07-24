@@ -271,6 +271,7 @@ export default new Vuex.Store({
     },
 
     async getProposals({ commit, getters, dispatch }) {
+      commit('error', null);
       commit('loading', true);
       try {
         const { data: proposals } = await Vue.axios.get('/proposals');
