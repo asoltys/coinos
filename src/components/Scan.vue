@@ -73,6 +73,7 @@ export default {
 
           if (code) {
             this.handleScan(code.data);
+            this.$go({ name: 'send', params: { text: code.data } });
             this.stop();
           } 
         });

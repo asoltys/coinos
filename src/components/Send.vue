@@ -6,7 +6,7 @@
       <sent v-if="payment.sent" />
       <template v-else>
         <lightning-payment v-if="payment.payobj && !editing" @edit="edit" />
-        <to v-if="!(payment.payobj || payment.address || payment.recipient)" @edit="edit" />
+        <to v-if="!(payment.payobj || payment.address || payment.recipient)" @edit="edit" :text="text" />
         <payment-details v-else @edit="edit" />
       </template>
     </template>
@@ -37,6 +37,7 @@ export default {
       type: Boolean,
       default: false,
     },
+    text: { type: String, default: '' }
   },
 
   data() {

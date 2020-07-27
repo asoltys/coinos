@@ -56,6 +56,9 @@ import Methods from './Methods';
 export default {
   components: { WithdrawUrl, Paper, Qrcode, Methods, SendToUser, Swap },
   mixins: [Copy],
+  props: {
+    text: { type: String, default: '' }
+  },
   data() {
     return {
       to: '',
@@ -80,6 +83,8 @@ export default {
     },
   },
   mounted() {
+    if (this.text) this.to = this.text;
+
     const vw = Math.max(
       document.documentElement.clientWidth,
       window.innerWidth || 0
