@@ -10,8 +10,14 @@
               title: !$vuetify.breakpoint.xs,
             }"
           >
+            <v-icon v-if="assets[a.asset].registered" class="mr-1" color="yellow" title="Registered">assignment</v-icon>
             <div class="mb-1">
-              {{ a.name }} <v-btn class="toggle ml-1" :color="a.ticker === 'BTC' ? 'white' : '#0ae'">{{ a.ticker }}</v-btn>
+              {{ a.name }}
+              <v-btn
+                class="toggle ml-1"
+                :color="a.ticker === 'BTC' ? 'white' : '#0ae'"
+                >{{ a.ticker }}</v-btn
+              >
             </div>
           </div>
           <div
@@ -47,7 +53,43 @@
             >
               Settings saved successfully
             </v-alert>
-            <v-form @submit.prevent="() => submit(a)">
+            <div v-if="registering[a.asset]">
+              <h2 class="text-center white--text">Proof of Domain</h2>
+              <div class="text-center">
+                Place file at <a :href="url(a)">{{ url(a) }}</a> and click Register
+              </div>
+              <div class="d-flex">
+                <div class="flex-grow-1 text-center">
+                  <v-icon large @click="showcode = !showcode" class="pa-4"
+                    >assignment</v-icon
+                  >
+                </div>
+              </div>
+              <v-textarea
+                v-if="showcode"
+                :value="proof(a)"
+                rows="1"
+                auto-grow
+              />
+              <div class="d-flex flex-grow-1 mb-2">
+                <v-btn @click="download(filename(a), proof(a))" class="flex-grow-1 mr-1">
+                  <v-icon left>get_app</v-icon><span>Download</span>
+                </v-btn>
+                <v-btn @click="copy(proof(a))" class="flex-grow-1">
+                  <v-icon left>content_copy</v-icon><span>Copy</span>
+                </v-btn>
+              </div>
+              <div class="d-flex flex-grow-1" style="width: 100%">
+                <v-btn
+                  @click="register(a.asset)"
+                  color="yellow"
+                  class="black--text flex-grow-1"
+                >
+                  <v-icon left>assignment</v-icon><span>Register</span>
+                </v-btn>
+              </div>
+            </div>
+            <v-form v-else @submit.prevent="() => submit(a)">
               <v-textarea
                 label="Id"
                 :value="a.asset"
@@ -64,15 +106,16 @@
               <v-text-field
                 label="Name"
                 v-model="a.name"
-                rows="1"
-                auto-grow
                 :readonly="a.asset === BTC"
+              />
+              <v-text-field
+                v-if="a.asset !== BTC"
+                label="Domain"
+                v-model="a.domain"
               />
               <v-text-field
                 label="Ticker"
                 v-model="a.ticker"
-                rows="1"
-                auto-grow
                 :readonly="a.asset === BTC"
               />
               <v-text-field
@@ -87,12 +130,17 @@
                   <v-icon left class="yellow--text">check</v-icon>
                   <span>save</span>
                 </v-btn>
+                <v-btn class="mr-1" @click.prevent="select(a.asset)">
+                  <v-icon left>line_weight</v-icon>
+                  <span>Payments</span>
+                </v-btn>
                 <v-btn
-                   class="mr-1"
-                   @click.prevent="() => select(a.asset)"
-                   >
-                   <v-icon>line_weight</v-icon>
-                   <span>Payments</span>
+                  v-if="!assets[a.asset].registered && a.contract" 
+                  class="mr-1"
+                  @click.prevent="startRegistering(a.asset)"
+                >
+                  <v-icon left>assignment</v-icon>
+                  <span>Register</span>
                 </v-btn>
               </div>
             </v-form>
@@ -120,15 +168,46 @@ const BTC = process.env.VUE_APP_LBTC;
 export default {
   mixins: [Copy],
   computed: {
+    assets: get('assets'),
     user: sync('user'),
   },
   data() {
     return {
+      showcode: false,
       BTC,
+      registering: {},
       success: {},
     };
   },
   methods: {
+    url(a) {
+      return `https://${a.contract.entity.domain}/.well-known/${this.filename(a)}`;
+    },
+    proof(a) {
+      return `Authorize linking the domain name ${a.contract.entity.domain} to the Liquid asset ${a.asset}`;
+    },
+    filename(a) {
+      return `liquid-asset-proof-${a.asset}`;
+    },
+    download(filename, text) {
+      const blob = new Blob([text], {
+        type: 'application/octet-stream;charset=utf-8;',
+      });
+      if (navigator.msSaveBlob) {
+        navigator.msSaveBlob(blob, filename);
+      } else {
+        const link = document.createElement('a');
+        if (link.download !== undefined) {
+          const url = URL.createObjectURL(blob);
+          link.setAttribute('href', url);
+          link.setAttribute('download', filename);
+          link.style.visibility = 'hidden';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        }
+      }
+    },
     limit(e, a) {
       if (e < 0) this.$nextTick(() => (a.precision = 0));
       if (e > 8) this.$nextTick(() => (a.precision = 8));
@@ -141,8 +220,16 @@ export default {
         this.$set(this.success, a.asset, false);
       }
     },
+    registerAsset: call('registerAsset'),
     shiftAccount: call('shiftAccount'),
     updateAccount: call('updateAccount'),
+    async startRegistering(a) {
+      this.$set(this.registering, a, true);
+    },
+    async register(a) {
+      await this.registerAsset(a);
+      this.select(a);
+    },
     async select(a) {
       await this.shiftAccount(a);
       this.$go('/home');

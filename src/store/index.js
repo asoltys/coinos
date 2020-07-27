@@ -635,6 +635,16 @@ export default new Vuex.Store({
       }
     },
 
+    async registerAsset({ commit, dispatch }, asset) {
+      try {
+        await Vue.axios.post('/assets/register', { asset });
+        dispatch('snack', 'Successfully registered asset');
+        go('/assets');
+      } catch (e) {
+        commit('error', e.response ? e.response.data : e.message);
+      }
+    },
+
     async createUser({ commit, dispatch }, user) {
       commit('error', null);
       commit('loading', true);

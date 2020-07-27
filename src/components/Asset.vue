@@ -32,7 +32,8 @@
         rows="1"
         auto-grow
       />
-      <v-text-field label="Ticker" v-model="asset.ticker" rows="1" auto-grow />
+      <v-text-field label="Domain" v-model="asset.domain" />
+      <v-text-field label="Ticker" v-model="asset.ticker" />
       <v-text-field
         label="Precision"
         v-model="asset.precision"
