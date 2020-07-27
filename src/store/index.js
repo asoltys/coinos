@@ -1352,6 +1352,7 @@ export default new Vuex.Store({
       if (index > -1) s.user.accounts[index] = v;
       else s.user.accounts.unshift(v);
       if (s.user.account.id === v.id) s.user.account = v;
+      s.assets[v.asset] = v;
       s.user = JSON.parse(JSON.stringify(s.user));
     },
     addKey(s, v) {
