@@ -13,9 +13,13 @@
       <proposals :proposals="own" />
     </div>
 
+    <v-btn @click="$go('/')" class="wide mb-2 mr-2">
+      <v-icon>arrow_back</v-icon>
+      Back
+    </v-btn>
     <v-btn
       v-if="user.id"
-      class="mx-auto mb-2"
+      class="mx-auto mb-2 wide"
       @click="$go('/propose')"
     >
       <v-icon>add</v-icon>
