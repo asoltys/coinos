@@ -120,6 +120,9 @@ export default {
   },
 
   computed: {
+    isBtc() {
+      return this.user.account.ticker === 'BTC';
+    },
     ticker() {
       return this.user.unit === 'BTC' ? this.user.account.ticker : 'SAT';
     },

@@ -46,6 +46,11 @@ const Receive = () =>
     /* webpackChunkName: "receive" */
     '../components/Receive'
   );
+const Redeem = () =>
+  import(
+    /* webpackChunkName: "redeem" */
+    '../components/Redeem'
+  );
 const Register = () =>
   import(
     /* webpackChunkName: "register" */
@@ -109,6 +114,7 @@ const routes = [
   { path: '/logout', component: Login, props: { logout: true } },
   { path: '/payments', component: Payments },
   { path: '/receive', component: Receive },
+  { path: '/redeem/:redeemcode', component: Redeem, props: true },
   { path: '/register', component: Register },
   { path: '/scan', component: Scan },
   { name: 'send', path: '/send', component: Send, props: true },

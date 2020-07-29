@@ -12,11 +12,11 @@
     </div>
     <payments class="mb-2" />
     <v-btn
-      v-if="user.username.startsWith('Guest')"
+      v-if="!user.password"
       class="mr-1 wide"
       @click="$router.push('/settings')"
     >
-      <v-icon left class="green--text">person</v-icon><span>Setup Account</span>
+      <v-icon left color="yellow">warning</v-icon><span>Setup Account</span>
     </v-btn>
   </div>
 </template>

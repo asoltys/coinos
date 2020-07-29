@@ -10,9 +10,9 @@
   </div>
   <v-menu v-else offset-y nudge-bottom="1">
     <template v-slot:activator="{ on }">
-      <v-btn v-on="on" class="black--text" :color="color(currency)">{{
+      <v-btn v-on="on" class="black--text" :color="color(display)">{{
         display
-      }}</v-btn>
+        }}</v-btn>
       <span class="print black--text">{{ display }}</span>
     </template>
     <v-list v-if="currencies.length">
@@ -63,7 +63,7 @@ export default {
 
       if (account) {
         await this.shiftAccount(account.asset);
-      } else if (currency || c === 'SAT') {
+      } else if (currency) {
         await this.shiftAccount(process.env.VUE_APP_LBTC);
         await this.setCurrency(c);
       }

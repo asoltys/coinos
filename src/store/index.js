@@ -195,7 +195,8 @@ export default new Vuex.Store({
       }
 
       if (!token || token === 'null') {
-        if (paths.includes(path)) commit('initializing', false);
+        if (paths.includes(path) || path.includes('redeem'))
+          commit('initializing', false);
         else go('/login');
         return;
       }
@@ -407,11 +408,14 @@ export default new Vuex.Store({
     },
 
     async logout({ commit, state }) {
+      try {
       commit('loading', true);
       let { subscription } = state;
+        l("logging out");
       await Vue.axios.post('/logout', { subscription });
       document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
       window.sessionStorage.removeItem('token');
+        l("logged out");
       commit('token', null);
       commit('pin', null);
       commit('user', null);
@@ -419,8 +423,13 @@ export default new Vuex.Store({
       commit('seed', null);
       commit('socket', null);
       commit('subscription', null);
+        l(document.cookie);
       go('/');
       commit('loading', false);
+      } catch(e) {
+        l(e.message);
+        commit('error', e.response ? e.response.data : e.message);
+      } 
     },
 
     async loadPayments({ state }) {
@@ -711,10 +720,21 @@ export default new Vuex.Store({
       commit('loadingFee', false);
     },
 
-    async sendInternal({ commit, dispatch, getters }) {
+    async getPayment({ commit, dispatch, getters, state }, redeemcode) {
+      try {
+        let { data: payment } = await Vue.axios.get(`/payment/${redeemcode}`);
+        commit('payment', payment);
+      } catch (e) {
+        commit('error', e.response ? e.response.data : e.message);
+      }
+    },
+
+    async sendInternal({ commit, dispatch, getters, state }) {
+      commit('error', null);
       let {
         payment: {
           amount,
+          method,
           memo,
           recipient: { username },
         },
@@ -722,10 +742,11 @@ export default new Vuex.Store({
       } = getters;
       let asset = user.account.asset;
 
-      if (amount <= 0)
-        return commit('error', 'Amount must be greater than zero');
-
       try {
+      if (amount <= 0) {
+        throw new Error('Amount must be greater than zero');
+      } 
+
         let res = await Vue.axios.post('/send', {
           amount,
           asset,
@@ -734,6 +755,32 @@ export default new Vuex.Store({
         });
         res.data.sent = true;
         commit('payment', res.data);
+      } catch (e) {
+        await dispatch('clearPayment');
+        state.payment.method = method;
+        commit('error', e.response ? e.response.data : e.message);
+      }
+    },
+
+    async redeem({ commit, dispatch, getters }, redeemcode) {
+      try {
+        let {
+          data: { user, payment },
+        } = await Vue.axios.post('/redeem', {
+          redeemcode,
+        });
+
+        if (user) {
+          await dispatch('login', user);
+          ({
+            data: { payment },
+          } = await Vue.axios.post('/redeem', {
+            redeemcode,
+          }));
+        }
+
+        await dispatch('shiftAccount', payment.account.asset);
+        go('/home');
       } catch (e) {
         commit('error', e.response ? e.response.data : e.message);
       }
@@ -985,6 +1032,7 @@ export default new Vuex.Store({
 
       if (asset !== BTC && user.unit === 'SAT') dispatch('toggleUnit');
       await Vue.axios.post('/shiftAccount', { asset });
+      if (user.fiat) await dispatch('toggleFiat');
     },
 
     async getRecipient({ commit, dispatch, getters }, username) {

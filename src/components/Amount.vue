@@ -10,7 +10,7 @@
         @input="input"
         :key="editing"
       />
-      <div class="d-flex">
+      <div class="d-flex" v-if="button">
         <v-btn
           class="black--text flex-grow-1"
           color="primary"
@@ -34,18 +34,18 @@
           Max
         </v-btn>
         <v-btn
-          v-if="currency"
+          v-if="user.account.ticker !== 'BTC' || currency"
           class="toggle black--text mt-auto"
-          :color="['SAT', 'BTC'].includes(currency) || user.unit === 'SAT' ? 'white' : '#0ae'"
-          @click.prevent="toggle"
-          >{{ user.unit === 'SAT' ? user.unit : currency }}</v-btn
+          :color="color(displayCurrency)"
+          @click.prevent="toggleUnit"
+          >{{ displayCurrency }}</v-btn
         >
         <v-btn
           v-else
           class="toggle black--text mt-auto"
-          :color="user.fiat ? 'yellow' : 'white'"
-          @click.prevent="toggle"
-          >{{ user.fiat ? user.currency : user.account.ticker }}</v-btn
+          :color="color(displayCurrency)"
+          @click.prevent="toggleFiat"
+          >{{ displayCurrency }}</v-btn
         >
         <v-btn icon @click="copy(displayAmount)" class="ml-1" text>
           <v-icon>content_copy</v-icon>
@@ -66,17 +66,29 @@ export default {
   components: { Numpad },
   mixins: [Copy],
   props: {
+    button: { type: Boolean, default: true },
     currency: { type: String, default: null },
     label: { type: String, default: 'Amount' },
     max: { type: Number, default: null },
     value: { type: Number, default: null },
+    startEditing: { type: Boolean, default: false },
   },
   data() {
     return {
-      editing: false,
+      editing: this.startEditing,
     };
   },
   computed: {
+    displayCurrency() {
+      if (this.user.unit === 'SAT') return 'SAT';
+      if (this.currency) return this.currency;
+
+      if (this.user.account.ticker !== 'BTC') {
+        return this.user.fiat ? this.user.currency : this.user.account.ticker;
+      }
+      
+      return this.user.currency;
+    },
     fiatAmount() {
       return ((this.value * this.rate) / SATS).toFixed(2);
     },
@@ -111,13 +123,20 @@ export default {
       if (user.account.ticker === 'BTC') {
         return [...user.currencies, 'SAT', 'BTC'];
       }
-      return [user.account.ticker];
+      return [user.account.ticker, 'SAT'];
     },
     payment: get('payment'),
     rate: get('rate'),
     user: get('user'),
   },
   methods: {
+    color(c) {
+      return ['BTC', 'SAT'].includes(c)
+        ? 'white'
+        : this.user.currencies.includes(c)
+        ? 'yellow'
+        : '#0ae';
+    },
     input (amount, fiatAmount, currency) {
       this.$emit('input', amount, fiatAmount, currency);
     }, 
@@ -130,10 +149,6 @@ export default {
       this.$emit('input', this.max);
     },
     toggleUnit: call('toggleUnit'),
-    toggle() {
-      if (this.user.account.ticker !== 'BTC' || this.currency) return this.toggleUnit();
-      this.toggleFiat();
-    },
   },
 };
 </script>

@@ -1,55 +1,87 @@
 <template>
-  <v-card class="mb-2">
-    <v-alert class="headline black--text text-center" color="yellow"
-      >Sent!</v-alert
-    >
-    <div class="pa-4">
-      <div class="mb-2">
-        <div class="d-flex justify-center">
-          <div class="mr-2">
-            <span class="display-1">{{ $format(total, precision) }}</span>
-            {{ ticker }}
-          </div>
-          <div>
-            <span v-if="payment.account.ticker === 'BTC'" class="yellow--text">
-              <span class="display-1">{{ fiat(total) }}</span>
-              {{ payment.currency }}
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <div class="mb-4 text-center">
-        <div class="d-flex justify-center">
-          <div class="mr-2">
-            <span class="headline grey--text text--lighten-2">+ Fee: </span>
-            <span class="display-1">{{ fee }}</span>
-            {{ user.unit }}
-          </div>
-          <div>
-            <span v-if="payment.account.ticker === 'BTC'" class="yellow--text">
-              <span class="display-1">{{ fiat(payment.fee) }}</span>
-              {{ payment.currency }}
-            </span>
+  <div>
+    <v-card class="mb-2">
+      <v-alert class="headline black--text text-center" color="yellow"
+        >Sent!</v-alert
+      >
+      <div class="pa-4">
+        <div class="mb-2">
+          <div class="d-flex justify-center">
+            <div class="mr-2">
+              <span class="display-1">{{ $format(total, precision) }}</span>
+              {{ ticker }}
+            </div>
+            <div>
+              <span
+                v-if="payment.account.ticker === 'BTC'"
+                class="yellow--text"
+              >
+                <span class="display-1">{{ fiat(total) }}</span>
+                {{ payment.currency }}
+              </span>
+            </div>
           </div>
         </div>
-      </div>
 
-      <v-btn @click="clearPayment" class="mr-2">
-        <v-icon left>arrow_back</v-icon><span>Send Another</span>
-      </v-btn>
-      <v-btn v-if="['BTC', 'LBTC'].includes(payment.network)" @click.native="explore">
-        <v-icon left>open_in_new</v-icon><span>Explore</span>
-      </v-btn>
-    </div>
-  </v-card>
+        <div class="mb-4 text-center">
+          <div class="d-flex justify-center">
+            <div class="mr-2">
+              <span class="headline grey--text text--lighten-2">+ Fee: </span>
+              <span class="display-1">{{ fee }}</span>
+              {{ user.unit }}
+            </div>
+            <div>
+              <span
+                v-if="payment.account.ticker === 'BTC'"
+                class="yellow--text"
+              >
+                <span class="display-1">{{ fiat(payment.fee) }}</span>
+                {{ payment.currency }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <v-btn @click="clearPayment" class="mr-2">
+          <v-icon left>arrow_back</v-icon><span>Send Another</span>
+        </v-btn>
+        <v-btn
+          v-if="['BTC', 'LBTC'].includes(payment.network)"
+          @click.native="explore"
+        >
+          <v-icon left>open_in_new</v-icon><span>Explore</span>
+        </v-btn>
+      </div>
+    </v-card>
+    <v-card v-if="payment.redeemcode" class="mb-2">
+      <v-card-text class="title white--text text-center">
+        <div class="mb-2">
+        Redeem code <span class="yellow--text" @click="redeem" style="cursor: pointer">{{ payment.redeemcode }}</span>
+        </div>
+        <v-btn @click="redeem" class="mr-1">
+          <v-icon left>open_in_new</v-icon>
+          Open
+        </v-btn>
+        <v-btn @click="copy(redeemUrl)">
+          <v-icon left>content_copy</v-icon>
+          Copy
+        </v-btn>
+
+      </v-card-text>
+    </v-card>
+  </div>
 </template>
 
 <script>
 import { get, call } from 'vuex-pathify';
+import Copy from '../mixins/Copy';
 
 export default {
+  mixins: [Copy],
   computed: {
+    redeemUrl() {
+      return `${window.location.protocol}//${window.location.host}/redeem/${this.payment.redeemcode}`;
+    },
     fee() {
       return this.$format(this.payment.fee || 0);
     },
@@ -67,7 +99,10 @@ export default {
     },
     total() {
       let total = Math.abs(this.payment.amount);
-      if (this.payment.account.ticker === 'BTC' && this.payment.network !== 'LNBTC') {
+      if (
+        this.payment.account.ticker === 'BTC' &&
+        this.payment.network !== 'LNBTC'
+      ) {
         total -= this.payment.fee;
       }
 
@@ -77,6 +112,9 @@ export default {
   },
 
   methods: {
+    redeem() {
+      window.location.href = this.redeemUrl;
+    },
     clearPayment: call('clearPayment'),
 
     fiat(n) {
