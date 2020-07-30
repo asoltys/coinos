@@ -11,7 +11,7 @@
     </template>
     <div v-else>
       <numpad
-        @done="addInvoice('lightning')"
+        @done="addInvoice({ method: 'lightning' })"
         @input="updateAmount"
         :currencies="currencies"
         :initialAmount="invoice.amount"
@@ -40,7 +40,7 @@
         <v-btn
           v-if="nodes.includes('bitcoin')"
           class="flex-grow-1 mb-1 mr-1"
-          @click="addInvoice('bitcoin')"
+          @click="addInvoice({ method: 'bitcoin' })"
           :disabled="!isBtc"
           :style="buttonStyle"
         >
@@ -51,7 +51,7 @@
         <v-btn
           v-if="nodes.includes('lightning')"
           class="flex-grow-1 mb-1 mr-1"
-          @click="addInvoice('lightning')"
+          @click="addInvoice({ method: 'lightning' })"
           :disabled="!isBtc"
           :style="buttonStyle"
         >
@@ -62,7 +62,7 @@
         <v-btn
           v-if="nodes.includes('liquid')"
           class="flex-grow-1 mr-0"
-          @click="addInvoice('liquid')"
+          @click="addInvoice({ method: 'liquid' })"
           :style="buttonStyle"
         >
           <water fillColor="#00aaee" />
@@ -78,7 +78,6 @@ import Balance from './Balance';
 import Numpad from './NumPad';
 import Received from './Received';
 import Request from './Request';
-import { mapActions } from 'vuex';
 import Flash from 'vue-material-design-icons/Flash';
 import Water from 'vue-material-design-icons/Water';
 import { get, call, sync } from 'vuex-pathify';
@@ -130,7 +129,10 @@ export default {
         this.$refs.memo.focus();
       });
     },
-    ...mapActions(['addInvoice', 'clearInvoice', 'snack', 'setCurrency']),
+    addInvoice: call('addInvoice'),
+    clearInvoice: call('clearInvoice'),
+    snack: call('snack'),
+    setCurrency: call('setCurrency'),
 
     updateAmount(amount, fiatAmount, currency) {
       this.setCurrency(currency);

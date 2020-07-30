@@ -81,6 +81,11 @@ const Text = () =>
     /* webpackChunkName: "text" */
     '../components/Text'
   );
+const User = () =>
+  import(
+    /* webpackChunkName: "user" */
+    '../components/User'
+  );
 const Pay = () =>
   import(
     /* webpackChunkName: "pay" */
@@ -125,6 +130,7 @@ const routes = [
   { path: '/propose', component: Swap },
   { path: '/swaps', component: Swaps },
   { path: '/withdraw', component: Withdraw },
+  { path: '/:username', component: User, props: true },
 ];
 
 Vue.use(VueRouter);
