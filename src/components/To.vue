@@ -34,7 +34,7 @@
     <methods v-if="!payment.method"/>
     <send-to-user v-if="payment.method === 'coinos'" />
     <paper v-if="payment.method === 'paper'" />
-    <withdraw-url v-if="payment.method === 'url'" />
+    <voucher v-if="payment.method === 'url'" />
     <swap v-if="payment.method === 'swap'" />
     <v-btn v-if="payment.method" @click="payment.method = null" class="my-2 wide">
       <v-icon>arrow_back</v-icon>
@@ -50,11 +50,11 @@ import Qrcode from 'vue-material-design-icons/Qrcode';
 import SendToUser from './SendToUser';
 import Paper from './Paper';
 import Swap from './Swap';
-import WithdrawUrl from './WithdrawUrl';
+import Voucher from './Voucher';
 import Methods from './Methods';
 
 export default {
-  components: { WithdrawUrl, Paper, Qrcode, Methods, SendToUser, Swap },
+  components: { Voucher, Paper, Qrcode, Methods, SendToUser, Swap },
   mixins: [Copy],
   props: {
     text: { type: String, default: '' }

@@ -7,7 +7,7 @@
       <div class="d-flex flex-wrap">
         <v-btn dark @click="voucher" class="flex-grow-1 mb-2 mr-1 wide">
           <v-icon left color="pink">card_giftcard</v-icon
-          ><span>Coinos Voucher</span>
+          ><span>Create Voucher</span>
         </v-btn>
         <v-btn dark @click="submit" class="flex-grow-1 mb-2 mr-1 wide">
           <flash fillColor="yellow" />

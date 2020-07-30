@@ -27,6 +27,8 @@
 
 <script>
 import { get, call } from 'vuex-pathify';
+const BTC = process.env.VUE_APP_LBTC;
+
 export default {
   props: {
     currency: { type: String },
@@ -65,11 +67,12 @@ export default {
         await this.shiftAccount(account.asset);
       } else if (currency) {
         await this.setCurrency(c);
-      }
+      } else {
+        await this.shiftAccount(BTC);
+      } 
 
-      if (['BTC', 'SAT'].includes(c)) {
-        await this.shiftAccount(process.env.VUE_APP_LBTC);
-      }
+      if (c === 'SAT' && this.user.unit !== 'SAT') await this.toggleUnit();
+      if (c !== 'SAT' && this.user.unit !== 'BTC') await this.toggleUnit();
 
       this.$emit('currency', c);
     },

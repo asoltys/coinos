@@ -1010,25 +1010,12 @@ export default new Vuex.Store({
     },
 
     async shiftAccount({ commit, dispatch, getters }, asset) {
-      let { user } = getters;
-
-      if (typeof asset !== 'string') {
-        let index = user.accounts.findIndex(a => a.id === user.account.id);
-        let current = user.accounts[index].asset;
-
-        if (current === BTC) {
-          await dispatch('toggleUnit');
-          if (user.unit === 'SAT') return;
-        }
-
-        if (index >= user.accounts.length - 1) index = 0;
-        else index++;
-
-        asset = user.accounts[index].asset;
-      }
-
-      await Vue.axios.post('/shiftAccount', { asset });
-      if (user.fiat) await dispatch('toggleFiat');
+      try {
+        let { user } = getters;
+        await Vue.axios.post('/shiftAccount', { asset });
+      } catch(e) {
+        commit('error', e.response ? e.response.data : e.message);
+      } 
     },
 
     async getRecipient({ commit, dispatch, getters }, username) {
