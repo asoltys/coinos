@@ -761,6 +761,7 @@ export default new Vuex.Store({
     },
 
     async redeem({ commit, dispatch, getters }, redeemcode) {
+      commit('loading', true);
       try {
         let {
           data: { user, payment },
@@ -782,6 +783,7 @@ export default new Vuex.Store({
       } catch (e) {
         commit('error', e.response ? e.response.data : e.message);
       }
+      commit('loading', false);
     },
 
     async updatePayment({ commit, dispatch, getters }, { id, memo }) {
@@ -1303,12 +1305,14 @@ export default new Vuex.Store({
     },
 
     async getPaymentUrl({ commit, getters }, amount) {
+      commit('loading', true);
       try {
         const { data: lnurl } = await Vue.axios.get(`/pay?amount=${amount}`);
         commit('lnurl', lnurl);
       } catch (e) {
         commit('error', e.response ? e.response.data : e.message);
       }
+      commit('loading', false);
     },
 
     async getWithdrawUrl({ commit, dispatch, getters }, { min, max }) {

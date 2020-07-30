@@ -55,12 +55,8 @@ export default {
       default: null,
     },
   },
-  data() {
-    return {
-      loading: false,
-    };
-  },
   computed: {
+    loading: get('loading'),
     total() {
       let { precision } = this.payment.account;
       return this.$format(-this.payment.amount, precision);
@@ -79,9 +75,7 @@ export default {
     redeem: call('redeem'),
   },
   async mounted() {
-    this.loading = true;
     await this.getPayment(this.redeemcode);
-    this.loading = false;
   },
 };
 </script>
