@@ -64,12 +64,11 @@ export default {
       if (account) {
         await this.shiftAccount(account.asset);
       } else if (currency) {
-        await this.shiftAccount(process.env.VUE_APP_LBTC);
         await this.setCurrency(c);
       }
 
-      if ((['BTC', 'SAT'].includes(c) && this.user.unit !== c) || (this.user.unit === 'SAT' && !currency)) {
-        await this.toggleUnit();
+      if (['BTC', 'SAT'].includes(c)) {
+        await this.shiftAccount(process.env.VUE_APP_LBTC);
       }
 
       this.$emit('currency', c);

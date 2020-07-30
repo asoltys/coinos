@@ -1027,7 +1027,6 @@ export default new Vuex.Store({
         asset = user.accounts[index].asset;
       }
 
-      if (asset !== BTC && user.unit === 'SAT') dispatch('toggleUnit');
       await Vue.axios.post('/shiftAccount', { asset });
       if (user.fiat) await dispatch('toggleFiat');
     },
@@ -1266,6 +1265,14 @@ export default new Vuex.Store({
         } catch (e) {
           commit('error', e.response ? e.response.data : e.message);
         }
+      }
+
+      if (
+        text.startsWith(
+          `${window.location.protocol}//${window.location.host}/redeem`
+        )
+      ) {
+        window.location.href = text;
       }
 
       commit('stopScanning', true);

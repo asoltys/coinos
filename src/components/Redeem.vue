@@ -7,7 +7,7 @@
           Redeem Voucher
           <v-card color="secondary" class="ma-4">
             <v-card-text>
-              <div class="d-flex justify-center display-1 white--text">
+              <div class="d-flex justify-center display-1 white--text flex-wrap">
                 <div class="mr-2 d-flex">
                   <div class="mr-1 my-auto">{{ total }}</div>
                   <div class="my-auto">
@@ -34,7 +34,8 @@
             </v-card-text>
           </v-card>
         </div>
-        <v-btn @click="redeem(redeemcode)" color="green" class="mt-2">
+        <v-alert color="error" v-if="payment.redeemed">Sorry, Already Redeemed</v-alert>
+        <v-btn v-else @click="redeem(redeemcode)" color="green" class="mt-2">
           <v-icon left>send</v-icon>
           Redeem
         </v-btn>
