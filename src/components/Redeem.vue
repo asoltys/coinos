@@ -12,7 +12,6 @@
                   <div class="mr-1 my-auto">{{ total }}</div>
                   <div class="my-auto">
                     <v-btn
-                      @click="select(ticker)"
                       color="white"
                       class="black--text"
                       >{{ ticker }}</v-btn
@@ -20,14 +19,15 @@
                     <span class="print">{{ ticker }}</span>
                   </div>
                 </div>
-                <div v-if="payment.account.ticker === 'BTC'" class="d-flex">
+                <div v-if="ticker === 'BTC'" class="d-flex">
                   <div class="yellow--text mr-1 my-auto">
                     <span>{{ fiat }}</span>
+                    <v-btn
+                      color="yellow"
+                      class="black--text"
+                      >{{ payment.currency }}</v-btn
+                    >
                   </div>
-                  <currency-list
-                    :currency="user.currency"
-                    :currencies="[user.currency]"
-                  />
                 </div>
               </div>
               <div v-if="payment.memo" class="body-1 pa-4">{{ payment.memo }}</div>
@@ -46,7 +46,6 @@
 
 <script>
 import { get, call } from 'vuex-pathify';
-import CurrencyList from './CurrencyList';
 const SATS = 100000000;
 
 export default {
@@ -56,7 +55,6 @@ export default {
       default: null,
     },
   },
-  components: { CurrencyList },
   data() {
     return {
       loading: false,
@@ -65,18 +63,13 @@ export default {
   computed: {
     total() {
       let { precision } = this.payment.account;
-      if (this.payment.account.ticker === 'BTC' && this.user.unit === 'SAT')
-        precision = 0;
-
       return this.$format(-this.payment.amount, precision);
     },
     fiat() {
       return ((-this.payment.amount / SATS) * this.payment.rate).toFixed(2);
     },
     ticker() {
-      let { ticker } = this.payment.account;
-      if (ticker === 'BTC') return this.user.unit;
-      return ticker;
+      return this.payment.account.ticker;
     },
     user: get('user'),
     payment: get('payment'),
