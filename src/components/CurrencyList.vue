@@ -58,6 +58,7 @@ export default {
     setCurrency: call('setCurrency'),
     toggleUnit: call('toggleUnit'),
     async select(c) {
+      this.$emit('currency', c);
       this.display = c;
 
       let account = this.user.accounts.find(a => a.ticker === c);
@@ -66,15 +67,13 @@ export default {
       if (account) {
         await this.shiftAccount(account.asset);
       } else if (currency) {
-        await this.setCurrency(c);
+        return await this.setCurrency(c);
       } else {
         await this.shiftAccount(BTC);
       } 
 
       if (c === 'SAT' && this.user.unit !== 'SAT') await this.toggleUnit();
       if (c !== 'SAT' && this.user.unit !== 'BTC') await this.toggleUnit();
-
-      this.$emit('currency', c);
     },
   },
 

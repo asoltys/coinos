@@ -1014,6 +1014,7 @@ export default new Vuex.Store({
       try {
         let { user } = getters;
         await Vue.axios.post('/shiftAccount', { asset });
+        if (user.unit === 'SAT' && asset !== BTC) await dispatch('toggleUnit');
       } catch(e) {
         commit('error', e.response ? e.response.data : e.message);
       } 
