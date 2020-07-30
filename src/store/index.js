@@ -170,6 +170,21 @@ export default new Vuex.Store({
       commit('assets', (await Vue.axios.get('/assets')).data);
       const { path } = router.currentRoute;
       commit('error', '');
+
+      let token = getters.token || window.sessionStorage.getItem('token');
+
+      if (!token || token === 'null') {
+        let cookie = `; ${document.cookie}`.match(';\\s*token=([^;]+)');
+        if (cookie && cookie[1]) token = cookie[1];
+      }
+
+      if (!token || token === 'null') {
+        if (paths.includes(path) || path.includes('redeem'))
+          commit('initializing', false);
+        else go('/login');
+        return;
+      }
+
       if (path === '/login' || path === '/register') {
         commit('initializing', false);
         commit('loading', false);
@@ -185,20 +200,6 @@ export default new Vuex.Store({
       } catch (e) {
         l(e);
         commit('error', 'Problem connecting to server');
-      }
-
-      let token = getters.token || window.sessionStorage.getItem('token');
-
-      if (!token) {
-        let cookie = `; ${document.cookie}`.match(';\\s*token=([^;]+)');
-        if (cookie && cookie[1]) token = cookie[1];
-      }
-
-      if (!token || token === 'null') {
-        if (paths.includes(path) || path.includes('redeem'))
-          commit('initializing', false);
-        else go('/login');
-        return;
       }
 
       if (token && token !== 'null') {
@@ -424,7 +425,7 @@ export default new Vuex.Store({
         go('/');
         commit('loading', false);
       } catch (e) {
-        l(e.message);
+        l("problem logging out", e.message);
         commit('error', e.response ? e.response.data : e.message);
       }
     },
