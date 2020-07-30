@@ -5,6 +5,7 @@
         class="my-4"
         label="Username:"
         v-model="username"
+        autocapitalize="none"
         clearable
       />
       <div class="d-flex">
