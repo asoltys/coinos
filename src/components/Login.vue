@@ -55,6 +55,7 @@
               @click="$go('/register')"
               color="green"
               class="mr-2 mb-2 mb-sm-0 wide"
+              :disabled="form.username.length > 1 || form.password.length > 1"
             >
               <v-icon left>account_balance_wallet</v-icon>
               New Account
@@ -63,15 +64,18 @@
         </v-card-text>
       </v-card>
     </div>
-    <v-btn @click="$go('/swaps')" class="mt-2">
+    <v-btn @click="$go('/swaps')" class="mt-2 mr-1">
       <v-icon left>swap_horiz</v-icon>
       View Swap Proposals
+    </v-btn>
+    <v-btn v-if="lnurl" @click="lnurl = null" class="mt-2">
+      <v-icon left>arrow_back</v-icon>
+      Back
     </v-btn>
   </div>
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
 import Flash from 'vue-material-design-icons/Flash';
 import Login from 'vue-material-design-icons/Login';
 import Qrcode from 'vue-material-design-icons/Qrcode';
@@ -102,14 +106,17 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['error', 'user', 'initializing', 'lnurl']),
+    error: get('error'),
+    initializing: get('initializing'),
+    lnurl: sync('lnurl'),
     loading: sync('loading'),
-    twofa: sync('twofa'),
     token: sync('token'),
+    twofa: sync('twofa'),
+    user: get('user'),
   },
 
   methods: {
-    ...mapActions(['login']),
+    login: call('login'),
     init: call('init'),
     getLoginUrl: call('getLoginUrl'),
     async lnurlAuth() {
