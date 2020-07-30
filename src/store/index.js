@@ -409,27 +409,24 @@ export default new Vuex.Store({
 
     async logout({ commit, state }) {
       try {
-      commit('loading', true);
-      let { subscription } = state;
-        l("logging out");
-      await Vue.axios.post('/logout', { subscription });
-      document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-      window.sessionStorage.removeItem('token');
-        l("logged out");
-      commit('token', null);
-      commit('pin', null);
-      commit('user', null);
-      if (state.socket) state.socket.close();
-      commit('seed', null);
-      commit('socket', null);
-      commit('subscription', null);
-        l(document.cookie);
-      go('/');
-      commit('loading', false);
-      } catch(e) {
+        commit('loading', true);
+        let { subscription } = state;
+        await Vue.axios.post('/logout', { subscription });
+        document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+        window.sessionStorage.removeItem('token');
+        commit('token', null);
+        commit('pin', null);
+        commit('user', null);
+        if (state.socket) state.socket.close();
+        commit('seed', null);
+        commit('socket', null);
+        commit('subscription', null);
+        go('/');
+        commit('loading', false);
+      } catch (e) {
         l(e.message);
         commit('error', e.response ? e.response.data : e.message);
-      } 
+      }
     },
 
     async loadPayments({ state }) {
@@ -743,9 +740,9 @@ export default new Vuex.Store({
       let asset = user.account.asset;
 
       try {
-      if (amount <= 0) {
-        throw new Error('Amount must be greater than zero');
-      } 
+        if (amount <= 0) {
+          throw new Error('Amount must be greater than zero');
+        }
 
         let res = await Vue.axios.post('/send', {
           amount,
