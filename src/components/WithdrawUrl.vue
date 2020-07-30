@@ -4,7 +4,7 @@
     <div v-else>
       <amount label="Amount" v-model.number="amount" :max="user.account.balance" class="mb-2" :button="false" :startEditing="true" />
       <v-textarea label="Memo" v-model="payment.memo" rows="1" auto-grow />
-      <div class="d-flex">
+      <div class="d-flex flex-wrap">
         <v-btn dark @click="voucher" class="flex-grow-1 mb-2 mr-1 wide">
           <v-icon left color="pink">card_giftcard</v-icon
           ><span>Coinos Voucher</span>
