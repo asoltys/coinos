@@ -30,7 +30,7 @@
       <amount v-model.number="amount" :max="max" class="mb-2" />
       <div class="d-flex">
         <v-btn
-          class="black--text flex-grow-1"
+          class="black--text flex-grow-1 wide"
           color="primary"
           dark
           @click="submit"

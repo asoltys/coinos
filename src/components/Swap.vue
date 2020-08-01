@@ -67,7 +67,7 @@
         </v-card>
       </div>
       <div class="d-flex">
-        <v-btn color="green" @click="submit" class="flex-grow-1">
+        <v-btn color="green" @click="submit" class="flex-grow-1 wide">
           <v-icon left>assignment</v-icon><span>Generate Proposal</span>
         </v-btn>
       </div>
