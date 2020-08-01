@@ -3,7 +3,7 @@
     <v-progress-linear
       v-if="initializing || loading || !user.payments"
       indeterminate
-    ></v-progress-linear>
+    />
     <template v-else>
       <div v-if="filteredPayments().length">
         <v-expansion-panels accordion>
@@ -136,12 +136,17 @@
                   :readonly="success[id]"
                 >
                   <template v-slot:append>
-                    <v-btn v-if="!success[id]" @click="updateMemo(id)" class="ml-1 mb-1" color="secondary">
+                    <v-btn
+                      v-if="!success[id]"
+                      @click="updateMemo(id)"
+                      class="ml-1 mb-1"
+                      color="secondary"
+                    >
                       <v-icon left>update</v-icon>
                       Save
                     </v-btn>
                   </template>
-                  </v-textarea>
+                </v-textarea>
               </v-card>
             </v-expansion-panel-content>
           </v-expansion-panel>
