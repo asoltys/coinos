@@ -42,7 +42,8 @@
         <v-card class="flex-grow-1 mr-md-2 mb-2">
           <v-card-text>
             <h2 class="text-center white--text">Trade</h2>
-            <v-select label="Asset" v-model="a1" :items="accounts" />
+            <v-autocomplete label="Select" v-model="a1" :items="accounts" />
+            <v-textarea label="Asset" v-model="a1" auto-grow rows="1" />
             <amount
               v-model.number="v1"
               class="mb-2"
@@ -107,7 +108,9 @@ export default {
         .sort((a, b) => ('' + a.text).localeCompare(b.text));
     },
     accounts() {
-      return this.user.accounts.map(a => ({ text: a.name, value: a.asset }));
+      return this.user.accounts
+        .map(a => ({ text: a.name, value: a.asset }))
+        .sort((a, b) => ('' + a.text).localeCompare(b.text));
     },
 
     proposal: sync('proposal'),
