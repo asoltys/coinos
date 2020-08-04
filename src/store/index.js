@@ -122,6 +122,7 @@ const state = {
   addressTypes,
   asset: BTC,
   assets: {},
+  balances: null,
   challenge: '',
   channels: [],
   channelRequest: null,
@@ -224,6 +225,16 @@ export default new Vuex.Store({
       if (token && token !== 'null') {
         if (path === '/' || path === '/register') return go('/home');
       } else if (paths.includes(path)) return go('/login');
+    },
+
+    async getBalances({ commit, getters, dispatch }) {
+      try {
+        let balances = (await Vue.axios.get('/balances')).data;
+        commit('balances', balances);
+      } catch (e) {
+        l(e);
+        commit('error', 'Problem fetching balances');
+      }
     },
 
     async getInfo({ commit, getters, dispatch }) {
