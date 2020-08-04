@@ -89,10 +89,10 @@ const blankInvoice = JSON.stringify({
   rate: 0,
   received: 0,
   user: {
-    currencies: ['CAD'],
+    currencies: ['CAD', 'USD', 'JPY'],
     currency: 'CAD',
     accounts: [],
-    account: { ticker: 'BTC' },
+    account: { asset: BTC, ticker: 'BTC' },
   },
   text: '',
   tip: 0,
@@ -370,14 +370,17 @@ export default new Vuex.Store({
     },
 
     async getNewAddress({ commit, dispatch, state }, type) {
+      const { invoice, addressTypes } = state;
       if (!type) {
-        type = state.addressTypes.shift();
-        state.addressTypes.push(type);
+        type = addressTypes.shift();
+        addressTypes.push(type);
       }
 
-      state.invoice.address = (
-        await Vue.axios.get(`/address?type=${type}`)
-      ).data;
+      const { method } = invoice;
+
+      let { data: address } = await Vue.axios.get(`/address?network=${method}&type=${type}`);
+      invoice.address = address;
+      return address;
     },
 
     async enable2fa(_, token) {
@@ -956,18 +959,14 @@ export default new Vuex.Store({
       let address;
       switch (method) {
         case 'bitcoin':
-          if (!invoice.address) await dispatch('getNewAddress', 'bech32');
-          l('address', invoice.address);
+          if (!invoice.address) invoice.address = await dispatch('getNewAddress', 'bech32');
           invoice.text = url(invoice.address);
           break;
         case 'liquid':
-          ({ confidential: address } = user);
-
-          let text = url(address);
+          if (!invoice.address) invoice.address = await dispatch('getNewAddress', 'p2sh-segwit');
+          let text = url(invoice.address);
           text = text.replace('liquid', 'liquidnetwork');
           if (amount) text += `&asset=${user.account.asset}`;
-
-          invoice.address = address;
           invoice.text = text;
           break;
         case 'lightning':
