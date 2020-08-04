@@ -25,4 +25,4 @@ yarn-error.log*
 cordova
 deploy.sh
 stage.sh
-.yarn
+.yarn*

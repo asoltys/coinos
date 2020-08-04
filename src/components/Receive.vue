@@ -6,12 +6,12 @@
         v-if="invoice.amount === null || invoice.received < invoice.amount"
         @clear="clearInvoice"
       />
-      <balance v-else />
-      <received v-if="invoice.received" @clear="clearInvoice" />
+      <balance v-else-if="user.username === currentUser.username" />
+      <received v-if="invoice.received" />
     </template>
     <div v-else>
       <numpad
-        @done="addInvoice('lightning')"
+        @done="addInvoice({ method: 'lightning', user })"
         @input="updateAmount"
         :currencies="currencies"
         :initialAmount="invoice.amount"
@@ -40,7 +40,7 @@
         <v-btn
           v-if="nodes.includes('bitcoin')"
           class="flex-grow-1 mb-1 mr-1"
-          @click="addInvoice('bitcoin')"
+          @click="addInvoice({ method: 'bitcoin', user })"
           :disabled="!isBtc"
           :style="buttonStyle"
         >
@@ -51,7 +51,7 @@
         <v-btn
           v-if="nodes.includes('lightning')"
           class="flex-grow-1 mb-1 mr-1"
-          @click="addInvoice('lightning')"
+          @click="addInvoice({ method: 'lightning', user })"
           :disabled="!isBtc"
           :style="buttonStyle"
         >
@@ -62,7 +62,7 @@
         <v-btn
           v-if="nodes.includes('liquid')"
           class="flex-grow-1 mr-0"
-          @click="addInvoice('liquid')"
+          @click="addInvoice({ method: 'liquid', user })"
           :style="buttonStyle"
         >
           <water fillColor="#00aaee" />
@@ -78,7 +78,6 @@ import Balance from './Balance';
 import Numpad from './NumPad';
 import Received from './Received';
 import Request from './Request';
-import { mapActions } from 'vuex';
 import Flash from 'vue-material-design-icons/Flash';
 import Water from 'vue-material-design-icons/Water';
 import { get, call, sync } from 'vuex-pathify';
@@ -120,7 +119,10 @@ export default {
     nodes: get('nodes'),
     rate: get('rate'),
     received: sync('received'),
-    user: sync('user'),
+    currentUser: get('user'),
+    user() {
+      return this.invoice.user.username ? this.invoice.user : this.currentUser;
+    } 
   },
 
   methods: {
@@ -130,7 +132,10 @@ export default {
         this.$refs.memo.focus();
       });
     },
-    ...mapActions(['addInvoice', 'clearInvoice', 'snack', 'setCurrency']),
+    addInvoice: call('addInvoice'),
+    clearInvoice: call('clearInvoice'),
+    snack: call('snack'),
+    setCurrency: call('setCurrency'),
 
     updateAmount(amount, fiatAmount, currency) {
       this.setCurrency(currency);

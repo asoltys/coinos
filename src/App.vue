@@ -85,7 +85,7 @@ export default {
 
   watch: {
     $route() {
-      if (!this.socket || !this.user) this.init();
+      this.init();
     },
   },
 

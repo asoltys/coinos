@@ -67,7 +67,7 @@ export default {
     },
     ticker() {
       let { ticker } = this.payment.account;
-      if (ticker === 'BTC') return this.user.unit;
+      if (ticker === 'BTC' && this.user.unit) return this.user.unit;
       return ticker;
     },
     isBtc() {
