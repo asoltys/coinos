@@ -56,8 +56,10 @@ export default {
     },
     shiftAccount: call('shiftAccount'),
     setCurrency: call('setCurrency'),
+    toggleFiat: call('toggleFiat'),
     toggleUnit: call('toggleUnit'),
     async select(c) {
+      console.log("selecting", c);
       this.$emit('currency', c);
       this.display = c;
 
@@ -72,8 +74,9 @@ export default {
         await this.shiftAccount(BTC);
       } 
 
-      if (c === 'SAT' && this.user.unit !== 'SAT') await this.toggleUnit();
-      if (c !== 'SAT' && this.user.unit !== 'BTC') await this.toggleUnit();
+      if (!currency && this.user.fiat) await this.toggleFiat();
+      if (c === 'SAT' && this.user.unit !== 'SAT') return this.toggleUnit();
+      if (c !== 'SAT' && this.user.unit !== 'BTC') return this.toggleUnit();
     },
   },
 
