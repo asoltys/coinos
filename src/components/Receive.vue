@@ -6,12 +6,12 @@
         v-if="invoice.amount === null || invoice.received < invoice.amount"
         @clear="clearInvoice"
       />
-      <balance v-else />
-      <received v-if="invoice.received" @clear="clearInvoice" />
+      <balance v-else-if="user.username === currentUser.username" />
+      <received v-if="invoice.received" />
     </template>
     <div v-else>
       <numpad
-        @done="addInvoice({ method: 'lightning' })"
+        @done="addInvoice({ method: 'lightning', user })"
         @input="updateAmount"
         :currencies="currencies"
         :initialAmount="invoice.amount"
@@ -40,7 +40,7 @@
         <v-btn
           v-if="nodes.includes('bitcoin')"
           class="flex-grow-1 mb-1 mr-1"
-          @click="addInvoice({ method: 'bitcoin' })"
+          @click="addInvoice({ method: 'bitcoin', user })"
           :disabled="!isBtc"
           :style="buttonStyle"
         >
@@ -51,7 +51,7 @@
         <v-btn
           v-if="nodes.includes('lightning')"
           class="flex-grow-1 mb-1 mr-1"
-          @click="addInvoice({ method: 'lightning' })"
+          @click="addInvoice({ method: 'lightning', user })"
           :disabled="!isBtc"
           :style="buttonStyle"
         >
@@ -62,7 +62,7 @@
         <v-btn
           v-if="nodes.includes('liquid')"
           class="flex-grow-1 mr-0"
-          @click="addInvoice({ method: 'liquid' })"
+          @click="addInvoice({ method: 'liquid', user })"
           :style="buttonStyle"
         >
           <water fillColor="#00aaee" />
@@ -119,7 +119,10 @@ export default {
     nodes: get('nodes'),
     rate: get('rate'),
     received: sync('received'),
-    user: sync('user'),
+    currentUser: get('user'),
+    user() {
+      return this.invoice.user.username ? this.invoice.user : this.currentUser;
+    } 
   },
 
   methods: {

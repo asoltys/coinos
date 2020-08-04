@@ -75,7 +75,7 @@
           </v-btn>
           <v-btn
             v-if="invoice.network === 'LNBTC'"
-            @click.native="getPaymentUrl(invoice.amount)"
+            @click.native="getPaymentUrl"
             class="wide mr-2 mb-2 mb-sm-0"
           >
             <qrcode class="mr-1" />
@@ -83,7 +83,7 @@
           </v-btn>
           <v-btn
             v-if="invoice.method === 'bitcoin'"
-            @click="address"
+            @click="newAddress"
             class="wide"
           >
             <v-icon left>refresh</v-icon><span>Address</span>
@@ -148,9 +148,10 @@ export default {
       'stopWriting',
     ]),
 
-    async address() {
+    async newAddress() {
       await this.getNewAddress();
-    },
+      await this.addInvoice({ method: 'bitcoin', user: this.invoice.user });
+    }, 
 
     color(c) {
       return ['BTC', 'SAT'].includes(c)

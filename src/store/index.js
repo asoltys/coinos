@@ -79,6 +79,7 @@ const go = path => {
 const BTC = process.env.VUE_APP_LBTC;
 
 const blankInvoice = JSON.stringify({
+  address: null,
   amount: null,
   currency: '',
   fiatAmount: null,
@@ -87,6 +88,12 @@ const blankInvoice = JSON.stringify({
   method: '',
   rate: 0,
   received: 0,
+  user: {
+    currencies: ['CAD'],
+    currency: 'CAD',
+    accounts: [],
+    account: { ticker: 'BTC' },
+  },
   text: '',
   tip: 0,
 });
@@ -154,6 +161,12 @@ const state = {
   text: '',
   token: null,
   twofa: '',
+  recipient: {
+    currencies: ['CAD'],
+    currency: 'CAD',
+    accounts: [],
+    account: { ticker: 'BTC' },
+  },
   user: {
     currencies: ['CAD'],
     currency: 'CAD',
@@ -181,10 +194,8 @@ export default new Vuex.Store({
         if (cookie && cookie[1]) token = cookie[1];
       }
 
-
       let failures = 0;
 
-      l("path", path, token);
       commit('token', token);
 
       try {
@@ -194,7 +205,6 @@ export default new Vuex.Store({
             await dispatch('setupSocket');
             failures = 0;
           } catch (e) {
-            l(e.message);
             if (failures > 5) commit('error', 'Problem connecting to server');
             else failures++;
           }
@@ -210,13 +220,10 @@ export default new Vuex.Store({
       commit('initializing', false);
       commit('loading', false);
 
-      console.log("includes", paths.includes(path));
-
       if (!(path === '/login' || path === '/register')) dispatch('getInfo');
       if (token && token !== 'null') {
         if (path === '/' || path === '/register') return go('/home');
       } else if (paths.includes(path)) return go('/login');
-
     },
 
     async getInfo({ commit, getters, dispatch }) {
@@ -362,11 +369,15 @@ export default new Vuex.Store({
       const res = await Vue.axios.post('/keys', { key });
     },
 
-    async getNewAddress({ commit, dispatch, state }) {
-      let type = state.addressTypes.shift();
-      state.addressTypes.push(type);
-      state.invoice.address = (await Vue.axios.post('/address', { type })).data;
-      dispatch('addInvoice');
+    async getNewAddress({ commit, dispatch, state }, type) {
+      if (!type) {
+        type = state.addressTypes.shift();
+        state.addressTypes.push(type);
+      }
+
+      state.invoice.address = (
+        await Vue.axios.get(`/address?type=${type}`)
+      ).data;
     },
 
     async enable2fa(_, token) {
@@ -531,20 +542,21 @@ export default new Vuex.Store({
     },
 
     async setupSocket({ commit, getters, dispatch }) {
-      await new Promise((resolve, reject) => {
+      return new Promise((resolve, reject) => {
         setTimeout(reject, 5000);
         const proto = location.protocol === 'https:' ? 'wss://' : 'ws://';
         if (getters.socket) {
           if (getters.socket.readyState === 1) return resolve();
           else {
+            getters.socket.close();
             commit('socket', null);
           }
         }
+
         let ws = new WebSocket(`${proto}${location.host}/ws`);
         commit('socket', ws);
 
         ws.onopen = () => {
-          l("open", getters.token);
           if (getters.token)
             ws.send(JSON.stringify({ type: 'login', data: getters.token }));
 
@@ -560,10 +572,8 @@ export default new Vuex.Store({
 
         ws.onclose = async e => {
           ws = null;
+          commit('socket', null);
           reject();
-          try {
-            await dispatch('setupSocket');
-          } catch (e) {}
         };
 
         ws.onmessage = msg => {
@@ -910,6 +920,7 @@ export default new Vuex.Store({
       commit('invoice', invoice);
       commit('error', null);
       commit('lnurl', null);
+      commit('received', null);
     },
 
     async clearPayment({ commit }) {
@@ -919,8 +930,8 @@ export default new Vuex.Store({
       commit('lnurl', null);
     },
 
-    async addInvoice({ commit, dispatch, state }, { method }) {
-      const { controller, invoice, socket, user } = state;
+    async addInvoice({ commit, dispatch, state }, { method, user }) {
+      const { controller, invoice, socket } = state;
       if (controller) controller.abort();
 
       if (!invoice.amount) invoice.amount = null;
@@ -945,9 +956,9 @@ export default new Vuex.Store({
       let address;
       switch (method) {
         case 'bitcoin':
-          ({ address } = user);
-          invoice.address = address;
-          invoice.text = url(address);
+          if (!invoice.address) await dispatch('getNewAddress', 'bech32');
+          l('address', invoice.address);
+          invoice.text = url(invoice.address);
           break;
         case 'liquid':
           ({ confidential: address } = user);
@@ -974,8 +985,8 @@ export default new Vuex.Store({
       }
 
       try {
-        await Vue.axios.post(`/invoice`, { invoice, user });
-        socket.send({ type: 'subscribe', data: invoice.id });
+        let { data } = await Vue.axios.post(`/invoice`, { invoice, user });
+        socket.send(JSON.stringify({ type: 'subscribe', data }));
         commit('invoice', invoice);
       } catch (e) {
         commit('error', e.response ? e.response.data : e.message);
@@ -996,7 +1007,7 @@ export default new Vuex.Store({
           await writer.write(text, { signal });
           dispatch('snack', 'Successfully wrote to NFC tag');
         } catch (e) {
-          l('failed to write NFC tag', e);
+          /* */
         }
       }
     },
@@ -1316,10 +1327,22 @@ export default new Vuex.Store({
       commit('loading', false);
     },
 
-    async getPaymentUrl({ commit, getters }, amount) {
+    async getPaymentUrl({ commit, getters }) {
       commit('loading', true);
       try {
-        const { data: lnurl } = await Vue.axios.get(`/pay?amount=${amount}`);
+        const { invoice, socket, user } = getters;
+        let {
+          amount,
+          user: { username },
+        } = invoice;
+
+        if (!username) ({ username } = user);
+
+        const { data: lnurl } = await Vue.axios.get(
+          `/pay/${username}?amount=${amount}`
+        );
+
+        socket.send(JSON.stringify({ type: 'subscribe', data: invoice }));
         commit('lnurl', lnurl);
       } catch (e) {
         commit('error', e.response ? e.response.data : e.message);
@@ -1423,17 +1446,21 @@ export default new Vuex.Store({
         s.received = v;
         s.invoice.received += parseInt(Math.abs(v.amount));
       }
+
       if (s.invoice.received >= s.invoice.amount) {
         s.invoices.unshift(JSON.parse(JSON.stringify(s.invoice)));
         s.invoice.amount = 0;
         s.invoice.fiatAmount = 0;
       }
 
-      let index = s.user.payments.findIndex(p => p.id === v.id);
-      if (index > -1) s.user.payments[index] = v;
-      else s.user.payments.unshift(v);
+      if (v.user_id === s.user.id) {
+        console.log(v.user_id);
+        let index = s.user.payments.findIndex(p => p.id === v.id);
+        if (index > -1) s.user.payments[index] = v;
+        else s.user.payments.unshift(v);
 
-      s.user = JSON.parse(JSON.stringify(s.user));
+        s.user = JSON.parse(JSON.stringify(s.user));
+      }
     },
     error(s, v) {
       s.error = v;
