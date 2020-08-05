@@ -1164,7 +1164,8 @@ export default new Vuex.Store({
       }
 
       if (url) {
-        let { amount, asset, message } = url.options;
+        let { amount, asset, assetid, message } = url.options;
+        if (assetid) asset = assetid;
         let account = user.accounts.find(a => a.asset === asset);
         if (account) await dispatch('shiftAccount', account.asset);
         else return commit('error', 'Unrecognized asset');
