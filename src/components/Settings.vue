@@ -27,7 +27,7 @@
           </v-btn>
           <set-pin @pin="pin" :showPinDialog="showPinDialog" />
           <v-btn @click="twofa">
-            <v-icon left class="yellow--text">$portrait</v-icon>
+            <v-icon left class="yellow--text">$cellphone</v-icon>
             {{ user.twofa ? 'Disable' : 'Setup' }} 2FA
           </v-btn>
         </div>

@@ -16,7 +16,7 @@ export default {
       document.execCommand('copy');
       document.body.removeChild(textArea);
 
-      this.snack('Copied to Clipboard');
+      this.snack('Copied!');
     },
     snack: call('snack'),
   },

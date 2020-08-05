@@ -162,6 +162,10 @@ export default {
   mounted() {
     this.clearInvoice();
     this.checkRefresh();
+    this.$nextTick(() => {
+      if (!this.invoice.user.username)
+      this.$set(this.invoice, 'user', this.user);
+    });
   },
 };
 </script>

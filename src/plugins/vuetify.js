@@ -9,6 +9,7 @@ import ArrowLeft from 'vue-material-design-icons/ArrowLeft';
 import BellRing from 'vue-material-design-icons/BellRing';
 import Camera from 'vue-material-design-icons/Camera';
 import Cancel from 'vue-material-design-icons/Close';
+import CellphoneAndroid from 'vue-material-design-icons/CellphoneAndroid';
 import Check from 'vue-material-design-icons/Check';
 import Clear from 'vue-material-design-icons/Close';
 import ClipboardText from 'vue-material-design-icons/ClipboardText';
@@ -31,7 +32,6 @@ import Lock from 'vue-material-design-icons/Lock';
 import Nfc from 'vue-material-design-icons/Nfc';
 import Note from 'vue-material-design-icons/Note';
 import OpenInNew from 'vue-material-design-icons/OpenInNew';
-import Portrait from 'vue-material-design-icons/CropPortrait';
 import Qrcode from 'vue-material-design-icons/Qrcode';
 import Refresh from 'vue-material-design-icons/Refresh';
 import Send from 'vue-material-design-icons/Send';
@@ -68,6 +68,7 @@ export default new Vuetify({
       'bell': { component: BellRing },
       'camera': { component: Camera },
       'cancel': { component: Cancel },
+      'cellphone': { component: CellphoneAndroid },
       'check': { component: Check },
       'clear': { component: Clear },
       'code': { component: Code },
@@ -82,14 +83,13 @@ export default new Vuetify({
       'help': { component: Help },
       'home': { component: Home },
       'info': { component: Info },
-      'key': { component: Key },
+      'key': { component: Key, props: { size: 64 } },
       'link': { component: Link},
       'lock': { component: Lock },
       'nfc': { component: Nfc },
       'note': { component: Note },
       'open': { component: OpenInNew },
       'payments': { component: FormatLineWeight },
-      'portrait': { component: Portrait },
       'qrcode': { component: Qrcode },
       'refresh': { component: Refresh },
       'send': { component: Send },

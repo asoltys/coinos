@@ -4,9 +4,7 @@
     <v-card-text>
       <v-list class="elevation-1 mb-2">
         <v-list-item v-for="{ hex } in user.keys" :key="hex" @click="copy(hex)">
-          <v-list-item-avatar>
-            <v-icon color="yellow">$key</v-icon>
-            </v-list-item-avatar>
+          <v-icon color="yellow" left>$key</v-icon>
           <v-list-item-content>
             <v-list-item-title>{{ hex }}</v-list-item-title>
           </v-list-item-content>

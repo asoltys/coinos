@@ -180,4 +180,8 @@ body
 
 .grecaptcha-badge
   display none
+
+.v-application code
+  background white
+  padding 5px
 </style>
