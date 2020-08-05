@@ -19,15 +19,15 @@
                     <span class="print">{{ ticker }}</span>
                   </div>
                 </div>
-                <div v-if="ticker === 'BTC'" class="d-flex">
-                  <div class="yellow--text mr-1 my-auto">
-                    <span>{{ fiat }}</span>
-                    <v-btn
-                      color="yellow"
-                      class="black--text"
-                      >{{ payment.currency }}</v-btn
-                    >
-                  </div>
+                <div v-if="ticker === 'BTC'" class="d-flex yellow--text">
+                  <div class="mr-1 my-auto">{{ fiat }}</div>
+                  <div class="my-auto">
+                  <v-btn
+                       color="yellow"
+                       class="black--text"
+                       >{{ payment.currency }}</v-btn
+                     >
+                     </div>
                 </div>
               </div>
               <div v-if="payment.memo" class="body-1 pa-4">{{ payment.memo }}</div>
