@@ -7,7 +7,7 @@
     >
       <div class="headline mb-2">Welcome! Your account is empty</div>
       <v-btn class="mr-1 wide" @click="$router.push('/receive')">
-        <v-icon left>get_app</v-icon><span>Receive Funds</span>
+        <v-icon left>$download</v-icon><span>Receive Funds</span>
       </v-btn>
     </div>
     <payments class="mb-2" />

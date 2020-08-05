@@ -14,7 +14,7 @@
           <v-avatar class="mr-2" v-if="user.pic" size="30">
             <img :src="user.pic" />
           </v-avatar>
-          <v-icon v-else>person</v-icon>
+          <v-icon v-else>$account</v-icon>
           <span class="truncate">{{
             user.username
           }}
@@ -24,25 +24,25 @@
       <v-card tile class="mx-auto menu" max-width="400">
         <v-list-item @click="$go('/about')">
           <v-list-item-action>
-            <v-icon>help</v-icon>
+            <v-icon>$help</v-icon>
           </v-list-item-action>
           <v-list-item-content>About</v-list-item-content>
         </v-list-item>
         <v-list-item v-if="user && user.accounts" @click="$go('/assets')">
           <v-list-item-action>
-            <v-icon>account_balance_wallet</v-icon>
+            <v-icon>$wallet</v-icon>
           </v-list-item-action>
           <v-list-item-content>Assets</v-list-item-content>
         </v-list-item>
         <v-list-item @click="$go('/swaps')">
           <v-list-item-action>
-            <v-icon>swap_horiz</v-icon>
+            <v-icon>$swap</v-icon>
           </v-list-item-action>
           <v-list-item-content>Swaps</v-list-item-content>
         </v-list-item>
         <v-list-item @click="$go('/settings')">
           <v-list-item-action>
-            <v-icon>settings</v-icon>
+            <v-icon>$settings</v-icon>
           </v-list-item-action>
           <v-list-item-content>Settings</v-list-item-content>
         </v-list-item>
@@ -54,20 +54,20 @@
         </v-list-item>
         <v-list-item v-if="!$prod" @click="generateBlock('bitcoin')">
           <v-list-item-action>
-            <v-icon>sync</v-icon>
+            <v-icon>$sync</v-icon>
           </v-list-item-action>
           <v-list-item-content>Generate Bitcoin</v-list-item-content>
         </v-list-item>
         <v-list-item v-if="!$prod" @click="generateBlock('liquid')">
           <v-list-item-action>
-            <v-icon>sync</v-icon>
+            <v-icon>$sync</v-icon>
           </v-list-item-action>
           <v-list-item-content>Generate Liquid</v-list-item-content>
         </v-list-item>
       </v-card>
     </v-menu>
     <v-btn icon v-else @click="$go('/about')">
-      <v-icon>help</v-icon>
+      <v-icon>$help</v-icon>
     </v-btn>
   </v-app-bar>
 </template>

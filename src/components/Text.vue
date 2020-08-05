@@ -13,7 +13,7 @@
         >
           <template v-slot:append>
             <v-btn @click="copy(text)" class="ml-1" icon>
-              <v-icon>content_copy</v-icon>
+              <v-icon>$copy</v-icon>
             </v-btn>
           </template>
         </v-textarea>

@@ -8,15 +8,15 @@
     >
       <v-btn class="flex-grow-1" text @click="home">
         <span>Payments</span>
-        <v-icon>line_weight</v-icon>
+        <v-icon>$payments</v-icon>
       </v-btn>
       <v-btn class="flex-grow-1" text @click="$go('/receive?refresh')">
         <span>Receive</span>
-        <v-icon>get_app</v-icon>
+        <v-icon>$download</v-icon>
       </v-btn>
       <v-btn class="flex-grow-1" text @click="$go('/scan')">
         <span>Scan</span>
-        <v-icon>camera_alt</v-icon>
+        <v-icon>$camera</v-icon>
       </v-btn>
       <v-btn
         class="flex-grow-1"
@@ -29,7 +29,7 @@
       </v-btn>
       <v-btn class="flex-grow-1" text @click="$go('/settings')">
         <span>Settings</span>
-        <v-icon>settings</v-icon>
+        <v-icon>$settings</v-icon>
       </v-btn>
     </v-bottom-navigation>
   </div>

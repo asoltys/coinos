@@ -29,13 +29,13 @@
           >
             <template v-slot:append>
               <v-btn @click="clear" class="ml-1" icon>
-                <v-icon>clear</v-icon>
+                <v-icon>$clear</v-icon>
               </v-btn>
               <v-btn icon @click="show = !show" class="ml-1" text>
                 <qrcode />
               </v-btn>
               <v-btn @click="copy(address)" class="ml-1" icon>
-                <v-icon>content_copy</v-icon>
+                <v-icon>$copy</v-icon>
               </v-btn>
             </template>
           </v-textarea>
@@ -46,11 +46,11 @@
         <v-textarea label="Recipient" v-model="to" rows="1" auto-grow>
           <template v-slot:append>
             <v-btn v-if="canPaste" class="mr-2 mb-2 flex-grow-1" @click="self">
-              <v-icon left>person</v-icon>
+              <v-icon left>$account</v-icon>
               <span>Self</span>
             </v-btn>
             <v-btn v-if="canPaste" class="mr-2 mb-2 flex-grow-1" @click="paste">
-              <v-icon left>assignment</v-icon>
+              <v-icon left>$assignment</v-icon>
               <span>Paste</span>
             </v-btn>
           </template>
@@ -64,7 +64,7 @@
         :max="balance"
       />
       <v-btn v-if="!editing" color="green" @click="submit">
-        <v-icon left>send</v-icon><span>Sweep</span>
+        <v-icon left>$send</v-icon><span>Sweep</span>
       </v-btn>
     </div>
   </div>

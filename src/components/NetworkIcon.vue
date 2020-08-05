@@ -5,8 +5,8 @@
       fillColor="yellow"
       title="Lightning Payment"
     />
-    <v-icon v-else-if="network === 'COINOS'" color="#ccc">forward</v-icon>
-    <v-icon v-else-if="network === 'GIFT'" color="yellow">card_giftcard</v-icon>
+    <v-icon v-else-if="network === 'COINOS'" color="#ccc">$forward</v-icon>
+    <v-icon v-else-if="network === 'GIFT'" color="yellow">$gift</v-icon>
     <img
       v-else-if="network === 'BTC'"
       src="../assets/bitcoin.png"

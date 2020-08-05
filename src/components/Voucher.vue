@@ -6,7 +6,7 @@
       <v-textarea label="Memo" v-model="payment.memo" rows="1" auto-grow />
       <div class="d-flex flex-wrap">
         <v-btn dark @click="voucher" class="flex-grow-1 mb-2 mr-1 wide">
-          <v-icon left color="pink">card_giftcard</v-icon
+          <v-icon left color="pink">$gift</v-icon
           ><span>Create Voucher</span>
         </v-btn>
         <v-btn dark @click="submit" class="flex-grow-1 mb-2 mr-1 wide">

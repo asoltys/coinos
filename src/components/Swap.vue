@@ -9,7 +9,7 @@
             <div class="d-flex">
               <div class="flex-grow-1 text-center">
                 <v-icon large @click="showcode = !showcode" class="pa-4"
-                  >assignment</v-icon
+                  >$assignment</v-icon
                 >
               </div>
             </div>
@@ -19,10 +19,10 @@
         <div class="d-flex flex-wrap mb-2">
           <div class="d-flex flex-grow-1 mb-2">
             <v-btn @click="download" class="flex-grow-1 mr-1">
-              <v-icon left>get_app</v-icon><span>Download</span>
+              <v-icon left>$download</v-icon><span>Download</span>
             </v-btn>
             <v-btn @click="copy(proposal.text)" class="flex-grow-1">
-              <v-icon left>content_copy</v-icon><span>Copy</span>
+              <v-icon left>$copy</v-icon><span>Copy</span>
             </v-btn>
           </div>
           <div class="d-flex flex-grow-1" style="width: 100%">
@@ -31,7 +31,7 @@
               color="yellow"
               class="black--text flex-grow-1"
             >
-              <v-icon left>assignment</v-icon><span>Publish</span>
+              <v-icon left>$assignment</v-icon><span>Publish</span>
             </v-btn>
           </div>
         </div>
@@ -68,7 +68,7 @@
       </div>
       <div class="d-flex">
         <v-btn color="green" @click="submit" class="flex-grow-1 wide">
-          <v-icon left>assignment</v-icon><span>Generate Proposal</span>
+          <v-icon left>$assignment</v-icon><span>Generate Proposal</span>
         </v-btn>
       </div>
     </div>

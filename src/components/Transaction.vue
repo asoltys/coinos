@@ -15,16 +15,16 @@
       </template>
       <template v-slot:append>
         <v-btn @click="clearPayment" class="ml-1" icon>
-          <v-icon>clear</v-icon>
+          <v-icon>$cancel</v-icon>
         </v-btn>
         <v-btn icon @click="show = !show" class="ml-1" text>
           <qrcode />
         </v-btn>
         <v-btn @click="explore" class="ml-1" icon>
-          <v-icon>open_in_new</v-icon>
+          <v-icon>$open</v-icon>
         </v-btn>
         <v-btn @click="copy(recipient)" class="ml-1" icon>
-          <v-icon>content_copy</v-icon>
+          <v-icon>$copy</v-icon>
         </v-btn>
       </template>
     </v-textarea>
@@ -59,7 +59,7 @@
           >{{ user.unit }}</v-btn
         >
         <v-btn icon @click="copy(displayFee)" class="ml-1" text>
-          <v-icon>content_copy</v-icon>
+          <v-icon>$copy</v-icon>
         </v-btn>
       </template>
     </v-text-field>
@@ -69,7 +69,7 @@
 
     <div class="d-flex" v-if="psbt">
       <v-btn @click="copy(psbt)" class="ml-auto">
-        <v-icon left>content_copy</v-icon>
+        <v-icon left>$copy</v-icon>
         Copy {{ payment.network === 'bitcoin' ? 'PSBT' : 'PSET' }}
       </v-btn>
     </div>

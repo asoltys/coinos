@@ -52,10 +52,10 @@
             class="mr-2 mb-2 mb-sm-0 wide"
           >
             <template v-if="invoice.tip">
-              <v-icon left>edit</v-icon><span>Edit Tip</span>
+              <v-icon left>$edit</v-icon><span>Edit Tip</span>
             </template>
             <template v-else>
-              <v-icon left>add</v-icon><span>Add Tip</span>
+              <v-icon left>$add</v-icon><span>Add Tip</span>
             </template>
           </v-btn>
           <v-btn
@@ -64,14 +64,14 @@
             class="mr-2 mb-2 mb-sm-0 wide"
           >
             <qrcode v-if="showcode" class="mr-1" />
-            <v-icon v-else class="mr-1">code</v-icon>
+            <v-icon v-else class="mr-1">$code</v-icon>
             <span>{{ code }}</span>
           </v-btn>
           <v-btn
             @click.native="copy(invoice.text)"
             class="wide mr-2 mb-2 mb-sm-0"
           >
-            <v-icon left>content_copy</v-icon><span>Copy</span>
+          <content-copy /><span>Copy</span>
           </v-btn>
           <v-btn
             v-if="invoice.network === 'LNBTC'"
@@ -86,7 +86,7 @@
             @click="newAddress"
             class="wide"
           >
-            <v-icon left>refresh</v-icon><span>Address</span>
+            <v-icon left>$refresh</v-icon><span>Address</span>
           </v-btn>
         </div>
       </v-card>
@@ -99,6 +99,7 @@ import { mapActions } from 'vuex';
 import { get, sync } from 'vuex-pathify';
 import Copy from '../mixins/Copy';
 import Tippad from './TipPad';
+import ContentCopy from 'vue-material-design-icons/ContentCopy';
 import Qrcode from 'vue-material-design-icons/Qrcode';
 import Qr from './Qr';
 import Lnurl from './Lnurl';
@@ -106,7 +107,7 @@ import Lnurl from './Lnurl';
 const SATS = 100000000;
 
 export default {
-  components: { Qrcode, Qr, Tippad, Lnurl },
+  components: { Qrcode, Qr, Tippad, Lnurl, ContentCopy },
   mixins: [Copy],
   props: {
     clear: { type: Function },

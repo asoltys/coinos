@@ -24,7 +24,7 @@
           </div>
 
           <v-btn v-if="canPaste" class="mr-2 mb-2 flex-grow-1" @click="paste">
-            <v-icon left>assignment</v-icon>
+            <v-icon left>$assignment</v-icon>
             <span>Paste</span>
           </v-btn>
         </template>
@@ -37,7 +37,7 @@
     <voucher v-if="payment.method === 'url'" />
     <swap v-if="payment.method === 'swap'" />
     <v-btn v-if="payment.method" @click="payment.method = null" class="my-2 wide">
-      <v-icon>arrow_back</v-icon>
+      <v-icon>$arrow_back</v-icon>
       Back</v-btn
     >
   </div>

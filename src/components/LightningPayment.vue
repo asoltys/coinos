@@ -35,7 +35,7 @@
     >
       <template v-slot:append>
         <v-btn @click="copy(payment.payobj.payeeNodeKey)" icon>
-          <v-icon>content_copy</v-icon>
+          <v-icon>$copy</v-icon>
         </v-btn>
       </template>
     </v-textarea>

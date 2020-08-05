@@ -35,7 +35,7 @@
       </div>
       <div class="text-center">
         <v-btn class="mt-2" v-if="payment.link" @click="explore(payment.link)">
-          <v-icon left>open_in_new</v-icon><span>Explore</span>
+          <v-icon left>$open</v-icon><span>Explore</span>
         </v-btn>
       </div>
     </v-card>

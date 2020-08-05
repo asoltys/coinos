@@ -13,7 +13,7 @@
       @click="payment.method = 'coinos'"
       :style="buttonStyle"
     >
-      <v-icon color="yellow">person</v-icon>
+      <v-icon color="yellow">$account</v-icon>
       <span>Coinos User</span>
     </v-btn>
     <v-btn
@@ -21,7 +21,7 @@
       @click="payment.method = 'url'"
       :style="buttonStyle"
     >
-      <v-icon color="pink" left>card_giftcard</v-icon>
+      <v-icon color="pink" left>$gift</v-icon>
       Voucher
     </v-btn>
     <v-btn
@@ -29,7 +29,7 @@
       @click="payment.method = 'swap'"
       :style="buttonStyle"
     >
-      <v-icon color="blue" left>swap_horiz</v-icon>
+      <v-icon color="blue" left>$swap</v-icon>
       Swap
     </v-btn>
   </div>

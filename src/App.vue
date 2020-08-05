@@ -2,7 +2,7 @@
   <v-app id="app">
     <top-bar />
     <snack-bar />
-    <v-content style="background: #333">
+    <v-main style="background: #333">
       <v-container class="mr-3" style="margin-bottom: 50px !important">
         <v-alert
           class="mb-2 black--text"
@@ -17,11 +17,11 @@
               @click="showVersion = !showVersion"
               style="cursor: pointer"
             >
-              <v-icon color="black">info</v-icon>
+              <v-icon color="black">$info</v-icon>
               coinos update detected
             </div>
             <v-btn @click="refresh">
-              <v-icon left>refresh</v-icon>
+              <v-icon left>$refresh</v-icon>
               Reload</v-btn
             >
           </div>
@@ -43,7 +43,7 @@
         <router-view v-if="!initializing" :key="$route.path" />
         <v-progress-linear v-else indeterminate />
       </v-container>
-    </v-content>
+    </v-main>
     <bottom-nav v-if="user && user.address" />
   </v-app>
 </template>

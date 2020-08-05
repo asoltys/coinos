@@ -10,7 +10,7 @@
               title: !$vuetify.breakpoint.xs,
             }"
           >
-            <v-icon v-if="assets[a.asset].registered" class="mr-1" color="yellow" title="Registered">assignment</v-icon>
+            <v-icon v-if="assets[a.asset].registered" class="mr-1" color="yellow" title="Registered">$assignment</v-icon>
             <div class="mb-1">
               {{ a.name }}
               <v-btn
@@ -61,7 +61,7 @@
               <div class="d-flex">
                 <div class="flex-grow-1 text-center">
                   <v-icon large @click="showcode = !showcode" class="pa-4"
-                    >assignment</v-icon
+                    >$assignment</v-icon
                   >
                 </div>
               </div>
@@ -73,10 +73,10 @@
               />
               <div class="d-flex flex-grow-1 mb-2">
                 <v-btn @click="download(filename(a), proof(a))" class="flex-grow-1 mr-1">
-                  <v-icon left>get_app</v-icon><span>Download</span>
+                  <v-icon left>$download</v-icon><span>Download</span>
                 </v-btn>
                 <v-btn @click="copy(proof(a))" class="flex-grow-1">
-                  <v-icon left>content_copy</v-icon><span>Copy</span>
+                  <v-icon left>$copy</v-icon><span>Copy</span>
                 </v-btn>
               </div>
               <div class="d-flex flex-grow-1" style="width: 100%">
@@ -85,7 +85,7 @@
                   color="yellow"
                   class="black--text flex-grow-1"
                 >
-                  <v-icon left>assignment</v-icon><span>Register</span>
+                  <v-icon left>$assignment</v-icon><span>Register</span>
                 </v-btn>
               </div>
             </div>
@@ -99,7 +99,7 @@
               >
                 <template v-slot:append>
                   <v-btn @click="() => copy(a.asset)" icon class="ml-1">
-                    <v-icon>content_copy</v-icon>
+                    <v-icon>$copy</v-icon>
                   </v-btn>
                 </template>
               </v-textarea>
@@ -127,11 +127,11 @@
               />
               <div class="text-right">
                 <v-btn type="submit" class="mr-1">
-                  <v-icon left class="yellow--text">check</v-icon>
+                  <v-icon left class="yellow--text">$check</v-icon>
                   <span>save</span>
                 </v-btn>
                 <v-btn class="mr-1" @click.prevent="select(a.asset)">
-                  <v-icon left>line_weight</v-icon>
+                  <v-icon left>$payments</v-icon>
                   <span>Payments</span>
                 </v-btn>
                 <v-btn
@@ -139,7 +139,7 @@
                   class="mr-1"
                   @click.prevent="startRegistering(a.asset)"
                 >
-                  <v-icon left>assignment</v-icon>
+                  <v-icon left>$assignment</v-icon>
                   <span>Register</span>
                 </v-btn>
               </div>
@@ -154,7 +154,7 @@
       @click="$go('/asset')"
       color="yellow"
     >
-      <v-icon>add</v-icon>
+      <v-icon>$add</v-icon>
       <span>New</span>
     </v-btn>
   </div>

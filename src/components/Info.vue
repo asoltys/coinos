@@ -39,7 +39,7 @@
         </v-list-item>
         <v-list-item>
           <v-list-item-avatar>
-            <v-icon class="ml-0 pl-0" color="green">person</v-icon>
+            <v-icon class="ml-0 pl-0" color="green">$account</v-icon>
           </v-list-item-avatar>
           <v-list-item-content>
             <v-list-item-title>User Balances</v-list-item-title>

@@ -13,7 +13,7 @@
         <template v-slot:append> </template>
       </v-text-field>
       <v-btn type="submit" class="black--text ml-1" color="primary">
-        <v-icon left>send</v-icon>
+        <v-icon left>$send</v-icon>
         Go
       </v-btn>
     </v-form>

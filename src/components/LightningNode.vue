@@ -20,7 +20,7 @@
               <qrcode />
             </v-btn>
             <v-btn icon @click="copy(clearnet)" class="ml-1" text>
-              <v-icon>content_copy</v-icon>
+              <v-icon>$copy</v-icon>
             </v-btn>
           </template>
         </v-textarea>
@@ -37,7 +37,7 @@
               <qrcode />
             </v-btn>
             <v-btn icon @click="copy(darknet)" class="ml-1" text>
-              <v-icon>content_copy</v-icon>
+              <v-icon>$copy</v-icon>
             </v-btn>
           </template>
         </v-textarea>
@@ -48,14 +48,14 @@
         <v-text-field label="Local Amount" v-model="localAmt" class="body-2" ref="localAmt" />
         <v-text-field v-if="pushAmt" label="Push Amount" v-model="pushAmt" class="body-2" />
         <v-btn class="black--text mx-auto" color="primary" type="submit">
-          <v-icon left>send</v-icon>
+          <v-icon left>$send</v-icon>
           Submit</v-btn
         >
         </v-form>
       </div>
       <div v-else-if="!channelRequest" class="d-flex">
         <v-btn class="black--text mx-auto" color="primary" @click="startGenerating">
-          <v-icon left>link</v-icon>
+          <v-icon left>$link</v-icon>
           Request Inbound Channel</v-btn
         >
       </div>

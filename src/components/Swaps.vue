@@ -14,7 +14,7 @@
     </div>
 
     <v-btn @click="$go('/')" class="wide mb-2 mr-2">
-      <v-icon>arrow_back</v-icon>
+      <v-icon>$arrow_back</v-icon>
       Back
     </v-btn>
     <v-btn
@@ -22,7 +22,7 @@
       class="mx-auto mb-2 wide"
       @click="$go('/propose')"
     >
-      <v-icon>add</v-icon>
+      <v-icon>$add</v-icon>
       <span>New</span>
     </v-btn>
   </div>

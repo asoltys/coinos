@@ -15,19 +15,19 @@
       <v-card-text>
         <div class="d-flex flex-wrap justify-center">
           <v-btn @click="changePassword" class="mr-sm-2 mb-2">
-            <v-icon left class="yellow--text">lock</v-icon>
+            <v-icon left class="yellow--text">$lock</v-icon>
             <span>{{ user.password ? 'Change' : 'Set' }} Password</span>
           </v-btn>
           <v-btn
             @click.stop="showPinDialog = !showPinDialog"
             class="mr-sm-2 mb-2"
           >
-            <v-icon left class="yellow--text">dialpad</v-icon>
+            <v-icon left class="yellow--text">$dialpad</v-icon>
             {{ user.pin ? 'Change' : 'Set' }} PIN
           </v-btn>
           <set-pin @pin="pin" :showPinDialog="showPinDialog" />
           <v-btn @click="twofa">
-            <v-icon left class="yellow--text">stay_current_portrait</v-icon>
+            <v-icon left class="yellow--text">$portrait</v-icon>
             {{ user.twofa ? 'Disable' : 'Setup' }} 2FA
           </v-btn>
         </div>
@@ -53,7 +53,7 @@
                 :length="6"
               />
               <v-btn @click="disable">
-                <v-icon left class="red--text">cancel</v-icon>
+                <v-icon left class="red--text">$cancel</v-icon>
                 <span>Disable</span>
               </v-btn>
             </div>
@@ -102,7 +102,7 @@
             />
             <div class="text-right">
               <v-btn @click="submit">
-                <v-icon left class="yellow--text">check</v-icon>
+                <v-icon left class="yellow--text">$check</v-icon>
                 <span>save</span>
               </v-btn>
             </div>
@@ -148,7 +148,7 @@
 
           <div class="text-right">
             <v-btn @click="submit">
-              <v-icon left class="yellow--text">check</v-icon>
+              <v-icon left class="yellow--text">$check</v-icon>
               <span>Save</span>
             </v-btn>
           </div>
@@ -158,7 +158,7 @@
     <linking-keys />
     <div class="d-flex my-2" v-if="promptInstall">
       <v-btn class="flex-grow-1" @click="install">
-        <v-icon left color="green">home</v-icon>
+        <v-icon left color="green">$home</v-icon>
         Add to Homescreen
       </v-btn>
     </div>
@@ -168,13 +168,13 @@
         @click="startScanning"
         v-if="hasNfc && !nfcEnabled"
       >
-        <v-icon color="pink" left>nfc</v-icon>
+        <v-icon color="pink" left>$nfc</v-icon>
         Enable NFC
       </v-btn>
     </div>
     <div class="d-flex my-2" v-if="promptNotifications">
       <v-btn class="flex-grow-1" @click="setupNotifications">
-        <v-icon color="yellow" left>notifications_active</v-icon>
+        <v-icon color="yellow" left>$notifications</v-icon>
         Enable Notifications
       </v-btn>
     </div>

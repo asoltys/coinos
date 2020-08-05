@@ -17,7 +17,7 @@
           dark
           @click="done"
         >
-          <v-icon left>check</v-icon><span>Set Amount</span>
+          <v-icon left>$check</v-icon><span>Set Amount</span>
         </v-btn>
       </div>
     </div>
@@ -48,7 +48,7 @@
           >{{ displayCurrency }}</v-btn
         >
         <v-btn icon @click="copy(displayAmount)" class="ml-1" text>
-          <v-icon>content_copy</v-icon>
+          <v-icon>$copy</v-icon>
         </v-btn>
       </template>
     </v-text-field>

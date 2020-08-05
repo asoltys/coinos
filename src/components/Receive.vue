@@ -32,7 +32,7 @@
       </v-card>
       <div class="d-flex flex-wrap buttons" v-else>
         <v-btn class="flex-grow-1 mb-1" @click="showMemo">
-          <v-icon left>note</v-icon>
+          <v-icon left>$note</v-icon>
           Add Memo
         </v-btn>
       </div>

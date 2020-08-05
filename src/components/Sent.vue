@@ -43,13 +43,13 @@
         </div>
 
         <v-btn @click="clearPayment" class="mr-2">
-          <v-icon left>arrow_back</v-icon><span>Send Another</span>
+          <v-icon left>$arrow_back</v-icon><span>Send Another</span>
         </v-btn>
         <v-btn
           v-if="['BTC', 'LBTC'].includes(payment.network)"
           @click.native="explore"
         >
-          <v-icon left>open_in_new</v-icon><span>Explore</span>
+          <v-icon left>$open</v-icon><span>Explore</span>
         </v-btn>
       </div>
     </v-card>
@@ -60,11 +60,11 @@
         </div>
         <qr :text="redeemUrl" />
         <v-btn @click="redeem" class="mr-1">
-          <v-icon left>open_in_new</v-icon>
+          <v-icon left>$open</v-icon>
           Open
         </v-btn>
         <v-btn @click="copy(redeemUrl)" class="mr-1">
-          <v-icon left>content_copy</v-icon>
+          <v-icon left>$copy</v-icon>
           Copy
         </v-btn>
       </v-card-text>

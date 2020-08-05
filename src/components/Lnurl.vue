@@ -3,7 +3,7 @@
       <qr :text="lnurl.encoded" />
       <div class="d-flex justify-center">
         <v-btn @click="window.location = `lightning:${lnurl.encoded}`">
-          <v-icon left color="yellow">open_in_new</v-icon>
+          <v-icon left color="yellow">$open</v-icon>
           Open
         </v-btn>
       </div>
@@ -16,7 +16,7 @@
       >
         <template v-slot:append>
           <v-btn @click="() => copy(lnurl.encoded)" icon class="ml-1">
-            <v-icon>content_copy</v-icon>
+            <v-icon>$copy</v-icon>
           </v-btn>
         </template>
       </v-textarea>

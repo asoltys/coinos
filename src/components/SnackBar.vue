@@ -1,15 +1,13 @@
 <template>
   <v-snackbar class="snack yellow--text" v-model="snack" :timeout="5000" top>
-    <info-icon class="mr-1" />
+    <v-icon left>$info</v-icon>
     <b>{{ message }}</b>
   </v-snackbar>
 </template>
 
 <script>
-import InfoIcon from 'vue-material-design-icons/Information';
 
 export default {
-  components: { InfoIcon },
   computed: {
     message: {
       get() {

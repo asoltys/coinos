@@ -57,7 +57,7 @@
               class="mr-2 mb-2 mb-sm-0 wide"
               :disabled="form.username.length > 1 || form.password.length > 1"
             >
-              <v-icon left>account_balance_wallet</v-icon>
+              <v-icon left>$wallet</v-icon>
               New Account
             </v-btn>
           </v-form>
@@ -65,11 +65,11 @@
       </v-card>
     </div>
     <v-btn @click="$go('/swaps')" class="mt-2 mr-1">
-      <v-icon left>swap_horiz</v-icon>
+      <v-icon left>$swap</v-icon>
       View Swap Proposals
     </v-btn>
     <v-btn v-if="lnurl" @click="lnurl = null" class="mt-2">
-      <v-icon left>arrow_back</v-icon>
+      <v-icon left>$arrow_back</v-icon>
       Back
     </v-btn>
   </div>

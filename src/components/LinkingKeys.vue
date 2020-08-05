@@ -5,26 +5,26 @@
       <v-list class="elevation-1 mb-2">
         <v-list-item v-for="{ hex } in user.keys" :key="hex" @click="copy(hex)">
           <v-list-item-avatar>
-            <v-icon color="yellow">vpn_key</v-icon>
+            <v-icon color="yellow">$key</v-icon>
             </v-list-item-avatar>
           <v-list-item-content>
             <v-list-item-title>{{ hex }}</v-list-item-title>
           </v-list-item-content>
           <v-list-item-action>
             <v-btn @click="copy(hex)" icon>
-              <v-icon>content_copy</v-icon>
+              <v-icon>$copy</v-icon>
             </v-btn>
           </v-list-item-action>
           <v-list-item-action>
             <v-btn @click="del(hex)" icon>
-              <v-icon>delete</v-icon>
+              <v-icon>$delete</v-icon>
             </v-btn>
           </v-list-item-action>
         </v-list-item>
       </v-list>
       <lnurl v-if="lnurl" :lnurl="lnurl" />
       <v-btn @click="getLoginUrl">
-        <v-icon left class="yellow--text">add</v-icon>
+        <v-icon left class="yellow--text">$add</v-icon>
         <span>Add</span>
       </v-btn>
     </v-card-text>

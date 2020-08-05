@@ -36,7 +36,7 @@
           @click="submit"
           :disabled="amount < min || amount > max"
         >
-          <v-icon left>send</v-icon><span>Pay</span>
+          <v-icon left>$send</v-icon><span>Pay</span>
         </v-btn>
       </div>
     </div>

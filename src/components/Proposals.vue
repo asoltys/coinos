@@ -23,22 +23,22 @@
         </div>
         <div class="d-flex flex-grow-1 flex-nowrap text-right ml-auto">
           <v-btn class="mr-1 ml-auto" @click.stop="download(p.text)" icon>
-            <v-icon>get_app</v-icon>
+            <v-icon>$download</v-icon>
           </v-btn>
           <v-btn class="mr-1" @click.stop="copy(p.text)" icon>
-            <v-icon>content_copy</v-icon>
+            <v-icon>$copy</v-icon>
           </v-btn>
           <span v-if="user.id">
             <v-btn
               v-if="p.user_id === user.id"
               @click.stop="deleteProposal(p.id)"
             >
-              <v-icon left>delete</v-icon>
+              <v-icon left>$delete</v-icon>
               Delete
             </v-btn>
             <v-btn v-else @click.stop="accept({ id: p.id })" color="green">
-              <v-icon class="d-none d-sm-inline-flex" left>send</v-icon>
-              <v-icon class="d-sm-none">send</v-icon>
+              <v-icon class="d-none d-sm-inline-flex" left>$send</v-icon>
+              <v-icon class="d-sm-none">$send</v-icon>
               <span class="d-none d-sm-inline">Accept</span>
             </v-btn>
           </span>
@@ -47,7 +47,7 @@
             @click.stop="$router.push({ name: 'accept', params: { id: p.id } })"
             color="green"
           >
-            <v-icon left>send</v-icon>
+            <v-icon left>$send</v-icon>
             Accept
           </v-btn>
         </div>
@@ -62,7 +62,7 @@
         >
           <template v-slot:append>
             <v-btn @click="() => copy(p.a1)" icon class="ml-1">
-              <v-icon>content_copy</v-icon>
+              <v-icon>$copy</v-icon>
             </v-btn>
           </template>
         </v-textarea>
@@ -75,7 +75,7 @@
         >
           <template v-slot:append>
             <v-btn @click="() => copy(p.a1)" icon class="ml-1">
-              <v-icon>content_copy</v-icon>
+              <v-icon>$copy</v-icon>
             </v-btn>
           </template>
         </v-textarea>

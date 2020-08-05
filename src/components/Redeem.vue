@@ -36,7 +36,7 @@
         </div>
         <v-alert color="error" v-if="payment.redeemed">Sorry, Already Redeemed</v-alert>
         <v-btn v-else @click="redeem(redeemcode)" color="green" class="mt-2">
-          <v-icon left>send</v-icon>
+          <v-icon left>$send</v-icon>
           Redeem
         </v-btn>
       </v-card-text>

@@ -31,7 +31,7 @@
         <template v-if="buttons[j + 3 * i - 4] !== '<'">{{
           buttons[j + 3 * i - 4]
         }}</template>
-        <v-icon v-else style="max-width: 14px">undo</v-icon>
+        <v-icon v-else style="max-width: 14px">$undo</v-icon>
       </v-btn>
     </div>
   </div>

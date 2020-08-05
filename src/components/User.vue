@@ -2,7 +2,7 @@
   <div>
     <receive />
     <v-btn v-if="received || invoice.address || invoice.text" @click="init" class="mr-1">
-      <v-icon left>arrow_back</v-icon>
+      <v-icon left>$arrow_back</v-icon>
       Back
     </v-btn>
   </div>

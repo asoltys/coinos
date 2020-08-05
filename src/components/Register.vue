@@ -28,11 +28,11 @@
         autocapitalize="none"
       />
     <v-btn @click="$go('/')" class="mr-1">
-      <v-icon left>arrow_back</v-icon>
+      <v-icon left>$arrow_back</v-icon>
       Back
     </v-btn>
       <v-btn type="submit" color="green" class="wide">
-        <v-icon left>account_balance_wallet</v-icon>
+        <v-icon left>$wallet</v-icon>
         Create New Account
       </v-btn>
     </v-form>

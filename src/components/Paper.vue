@@ -5,10 +5,10 @@
         <v-textarea label="Seed" v-model="seed" rows="1" auto-grow>
           <template v-slot:append>
             <v-btn @click="copy(seed)" class="ml-1" icon>
-              <v-icon>content_copy</v-icon>
+              <v-icon>$copy</v-icon>
             </v-btn>
             <v-btn icon @click="generate" class="ml-1" text>
-              <v-icon>refresh</v-icon>
+              <v-icon>$refresh</v-icon>
             </v-btn>
           </template>
         </v-textarea>
@@ -17,7 +17,7 @@
       <v-textarea label="Address" v-model="address" rows="1" auto-grow>
         <template v-slot:append>
           <v-btn @click="copy(address)" class="ml-1" icon>
-            <v-icon>content_copy</v-icon>
+            <v-icon>$copy</v-icon>
           </v-btn>
         </template>
       </v-textarea>
@@ -40,16 +40,16 @@
         <template v-slot:append>
           <v-btn v-if="1 === 2" @click="compressed = !compressed" class="ml-1">
             <template v-if="compressed">
-              <v-icon>unfold_more</v-icon>
+              <v-icon>$unfold_more</v-icon>
               Uncompress
             </template>
             <template v-else>
-              <v-icon>unfold_less</v-icon>
+              <v-icon>$unfold_less</v-icon>
               Compress
             </template>
           </v-btn>
           <v-btn @click="copy(encrypted || privkey)" class="ml-1" icon>
-            <v-icon>content_copy</v-icon>
+            <v-icon>$copy</v-icon>
           </v-btn>
         </template>
       </v-textarea>
@@ -67,7 +67,7 @@
           <span>Print</span>
         </v-btn>
         <v-btn @click="handleScan(address)" class="wide">
-          <v-icon left color="green">send</v-icon>
+          <v-icon left color="green">$send</v-icon>
           <span>Fund</span>
         </v-btn>
       </div>
