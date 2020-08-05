@@ -63,7 +63,6 @@
           </v-form>
         </v-card-text>
       </v-card>
-    </div>
     <v-btn @click="$go('/swaps')" class="mt-2 mr-1">
       <v-icon left>$swap</v-icon>
       View Swap Proposals
@@ -72,6 +71,7 @@
       <v-icon left>$arrow_back</v-icon>
       Back
     </v-btn>
+    </div>
   </div>
 </template>
 

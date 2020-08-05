@@ -152,6 +152,7 @@ const state = {
   proposals: [],
   psbt: null,
   pin: '',
+  poll: null,
   prompt2fa: false,
   rate: 0,
   rates: null,
@@ -211,7 +212,7 @@ export default new Vuex.Store({
             else failures++;
           }
 
-          setTimeout(socketPoll, 5000);
+          commit('poll', setTimeout(socketPoll, 5000));
         };
         socketPoll();
       } catch (e) {
@@ -345,6 +346,7 @@ export default new Vuex.Store({
     },
 
     async login({ commit, dispatch, state }, user) {
+      commit('loading', true);
       commit('user', user);
       user.token = state.twofa;
       const { password } = user;
@@ -455,14 +457,10 @@ export default new Vuex.Store({
 
     async logout({ commit, state }) {
       commit('loading', true);
-      let { subscription } = state;
 
-      try {
-        await Vue.axios.post('/logout', { subscription });
-      } catch (e) {
-        l('problem logging out', e.message);
-        commit('error', e.response ? e.response.data : e.message);
-      }
+      clearTimeout(state.poll);
+      commit('poll', null);
+      let { subscription } = state;
 
       document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
       window.sessionStorage.removeItem('token');
@@ -474,8 +472,15 @@ export default new Vuex.Store({
       commit('socket', null);
       commit('subscription', null);
       go('/');
-
       commit('loading', false);
+
+      try {
+        await Vue.axios.post('/logout', { subscription });
+      } catch (e) {
+        l('Problem during logging out', e.message);
+        commit('error', e.response ? e.response.data : e.message);
+      }
+
     },
 
     async loadPayments({ state }) {
@@ -580,13 +585,7 @@ export default new Vuex.Store({
       return new Promise((resolve, reject) => {
         setTimeout(reject, 5000);
         const proto = location.protocol === 'https:' ? 'wss://' : 'ws://';
-        if (getters.socket) {
-          if (getters.socket.readyState === 1) return resolve();
-          else {
-            getters.socket.close();
-            commit('socket', null);
-          }
-        }
+        if (getters.socket && getters.socket.readyState === 1) return resolve();
 
         let ws = new WebSocket(`${proto}${location.host}/ws`);
         commit('socket', ws);
