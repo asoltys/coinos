@@ -1,5 +1,5 @@
 <template>
-  <v-card v-if="user.keys.length" class="mb-2">
+  <v-card v-if="user.keys && user.keys.length" class="mb-2">
     <v-card-title>Linking Keys</v-card-title>
     <v-card-text>
       <v-list class="elevation-1 mb-2">

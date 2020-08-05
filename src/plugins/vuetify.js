@@ -4,6 +4,7 @@ import colors from 'vuetify/lib/util/colors';
 
 import Account from 'vue-material-design-icons/Account';
 import Add from 'vue-material-design-icons/Plus';
+import Alert from 'vue-material-design-icons/Alert';
 import ArrowLeft from 'vue-material-design-icons/ArrowLeft';
 import BellRing from 'vue-material-design-icons/BellRing';
 import Camera from 'vue-material-design-icons/Camera';
@@ -61,6 +62,7 @@ export default new Vuetify({
     values: {
       'account': { component: Account },
       'add': { component: Add },
+      'alert': { component: Alert },
       'arrow_back': { component: ArrowLeft },
       'assignment': { component: ClipboardText },
       'bell': { component: BellRing },

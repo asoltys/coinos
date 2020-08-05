@@ -205,7 +205,7 @@ export default new Vuex.Store({
             await dispatch('setupSocket');
             failures = 0;
           } catch (e) {
-            if (failures > 5) commit('error', 'Problem connecting to server');
+            if (failures > 5) commit('error', 'Failed to establish socket connection to server');
             else failures++;
           }
 
@@ -262,7 +262,7 @@ export default new Vuex.Store({
         commit('version', info.clientVersion.trim());
       } catch (e) {
         l(e);
-        commit('error', 'Problem connecting to server');
+        commit('error', 'Problem getting server info');
       }
     },
 
@@ -595,7 +595,6 @@ export default new Vuex.Store({
         };
 
         ws.onerror = () => {
-          commit('error', 'Problem connecting to server');
           ws.close();
           reject();
         };
