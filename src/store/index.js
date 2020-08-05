@@ -664,7 +664,7 @@ export default new Vuex.Store({
               if (!fx || !rate) return;
 
               getters.user.currencies.map(symbol => {
-                rates[symbol] = rate * fx[symbol] / fx['USD'];
+                rates[symbol] = rate * fx[symbol];
               });
 
               commit('rates', rates);
