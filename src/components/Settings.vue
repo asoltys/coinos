@@ -174,7 +174,7 @@
     </div>
     <div class="d-flex my-2" v-if="promptNotifications">
       <v-btn class="flex-grow-1" @click="setupNotifications">
-        <v-icon color="yellow" left>$notifications</v-icon>
+        <v-icon color="yellow" left>$bell</v-icon>
         Enable Notifications
       </v-btn>
     </div>
