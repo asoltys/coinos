@@ -591,7 +591,7 @@ export default new Vuex.Store({
         commit('socket', ws);
 
         ws.onopen = () => {
-          if (getters.token)
+          if (getters.token && getters.token !== 'null')
             ws.send(JSON.stringify({ type: 'login', data: getters.token }));
           else resolve();
 
