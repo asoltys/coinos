@@ -78,6 +78,14 @@ const go = path => {
 
 const BTC = process.env.VUE_APP_LBTC;
 
+const blankUser = {
+  username: null,
+  currencies: ['CAD', 'USD', 'JPY'],
+  currency: 'CAD',
+  accounts: [],
+  account: { asset: BTC, ticker: 'BTC' },
+};
+
 const blankInvoice = JSON.stringify({
   address: null,
   amount: null,
@@ -88,12 +96,7 @@ const blankInvoice = JSON.stringify({
   method: '',
   rate: 0,
   received: 0,
-  user: {
-    currencies: ['CAD', 'USD', 'JPY'],
-    currency: 'CAD',
-    accounts: [],
-    account: { asset: BTC, ticker: 'BTC' },
-  },
+  user: blankUser,
   text: '',
   tip: 0,
 });
@@ -168,12 +171,7 @@ const state = {
     accounts: [],
     account: { ticker: 'BTC' },
   },
-  user: {
-    currencies: ['CAD'],
-    currency: 'CAD',
-    accounts: [],
-    account: { ticker: 'BTC' },
-  },
+  user: blankUser,
   versionMismatch: null,
   version: null,
 };
@@ -217,8 +215,9 @@ export default new Vuex.Store({
         };
         socketPoll();
       } catch (e) {
-        l('failed to setup sockets', e);
-        go('/login');
+        commit('initializing', false);
+        commit('loading', false);
+        if (paths.includes(path)) return go('/login');
       }
 
       commit('initializing', false);
@@ -226,7 +225,7 @@ export default new Vuex.Store({
 
       if (!(path === '/login' || path === '/register')) dispatch('getInfo');
       if (token && token !== 'null') {
-        if (path === '/' || path === '/register') return go('/home');
+        if (['/', '/login', '/register'].includes(path)) return go('/home');
       } else if (paths.includes(path)) return go('/login');
     },
 
@@ -389,10 +388,8 @@ export default new Vuex.Store({
         return;
       }
 
-      state.socket.close();
+      if (state.socket) state.socket.close();
       await dispatch('init');
-
-      if (router.currentRoute.path !== '/home') go('/home');
     },
 
     async addLinkingKey({}, key) {
@@ -597,8 +594,8 @@ export default new Vuex.Store({
         ws.onopen = () => {
           if (getters.token)
             ws.send(JSON.stringify({ type: 'login', data: getters.token }));
+          else resolve();
 
-          resolve();
           commit('error', null);
         };
 
@@ -641,6 +638,8 @@ export default new Vuex.Store({
                     ticker,
                   };
                 });
+
+                resolve();
               } else {
                 dispatch('logout');
               }
@@ -1517,8 +1516,8 @@ export default new Vuex.Store({
         Object.keys(v).map(k => (s.user[k] = v[k]));
         s.user = JSON.parse(JSON.stringify(s.user));
       } else {
-        if (v) s.user = v;
-        else s.user = {};
+        if (v) s.user = JSON.parse(JSON.stringify(v));
+        else s.user = JSON.parse(JSON.stringify({}));
       }
     },
     version(s, v) {
