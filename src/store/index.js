@@ -14,7 +14,7 @@ import { generateMnemonic } from 'bip39';
 import cryptojs from 'crypto-js';
 import sha256, { HMAC } from 'fast-sha256';
 import secp256k1 from 'secp256k1';
-import { isUuid, uuid } from 'uuidv4';
+import { validate as isUuid, v4 } from 'uuid';
 
 const expectedType = process.env.VUE_APP_COINTYPE;
 
@@ -971,7 +971,7 @@ export default new Vuex.Store({
       invoice.memo = memo;
       invoice.method = method;
       invoice.network = methods[method];
-      invoice.uuid = uuid();
+      invoice.uuid = v4();
 
       const url = address => {
         let url = amount || memo ? `${method}:${address}?` : address;
@@ -1166,6 +1166,8 @@ export default new Vuex.Store({
       if (url) {
         let { amount, asset, assetid, message } = url.options;
         if (assetid) asset = assetid;
+        if (!asset) asset = BTC;
+        console.log(url, asset);
         let account = user.accounts.find(a => a.asset === asset);
         if (account) await dispatch('shiftAccount', account.asset);
         else return commit('error', 'Unrecognized asset');
