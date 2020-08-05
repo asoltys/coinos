@@ -122,7 +122,7 @@ export default {
     currentUser: get('user'),
     user() {
       return this.invoice.user.username ? this.invoice.user : this.currentUser;
-    } 
+    },
   },
 
   methods: {
@@ -164,7 +164,7 @@ export default {
     this.checkRefresh();
     this.$nextTick(() => {
       if (!this.invoice.user.username)
-      this.$set(this.invoice, 'user', this.user);
+        this.$set(this.invoice, 'user', this.user);
     });
   },
 };

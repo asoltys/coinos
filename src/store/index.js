@@ -1080,7 +1080,8 @@ export default new Vuex.Store({
           if (user.unit === 'SAT' && asset !== BTC)
             await dispatch('toggleUnit');
         } else {
-          user.account = { ticker: asset };
+          let ticker = asset === BTC ? 'BTC' : asset.substr(0, 3);
+          user.account = { asset, ticker };
         }
       } catch (e) {
         commit('error', e.response ? e.response.data : e.message);
