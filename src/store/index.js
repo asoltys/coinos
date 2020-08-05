@@ -205,7 +205,11 @@ export default new Vuex.Store({
             await dispatch('setupSocket');
             failures = 0;
           } catch (e) {
-            if (failures > 5) commit('error', 'Failed to establish socket connection to server');
+            if (failures > 5)
+              commit(
+                'error',
+                'Failed to establish socket connection to server'
+              );
             else failures++;
           }
 
@@ -225,7 +229,6 @@ export default new Vuex.Store({
         if (path === '/' || path === '/register') return go('/home');
       } else if (paths.includes(path)) return go('/login');
     },
-
 
     async getAssets({ commit, getters, dispatch }) {
       if (getters.assets) return;
@@ -405,7 +408,9 @@ export default new Vuex.Store({
 
       const { method } = invoice;
 
-      let { data: address } = await Vue.axios.get(`/address?network=${method}&type=${type}`);
+      let { data: address } = await Vue.axios.get(
+        `/address?network=${method}&type=${type}`
+      );
       invoice.address = address;
       return address;
     },
@@ -452,25 +457,28 @@ export default new Vuex.Store({
     },
 
     async logout({ commit, state }) {
+      commit('loading', true);
+      let { subscription } = state;
+
       try {
-        commit('loading', true);
-        let { subscription } = state;
         await Vue.axios.post('/logout', { subscription });
-        document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-        window.sessionStorage.removeItem('token');
-        commit('token', null);
-        commit('pin', null);
-        commit('user', null);
-        if (state.socket) state.socket.close();
-        commit('seed', null);
-        commit('socket', null);
-        commit('subscription', null);
-        go('/');
-        commit('loading', false);
       } catch (e) {
         l('problem logging out', e.message);
         commit('error', e.response ? e.response.data : e.message);
       }
+
+      document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+      window.sessionStorage.removeItem('token');
+      commit('token', null);
+      commit('pin', null);
+      commit('user', null);
+      if (state.socket) state.socket.close();
+      commit('seed', null);
+      commit('socket', null);
+      commit('subscription', null);
+      go('/');
+
+      commit('loading', false);
     },
 
     async loadPayments({ state }) {
@@ -985,11 +993,13 @@ export default new Vuex.Store({
       let address;
       switch (method) {
         case 'bitcoin':
-          if (!invoice.address) invoice.address = await dispatch('getNewAddress', 'bech32');
+          if (!invoice.address)
+            invoice.address = await dispatch('getNewAddress', 'bech32');
           invoice.text = url(invoice.address);
           break;
         case 'liquid':
-          if (!invoice.address) invoice.address = await dispatch('getNewAddress', 'p2sh-segwit');
+          if (!invoice.address)
+            invoice.address = await dispatch('getNewAddress', 'p2sh-segwit');
           let text = url(invoice.address);
           text = text.replace('liquid', 'liquidnetwork');
           if (amount) text += `&asset=${user.account.asset}`;
