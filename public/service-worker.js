@@ -19,7 +19,7 @@ self.addEventListener('push', function(e) {
   var options = {
     body: payload,
     badge: '/badge.png',
-    icon: '/coinos.png',
+    icon: '/coinos.webp',
   };
   e.waitUntil(self.registration.showNotification('coinos', options));
 });

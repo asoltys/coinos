@@ -3,8 +3,8 @@
   "name": "coinos",
   "icons": [
     {
-      "src": "/coinos.png",
-      "type": "image/png",
+      "src": "/coinos.webp",
+      "type": "image/webp",
       "sizes": "1024x1024",
       "purpose": "any maskable"
     }
