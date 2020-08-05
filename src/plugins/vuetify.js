@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Vuetify from 'vuetify/lib';
 import colors from 'vuetify/lib/util/colors';
 
+import Link from 'vue-material-design-icons/Link';
 import Cancel from 'vue-material-design-icons/Close';
 import Forward from 'vue-material-design-icons/Forward';
 import ArrowLeft from 'vue-material-design-icons/ArrowLeft';
@@ -81,6 +82,7 @@ export default new Vuetify({
       'clear': { component: Clear },
       'send': { component: Send },
       'arrow_back': { component: ArrowLeft },
+      'link': { component: Link},
       'cancel': { component: Cancel },
       'forward': { component: Forward },
       'refresh': { component: Refresh },
