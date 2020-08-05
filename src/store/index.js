@@ -184,7 +184,6 @@ export default new Vuex.Store({
   actions: {
     async init({ commit, getters, dispatch, state }) {
       commit('error', '');
-      commit('assets', (await Vue.axios.get('/assets')).data);
 
       const { path } = router.currentRoute;
 
@@ -227,14 +226,31 @@ export default new Vuex.Store({
       } else if (paths.includes(path)) return go('/login');
     },
 
-    async getBalances({ commit, getters, dispatch }) {
+
+    async getAssets({ commit, getters, dispatch }) {
+      if (getters.assets) return;
+      commit('loading', true);
       try {
-        let balances = (await Vue.axios.get('/balances')).data;
+        const { data: assets } = await Vue.axios.get('/assets');
+        commit('assets', assets);
+      } catch (e) {
+        l(e);
+        commit('error', 'Problem fetching assets');
+      }
+      commit('loading', false);
+    },
+
+    async getBalances({ commit, getters, dispatch }) {
+      if (getters.balances) return;
+      commit('loading', true);
+      try {
+        const { data: balances } = await Vue.axios.get('/balances');
         commit('balances', balances);
       } catch (e) {
         l(e);
         commit('error', 'Problem fetching balances');
       }
+      commit('loading', false);
     },
 
     async getInfo({ commit, getters, dispatch }) {

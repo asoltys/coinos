@@ -92,15 +92,10 @@ export default {
   },
 
   computed: {
-    asset() {
-      return Object.values(this.assets).find(a => a.ticker === this.currency);
-    },
-    assets: get('assets'),
     decimals() {
       if (this.currency === 'SAT') return 0;
       let account = this.user.accounts.find(a => a.ticker === this.currency);
       if (account) return account.precision;
-      else if (this.asset) return this.asset.precision;
       if (this.user.account.ticker !== 'BTC')
         return this.user.account.precision;
 

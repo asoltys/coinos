@@ -92,14 +92,10 @@ export default {
     fiatAmount() {
       return ((this.value * this.rate) / SATS).toFixed(2);
     },
-    assets: get('assets'),
     precision() {
       if (this.currency) {
         let account = this.user.accounts.find(a => a.ticker === this.currency);
         if (account) return account.precision;
-
-        let asset = Object.values(this.assets).find(a => a.ticker === this.currency);
-        if (asset) return asset.precision;
       } 
       return 8;
     },

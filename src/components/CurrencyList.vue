@@ -42,7 +42,6 @@ export default {
   },
 
   computed: {
-    assets: get('assets'),
     user: get('user'),
   },
 

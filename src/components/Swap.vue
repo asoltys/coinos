@@ -88,7 +88,6 @@ export default {
 
   data() {
     return {
-      loading: false,
       showcode: false,
       a1: null,
       a2: null,
@@ -99,6 +98,7 @@ export default {
 
   computed: {
     assets: get('assets'),
+    loading: get('loading'),
     all() {
       return Object.keys(this.assets)
         .map(asset => ({
@@ -143,19 +143,19 @@ export default {
       }
     },
 
+    getAssets: call('getAssets'),
     propose: call('propose'),
 
     async submit() {
       const { a1, a2, v1, v2 } = this;
-      this.loading = true;
       await this.propose({ a1, a2, v1, v2 });
-      this.loading = false;
     },
 
     withdraw: call('withdraw'),
   },
 
-  mounted() {
+  async mounted() {
+    await this.getAssets();
     this.proposal = null;
   },
 };
