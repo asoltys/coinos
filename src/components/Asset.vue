@@ -5,7 +5,7 @@
       v-if="success"
       class="mb-4"
       color="success"
-      icon="info"
+      icon="$info"
       v-model="success"
       dismissible
       transition="scale-transition"

@@ -45,7 +45,7 @@
               v-if="success[a.asset]"
               class="mb-4"
               color="success"
-              icon="info"
+              icon="$info"
               v-model="success[a.asset]"
               dismissible
               transition="scale-transition"

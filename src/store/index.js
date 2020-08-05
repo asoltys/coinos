@@ -134,6 +134,7 @@ const state = {
   ecpair: null,
   error: '',
   friends: [],
+  fx: null,
   info: null,
   invoice: JSON.parse(blankInvoice),
   invoices: [],
@@ -261,7 +262,7 @@ export default new Vuex.Store({
         let info = (await Vue.axios.get('/info')).data;
         commit('info', info);
         commit('nodes', info.nodes);
-        commit('rates', info.rates);
+        commit('fx', info.fx);
         commit('version', info.clientVersion.trim());
       } catch (e) {
         l(e);
@@ -480,7 +481,6 @@ export default new Vuex.Store({
         l('Problem during logging out', e.message);
         commit('error', e.response ? e.response.data : e.message);
       }
-
     },
 
     async loadPayments({ state }) {
@@ -656,9 +656,16 @@ export default new Vuex.Store({
               commit('addProposal', data);
               break;
 
-            case 'rates':
-              const rates = data;
-              if (!rates) return;
+            case 'rate':
+              const rate = data;
+              const rates = {};
+              const { fx } = getters;
+              if (!fx || !rate) return;
+
+              getters.user.currencies.map(symbol => {
+                rates[symbol] = rate * fx[symbol] / fx['USD'];
+              });
+
               commit('rates', rates);
               if (getters.user && getters.user.currency)
                 commit('rate', rates[getters.user.currency]);
@@ -719,6 +726,7 @@ export default new Vuex.Store({
         params[k] = user[k];
       });
 
+      console.log("updating user", user.id);
       if (user.id) {
         try {
           let res = await Vue.axios.post('/user', params);

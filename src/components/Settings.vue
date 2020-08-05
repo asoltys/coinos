@@ -4,7 +4,7 @@
     <v-alert
       class="mb-4"
       color="success"
-      icon="info"
+      icon="$info"
       v-model="success"
       dismissible
       transition="scale-transition"
@@ -36,7 +36,7 @@
             <v-alert
               class="mb-4"
               color="error"
-              icon="info"
+              icon="$info"
               v-model="twofaFail"
               dismissible
               transition="scale-transition"
@@ -212,6 +212,7 @@ export default {
       code: '',
       dialog: false,
       form: {
+        id: '',
         username: '',
         password: '',
         passconfirm: '',
@@ -224,14 +225,14 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['error', 'rates', 'user']),
+    ...mapGetters(['error', 'fx', 'user']),
     nfcEnabled: sync('nfcEnabled'),
     noNfc: get('noNfc'),
     hasNfc() {
       return 'NDEFReader' in window && !this.noNfc;
     },
     currencies() {
-      return this.rates ? Object.keys(this.rates).sort() : [];
+      return this.fx ? Object.keys(this.fx).sort() : [];
     },
     prompt() {
       return Window.prompt;
@@ -311,9 +312,12 @@ export default {
       this.form.pin = pin;
     },
     async submit(e) {
+      console.log("submitting");
       if (e) e.preventDefault();
+      console.log("ehh", this.form.password, this.form.passconfirm);
       if (!this.form.password || this.form.password === this.form.passconfirm) {
         this.saving = true;
+        console.log("updating user");
         let res = await this.updateUser(this.form);
         this.$nextTick(() => (this.saving = false));
 
