@@ -388,6 +388,7 @@ export default new Vuex.Store({
         if (e.response && e.response.data.startsWith('2fa'))
           commit('prompt2fa', true);
         else commit('error', 'Login failed');
+        commit('loading', false);
         return;
       }
 
