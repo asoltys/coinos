@@ -179,3 +179,8 @@ export default {
   },
 };
 </script>
+
+<style lang="stylus">
+.vue-pincode-input
+  color #ffeb3b
+</style>
