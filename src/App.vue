@@ -96,12 +96,11 @@ export default {
 
   watch: {
     $route() {
-      this.error = null;
+      this.init();
     },
   },
 
   mounted() {
-    this.init();
     this.setupNfc();
   },
 };

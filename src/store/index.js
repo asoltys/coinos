@@ -8,7 +8,7 @@ import router from '../router';
 import validate from 'bitcoin-address-validation';
 import { crypto, ECPair, payments, networks, Psbt } from 'bitcoinjs-lib';
 import pathify, { make } from 'vuex-pathify';
-import paths from '../paths';
+import restrictedPaths from '../paths';
 import format from '../format';
 import { generateMnemonic } from 'bip39';
 import cryptojs from 'crypto-js';
@@ -184,22 +184,20 @@ export default new Vuex.Store({
   state,
   actions: {
     async init({ commit, getters, dispatch, state }) {
-      commit('error', '');
+      commit('error', null);
 
-      const { path } = router.currentRoute;
+      let { token } = getters;
+      if (!token) token = window.sessionStorage.getItem('token');
 
-      let token = getters.token || window.sessionStorage.getItem('token');
-
-      if (!token || token === 'null') {
+      if (!token) {
         let cookie = `; ${document.cookie}`.match(';\\s*token=([^;]+)');
-        if (cookie && cookie[1]) token = cookie[1];
+        if (cookie && cookie[1] && cookie[1] !== 'null') token = cookie[1];
       }
-
-      let failures = 0;
 
       commit('token', token);
 
       if (!getters.socket || getters.socket.readyState !== 1) {
+        let failures = 0;
         try {
           await dispatch('setupSocket');
           const socketPoll = async () => {
@@ -226,10 +224,11 @@ export default new Vuex.Store({
       commit('initializing', false);
       commit('loading', false);
 
+      const { path } = router.currentRoute;
       if (!(path === '/login' || path === '/register')) dispatch('getInfo');
-      if (token && token !== 'null') {
+      if (token) {
         if (['/', '/login', '/register'].includes(path)) return go('/home');
-      } else if (paths.includes(path)) return go('/login');
+      } else if (restrictedPaths.includes(path)) return go('/login');
     },
 
     async getAssets({ commit, getters, dispatch }) {
@@ -597,7 +596,7 @@ export default new Vuex.Store({
         ws.onopen = () => {
           count++;
           if (count > 5) return;
-          if (getters.token && getters.token !== 'null' && ws.readyState === 1)
+          if (getters.token && ws.readyState === 1)
             ws.send(JSON.stringify({ type: 'login', data: getters.token }));
           else resolve();
 
