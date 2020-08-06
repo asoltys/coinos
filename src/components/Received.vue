@@ -2,14 +2,18 @@
   <div>
     <v-card class="pb-4 mb-2">
       <v-alert
-        v-if="!payment.confirmed"
+        v-if="payment.confirmed"
+        class="headline text-center black--text"
+        :color="invoice.received < invoice.amount ? 'orange' : 'yellow'"
+      >
+      <span v-if="invoice.received < invoice.amount">Partial</span> Payment Received!
+      </v-alert>
+      <v-alert
+        v-else
         class="headline text-center black--text"
         color="orange lighten-2"
       >
-        Unconfirmed Payment Detected!
-      </v-alert>
-      <v-alert v-else class="headline text-center black--text" color="yellow">
-        Payment Received!
+        Unconfirmed <span v-if="invoice.received < invoice.amount">Partial</span> Payment Detected!
       </v-alert>
       <div class="d-flex justify-center display-1">
         <div class="mr-2 d-flex">
@@ -84,10 +88,7 @@ export default {
         this.payment.rate
       ).toFixed(2);
     },
-    invoice() {
-      return this.invoices && this.invoices[0];
-    },
-    invoices: get('invoices'),
+    invoice: get('invoice'),
     link() {
       if (!this.isBtc) bs += '/liquid';
       return `${bs}/tx/${payment.hash}`;

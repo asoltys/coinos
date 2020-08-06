@@ -83,12 +83,6 @@ export default {
     error: sync('error'),
   },
 
-  watch: {
-    $route() {
-      this.init();
-    },
-  },
-
   methods: {
     refresh() {
       window.location.reload(true);
@@ -100,7 +94,14 @@ export default {
     setupNfc: call('setupNfc'),
   },
 
+  watch: {
+    $route() {
+      this.error = null;
+    },
+  },
+
   mounted() {
+    this.init();
     this.setupNfc();
   },
 };

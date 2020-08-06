@@ -64,9 +64,10 @@ export default {
 
   computed: {
     cryptos() {
-      return [
-        this.ticker === 'SAT' ? 'BTC' : 'SAT',
-        ...this.user.accounts
+      let arr = [this.ticker === 'SAT' ? 'BTC' : 'SAT'];
+      if (!this.user.accounts) return arr;
+      return [...arr,
+                ...this.user.accounts
           .map(a => a.ticker)
           .filter(a => a !== this.user.account.ticker),
       ];

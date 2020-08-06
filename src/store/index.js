@@ -17,6 +17,7 @@ import secp256k1 from 'secp256k1';
 import { validate as isUuid, v4 } from 'uuid';
 
 const expectedType = process.env.VUE_APP_COINTYPE;
+let count = 0;
 
 const linkingKey = (domain, seed) => {
   const root = fromSeed(Buffer.from(sha256(seed), 'hex'));
@@ -198,28 +199,28 @@ export default new Vuex.Store({
 
       commit('token', token);
 
-      try {
-        await dispatch('setupSocket');
-        const socketPoll = async () => {
-          try {
-            await dispatch('setupSocket');
-            failures = 0;
-          } catch (e) {
-            if (failures > 5)
-              commit(
-                'error',
-                'Failed to establish socket connection to server'
-              );
-            else failures++;
-          }
+      if (!getters.socket || getters.socket.readyState !== 1) {
+        try {
+          await dispatch('setupSocket');
+          const socketPoll = async () => {
+            try {
+              await dispatch('setupSocket');
+              failures = 0;
+            } catch (e) {
+              if (failures > 5)
+                commit(
+                  'error',
+                  'Failed to establish socket connection to server'
+                );
+              else failures++;
+            }
 
-          commit('poll', setTimeout(socketPoll, 5000));
-        };
-        socketPoll();
-      } catch (e) {
-        commit('initializing', false);
-        commit('loading', false);
-        if (paths.includes(path)) return go('/login');
+            commit('poll', setTimeout(socketPoll, 5000));
+          };
+          socketPoll();
+        } catch (e) {
+          dispatch('logout');
+        }
       }
 
       commit('initializing', false);
@@ -389,6 +390,7 @@ export default new Vuex.Store({
           commit('prompt2fa', true);
         else commit('error', 'Login failed');
         commit('loading', false);
+        l(e);
         return;
       }
 
@@ -459,7 +461,6 @@ export default new Vuex.Store({
 
     async logout({ commit, state }) {
       commit('loading', true);
-
       clearTimeout(state.poll);
       commit('poll', null);
       let { subscription } = state;
@@ -473,13 +474,12 @@ export default new Vuex.Store({
       commit('seed', null);
       commit('socket', null);
       commit('subscription', null);
-      go('/');
+      go('/login');
       commit('loading', false);
 
       try {
         await Vue.axios.post('/logout', { subscription });
       } catch (e) {
-        l('Problem during logging out', e.message);
         commit('error', e.response ? e.response.data : e.message);
       }
     },
@@ -584,36 +584,46 @@ export default new Vuex.Store({
 
     async setupSocket({ commit, getters, dispatch }) {
       return new Promise((resolve, reject) => {
-        setTimeout(reject, 5000);
+        setTimeout(() => reject(new Error("Socket timeout")), 5000);
         const proto = location.protocol === 'https:' ? 'wss://' : 'ws://';
-        if (getters.socket && getters.socket.readyState === 1) return resolve();
+        if (getters.socket && getters.socket.readyState === 1) {
+          getters.socket.send(JSON.stringify({ type: 'heartbeat' }));
+          return resolve();
+        } 
 
         let ws = new WebSocket(`${proto}${location.host}/ws`);
         commit('socket', ws);
 
         ws.onopen = () => {
-          if (getters.token && getters.token !== 'null')
+          count++;
+          if (count > 5) return;
+          if (getters.token && getters.token !== 'null' && ws.readyState === 1)
             ws.send(JSON.stringify({ type: 'login', data: getters.token }));
           else resolve();
 
           commit('error', null);
         };
 
-        ws.onerror = () => {
+        ws.onerror = (e) => {
           ws.close();
-          reject();
+          reject(new Error("socket error" + e.message));
         };
 
         ws.onclose = async e => {
           ws = null;
           commit('socket', null);
-          reject();
+          reject(new Error("socket closed"));
         };
 
         ws.onmessage = msg => {
+          commit('socket', ws);
           let { type, data } = JSON.parse(msg.data);
 
           switch (type) {
+            case 'connected':
+              getters.socket.id = data;
+              break;
+
             case 'account':
               commit('addAccount', data);
               break;
@@ -645,6 +655,10 @@ export default new Vuex.Store({
               }
               break;
 
+            case 'logout':
+              dispatch('logout');
+              break;
+
             case 'otpsecret':
               commit('user', { ...state.user, otpsecret: data });
               break;
@@ -660,8 +674,8 @@ export default new Vuex.Store({
             case 'rate':
               const rate = data;
               const rates = {};
-              const { fx } = getters;
-              if (!fx || !rate) return;
+              const { fx, user } = getters;
+              if (!fx || !rate || !user.currencies) return;
 
               getters.user.currencies.map(symbol => {
                 rates[symbol] = rate * fx[symbol];
@@ -727,7 +741,6 @@ export default new Vuex.Store({
         params[k] = user[k];
       });
 
-      console.log("updating user", user.id);
       if (user.id) {
         try {
           let res = await Vue.axios.post('/user', params);
@@ -1184,7 +1197,6 @@ export default new Vuex.Store({
         let { amount, asset, assetid, message } = url.options;
         if (assetid) asset = assetid;
         if (!asset) asset = BTC;
-        console.log(url, asset);
         let account = user.accounts.find(a => a.asset === asset);
         if (account) await dispatch('shiftAccount', account.asset);
         else return commit('error', 'Unrecognized asset');
@@ -1500,7 +1512,6 @@ export default new Vuex.Store({
       }
 
       if (v.user_id === s.user.id) {
-        console.log(v.user_id);
         let index = s.user.payments.findIndex(p => p.id === v.id);
         if (index > -1) s.user.payments[index] = v;
         else s.user.payments.unshift(v);

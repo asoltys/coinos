@@ -34,6 +34,7 @@ import Note from 'vue-material-design-icons/Note';
 import OpenInNew from 'vue-material-design-icons/OpenInNew';
 import Qrcode from 'vue-material-design-icons/Qrcode';
 import Refresh from 'vue-material-design-icons/Refresh';
+import Search from 'vue-material-design-icons/AccountSearch';
 import Send from 'vue-material-design-icons/Send';
 import Settings from 'vue-material-design-icons/Settings';
 import SwapHorizontal from 'vue-material-design-icons/SwapHorizontal';
@@ -92,6 +93,7 @@ export default new Vuetify({
       'payments': { component: FormatLineWeight },
       'qrcode': { component: Qrcode },
       'refresh': { component: Refresh },
+      'search': { component: Search },
       'send': { component: Send },
       'settings': { component: Settings},
       'swap': { component: SwapHorizontal },

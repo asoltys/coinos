@@ -40,6 +40,16 @@
       </template>
     </v-textarea>
     <v-textarea label="Memo" v-model="payment.memo" rows="1" auto-grow />
+    <div class="d-flex flex-wrap">
+      <v-btn
+        class="order-first order-sm-last mb-2 flex-grow-1"
+        color="green"
+        dark
+        @click="sendPayment"
+      >
+        <v-icon left>$send</v-icon><span>Send</span>
+      </v-btn>
+    </div>
   </v-card>
 </template>
 
@@ -66,6 +76,7 @@ export default {
     user: get('user'),
   },
   methods: {
+    sendPayment: call('sendPayment'),
     updateAmount(amount, fiatAmount, currency) {
       this.$nextTick(() => {
         this.payment.fiatAmount = fiatAmount;

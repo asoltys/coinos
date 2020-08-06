@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-progress-linear v-if="loading" indeterminate />
+    <v-progress-linear v-if="loading || !rates" indeterminate />
     <template v-else-if="invoice.text">
       <request
         v-if="invoice.amount === null || invoice.received < invoice.amount"
@@ -118,6 +118,7 @@ export default {
     loading: sync('loading'),
     nodes: get('nodes'),
     rate: get('rate'),
+    rates: get('rates'),
     received: sync('received'),
     currentUser: get('user'),
     user() {

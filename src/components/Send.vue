@@ -4,9 +4,10 @@
     <template v-else>
       <Balance />
       <sent v-if="payment.sent" />
+      <recipient v-else-if="payment.recipient" @internal="sendInternal" />
       <template v-else>
-        <lightning-payment v-if="payment.payobj && !editing" @edit="edit" />
-        <to v-if="!(payment.payobj || payment.address || payment.recipient)" @edit="edit" :text="text" />
+        <to v-if="!(payment.payobj || payment.address)" @edit="edit" :text="text" />
+        <lightning-payment v-else-if="payment.payobj && !editing" @edit="edit" />
         <payment-details v-else @edit="edit" />
       </template>
     </template>
@@ -14,12 +15,12 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
-import { sync } from 'vuex-pathify';
+import { call, get, sync } from 'vuex-pathify';
 
 import Balance from './Balance';
 import LightningPayment from './LightningPayment';
 import PaymentDetails from './PaymentDetails';
+import Recipient from './Recipient';
 import Sent from './Sent';
 import To from './To';
 
@@ -27,6 +28,7 @@ export default {
   components: {
     Balance,
     LightningPayment,
+    Recipient,
     PaymentDetails,
     Sent,
     To,
@@ -48,19 +50,16 @@ export default {
   },
 
   computed: {
-    ...mapGetters([
-      'loading',
-      'payment',
-      'user',
-    ]),
+    loading: get('loading'),
+    payment: get('payment'),
+    user: get('user'),
   },
 
   methods: {
-    ...mapActions([
-      'clearPayment',
-      'estimateFee',
-      'setCurrency',
-    ]),
+    clearPayment: call('clearPayment'),
+    estimateFee: call('estimateFee'),
+    sendInternal: call('sendInternal'),
+    setCurrency: call('setCurrency'),
 
     edit() { this.editing = true; },
 

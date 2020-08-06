@@ -312,12 +312,9 @@ export default {
       this.form.pin = pin;
     },
     async submit(e) {
-      console.log("submitting");
       if (e) e.preventDefault();
-      console.log("ehh", this.form.password, this.form.passconfirm);
       if (!this.form.password || this.form.password === this.form.passconfirm) {
         this.saving = true;
-        console.log("updating user");
         let res = await this.updateUser(this.form);
         this.$nextTick(() => (this.saving = false));
 

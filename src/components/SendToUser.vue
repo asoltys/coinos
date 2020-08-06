@@ -14,7 +14,7 @@
           color="primary"
           @click="sendToUser"
         >
-          <v-icon left>search</v-icon>
+          <v-icon left>$search</v-icon>
           Find User
         </v-btn>
       </div>
