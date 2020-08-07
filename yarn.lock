@@ -1857,7 +1857,7 @@ bip38@^3.1.0:
     safe-buffer "~5.1.1"
     scryptsy "^2.1.0"
 
-bip39@^3.0.2:
+bip39@^3.0.1, bip39@^3.0.2:
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/bip39/-/bip39-3.0.2.tgz#2baf42ff3071fc9ddd5103de92e8f80d9257ee32"
   integrity sha512-J4E1r2N0tUylTKt07ibXvhpT2c5pyAFgvuA5q1H9uDy6dEGpjV8jmymh3MTYJDLCNbIVClSB9FbND49I6N24MQ==
@@ -1873,6 +1873,15 @@ bip66@^1.1.0, bip66@^1.1.5:
   integrity sha1-AfqHSHhcpwlV1QESF9GzE5lpyiI=
   dependencies:
     safe-buffer "^5.0.1"
+
+bip84@^0.2.2:
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/bip84/-/bip84-0.2.2.tgz#e27d9b466daa47e3e73dbe6b2f02357515f7b972"
+  integrity sha512-ktqRFZSTZ3ccDR7QxA2dKNRznLmAIgFSN36Ya91XdF/57qFcYbri5IAvU7BlmSaOKLJ1ijgUaB1qYKOj0EEz2Q==
+  dependencies:
+    bip39 "^3.0.1"
+    bitcoinjs-lib "^5.0.3"
+    bs58check "^2.1.2"
 
 bitcoin-address-validation@^1.0.2:
   version "1.0.2"
@@ -1909,7 +1918,7 @@ bitcoinjs-lib@^3.3.1:
     varuint-bitcoin "^1.0.4"
     wif "^2.0.1"
 
-bitcoinjs-lib@^5.1.8:
+bitcoinjs-lib@^5.0.3, bitcoinjs-lib@^5.1.10:
   version "5.1.10"
   resolved "https://registry.yarnpkg.com/bitcoinjs-lib/-/bitcoinjs-lib-5.1.10.tgz#91ec7cde308007008b22ed9117c5f26970cbad54"
   integrity sha512-CesUqtBtnYc+SOMsYN9jWQWhdohW1MpklUkF7Ukn4HiAyN6yxykG+cIJogfRt6x5xcgH87K1Q+Mnoe/B+du1Iw==
@@ -2122,7 +2131,7 @@ bs58@^4.0.0:
   dependencies:
     base-x "^3.0.2"
 
-bs58check@<3.0.0, bs58check@^2.0.0, bs58check@^2.1.1:
+bs58check@<3.0.0, bs58check@^2.0.0, bs58check@^2.1.1, bs58check@^2.1.2:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/bs58check/-/bs58check-2.1.2.tgz#53b018291228d82a5aa08e7d796fdafda54aebfc"
   integrity sha512-0TS1jicxdU09dwJMNZtVAfzPi6Q6QeN0pM1Fkzrjn+XYHvzMKPU3pHVpva+769iNVSfIYWf7LJ6WR+BuuMf8cA==

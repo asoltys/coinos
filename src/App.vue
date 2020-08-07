@@ -40,6 +40,8 @@
           >{{ error }}</v-alert
         >
         <two-fa />
+    {{ user.seed }}
+    <v-btn><v-icon left>$snowflake</v-icon>Cold Wallet</v-btn>
         <router-view v-if="!initializing" :key="$route.path" />
         <v-progress-linear v-else indeterminate />
       </v-container>

@@ -19,6 +19,8 @@ import Delete from 'vue-material-design-icons/Delete';
 import Dialpad from 'vue-material-design-icons/Dialpad';
 import Download from 'vue-material-design-icons/Download';
 import Edit from 'vue-material-design-icons/FileDocumentEdit';
+import Fire from 'vue-material-design-icons/Fire';
+import Snowflake from 'vue-material-design-icons/Snowflake';
 import Flash from 'vue-material-design-icons/Flash';
 import FormatLineWeight from 'vue-material-design-icons/FormatLineWeight';
 import Forward from 'vue-material-design-icons/Forward';
@@ -78,6 +80,8 @@ export default new Vuetify({
       'dialpad': { component: Dialpad },
       'download': { component: Download },
       'edit': { component: Edit },
+      'fire': { component: Fire },
+      'snowflake': { component: Snowflake },
       'flash': { component: Flash },
       'forward': { component: Forward },
       'gift': { component: Gift },
