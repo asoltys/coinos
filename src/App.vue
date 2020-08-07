@@ -54,7 +54,6 @@ import BottomNav from './components/BottomNav';
 import SnackBar from './components/SnackBar';
 import TopBar from './components/TopBar';
 import TwoFa from './components/TwoFa';
-import paths from './paths';
 
 export default {
   components: { BottomNav, SnackBar, TopBar, TwoFa },
@@ -71,10 +70,6 @@ export default {
     socket: get('socket'),
     user: sync('user'),
     versionMismatch: get('versionMismatch'),
-
-    publicPath() {
-      return paths.includes(this.$route.path);
-    },
 
     webscanning() {
       return this.scanning && !window.QRScanner;

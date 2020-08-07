@@ -8,7 +8,8 @@ import router from '../router';
 import validate from 'bitcoin-address-validation';
 import { crypto, ECPair, payments, networks, Psbt } from 'bitcoinjs-lib';
 import pathify, { make } from 'vuex-pathify';
-import restrictedPaths from '../paths';
+import restrictedPaths from '../restrictedPaths';
+import publicPaths from '../publicPaths';
 import format from '../format';
 import { generateMnemonic } from 'bip39';
 import cryptojs from 'crypto-js';
@@ -17,7 +18,6 @@ import secp256k1 from 'secp256k1';
 import { validate as isUuid, v4 } from 'uuid';
 
 const expectedType = process.env.VUE_APP_COINTYPE;
-let count = 0;
 
 const linkingKey = (domain, seed) => {
   const root = fromSeed(Buffer.from(sha256(seed), 'hex'));
@@ -197,10 +197,16 @@ export default new Vuex.Store({
       if (token === 'null') token = null;
       commit('token', token);
 
-      if (!getters.socket || getters.socket.readyState !== 1) {
+      const { path } = router.currentRoute;
+
+      if (
+        !(
+          publicPaths.includes(path) ||
+          (getters.socket && getters.socket.readyState === 1)
+        )
+      ) {
         let failures = 0;
         try {
-          await dispatch('setupSocket');
           const socketPoll = async () => {
             try {
               await dispatch('setupSocket');
@@ -225,7 +231,6 @@ export default new Vuex.Store({
       commit('initializing', false);
       commit('loading', false);
 
-      const { path } = router.currentRoute;
       if (!(path === '/login' || path === '/register')) dispatch('getInfo');
       if (token) {
         if (['/', '/login', '/register'].includes(path)) return go('/home');
@@ -460,6 +465,8 @@ export default new Vuex.Store({
     },
 
     async logout({ commit, state }) {
+      commit('error', null);
+      commit('lnurl', null);
       commit('loading', true);
       clearTimeout(state.poll);
       commit('poll', null);
@@ -586,23 +593,30 @@ export default new Vuex.Store({
       return new Promise((resolve, reject) => {
         setTimeout(() => reject(new Error('Socket timeout')), 5000);
         const proto = location.protocol === 'https:' ? 'wss://' : 'ws://';
-        if (getters.socket && getters.socket.readyState === 1) {
-          getters.socket.send(JSON.stringify({ type: 'heartbeat' }));
-          return resolve();
-        }
+
+        const open = () => {
+          const { socket: ws, user, token } = getters;
+          if (ws && ws.readyState === 1) {
+            ws.send(JSON.stringify({ type: 'heartbeat' }));
+
+            if (!user || !user.payments) {
+              ws.send(JSON.stringify({ type: 'login', data: token }));
+            } else {
+              resolve();
+              return true;
+            }
+          }
+
+          return false;
+        };
+
+        if (open()) return;
 
         let ws = new WebSocket(`${proto}${location.host}/ws`);
         commit('socket', ws);
 
         ws.onopen = () => {
-          const { token } = getters;
-          count++;
-          if (count > 5) return;
-          if (token && ws.readyState === 1) {
-            ws.send(JSON.stringify({ type: 'login', data: token }));
-          } else resolve();
-
-          commit('error', null);
+          open();
         };
 
         ws.onerror = e => {
