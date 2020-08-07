@@ -60,6 +60,13 @@
           v-model="password"
           :type="show ? 'text' : 'password'"
         />
+        <v-text-field
+          class="my-4"
+          label="Confirm Password"
+          v-model="confirm"
+          :error="!!(confirm && confirm !== password)"
+          :type="show ? 'text' : 'password'"
+        />
       </div>
       <div class="d-flex flex-wrap no-print">
         <v-btn class="ml-auto mr-2 mb-2 mb-sm-0 wide" @click="print">
@@ -99,6 +106,7 @@ export default {
     return {
       compressed: true,
       password: '',
+      confirm: '',
       seed: '',
       show: false,
       encrypting: false,
@@ -135,9 +143,9 @@ export default {
     },
   },
   watch: {
-    password(v) {
+    confirm(v) {
       clearTimeout(this.encrypting);
-      if (!v) return (this.encrypted = '');
+      if (!v || v !== this.password) return (this.encrypted = '');
 
       this.encrypted = 'Encrypting...';
       this.encrypting = setTimeout(async () => {
