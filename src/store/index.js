@@ -81,10 +81,10 @@ const BTC = process.env.VUE_APP_LBTC;
 
 const blankUser = {
   username: null,
-  currencies: ['CAD', 'USD', 'JPY'],
-  currency: 'CAD',
-  accounts: [],
-  account: { asset: BTC, ticker: 'BTC' },
+  currencies: ['AUD', 'CAD', 'GBP', 'EUR', 'JPY', 'USD'],
+  currency: 'USD',
+  accounts: [{ asset: BTC, ticker: 'BTC', precision: 8 }],
+  account: { asset: BTC, ticker: 'BTC', precision: 8 },
 };
 
 const blankInvoice = JSON.stringify({

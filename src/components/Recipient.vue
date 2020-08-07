@@ -9,6 +9,7 @@
         v-model.number="payment.amount"
         class="mb-2"
         @done="$emit('feeRate')"
+        :currency="currency"
       />
       <div>
         <v-btn
@@ -31,7 +32,12 @@ import Amount from './Amount';
 export default {
   components: { Amount },
   computed: {
+    currency() {
+      if (this.user.account.ticker === 'BTC') return null;
+      else return this.user.account.ticker;
+    },
     payment: get('payment'),
+    user: get('user'),
   },
   methods: {
     send() {
