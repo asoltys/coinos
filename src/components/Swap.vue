@@ -8,9 +8,9 @@
             <h2 class="text-center white--text">Proposal Created</h2>
             <div class="d-flex">
               <div class="flex-grow-1 text-center">
-                <v-icon large @click="showcode = !showcode" class="pa-4"
-                  >$assignment</v-icon
-                >
+                <v-btn icon @click="showcode = !showcode">
+                  <v-icon large>$assignment</v-icon>
+                </v-btn>
               </div>
             </div>
           </v-card-text>
