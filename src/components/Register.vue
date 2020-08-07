@@ -19,22 +19,22 @@
       />
 
         <div class="d-flex flex-wrap">
-      <label class="my-auto mr-2">Challenge Word:</label>
-      <img :src="challenge" style="max-width: 100%" />
+      <label class="my-auto flex-grow-1 flex-sm-grow-0 mr-2 text-center">Your Challenge Word is</label>
+      <img :src="challenge" style="max-width: 100%" class="mx-auto mx-sm-0" />
       </div>
       <v-text-field
         label="Enter Challenge Word"
         v-model="form.response"
         autocapitalize="none"
       />
-    <v-btn @click="$go('/')" class="mr-1">
-      <v-icon left>$arrow_back</v-icon>
-      Back
-    </v-btn>
-      <v-btn type="submit" color="green" class="wide">
+      <v-btn type="submit" color="green" class="wide mr-2">
         <v-icon left>$wallet</v-icon>
         Create New Account
       </v-btn>
+    <v-btn @click="$go('/')" class="mb-1 mb-sm-0 wide">
+      <v-icon left>$arrow_back</v-icon>
+      Back
+    </v-btn>
     </v-form>
   </div>
 </template>
