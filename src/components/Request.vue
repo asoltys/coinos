@@ -161,7 +161,7 @@ export default {
       return ['BTC', 'SAT'].includes(c)
         ? 'white'
         : this.user.currencies.includes(c)
-        ? 'yellow'
+        ? '#ffeb3b'
         : '#0ae';
     },
 

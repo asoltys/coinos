@@ -999,13 +999,14 @@ export default new Vuex.Store({
     },
 
     async addInvoice({ commit, dispatch, state }, { method, user }) {
-      const { controller, invoice, socket } = state;
+      const { controller, invoice, rate, socket } = state;
       if (controller) controller.abort();
 
       if (!invoice.amount) invoice.amount = null;
       const { amount, memo, tip } = invoice;
 
       method = method || invoice.method;
+      invoice.rate = rate;
       invoice.memo = memo;
       invoice.method = method;
       invoice.network = methods[method];
