@@ -97,7 +97,7 @@ const blankInvoice = JSON.stringify({
   method: '',
   rate: 0,
   received: 0,
-  user: blankUser,
+  user: JSON.parse(JSON.stringify(blankUser)),
   text: '',
   tip: 0,
 });
@@ -174,7 +174,7 @@ const state = {
     accounts: [],
     account: { ticker: 'BTC' },
   },
-  user: blankUser,
+  user: JSON.parse(JSON.stringify(blankUser)),
   versionMismatch: null,
   version: null,
 };
@@ -194,6 +194,7 @@ export default new Vuex.Store({
         if (cookie && cookie[1] && cookie[1] !== 'null') token = cookie[1];
       }
 
+      if (token === 'null') token = null;
       commit('token', token);
 
       if (!getters.socket || getters.socket.readyState !== 1) {
@@ -594,10 +595,12 @@ export default new Vuex.Store({
         commit('socket', ws);
 
         ws.onopen = () => {
+          const { token } = getters;
           count++;
           if (count > 5) return;
-          if (getters.token && ws.readyState === 1)
-            ws.send(JSON.stringify({ type: 'login', data: getters.token }));
+          if (token && ws.readyState === 1) {
+            ws.send(JSON.stringify({ type: 'login', data: token }));
+          }
           else resolve();
 
           commit('error', null);
@@ -676,13 +679,13 @@ export default new Vuex.Store({
               const { fx, user } = getters;
               if (!fx || !rate || !user.currencies) return;
 
-              getters.user.currencies.map(symbol => {
+              user.currencies.map(symbol => {
                 rates[symbol] = rate * fx[symbol];
               });
 
               commit('rates', rates);
-              if (getters.user && getters.user.currency)
-                commit('rate', rates[getters.user.currency]);
+              if (user && user.currency)
+                commit('rate', rates[user.currency]);
               break;
 
             case 'to':
