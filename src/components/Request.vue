@@ -36,7 +36,9 @@
         <qr v-else-if="!showcode" :text="invoice.text" />
         <div
           class="mb-2"
-          v-if="invoice.amount <= 0 && !invoice.memo && invoice.network !== 'LNBTC'"
+          v-if="
+            invoice.amount <= 0 && !invoice.memo && invoice.network !== 'LNBTC'
+          "
         >
           <code class="black--text mb-2" :data-clipboard-text="invoice.text">{{
             invoice.text
@@ -59,26 +61,29 @@
             </template>
           </v-btn>
           <v-btn
-            v-if="invoice.amount > 0 || invoice.memo || invoice.network === 'LNBTC'"
+            v-if="
+              invoice.amount > 0 || invoice.memo || invoice.network === 'LNBTC'
+            "
             @click.native="showcode = !showcode"
             class="mr-2 mb-2 mb-sm-0 wide"
           >
-            <qrcode v-if="showcode" class="mr-1" />
-            <v-icon v-else class="mr-1">$code</v-icon>
+            <v-icon v-if="showcode" left>$qrcode</v-icon>
+            <v-icon v-else left>$code</v-icon>
             <span>{{ code }}</span>
           </v-btn>
           <v-btn
             @click.native="copy(invoice.text)"
             class="wide mr-2 mb-2 mb-sm-0"
           >
-          <content-copy /><span>Copy</span>
+            <v-icon left>$copy</v-icon>
+            <span>Copy</span>
           </v-btn>
           <v-btn
             v-if="invoice.network === 'LNBTC'"
             @click.native="getPaymentUrl"
             class="wide mr-2 mb-2 mb-sm-0"
           >
-            <qrcode class="mr-1" />
+            <v-icon left>$qrcode</v-icon>
             LNURL
           </v-btn>
           <v-btn
@@ -99,15 +104,13 @@ import { mapActions } from 'vuex';
 import { get, sync } from 'vuex-pathify';
 import Copy from '../mixins/Copy';
 import Tippad from './TipPad';
-import ContentCopy from 'vue-material-design-icons/ContentCopy';
-import Qrcode from 'vue-material-design-icons/Qrcode';
 import Qr from './Qr';
 import Lnurl from './Lnurl';
 
 const SATS = 100000000;
 
 export default {
-  components: { Qrcode, Qr, Tippad, Lnurl, ContentCopy },
+  components: { Qr, Tippad, Lnurl },
   mixins: [Copy],
   props: {
     clear: { type: Function },
@@ -152,7 +155,7 @@ export default {
     async newAddress() {
       await this.getNewAddress();
       await this.addInvoice({ method: 'bitcoin', user: this.invoice.user });
-    }, 
+    },
 
     color(c) {
       return ['BTC', 'SAT'].includes(c)
@@ -166,7 +169,7 @@ export default {
       this.tipping = false;
       this.invoice.tip = tip;
       this.invoice.fiatTip = fiatTip;
-      await this.addInvoice();
+      await this.addInvoice({ user: this.invoice.user });
     },
   },
   beforeRouteLeave() {

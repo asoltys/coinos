@@ -584,12 +584,12 @@ export default new Vuex.Store({
 
     async setupSocket({ commit, getters, dispatch }) {
       return new Promise((resolve, reject) => {
-        setTimeout(() => reject(new Error("Socket timeout")), 5000);
+        setTimeout(() => reject(new Error('Socket timeout')), 5000);
         const proto = location.protocol === 'https:' ? 'wss://' : 'ws://';
         if (getters.socket && getters.socket.readyState === 1) {
           getters.socket.send(JSON.stringify({ type: 'heartbeat' }));
           return resolve();
-        } 
+        }
 
         let ws = new WebSocket(`${proto}${location.host}/ws`);
         commit('socket', ws);
@@ -600,21 +600,20 @@ export default new Vuex.Store({
           if (count > 5) return;
           if (token && ws.readyState === 1) {
             ws.send(JSON.stringify({ type: 'login', data: token }));
-          }
-          else resolve();
+          } else resolve();
 
           commit('error', null);
         };
 
-        ws.onerror = (e) => {
+        ws.onerror = e => {
           ws.close();
-          reject(new Error("socket error" + e.message));
+          reject(new Error('socket error' + e.message));
         };
 
         ws.onclose = async e => {
           ws = null;
           commit('socket', null);
-          reject(new Error("socket closed"));
+          reject(new Error('socket closed'));
         };
 
         ws.onmessage = msg => {
@@ -684,8 +683,7 @@ export default new Vuex.Store({
               });
 
               commit('rates', rates);
-              if (user && user.currency)
-                commit('rate', rates[user.currency]);
+              if (user && user.currency) commit('rate', rates[user.currency]);
               break;
 
             case 'to':
@@ -987,6 +985,17 @@ export default new Vuex.Store({
       commit('payment', payment);
       commit('error', null);
       commit('lnurl', null);
+    },
+
+    async checkUser({ commit, dispatch, state }, username) {
+      try {
+        let { data: exists } = await Vue.axios.get(
+          `/exists?username=${username}`
+        );
+        return exists;
+      } catch (e) {
+        commit('error', e.response ? e.response.data : e.message);
+      }
     },
 
     async addInvoice({ commit, dispatch, state }, { method, user }) {
@@ -1509,8 +1518,6 @@ export default new Vuex.Store({
 
       if (s.invoice.received >= s.invoice.amount) {
         s.invoices.unshift(JSON.parse(JSON.stringify(s.invoice)));
-        s.invoice.amount = 0;
-        s.invoice.fiatAmount = 0;
       }
 
       if (v.user_id === s.user.id) {

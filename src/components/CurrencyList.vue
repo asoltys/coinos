@@ -58,7 +58,6 @@ export default {
     toggleFiat: call('toggleFiat'),
     toggleUnit: call('toggleUnit'),
     async select(c) {
-      console.log("selecting", c);
       this.$emit('currency', c);
       this.display = c;
 

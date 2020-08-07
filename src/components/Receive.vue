@@ -164,8 +164,9 @@ export default {
     this.clearInvoice();
     this.checkRefresh();
     this.$nextTick(() => {
-      if (!this.invoice.user.username && this.user.username)
+      if (!this.invoice.user.username && this.user.username) {
         this.$set(this.invoice, 'user', JSON.parse(JSON.stringify(this.user)));
+      }
     });
   },
 };

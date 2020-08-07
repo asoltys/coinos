@@ -85,7 +85,7 @@ export default {
     fiat() {
       return (
         ((this.payment.amount + this.payment.tip) / SATS) *
-        this.payment.rate
+        this.rate
       ).toFixed(2);
     },
     invoice: get('invoice'),
