@@ -1,5 +1,6 @@
 <template>
   <div>
+    <h1 v-if="!invoice.text" class="text-center">Send a payment to <span class="yellow--text">{{ username }}</span></h1>
     <receive />
     <v-btn v-if="received || invoice.address || invoice.text" @click="init" class="mr-1">
       <v-icon left>$arrow_back</v-icon>
