@@ -10,12 +10,13 @@
         autocapitalize="none"
         ref="username"
       />
-      <v-text-field label="Password" v-model="form.password" type="password" />
+      <v-text-field label="Password" v-model="form.password" type="password" ref="password" />
       <v-text-field
         label="Confirm Password"
         v-model="form.confirm"
         type="password"
         :error="form.confirm !== '' && form.confirm !== form.password"
+        ref="confirm"
       />
 
         <div class="d-flex flex-wrap">
@@ -44,12 +45,16 @@ import { call, get, sync } from 'vuex-pathify';
 const IS_PRODUCTION = !['development', 'test'].includes(process.env.NODE_ENV);
 
 export default {
+  props: {
+    username: { type: String, default: '' },
+    password: { type: String, default: '' },
+  },
   data() {
     return {
       submitted: false,
       form: {
-        username: '',
-        password: '',
+        username: this.username,
+        password: this.password,
         confirm: '',
         response: '',
       },
@@ -72,7 +77,9 @@ export default {
 
   mounted() {
     this.getChallenge();
-    this.$refs.username.focus();
+    if (!this.username) this.$refs.username.focus();
+    else if (!this.password) this.$refs.password.focus();
+    else this.$refs.confirm.focus();
   },
 };
 </script>

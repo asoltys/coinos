@@ -120,7 +120,7 @@ const routes = [
   { path: '/payments', component: Payments },
   { path: '/receive', component: Receive },
   { path: '/redeem/:redeemcode', component: Redeem, props: true },
-  { path: '/register', component: Register },
+  { path: '/register', name:'register', component: Register, props: true },
   { path: '/scan', component: Scan },
   { name: 'send', path: '/send', component: Send, props: true },
   { path: '/settings', component: Settings },

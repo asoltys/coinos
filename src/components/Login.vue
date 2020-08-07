@@ -52,10 +52,9 @@
               LNURL Auth
             </v-btn>
             <v-btn
-              @click="$go('/register')"
+              @click="$go({ name: 'register', params: { username: form.username, password: form.password } })"
               color="green"
               class="mr-2 mb-2 mb-sm-0 wide"
-              :disabled="form.username.length > 1 || form.password.length > 1"
             >
               <v-icon left>$wallet</v-icon>
               New Account
