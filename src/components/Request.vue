@@ -179,8 +179,8 @@ export default {
 .code
   margin auto
   width 260px
-  height 260px
   background #333
+  min-height 30vh
   word-wrap break-word
   padding 15px
 
