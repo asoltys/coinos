@@ -6,7 +6,7 @@ import { fromSeed } from 'bip32';
 import bolt11 from 'bolt11';
 import router from '../router';
 import validate from 'bitcoin-address-validation';
-import { crypto, ECPair, payments, networks, Psbt } from 'bitcoinjs-lib';
+import { crypto, ECPair, payments, Psbt } from 'bitcoinjs-lib';
 import pathify, { make } from 'vuex-pathify';
 import restrictedPaths from '../restrictedPaths';
 import publicPaths from '../publicPaths';
@@ -377,6 +377,8 @@ export default new Vuex.Store({
           user.seed = aes.encrypt(seed, password).toString();
         }
 
+        commit('seed', seed);
+
         if (!user.keys.length) {
           const key = bytesToHexString(
             secp256k1.publicKeyCreate(
@@ -387,9 +389,11 @@ export default new Vuex.Store({
           dispatch('addLinkingKey', key);
         }
 
-        dispatch('updateUser', user);
+        if (!user.accounts.find(a => a.pubkey)) {
+          dispatch('addAccount');
+        }
 
-        commit('seed', seed);
+        dispatch('updateUser', user);
       } catch (e) {
         if (e.response && e.response.data.startsWith('2fa'))
           commit('prompt2fa', true);
@@ -403,22 +407,70 @@ export default new Vuex.Store({
       await dispatch('init');
     },
 
+    async addAccount({ getters }) {
+      const { seed, user } = getters;
+      const root = fromSeed(
+        Buffer.from(sha256(seed), 'hex'),
+        this._vm.$network
+      );
+
+      const index = user.accounts.filter(a => a.pubkey).length;
+
+      const hd = root.derivePath(`m/84'/0'/0'/${index}/0`);
+      const { address } = payments.p2wpkh({
+        pubkey: hd.publicKey,
+        network: this._vm.$network,
+      });
+
+      Vue.axios.post('/accounts', {
+        pubkey: root
+          .derivePath(`m/84'/0'/0'/${index}`)
+          .neutered()
+          .toBase58(),
+        address,
+      });
+    },
+
     async addLinkingKey({}, key) {
       const res = await Vue.axios.post('/keys', { key });
     },
 
     async getNewAddress({ commit, dispatch, state }, type) {
-      const { invoice, addressTypes } = state;
+      const { invoice, addressTypes, seed, user } = state;
       if (!type) {
         type = addressTypes.shift();
         addressTypes.push(type);
       }
 
       const { method } = invoice;
+      let address;
 
-      let { data: address } = await Vue.axios.get(
-        `/address?network=${method}&type=${type}`
-      );
+      if (user.account.pubkey) {
+        if (!seed) return dispatch('logout');
+        const root = fromSeed(
+          Buffer.from(sha256(seed), 'hex'),
+          this._vm.$network
+        );
+
+        let { id, index } = user.account;
+        index++;
+        const hd = root.derivePath(`m/84'/0'/0'/0/${index}`);
+
+        ({ address } = payments.p2wpkh({
+          pubkey: hd.publicKey,
+          network: this._vm.$network,
+        }));
+
+        await Vue.axios.post('/account', { id, address, index });
+
+        invoice.address = address;
+        return address;
+      } else {
+        ({ data: address } = await Vue.axios.get(
+          `/address?network=${method}&type=${type}`
+        ));
+      }
+
       invoice.address = address;
       return address;
     },
@@ -702,7 +754,7 @@ export default new Vuex.Store({
 
             case 'to':
               let { payment } = getters;
-              payment.recipient = data;
+              if (!getters.user.account.pubkey) payment.recipient = data;
               break;
 
             case 'user':
@@ -864,7 +916,7 @@ export default new Vuex.Store({
           }));
         }
 
-        await dispatch('shiftAccount', payment.account.asset);
+        await dispatch('shiftAccount', payment.account.id);
         go('/home');
       } catch (e) {
         commit('error', e.response ? e.response.data : e.message);
@@ -1110,12 +1162,13 @@ export default new Vuex.Store({
       }
     },
 
-    async shiftAccount({ commit, dispatch, getters }, asset) {
+    async shiftAccount({ commit, dispatch, getters }, id) {
+      console.log('shifting', id);
       try {
         let { user } = getters;
 
         if (user.id) {
-          await Vue.axios.post('/shiftAccount', { asset });
+          await Vue.axios.post('/shiftAccount', { id });
           if (user.unit === 'SAT' && asset !== BTC)
             await dispatch('toggleUnit');
         } else {
@@ -1179,7 +1232,10 @@ export default new Vuex.Store({
           }
 
           if (user.account.ticker !== 'BTC')
-            await dispatch('shiftAccount', process.env.VUE_APP_LBTC);
+            await dispatch(
+              'shiftAccount',
+              user.accounts.find(a => a.asset === process.env.VUE_APP_LBTC).id
+            );
 
           let { tags, satoshis, millisatoshis } = payment.payobj;
           let description = tags.find(t => t.tagName === 'description');
@@ -1224,7 +1280,7 @@ export default new Vuex.Store({
         if (assetid) asset = assetid;
         if (!asset) asset = BTC;
         let account = user.accounts.find(a => a.asset === asset);
-        if (account) await dispatch('shiftAccount', account.asset);
+        if (account) await dispatch('shiftAccount', account.id);
         else return commit('error', 'Unrecognized asset');
 
         payment.address = url.address;
@@ -1264,11 +1320,7 @@ export default new Vuex.Store({
       }
 
       try {
-        const network =
-          process.env.NODE_ENV === 'production'
-            ? networks['bitcoin']
-            : networks['regtest'];
-        let ecpair = ECPair.fromWIF(text, network);
+        let ecpair = ECPair.fromWIF(text, this._vm.$network);
         commit('ecpair', ecpair);
         go('/sweep');
       } catch (e) {

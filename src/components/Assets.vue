@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-expansion-panels accordion class="mb-2">
-      <v-expansion-panel v-for="a in user.accounts" :key="a.asset">
+      <v-expansion-panel v-for="a in user.accounts" :key="a.id">
         <v-expansion-panel-header ripple class="d-flex" expand-icon="">
           <div
             class="asset d-flex flex-grow-1"
@@ -81,7 +81,7 @@
               </div>
               <div class="d-flex flex-grow-1" style="width: 100%">
                 <v-btn
-                  @click="register(a.asset)"
+                  @click="register(a)"
                   color="yellow"
                   class="black--text flex-grow-1"
                 >
@@ -130,7 +130,7 @@
                   <v-icon left class="yellow--text">$check</v-icon>
                   <span>save</span>
                 </v-btn>
-                <v-btn class="mr-1" @click.prevent="select(a.asset)">
+                <v-btn class="mr-1" @click.prevent="select(a)">
                   <v-icon left>$payments</v-icon>
                   <span>Payments</span>
                 </v-btn>
@@ -227,11 +227,11 @@ export default {
       this.$set(this.registering, a, true);
     },
     async register(a) {
-      await this.registerAsset(a);
+      await this.registerAsset(a.asset);
       this.select(a);
     },
     async select(a) {
-      await this.shiftAccount(a);
+      await this.shiftAccount(a.id);
       this.$go('/home');
     },
   },

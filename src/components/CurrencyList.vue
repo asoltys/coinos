@@ -47,6 +47,7 @@ export default {
 
   methods: {
     color(c) {
+      if (!this.user.currencies) return 'white';
       return ['BTC', 'SAT'].includes(c)
         ? 'white'
         : this.user.currencies.includes(c)
@@ -63,13 +64,14 @@ export default {
 
       let account = this.user.accounts.find(a => a.ticker === c);
       let currency = this.user.currencies.find(cr => cr === c);
+      let btc = this.user.accounts.find(a => a.ticker === BTC);
 
       if (account) {
-        await this.shiftAccount(account.asset);
+        await this.shiftAccount(account.id);
       } else if (currency) {
         return await this.setCurrency(c);
-      } else {
-        await this.shiftAccount(BTC);
+      } else if (btc) {
+        await this.shiftAccount(btc.id);
       } 
 
       if (!currency && this.user.fiat) await this.toggleFiat();

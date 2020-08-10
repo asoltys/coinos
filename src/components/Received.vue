@@ -99,10 +99,9 @@ export default {
   },
   methods: {
     select() {
-      const account = this.user.accounts.find(a => a.ticker === this.ticker);
-      const { asset } = account;
-      if (!asset) asset = 'BTC';
-      this.shiftAccount(asset);
+      let account = this.user.accounts.find(a => a.ticker === this.ticker);
+      if (!account) account = this.user.accounts.find(a => a.asset === process.env.VUE_APP_LBTC);
+      this.shiftAccount(account.id);
     },
     shiftAccount: call('shiftAccount'),
     explore(link) {

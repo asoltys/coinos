@@ -32,7 +32,7 @@
       label="Asset"
       v-if="payment.network === 'LBTC'"
       v-model="user.account_id"
-      @input="changeAsset"
+      @input="shiftAccount"
       :items="accounts"
     />
     <amount
@@ -139,10 +139,6 @@ export default {
   },
   methods: {
     toggleFiat: call('toggleFiat'),
-    changeAsset(id) {
-      let { asset } = this.user.accounts.find(a => a.id === id);
-      this.shiftAccount(asset);
-    },
     clearPayment: call('clearPayment'),
     toggle() {
       if (this.user.account.ticker !== 'BTC') return;
