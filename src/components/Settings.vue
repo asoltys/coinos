@@ -26,11 +26,12 @@
             {{ user.pin ? 'Change' : 'Set' }} PIN
           </v-btn>
           <set-pin @pin="pin" :showPinDialog="showPinDialog" />
-          <v-btn @click="twofa">
+          <v-btn @click="twofa" class="mr-sm-2 mb-2">
             <v-icon left class="yellow--text">$cellphone</v-icon>
             {{ user.twofa ? 'Disable' : 'Setup' }} 2FA
           </v-btn>
         </div>
+
         <div v-if="set2fa">
           <v-card class="pa-3 text-center mb-2">
             <v-alert
@@ -155,6 +156,7 @@
         </v-form>
       </v-card-text>
     </v-card>
+    <seed />
     <linking-keys />
     <div class="d-flex my-2" v-if="promptInstall">
       <v-btn class="flex-grow-1" @click="install">
@@ -190,10 +192,11 @@ import PincodeInput from 'vue-pincode-input';
 import FullScreen from '../mixins/FullScreen';
 import VueScrollTo from 'vue-scrollto';
 import LinkingKeys from './LinkingKeys';
+import Seed from './Seed';
 import Window from '../window';
 
 export default {
-  components: { SetPin, PincodeInput, LinkingKeys },
+  components: { SetPin, PincodeInput, Seed, LinkingKeys },
   mixins: [FullScreen],
   data() {
     return {

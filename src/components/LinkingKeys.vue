@@ -1,6 +1,11 @@
 <template>
-  <v-card v-if="user.keys && user.keys.length" class="mb-2">
-    <v-card-title>Linking Keys</v-card-title>
+  <div v-if="user.keys && user.keys.length" class="mb-2 d-flex">
+    <v-btn v-if="!show" @click="show = !show" class="wide flex-grow-1">
+      <v-icon left color="yellow">$key</v-icon> 
+      Auth Keys
+    </v-btn>
+  <v-card v-else class="flex-grow-1">
+    <v-card-title>LNURL Auth Keys</v-card-title>
     <v-card-text>
       <v-list class="elevation-1 mb-2">
         <v-list-item v-for="{ hex } in user.keys" :key="hex" @click="copy(hex)">
@@ -21,12 +26,13 @@
         </v-list-item>
       </v-list>
       <lnurl v-if="lnurl" :lnurl="lnurl" />
-      <v-btn @click="getLoginUrl">
+      <v-btn v-else @click="getLoginUrl">
         <v-icon left class="yellow--text">$add</v-icon>
-        <span>Add</span>
+        <span>Add New</span>
       </v-btn>
     </v-card-text>
   </v-card>
+  </div>
 </template>
 
 <script>
@@ -37,6 +43,9 @@ import Lnurl from './Lnurl';
 export default {
   components: { Lnurl },
   mixins: [Copy],
+  data: () => ({
+    show: false,
+  }),
   computed: {
     lnurl: get('lnurl'),
     user: get('user'),
