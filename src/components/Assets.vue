@@ -195,6 +195,7 @@ export default {
       let { accounts } = this.user;
       return accounts
         .sort((a, b) => ('' + a.ticker).localeCompare(b.ticker))
+        .sort((a, b) => a.ticker === 'BTC' ? -1 : 1)
         .sort((a, b) => {
           if (a.pubkey && !b.pubkey) return -1;
           return 1;
