@@ -2,7 +2,7 @@
   <div v-if="user.username" class="text-center">
     <balance />
     <div
-      v-if="user.account.ticker === 'BTC' && !user.account.balance"
+      v-if="user.account.ticker === 'BTC' && !(user.account.balance || user.account.pending)"
       class="mx-auto mb-2"
     >
       <div class="headline mb-2">Welcome! Your account is empty</div>

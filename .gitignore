@@ -23,6 +23,7 @@ yarn-error.log*
 *.sln
 *.sw?
 cordova
+bump.sh
 deploy.sh
 stage.sh
 .yarn*
