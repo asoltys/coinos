@@ -173,7 +173,7 @@
       <span>New</span>
     </v-btn>
     <v-btn
-      v-if="!showArchived"
+      v-if="!showArchived && user.accounts.filter(a => a.hide).length"
       class="mx-auto mb-2"
       @click="showArchived = true"
     >
