@@ -40,6 +40,7 @@
           >{{ error }}</v-alert
         >
         <two-fa />
+        <password />
         <router-view v-if="!initializing" :key="$route.path" />
         <v-progress-linear v-else indeterminate />
       </v-container>
@@ -53,10 +54,11 @@ import { get, call, sync } from 'vuex-pathify';
 import BottomNav from './components/BottomNav';
 import SnackBar from './components/SnackBar';
 import TopBar from './components/TopBar';
+import Password from './components/Password';
 import TwoFa from './components/TwoFa';
 
 export default {
-  components: { BottomNav, SnackBar, TopBar, TwoFa },
+  components: { BottomNav, SnackBar, TopBar, Password, TwoFa },
 
   data() {
     return {

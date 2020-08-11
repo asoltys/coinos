@@ -156,6 +156,7 @@ const state = {
   pin: '',
   poll: null,
   prompt2fa: false,
+  promptPassword: false,
   rate: 0,
   rates: null,
   received: JSON.parse(blankPayment),
@@ -235,6 +236,25 @@ export default new Vuex.Store({
       if (token) {
         if (['/', '/login', '/register'].includes(path)) return go('/home');
       } else if (restrictedPaths.includes(path)) return go('/login');
+    },
+
+    async checkPassword({ commit, getters, dispatch }, password) {
+      try {
+        const { data: match } = await Vue.axios.post('/password', { password });
+        if (match) {
+          const {
+            AES: aes,
+            enc: { Utf8 },
+          } = cryptojs;
+          const seed = aes.decrypt(getters.user.seed, password).toString(Utf8);
+          commit('seed', seed);
+          return seed;
+        }
+
+        return false;
+      } catch (e) {
+        commit('error', e.response ? e.response.data : e.message);
+      }
     },
 
     async getAssets({ commit, getters, dispatch }) {
@@ -435,8 +455,25 @@ export default new Vuex.Store({
       const res = await Vue.axios.post('/keys', { key });
     },
 
+    async passwordPrompt({ commit, dispatch, getters }, resolve) {
+      commit('promptPassword', true);
+
+      let interval;
+
+      await new Promise((resolve, reject) => {
+        interval = setInterval(() => {
+          if (getters.seed) resolve() && l('resolved');
+        }, 1000);
+      });
+
+      clearInterval(interval);
+      commit('promptPassword', false);
+
+      return getters.seed;
+    },
+
     async getNewAddress({ commit, dispatch, state }, type) {
-      const { invoice, addressTypes, seed, user } = state;
+      let { invoice, addressTypes, seed, user } = state;
       if (!type) {
         type = addressTypes.shift();
         addressTypes.push(type);
@@ -446,13 +483,15 @@ export default new Vuex.Store({
       let address;
 
       if (user.account.pubkey) {
-        if (!seed) return dispatch('logout');
+        l("here");
+        if (!seed) seed = await dispatch('passwordPrompt');
         const root = fromSeed(
           Buffer.from(sha256(seed), 'hex'),
           this._vm.$network
         );
 
         let { id, index } = user.account;
+        l(index);
         index++;
         const hd = root.derivePath(`m/84'/0'/0'/0/${index}`);
 
@@ -460,6 +499,8 @@ export default new Vuex.Store({
           pubkey: hd.publicKey,
           network: this._vm.$network,
         }));
+
+        l(address, index);
 
         await Vue.axios.post('/account', { id, address, index });
 
@@ -854,7 +895,7 @@ export default new Vuex.Store({
             if (user.account.pubkey) {
               commit('psbt', tx);
 
-              if (!seed) return dispatch('logout');
+              if (!seed) await dispatch('passwordPrompt');
               const root = fromSeed(Buffer.from(sha256(seed), 'hex'));
 
               const psbt = Psbt.fromBase64(tx);
@@ -1120,6 +1161,10 @@ export default new Vuex.Store({
     async addInvoice({ commit, dispatch, state }, { method, user }) {
       const { controller, invoice, rate, socket } = state;
       if (controller) controller.abort();
+
+      if (!invoice.user.username && user.username) {
+        invoice.user = user;
+      }
 
       if (!invoice.amount) invoice.amount = null;
       const { amount, memo, tip } = invoice;
@@ -1412,7 +1457,7 @@ export default new Vuex.Store({
               await dispatch('openChannel', params);
               break;
             case 'login':
-              if (!seed) return dispatch('logout');
+              if (!seed) seed = await dispatch('passwordPrompt');
               try {
                 const key = linkingKey(params.domain, seed);
                 const signedMessage = secp256k1.ecdsaSign(

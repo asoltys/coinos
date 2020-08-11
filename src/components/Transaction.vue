@@ -69,7 +69,7 @@
     <div class="d-flex" v-if="psbt">
       <v-btn @click="copy(psbt)" class="ml-auto">
         <v-icon left>$copy</v-icon>
-        Copy {{ payment.network === 'bitcoin' ? 'PSBT' : 'PSET' }}
+        Copy {{ payment.network === 'BTC' ? 'PSBT' : 'PSET' }}
       </v-btn>
     </div>
   </v-card>

@@ -274,7 +274,7 @@ export default {
           o.amount = p.amount + p.tip;
           o.displayAmount = this.$format(Math.abs(o.amount), this.precision);
           o.displayFee = this.$format(Math.abs(o.fee), this.precision);
-          o.fiat = ((p.amount * p.rate) / SATS).toFixed(2);
+          o.fiat = (Math.round(p.amount * p.rate) / SATS).toFixed(2);
           o.tip = parseFloat((p.tip * p.rate) / SATS).toFixed(2);
           if (isNaN(o.tip) || o.tip <= 0) o.tip = null;
           o.color = o.amount < 0 ? 'red--text' : 'green--text';

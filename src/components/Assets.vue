@@ -45,7 +45,7 @@
               >({{ $format(a.pending, a.precision) }} pending)</span
             >
           </div>
-          <v-btn icon @click.prevent="select(a)" class="flex-grow-0">
+          <v-btn icon @click.prevent.stop="select(a)" class="flex-grow-0">
             <v-icon title="Payments">$payments</v-icon>
           </v-btn>
         </v-expansion-panel-header>
@@ -208,7 +208,7 @@
               >({{ $format(a.pending, a.precision) }} pending)</span
             >
           </div>
-          <v-btn icon @click.prevent="select(a)" class="flex-grow-0">
+          <v-btn icon @click.prevent.stop="select(a)" class="flex-grow-0">
             <v-icon title="Payments">$payments</v-icon>
           </v-btn>
         </v-expansion-panel-header>
