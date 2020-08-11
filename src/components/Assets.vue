@@ -1,8 +1,7 @@
 <template>
   <div>
-    <h1>Non-custodial wallets</h1>
     <v-expansion-panels accordion class="mb-2">
-      <v-expansion-panel v-for="a in client" :key="a.id">
+      <v-expansion-panel v-for="a in accounts" :key="a.id">
         <v-expansion-panel-header ripple class="d-flex" expand-icon="">
           <div
             class="asset d-flex flex-grow-1"
@@ -19,7 +18,7 @@
               >$assignment</v-icon
             >
             <div class="mb-1">
-              {{ a.name }}
+              {{ a.name }} <span v-if="a.pubkey">(non-custodial)</span>
               <v-btn
                 class="toggle ml-1"
                 :color="a.ticker === 'BTC' ? 'white' : '#0ae'"
@@ -27,190 +26,29 @@
               >
             </div>
           </div>
-          <div
-            class="flex-grow-1 text-right"
-            :class="{
-              'body-1': $vuetify.breakpoint.xsOnly,
-              'display-1': !$vuetify.breakpoint.xs,
-            }"
-          >
-            {{ $format(a.balance, a.precision) }}
-            <span
-              v-if="a.pending"
-              class="orange--text text--lighten-4"
+          <div class="d-flex flex-wrap">
+            <div
+              class="flex-grow-1 text-right my-auto mr-1"
               :class="{
-                'body-1': $vuetify.breakpoint.xsOnly,
-                title: !$vuetify.breakpoint.xs,
+                'title': $vuetify.breakpoint.xsOnly,
+                'display-1': !$vuetify.breakpoint.xs,
               }"
-              >({{ $format(a.pending, a.precision) }} pending)</span
             >
-          </div>
-          <v-btn icon @click.prevent.stop="select(a)" class="flex-grow-0">
-            <v-icon title="Payments">$payments</v-icon>
-          </v-btn>
-        </v-expansion-panel-header>
-        <v-expansion-panel-content class="text-left">
-          <v-card class="pa-4" style="background: #333">
-            <v-alert
-              v-if="success[a.asset]"
-              class="mb-4"
-              color="success"
-              icon="$info"
-              v-model="success[a.asset]"
-              dismissible
-              transition="scale-transition"
-              dark
-            >
-              Settings saved successfully
-            </v-alert>
-            <div v-if="registering[a.asset]">
-              <h2 class="text-center white--text">Proof of Domain</h2>
-              <div class="text-center">
-                Place file at <a :href="url(a)">{{ url(a) }}</a> and click
-                Register
-              </div>
-              <div class="d-flex">
-                <div class="flex-grow-1 text-center">
-                  <v-icon large @click="showcode = !showcode" class="pa-4"
-                    >$assignment</v-icon
-                  >
-                </div>
-              </div>
-              <v-textarea
-                v-if="showcode"
-                :value="proof(a)"
-                rows="1"
-                auto-grow
-              />
-              <div class="d-flex flex-grow-1 mb-2">
-                <v-btn
-                  @click="download(filename(a), proof(a))"
-                  class="flex-grow-1 mr-1"
-                >
-                  <v-icon left>$download</v-icon><span>Download</span>
-                </v-btn>
-                <v-btn @click="copy(proof(a))" class="flex-grow-1">
-                  <v-icon left>$copy</v-icon><span>Copy</span>
-                </v-btn>
-              </div>
-              <div class="d-flex flex-grow-1" style="width: 100%">
-                <v-btn
-                  @click="register(a)"
-                  color="yellow"
-                  class="black--text flex-grow-1"
-                >
-                  <v-icon left>$assignment</v-icon><span>Register</span>
-                </v-btn>
-              </div>
-            </div>
-            <v-form v-else @submit.prevent="() => submit(a)">
-              <v-textarea
-                label="Id"
-                :value="a.asset"
-                rows="1"
-                auto-grow
-                readonly
-              >
-                <template v-slot:append>
-                  <v-btn @click="() => copy(a.asset)" icon class="ml-1">
-                    <v-icon>$copy</v-icon>
-                  </v-btn>
-                </template>
-              </v-textarea>
-              <v-text-field
-                label="Name"
-                v-model="a.name"
-                :readonly="a.asset === BTC"
-              />
-              <v-text-field
-                v-if="a.asset !== BTC"
-                label="Domain"
-                v-model="a.domain"
-              />
-              <v-text-field
-                label="Ticker"
-                v-model="a.ticker"
-                :readonly="a.asset === BTC"
-              />
-              <v-text-field
-                label="Precision"
-                v-model="a.precision"
-                type="number"
-                @input="e => limit(e, a)"
-                :readonly="a.asset === BTC"
-              />
-              <div class="text-right">
-                <v-btn type="submit" class="mr-1">
-                  <v-icon left class="yellow--text">$check</v-icon>
-                  <span>save</span>
-                </v-btn>
-                <v-btn class="mr-1" @click.prevent="select(a)">
-                  <v-icon left>$payments</v-icon>
-                  <span>Payments</span>
-                </v-btn>
-                <v-btn
-                  v-if="!assets[a.asset].registered && a.contract"
-                  class="mr-1"
-                  @click.prevent="startRegistering(a.asset)"
-                >
-                  <v-icon left>$assignment</v-icon>
-                  <span>Register</span>
-                </v-btn>
-              </div>
-            </v-form>
-          </v-card>
-        </v-expansion-panel-content>
-      </v-expansion-panel>
-    </v-expansion-panels>
-
-    <h1>Custodial wallets</h1>
-    <v-expansion-panels accordion class="mb-2">
-      <v-expansion-panel v-for="a in server" :key="a.id">
-        <v-expansion-panel-header ripple class="d-flex" expand-icon="">
-          <div
-            class="asset d-flex flex-grow-1"
-            :class="{
-              'body-1': $vuetify.breakpoint.xsOnly,
-              title: !$vuetify.breakpoint.xs,
-            }"
-          >
-            <v-icon
-              v-if="assets[a.asset].registered"
-              class="mr-1"
-              color="yellow"
-              title="Registered"
-              >$assignment</v-icon
-            >
-            <div class="mb-1">
-              {{ a.name }}
-              <v-btn
-                class="toggle ml-1"
-                :color="a.ticker === 'BTC' ? 'white' : '#0ae'"
-                >{{ a.ticker }}</v-btn
+              {{ $format(a.balance, a.precision) }}
+              <span
+                v-if="a.pending"
+                class="orange--text text--lighten-4"
+                :class="{
+                  'body-1': $vuetify.breakpoint.xsOnly,
+                  title: !$vuetify.breakpoint.xs,
+                }"
+                >({{ $format(a.pending, a.precision) }} pending)</span
               >
             </div>
+            <v-btn @click.prevent.stop="select(a)" class="flex-grow-0 ml-auto my-auto black--text" color="yellow">
+              <v-icon>$forward</v-icon>
+            </v-btn>
           </div>
-          <div
-            class="flex-grow-1 text-right"
-            :class="{
-              'body-1': $vuetify.breakpoint.xsOnly,
-              'display-1': !$vuetify.breakpoint.xs,
-            }"
-          >
-            {{ $format(a.balance, a.precision) }}
-            <span
-              v-if="a.pending"
-              class="orange--text text--lighten-4"
-              :class="{
-                'body-1': $vuetify.breakpoint.xsOnly,
-                title: !$vuetify.breakpoint.xs,
-              }"
-              >({{ $format(a.pending, a.precision) }} pending)</span
-            >
-          </div>
-          <v-btn icon @click.prevent.stop="select(a)" class="flex-grow-0">
-            <v-icon title="Payments">$payments</v-icon>
-          </v-btn>
         </v-expansion-panel-header>
         <v-expansion-panel-content class="text-left">
           <v-card class="pa-4" style="background: #333">
@@ -345,11 +183,15 @@ const BTC = process.env.VUE_APP_LBTC;
 export default {
   mixins: [Copy],
   computed: {
-    client() {
-      return this.user.accounts.filter(a => this.assets[a.asset] && a.pubkey);
-    },
-    server() {
-      return this.user.accounts.filter(a => this.assets[a.asset] && !a.pubkey);
+    accounts() {
+      let { accounts } = this.user;
+      return accounts
+        .sort((a, b) => ('' + a.ticker).localeCompare(b.ticker))
+        .sort((a, b) => {
+          if (a.pubkey && !b.pubkey) return -1;
+          return 1;
+        })
+        .filter(a => this.assets[a.asset]);
     },
     assets: get('assets'),
     user: sync('user'),
