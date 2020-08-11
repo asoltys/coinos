@@ -145,9 +145,9 @@
                   <v-icon left class="yellow--text">$check</v-icon>
                   <span>save</span>
                 </v-btn>
-                <v-btn class="mr-1" @click.prevent="select(a)">
-                  <v-icon left>$payments</v-icon>
-                  <span>Payments</span>
+                <v-btn class="mr-1" @click.prevent="archive(a)" v-if="a.ticker !== 'BTC'">
+                  <v-icon left>$archive</v-icon>
+                  <span>{{ a.hide ? 'Unarchive' : 'Archive' }}</span>
                 </v-btn>
                 <v-btn
                   v-if="!assets[a.asset].registered && a.contract"
@@ -165,12 +165,20 @@
     </v-expansion-panels>
 
     <v-btn
-      class="mx-auto mb-2 black--text"
+      class="mx-auto mb-2 black--text mr-2"
       @click="$go('/asset')"
       color="yellow"
     >
       <v-icon>$add</v-icon>
       <span>New</span>
+    </v-btn>
+    <v-btn
+      v-if="!showArchived"
+      class="mx-auto mb-2"
+      @click="showArchived = true"
+    >
+      <v-icon>$archive</v-icon>
+      <span>Show Archived</span>
     </v-btn>
   </div>
 </template>
@@ -191,13 +199,14 @@ export default {
           if (a.pubkey && !b.pubkey) return -1;
           return 1;
         })
-        .filter(a => this.assets[a.asset]);
+        .filter(a => (!a.hide || this.showArchived) && this.assets[a.asset]);
     },
     assets: get('assets'),
     user: sync('user'),
   },
   data() {
     return {
+      showArchived: false,
       showcode: false,
       BTC,
       registering: {},
@@ -205,6 +214,10 @@ export default {
     };
   },
   methods: {
+    archive(a) {
+      a.hide = !a.hide;
+      this.updateAccount(a);
+    }, 
     url(a) {
       return `https://${a.contract.entity.domain}/.well-known/${this.filename(
         a

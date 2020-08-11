@@ -109,7 +109,7 @@ export default {
         'SAT',
         'BTC',
         ...[
-          ...this.user.accounts.map(a => a.ticker).filter(a => a !== 'BTC'),
+          ...this.user.accounts.filter(a => !a.hide).map(a => a.ticker).filter(a => a !== 'BTC'),
         ].sort(),
         ...[...this.user.currencies].sort(),
       ];
