@@ -1,5 +1,5 @@
 <template>
-  <v-card class="elevation-1 pa-4 mb-2">
+  <v-card v-if="user.account" class="elevation-1 pa-4 mb-2">
     <qr :text="recipient" v-if="show" />
     <v-textarea
       v-if="recipient"
@@ -54,10 +54,9 @@
       <template v-slot:append>
         <v-btn
           class="toggle black--text mt-auto"
-          :color="user.fiat ? 'yellow' : 'white'"
+          :color="color(feeUnit)"
           @click.prevent="toggle"
-          >{{ user.unit }}</v-btn
-        >
+          >{{ feeUnit }}</v-btn>
         <v-btn icon @click="copy(displayFee)" class="ml-1" text>
           <v-icon>$copy</v-icon>
         </v-btn>
@@ -132,12 +131,26 @@ export default {
       if (!this.fee) return null;
       return ((this.fee * this.rate) / SATS).toFixed(2);
     },
+    feeUnit() {
+      return this.user.fiat
+        ? this.user.currency
+        : this.user.unit === 'SAT'
+        ? 'SAT'
+        : this.user.account.ticker;
+    },
     loadingFee: get('loadingFee'),
     payment: sync('payment'),
     rate: get('rate'),
     user: get('user'),
   },
   methods: {
+    color(c) {
+      return ['BTC', 'SAT'].includes(c)
+        ? 'white'
+        : this.user.currencies.includes(c)
+        ? '#ffeb3b'
+        : '#0ae';
+    },
     toggleFiat: call('toggleFiat'),
     clearPayment: call('clearPayment'),
     toggle() {

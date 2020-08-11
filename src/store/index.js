@@ -820,11 +820,11 @@ export default new Vuex.Store({
       }
     },
 
-    async estimateFee({ commit, getters }) {
+    async estimateFee({ commit, dispatch, getters }) {
       commit('error', null);
       commit('loadingFee', true);
 
-      let { payment, user } = getters;
+      let { payment, user, seed } = getters;
       let { asset } = user.account;
       let { address, amount, feeRate } = payment;
 
@@ -844,9 +844,46 @@ export default new Vuex.Store({
           }
         } else {
           try {
-            let res = await Vue.axios.post('/bitcoin/fee', params);
-            payment.feeRate = res.data.feeRate;
-            payment.tx = res.data.tx;
+            let {
+              data: { feeRate, tx },
+            } = await Vue.axios.post('/bitcoin/fee', params);
+
+            payment.feeRate = feeRate;
+            payment.tx = tx;
+
+            if (user.account.pubkey) {
+              commit('psbt', tx);
+
+              if (!seed) return dispatch('logout');
+              const root = fromSeed(Buffer.from(sha256(seed), 'hex'));
+
+              const psbt = Psbt.fromBase64(tx);
+              psbt.txInputs.map((input, inputIndex) => {
+                for (let i = user.account.index; i >= 0; i--) {
+                  const hd = root.derivePath(`m/84'/0'/0'/0/${i}`);
+
+                  const pair = ECPair.fromPrivateKey(hd.privateKey, {
+                    compressed: true,
+                    network: this._vm.$network,
+                  });
+
+                  try {
+                    psbt.signInput(inputIndex, pair);
+                  } catch (e) {
+                    /* */
+                  }
+                }
+              });
+
+              await psbt.finalizeAllInputs();
+
+              payment.fee = psbt.getFee();
+              payment.tx = psbt.extractTransaction();
+              payment.tx.fee = payment.fee / SATS;
+              payment.txid = payment.tx.txid;
+              payment.feeRate = feeRate;
+              payment.signed = true;
+            }
           } catch (e) {
             commit('error', e.response ? e.response.data : e.message);
           }
@@ -984,19 +1021,35 @@ export default new Vuex.Store({
       commit('error', null);
 
       let {
-        payment: { address, amount, asset, memo, tx, payreq, route },
+        payment: { address, amount, asset, memo, tx, payreq, route, signed },
       } = getters;
+
+      if (signed) {
+        try {
+          let { data: payment } = await Vue.axios.post('/bitcoin/broadcast', {
+            tx: tx.toHex(),
+            payment: getters.payment,
+          });
+          payment.sent = true;
+          commit('payment', payment);
+        } catch (e) {
+          commit('error', e.response ? e.response.data : e.message);
+        }
+
+        commit('loading', false);
+        return;
+      }
 
       if (payreq.startsWith('lnbc')) {
         try {
-          let res = await Vue.axios.post('/lightning/send', {
+          let { data: payment } = await Vue.axios.post('/lightning/send', {
             amount,
             memo,
             payreq,
             route,
           });
-          res.data.sent = true;
-          commit('payment', res.data);
+          payment.sent = true;
+          commit('payment', payment);
         } catch (e) {
           commit('error', e.response ? e.response.data : e.message);
         }
@@ -1072,6 +1125,7 @@ export default new Vuex.Store({
       const { amount, memo, tip } = invoice;
 
       method = method || invoice.method;
+      invoice.received = 0;
       invoice.rate = rate;
       invoice.memo = memo;
       invoice.method = method;
@@ -1163,9 +1217,10 @@ export default new Vuex.Store({
     },
 
     async shiftAccount({ commit, dispatch, getters }, id) {
-      console.log('shifting', id);
       try {
         let { user } = getters;
+        let account = user.accounts.find(a => a.id === id);
+        let { asset } = account;
 
         if (user.id) {
           await Vue.axios.post('/shiftAccount', { id });
@@ -1280,8 +1335,10 @@ export default new Vuex.Store({
         if (assetid) asset = assetid;
         if (!asset) asset = BTC;
         let account = user.accounts.find(a => a.asset === asset);
-        if (account) await dispatch('shiftAccount', account.id);
-        else return commit('error', 'Unrecognized asset');
+        if (account) {
+          if (account.asset !== user.account.asset)
+            await dispatch('shiftAccount', account.id);
+        } else return commit('error', 'Unrecognized asset');
 
         payment.address = url.address;
 

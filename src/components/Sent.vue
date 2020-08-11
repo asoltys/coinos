@@ -100,15 +100,7 @@ export default {
       return ticker;
     },
     total() {
-      let total = Math.abs(this.payment.amount);
-      if (
-        this.payment.account.ticker === 'BTC' &&
-        this.payment.network !== 'LNBTC'
-      ) {
-        total -= this.payment.fee;
-      }
-
-      return total;
+      return Math.abs(this.payment.amount);
     },
     user: get('user'),
   },

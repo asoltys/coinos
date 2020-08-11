@@ -32,13 +32,13 @@
           <v-list-item-action>
             <v-icon>$wallet</v-icon>
           </v-list-item-action>
-          <v-list-item-content>Assets</v-list-item-content>
+          <v-list-item-content>Wallets</v-list-item-content>
         </v-list-item>
         <v-list-item @click="$go('/swaps')">
           <v-list-item-action>
             <v-icon>$swap</v-icon>
           </v-list-item-action>
-          <v-list-item-content>Swaps</v-list-item-content>
+          <v-list-item-content>Exchange</v-list-item-content>
         </v-list-item>
         <v-list-item @click="$go('/settings')">
           <v-list-item-action>

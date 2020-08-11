@@ -10,7 +10,8 @@
   </div>
   <v-menu v-else offset-y nudge-bottom="1">
     <template v-slot:activator="{ on }">
-      <v-btn v-on="on" class="black--text" :color="color(display)">{{
+      <v-btn v-on="on" class="black--text" :color="color(display)">
+        {{
         display
         }}</v-btn>
       <span class="print black--text">{{ display }}</span>

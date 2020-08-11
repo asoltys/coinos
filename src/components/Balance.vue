@@ -1,5 +1,8 @@
 <template>
   <div v-if="user.id" class="mb-2 text-center no-print">
+        <v-btn class="ml-1 black--text mb-1" :color="custodial ? 'orange' : 'green'" @click="toggleCustodial">
+          {{ custodial ? 'Custodial' : 'Non-Custodial' }}
+        </v-btn>
     <div class="d-flex">
       <div class="display-2 font-weight-black flex-grow-1 text-right mr-2">
         {{ $format(user.account.balance, precision) }}
@@ -40,7 +43,8 @@ import { mapGetters } from 'vuex';
 import { call } from 'vuex-pathify';
 import CurrencyList from './CurrencyList';
 
-const ease = t => t<.5 ? 8*t*t*t*t : 1-8*(--t)*t*t*t;
+const ease = t => (t < 0.5 ? 8 * t * t * t * t : 1 - 8 * --t * t * t * t);
+const BTC = process.env.VUE_APP_LBTC;
 const SATS = 100000000;
 
 export default {
@@ -63,13 +67,19 @@ export default {
   },
 
   computed: {
+    custodial() {
+      return !this.user.account.pubkey;
+    },
     cryptos() {
       let arr = [this.ticker === 'SAT' ? 'BTC' : 'SAT'];
       if (!this.user.accounts) return arr;
-      return [...arr,
-                ...this.user.accounts
-          .map(a => a.ticker)
-          .filter(a => a !== this.user.account.ticker),
+      return [
+        ...new Set([
+          ...arr,
+          ...this.user.accounts
+            .map(a => a.ticker)
+            .filter(a => a !== this.user.account.ticker),
+        ]),
       ];
     },
     fiats() {
@@ -98,6 +108,14 @@ export default {
   },
 
   methods: {
+    toggleCustodial() {
+      let a = this.user.accounts.filter(a => a.asset === BTC);
+      if (this.custodial) {
+        this.shiftAccount(a.find(a => a.pubkey).id)
+      } else {
+        this.shiftAccount(a.find(a => !a.pubkey).id)
+      } 
+    },
     shiftAccount: call('shiftAccount'),
     shiftCurrency: call('shiftCurrency'),
   },

@@ -5,6 +5,8 @@
         Fee Rate
       </v-card-title>
 
+
+
       <v-card-text>
         <v-slider
           v-model="payment.feeRate"

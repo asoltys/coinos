@@ -15,7 +15,7 @@
               createdAt,
               currency,
               displayAmount: amount,
-              fee,
+              displayFee: fee,
               fiat,
               hash,
               id,
@@ -273,6 +273,7 @@ export default {
           let o = JSON.parse(JSON.stringify(p));
           o.amount = p.amount + p.tip;
           o.displayAmount = this.$format(Math.abs(o.amount), this.precision);
+          o.displayFee = this.$format(Math.abs(o.fee), this.precision);
           o.fiat = ((p.amount * p.rate) / SATS).toFixed(2);
           o.tip = parseFloat((p.tip * p.rate) / SATS).toFixed(2);
           if (isNaN(o.tip) || o.tip <= 0) o.tip = null;
