@@ -45,7 +45,7 @@
         <v-progress-linear v-else indeterminate />
       </v-container>
     </v-main>
-    <bottom-nav v-if="user && user.address" />
+    <bottom-nav v-if="user && user.id" />
   </v-app>
 </template>
 

@@ -164,6 +164,7 @@
           </v-btn>
         </div>
       </div>
+      <v-alert color="primary" class="black--text" v-else-if="user.account.ticker !== 'BTC'">No payments found</v-alert>
     </template>
   </div>
 </template>

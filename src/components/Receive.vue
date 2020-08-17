@@ -38,7 +38,7 @@
       </div>
       <div class="d-flex flex-wrap buttons">
         <v-btn
-          v-if="nodes.includes('bitcoin')"
+          v-if="nodes.includes('bitcoin') && (!user.account.pubkey || user.account.ticker === 'BTC')"
           class="flex-grow-1 mb-1 mr-1"
           @click="addInvoice({ method: 'bitcoin', user })"
           :disabled="!isBtc"
@@ -49,7 +49,7 @@
         </v-btn>
 
         <v-btn
-          v-if="nodes.includes('lightning')"
+          v-if="nodes.includes('lightning') && !user.account.pubkey"
           class="flex-grow-1 mb-1 mr-1"
           @click="addInvoice({ method: 'lightning', user })"
           :disabled="!isBtc"
@@ -60,7 +60,7 @@
         </v-btn>
 
         <v-btn
-          v-if="nodes.includes('liquid')"
+          v-if="nodes.includes('liquid') && (!user.account.pubkey || user.account.ticker === 'LBTC')"
           class="flex-grow-1 mr-0"
           @click="addInvoice({ method: 'liquid', user })"
           :style="buttonStyle"
@@ -93,9 +93,10 @@ export default {
 
   computed: {
     buttonStyle() {
+      let numButtons = this.user.account.pubkey ? 1 : this.nodes.length;
       return {
         maxWidth: `${(
-          100 / (window.innerWidth < 600 ? 1 : this.nodes.length)
+          100 / (window.innerWidth < 600 ? 1 : numButtons)
         ).toFixed(0)}%`,
       };
     },
@@ -109,7 +110,7 @@ export default {
         'SAT',
         'BTC',
         ...[
-          ...this.user.accounts.filter(a => !a.hide).map(a => a.ticker).filter(a => a !== 'BTC'),
+          ...this.user.accounts.filter(a => !a.hide && a.pubkey === this.user.account.pubkey).map(a => a.ticker).filter(a => a !== 'BTC'),
         ].sort(),
         ...[...this.user.currencies].sort(),
       ];

@@ -53,7 +53,7 @@
         >
         </v-form>
       </div>
-      <div v-else-if="!channelRequest" class="d-flex">
+      <div v-else-if="1 === 2 && !channelRequest" class="d-flex">
         <v-btn class="black--text mx-auto" color="primary" @click="startGenerating">
           <v-icon left>$link</v-icon>
           Request Inbound Channel</v-btn

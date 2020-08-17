@@ -7,6 +7,12 @@ import bolt11 from 'bolt11';
 import router from '../router';
 import validate from 'bitcoin-address-validation';
 import { crypto, ECPair, payments, Psbt } from 'bitcoinjs-lib';
+import {
+  crypto as lqcrypto,
+  ECPair as lqECPair,
+  payments as lqpayments,
+  Psbt as lqPsbt,
+} from 'liquidjs-lib';
 import pathify, { make } from 'vuex-pathify';
 import restrictedPaths from '../restrictedPaths';
 import publicPaths from '../publicPaths';
@@ -409,8 +415,20 @@ export default new Vuex.Store({
           dispatch('addLinkingKey', key);
         }
 
-        if (!user.accounts.find(a => a.pubkey)) {
-          dispatch('addAccount');
+        if (
+          !user.accounts.find(
+            a => a.ticker === 'BTC' && a.pubkey
+          )
+        ) {
+          dispatch('addBitcoinAccount');
+        }
+
+        if (
+          !user.accounts.find(
+            a => a.ticker === 'LBTC' && a.pubkey
+          )
+        ) {
+          dispatch('addLiquidAccount');
         }
 
         dispatch('updateUser', user);
@@ -427,27 +445,37 @@ export default new Vuex.Store({
       await dispatch('init');
     },
 
-    async addAccount({ getters }) {
+    async addBitcoinAccount({ getters }) {
       const { seed, user } = getters;
       const root = fromSeed(
         Buffer.from(sha256(seed), 'hex'),
         this._vm.$network
       );
 
-      const index = user.accounts.filter(a => a.pubkey).length;
-
-      const hd = root.derivePath(`m/84'/0'/0'/${index}/0`);
-      const { address } = payments.p2wpkh({
-        pubkey: hd.publicKey,
-        network: this._vm.$network,
+      Vue.axios.post('/accounts', {
+        pubkey: root
+          .derivePath(`m/84'/0'/0'/0`)
+          .neutered()
+          .toBase58(),
+        name: 'Bitcoin',
+        ticker: 'BTC',
       });
+    },
+
+    async addLiquidAccount({ getters }) {
+      const { seed, user } = getters;
+      const root = fromSeed(
+        Buffer.from(sha256(seed), 'hex'),
+        this._vm.$lqnetwork
+      );
 
       Vue.axios.post('/accounts', {
         pubkey: root
-          .derivePath(`m/84'/0'/0'/${index}`)
+          .derivePath(`m/84'/0'/0'/0`)
           .neutered()
           .toBase58(),
-        address,
+        name: 'Bitcoin',
+        ticker: 'LBTC',
       });
     },
 
@@ -483,24 +511,28 @@ export default new Vuex.Store({
       let address;
 
       if (user.account.pubkey) {
-        l("here");
         if (!seed) seed = await dispatch('passwordPrompt');
         const root = fromSeed(
           Buffer.from(sha256(seed), 'hex'),
           this._vm.$network
         );
-
         let { id, index } = user.account;
-        l(index);
         index++;
         const hd = root.derivePath(`m/84'/0'/0'/0/${index}`);
 
-        ({ address } = payments.p2wpkh({
-          pubkey: hd.publicKey,
-          network: this._vm.$network,
-        }));
+        if (method === 'bitcoin') {
+          ({ address } = payments.p2wpkh({
+            pubkey: hd.publicKey,
+            network: this._vm.$network,
+          }));
+        }
 
-        l(address, index);
+        if (method === 'liquid') {
+          ({ address } = lqpayments.p2wpkh({
+            pubkey: hd.publicKey,
+            network: this._vm.$lqnetwork,
+          }));
+        }
 
         await Vue.axios.post('/account', { id, address, index });
 
@@ -872,62 +904,59 @@ export default new Vuex.Store({
       let params = { address, amount, asset, feeRate };
 
       if (address) {
-        if (isLiquid(address)) {
-          try {
-            let {
-              data: { feeRate, tx, psbt },
-            } = await Vue.axios.post('/liquid/fee', params);
-            payment.feeRate = feeRate;
-            payment.tx = tx;
-            commit('psbt', psbt);
-          } catch (e) {
-            commit('error', e.response ? e.response.data : e.message);
-          }
-        } else {
-          try {
-            let {
-              data: { feeRate, tx },
-            } = await Vue.axios.post('/bitcoin/fee', params);
+        try {
+          let network = isLiquid(address) ? 'liquid' : 'bitcoin';
+          let {
+            data: { feeRate, tx },
+          } = await Vue.axios.post(`/${network}/fee`, params);
 
-            payment.feeRate = feeRate;
-            payment.tx = tx;
+          payment.feeRate = feeRate;
+          payment.tx = tx;
 
-            if (user.account.pubkey) {
-              commit('psbt', tx);
+          if (user.account.pubkey) {
+            commit('psbt', tx);
+            if (!seed) seed = await dispatch('passwordPrompt');
+            const root = fromSeed(Buffer.from(sha256(seed), 'hex'));
 
-              if (!seed) await dispatch('passwordPrompt');
-              const root = fromSeed(Buffer.from(sha256(seed), 'hex'));
+            let psbt, network;
 
-              const psbt = Psbt.fromBase64(tx);
-              psbt.txInputs.map((input, inputIndex) => {
-                for (let i = user.account.index; i >= 0; i--) {
-                  const hd = root.derivePath(`m/84'/0'/0'/0/${i}`);
-
-                  const pair = ECPair.fromPrivateKey(hd.privateKey, {
-                    compressed: true,
-                    network: this._vm.$network,
-                  });
-
-                  try {
-                    psbt.signInput(inputIndex, pair);
-                  } catch (e) {
-                    /* */
-                  }
-                }
-              });
-
-              await psbt.finalizeAllInputs();
-
-              payment.fee = psbt.getFee();
-              payment.tx = psbt.extractTransaction();
-              payment.tx.fee = payment.fee / SATS;
-              payment.txid = payment.tx.txid;
-              payment.feeRate = feeRate;
-              payment.signed = true;
+            if (user.account.name.includes('Liquid')) {
+              psbt = lqPsbt.fromBase64(tx);
+              network = this._vm.$lqnetwork;
+            } else {
+              psbt = Psbt.fromBase64(tx);
+              network = this._vm.$network;
             }
-          } catch (e) {
-            commit('error', e.response ? e.response.data : e.message);
+
+            psbt.data.inputs.map((input, inputIndex) => {
+              for (let i = user.account.index; i >= 0; i--) {
+                const hd = root.derivePath(`m/84'/0'/0'/0/${i}`);
+
+                const pair = ECPair.fromPrivateKey(hd.privateKey, {
+                  compressed: true,
+                  network,
+                });
+
+                try {
+                  psbt.signInput(inputIndex, pair);
+                } catch (e) {
+                  /* */
+                }
+              }
+            });
+
+            await psbt.finalizeAllInputs();
+
+            payment.fee = psbt.getFee();
+            payment.tx = psbt.extractTransaction();
+            payment.tx.fee = payment.fee / SATS;
+            payment.txid = payment.tx.txid;
+            payment.feeRate = feeRate;
+            payment.signed = true;
           }
+        } catch (e) {
+          commit('error', e.response ? e.response.data : e.message);
+          throw e;
         }
       }
 
@@ -1062,12 +1091,23 @@ export default new Vuex.Store({
       commit('error', null);
 
       let {
-        payment: { address, amount, asset, memo, tx, payreq, route, signed },
+        payment: {
+          address,
+          amount,
+          asset,
+          network,
+          memo,
+          tx,
+          payreq,
+          route,
+          signed,
+        },
       } = getters;
 
       if (signed) {
         try {
-          let { data: payment } = await Vue.axios.post('/bitcoin/broadcast', {
+          let method = network === 'LBTC' ? 'liquid' : 'bitcoin';
+          let { data: payment } = await Vue.axios.post(`/${method}/broadcast`, {
             tx: tx.toHex(),
             payment: getters.payment,
           });
@@ -1331,6 +1371,7 @@ export default new Vuex.Store({
             throw new Error('Wrong network');
           }
 
+          l('ticker', user.account.ticker);
           if (user.account.ticker !== 'BTC')
             await dispatch(
               'shiftAccount',
@@ -1381,6 +1422,7 @@ export default new Vuex.Store({
         if (!asset) asset = BTC;
         let account = user.accounts.find(a => a.asset === asset);
         if (account) {
+          l(account.asset, user.account.asset);
           if (account.asset !== user.account.asset)
             await dispatch('shiftAccount', account.id);
         } else return commit('error', 'Unrecognized asset');

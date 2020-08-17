@@ -110,9 +110,10 @@ export default {
     text: get('text'),
   },
   methods: {
-    self() {
-      this.to = this.user.address;
+    async self() {
+      this.to = await this.getNewAddress();
     },
+    getNewAddress: call('getNewAddress'),
     buildSweepTx: call('buildSweepTx'),
     clearPayment: call('clearPayment'),
     clear() {

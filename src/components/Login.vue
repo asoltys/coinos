@@ -44,20 +44,20 @@
               Sign in
             </v-btn>
             <v-btn
-              @click="lnurlAuth"
-              color="secondary"
-              class="mr-2 mb-2 mb-sm-0 wide"
-            >
-              <qrcode class="mr-1" />
-              LNURL Auth
-            </v-btn>
-            <v-btn
               @click="$go({ name: 'register', params: { username: form.username, password: form.password } })"
               color="green"
               class="mr-2 mb-2 mb-sm-0 wide"
             >
               <v-icon left>$wallet</v-icon>
               New Account
+            </v-btn>
+            <v-btn
+              @click="lnurlAuth"
+              color="secondary"
+              class="mr-2 mb-2 mb-sm-0 wide"
+            >
+              <qrcode class="mr-1" />
+              LNURL Auth
             </v-btn>
           </v-form>
         </v-card-text>

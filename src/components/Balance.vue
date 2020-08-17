@@ -81,7 +81,7 @@ export default {
       return [
         ...new Set([
           ...arr,
-          ...this.user.accounts.filter(a => !a.hide)
+          ...this.user.accounts.filter(a => !a.hide && a.pubkey === this.user.account.pubkey)
             .map(a => a.ticker)
             .filter(a => a !== this.user.account.ticker),
         ]),

@@ -63,9 +63,9 @@ export default {
       this.$emit('currency', c);
       this.display = c;
 
-      let account = this.user.accounts.find(a => a.ticker === c);
+      let account = this.user.accounts.find(a => a.ticker === c && a.pubkey === this.user.account.pubkey);
       let currency = this.user.currencies.find(cr => cr === c);
-      let btc = this.user.accounts.find(a => a.ticker === BTC);
+      let btc = this.user.accounts.find(a => a.asset === BTC && a.pubkey === this.user.account.pubkey);
 
       if (account) {
         await this.shiftAccount(account.id);

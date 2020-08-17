@@ -8,7 +8,7 @@
       >coin<span class="yellow--text">os</span></v-toolbar-title
     >
     <v-spacer></v-spacer>
-    <v-menu class="ml-2" v-if="user && user.address && user.username" offset-y nudge-bottom="1">
+    <v-menu class="ml-2" v-if="user && user.id" offset-y nudge-bottom="1">
       <template v-slot:activator="{ on }">
         <v-btn v-on="on">
           <v-avatar class="mr-2" v-if="user.pic" size="30">
@@ -88,7 +88,7 @@ export default {
   methods: {
     generateBlock: call('generateBlock'), 
     goHome() {
-      if (this.user && this.user.address) this.$go('/home');
+      if (this.user && this.user.id) this.$go('/home');
       else this.$go('/');
     },
   },

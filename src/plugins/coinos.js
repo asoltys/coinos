@@ -1,5 +1,6 @@
 import format from '../format';
 import { networks } from 'bitcoinjs-lib';
+import { networks as lqnetworks } from 'liquidjs-lib';
 
 const Coinos = {
   install(Vue, options) {
@@ -18,6 +19,11 @@ const Coinos = {
         process.env.NODE_ENV === 'production'
           ? networks['bitcoin']
           : networks['regtest']),
+      (Vue.prototype.$prod = process.env.NODE_ENV === 'production'),
+      (Vue.prototype.$lqnetwork =
+        process.env.NODE_ENV === 'production'
+          ? lqnetworks['liquid']
+          : lqnetworks['regtest']),
       (Vue.prototype.$prod = process.env.NODE_ENV === 'production');
   },
 };
