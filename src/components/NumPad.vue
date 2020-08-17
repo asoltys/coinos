@@ -93,6 +93,7 @@ export default {
 
   computed: {
     decimals() {
+      if (this.user.currencies.includes(this.currency)) return 2;
       if (this.currency === 'SAT') return 0;
       let account = this.user.accounts.find(a => a.ticker === this.currency);
       if (account) return account.precision;

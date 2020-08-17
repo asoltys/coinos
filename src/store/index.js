@@ -574,6 +574,7 @@ export default new Vuex.Store({
 
     async setCurrency({ commit, dispatch, getters, state }, currency) {
       const { invoice, rates, user } = state;
+      if (user.currency === currency) return;
       if (!(user.currencies.includes(currency) && rates[currency])) return;
       const rate = rates[currency];
 
