@@ -846,7 +846,7 @@ export default new Vuex.Store({
     async issueAsset({ commit, dispatch }, asset) {
       try {
         await Vue.axios.post('/assets', asset);
-        go('/assets');
+        go('/wallets');
       } catch (e) {
         commit('error', e.response ? e.response.data : e.message);
       }
@@ -856,7 +856,7 @@ export default new Vuex.Store({
       try {
         await Vue.axios.post('/assets/register', { asset });
         dispatch('snack', 'Successfully registered asset');
-        go('/assets');
+        go('/wallets');
       } catch (e) {
         commit('error', e.response ? e.response.data : e.message);
       }
@@ -921,7 +921,7 @@ export default new Vuex.Store({
 
             let psbt, network;
 
-            if (user.account.name.includes('Liquid')) {
+            if (user.account.ticker === 'LBTC') {
               psbt = lqPsbt.fromBase64(tx);
               network = this._vm.$lqnetwork;
             } else {

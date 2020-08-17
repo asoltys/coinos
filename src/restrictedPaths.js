@@ -1,7 +1,6 @@
 export default [
 '/',
 '/asset',
-'/assets',
 '/decrypt',
 '/home',
 '/logout',
@@ -14,5 +13,6 @@ export default [
 '/text',
 '/pay',
 '/propose',
+'/wallets',
 '/withdraw',
 ];
