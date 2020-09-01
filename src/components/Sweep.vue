@@ -104,6 +104,7 @@ export default {
     },
     ecpair: sync('ecpair'),
     error: sync('error'),
+    invoice: get('invoice'),
     payment: get('payment'),
     rate: get('rate'),
     user: get('user'),
@@ -111,8 +112,12 @@ export default {
   },
   methods: {
     async self() {
-      this.to = await this.getNewAddress();
+      await this.addInvoice({ method: 'bitcoin', user: this.user });
+      this.$nextTick(() => {
+        this.to = this.invoice.address;
+      });
     },
+    addInvoice: call('addInvoice'),
     getNewAddress: call('getNewAddress'),
     buildSweepTx: call('buildSweepTx'),
     clearPayment: call('clearPayment'),
