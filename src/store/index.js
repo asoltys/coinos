@@ -507,7 +507,8 @@ export default new Vuex.Store({
         addressTypes.push(type);
       }
 
-      const { method } = invoice;
+      let { method } = invoice;
+      if (!method) method = 'bitcoin';
       let address;
 
       if (user.account.pubkey) {
@@ -1489,8 +1490,13 @@ export default new Vuex.Store({
         try {
           const { data: params } = await Vue.axios.get(`/decode?text=${text}`);
           if (params.status === 'ERROR') {
-            let json = params.reason.replace(/.*{/, '{');
-            return commit('error', JSON.parse(json).reason);
+            let { reason } = params;
+            try {
+              ({ reason } = JSON.parse(reason.replace(/.*{/, '{')));
+            } catch { /**/ }
+
+            commit('loading', false);
+            return commit('error', reason);
           }
 
           let { seed } = getters;
