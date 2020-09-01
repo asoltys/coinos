@@ -13,7 +13,7 @@
               {{ user.currency }}
             </div>
           </div>
-          <div class="red--text" v-if="pending">
+          <div class="red--text" v-if="pending > 0">
             <span class="display-1 font-weight-black"
               >{{ $format(pending) }}
             </span>
@@ -158,7 +158,7 @@ export default {
       },
     } = await this.axios.get(`/electrs/address/${address}`);
     this.balance = funded - spent;
-    this.pending = pspent - pfunded;
+    this.pending = pfunded - pspent;
     this.loading = false;
   },
 };
