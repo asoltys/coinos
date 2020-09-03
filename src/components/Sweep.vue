@@ -62,6 +62,7 @@
         @edit="editing = true"
         @feeRate="buildSweepTx(address)"
         :max="balance"
+        :key="payment.address"
       />
       <v-btn v-if="!editing" color="green" @click="submit">
         <v-icon left>$send</v-icon><span>Sweep</span>
@@ -90,6 +91,7 @@ export default {
       address: '',
       balance: 0,
       pending: 0,
+      poll: null,
       editing: false,
       loading: true,
       show: false,
@@ -129,6 +131,28 @@ export default {
       this.editing = false;
       this.buildSweepTx(this.address);
     },
+    async getBalance() {
+      let {
+        data: {
+          chain_stats: { funded_txo_sum: funded, spent_txo_sum: spent },
+          mempool_stats: { funded_txo_sum: pfunded, spent_txo_sum: pspent },
+        },
+      } = await this.axios.get(`/electrs/address/${this.address}`);
+      this.pending = pfunded - pspent;
+      this.balance = funded - spent;
+      if (this.pending < 0) this.balance += this.pending;
+    },
+    init() {
+      this.to = '';
+      let { publicKey: pubkey } = this.ecpair;
+      let { address } = payments.p2wpkh({ pubkey, network: this.$network });
+      this.address = address;
+
+      this.getBalance();
+      if (!this.poll) {
+        this.poll = setInterval(this.getBalance, 2000);
+      }
+    },
     async paste() {
       this.to = await navigator.clipboard.readText();
     },
@@ -138,6 +162,9 @@ export default {
     },
   },
   watch: {
+    payment(n, o) {
+      if (o.sent && !n.sent) this.init();
+    },
     to(v) {
       if (validate(v)) {
         this.payment.address = v;
@@ -145,20 +172,13 @@ export default {
       }
     },
   },
+  beforeDestroy() {
+    clearInterval(this.poll);
+  },
   async mounted() {
     if (!this.ecpair || !this.ecpair.publicKey) return this.$go('/send');
     await this.clearPayment();
-    let { publicKey: pubkey } = this.ecpair;
-    let { address } = payments.p2wpkh({ pubkey, network: this.$network });
-    this.address = address;
-    let {
-      data: {
-        chain_stats: { funded_txo_sum: funded, spent_txo_sum: spent },
-        mempool_stats: { funded_txo_sum: pfunded, spent_txo_sum: pspent },
-      },
-    } = await this.axios.get(`/electrs/address/${address}`);
-    this.balance = funded - spent;
-    this.pending = pfunded - pspent;
+    this.init();
     this.loading = false;
   },
 };

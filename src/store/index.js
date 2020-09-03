@@ -1083,7 +1083,6 @@ export default new Vuex.Store({
         payment.sent = true;
         payment.rate = rate;
         payment.currency = user.currency;
-        payment.amount += payment.fee;
       } catch (e) {
         commit('error', e.response ? e.response.data : e.message);
       }
