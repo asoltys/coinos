@@ -218,6 +218,7 @@ export default new Vuex.Store({
             try {
               await dispatch('setupSocket');
               failures = 0;
+              if (getters.error.startsWith('Failed')) commit('error', null);
             } catch (e) {
               if (failures > 5)
                 commit(
