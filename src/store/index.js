@@ -220,21 +220,11 @@ export default new Vuex.Store({
           (getters.socket && getters.socket.readyState === 1)
         )
       ) {
-        let failures = 0;
         try {
           const socketPoll = async () => {
             try {
               await dispatch('setupSocket');
-              failures = 0;
-              if (getters.error.startsWith('Failed')) commit('error', null);
-            } catch (e) {
-              if (failures > 5)
-                commit(
-                  'error',
-                  'Failed to establish socket connection to server'
-                );
-              else failures++;
-            }
+            } catch (e) {}
 
             commit('poll', setTimeout(socketPoll, 5000));
           };

@@ -10,11 +10,10 @@
       />
       <div class="d-flex">
         <v-btn
-          class="ml-auto black--text wide"
-          color="primary"
+          class="ml-auto wide"
           @click="sendToUser"
         >
-          <v-icon left>$search</v-icon>
+          <v-icon left color="primary">$search</v-icon>
           Find User
         </v-btn>
       </div>

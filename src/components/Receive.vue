@@ -132,7 +132,8 @@ export default {
       this.showingMemo = true;
       this.$nextTick(() => {
         this.$refs.memo.focus();
-        this.$vuetify.goTo(this.$refs.memo, { offset: 15 });
+        setTimeout(() =>
+        this.$vuetify.goTo(this.$refs.memo, { offset: 15 }), 100);
       });
     },
     addInvoice: call('addInvoice'),

@@ -152,12 +152,12 @@
                   :readonly="a.asset === BTC"
                 />
                 <div class="text-right">
-                  <v-btn type="submit" class="mr-1">
+                  <v-btn type="submit" class="mr-1 mb-1 mb-sm-0 wide">
                     <v-icon left class="yellow--text">$check</v-icon>
                     <span>save</span>
                   </v-btn>
                   <v-btn
-                    class="mr-1"
+                    class="mr-1 mb-1 mb-sm-0 wide"
                     @click.prevent="archive(a)"
                     v-if="a.ticker !== 'BTC'"
                   >
@@ -166,7 +166,7 @@
                   </v-btn>
                   <v-btn
                     v-if="!assets[a.asset].registered && a.contract"
-                    class="mr-1"
+                    class="mr-1 wide"
                     @click.prevent="startRegistering(a.asset)"
                   >
                     <v-icon left>$assignment</v-icon>
@@ -181,18 +181,18 @@
     </div>
     <div class="text-center">
     <v-btn
-      class="mx-auto mb-2 mr-2"
+      class="mx-auto mb-2 mr-2 wide"
       @click="$go('/asset')"
     >
-      <v-icon color="yellow">$add</v-icon>
+      <v-icon left color="yellow">$add</v-icon>
       <span>Issue New Asset</span>
     </v-btn>
     <v-btn
       v-if="!showArchived && user.accounts.filter(a => a.hide).length"
-      class="mx-auto mb-2"
+      class="mx-auto mb-2 wide"
       @click="showArchived = true"
     >
-      <v-icon>$archive</v-icon>
+      <v-icon left>$archive</v-icon>
       <span>Show Archived</span>
     </v-btn>
     </div>

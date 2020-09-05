@@ -6,11 +6,11 @@
     :timeout="timeout"
     fixed
     top
-    color="black"
+    color="white"
   >
     <template v-slot:action="{ attrs }">
-      <v-btn color="error" text v-bind="attrs" icon @click="open = false">
-        <v-icon>$cancel</v-icon>
+      <v-btn text v-bind="attrs" icon @click="open = false">
+        <v-icon color="secondary">$cancel</v-icon>
       </v-btn>
     </template>
     <div class="d-flex">
@@ -18,8 +18,8 @@
         <v-icon v-if="type === 'error'" color="error" left>$alert</v-icon>
         <v-icon v-else color="yellow" left>$info</v-icon>
       </div>
-      <div>
-        <b>{{ text }}</b>
+      <div class="my-auto">
+        <b class="black--text">{{ text }}</b>
       </div>
     </div>
   </v-snackbar>

@@ -12,12 +12,10 @@
       />
       <div class="d-flex" v-if="button">
         <v-btn
-          class="black--text flex-grow-1"
-          color="primary"
-          dark
+          class="flex-grow-1"
           @click="done"
         >
-          <v-icon left>$check</v-icon><span>Set Amount</span>
+          <v-icon left color="yellow">$check</v-icon><span>Set Amount</span>
         </v-btn>
       </div>
     </div>

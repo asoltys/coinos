@@ -37,8 +37,9 @@
         <span>None</span>
       </v-btn>
       <div class="text-center">
-        <v-btn class="mb-2 black--text ok" color="yellow" @click="done">
-          <span>Ok</span>
+        <v-btn class="mb-2 ok" @click="done">
+          <v-icon left color="primary">$check</v-icon>
+          <span>Done</span>
         </v-btn>
       </div>
     </div>
