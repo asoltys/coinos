@@ -9,10 +9,6 @@
           <v-icon left color="pink">$gift</v-icon
           ><span>Create Voucher</span>
         </v-btn>
-        <v-btn dark @click="submit" class="flex-grow-1 mb-2 mr-1 wide">
-          <flash fillColor="yellow" />
-          <span>LNURL Withdrawal</span>
-        </v-btn>
       </div>
     </div>
   </div>
@@ -22,10 +18,9 @@
 import { get, call, sync } from 'vuex-pathify';
 import Amount from './Amount';
 import Lnurl from './Lnurl';
-import Flash from 'vue-material-design-icons/Flash';
 
 export default {
-  components: { Flash, Amount, Lnurl },
+  components: { Amount, Lnurl },
   data() {
     return {
       min: 1,
@@ -40,7 +35,7 @@ export default {
       this.payment.amount = this.amount;
       this.payment.method = 'url';
       this.payment.recipient = { username: null };
-      this.sendInternal();
+      await this.sendInternal();
     },
     async submit() {
       this.error = null;

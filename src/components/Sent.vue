@@ -53,37 +53,16 @@
         </v-btn>
       </div>
     </v-card>
-    <v-card v-if="payment.redeemcode" class="mb-2">
-      <v-card-text class="title white--text text-center">
-        <div class="mb-2">
-        Redeem code <span class="yellow--text" @click="redeem" style="cursor: pointer">{{ payment.redeemcode }}</span>
-        </div>
-        <qr :text="redeemUrl" />
-        <v-btn @click="redeem" class="mr-1">
-          <v-icon left>$open</v-icon>
-          Open
-        </v-btn>
-        <v-btn @click="copy(redeemUrl)" class="mr-1">
-          <v-icon left>$copy</v-icon>
-          Copy
-        </v-btn>
-      </v-card-text>
-    </v-card>
   </div>
 </template>
 
 <script>
 import { get, call } from 'vuex-pathify';
 import Copy from '../mixins/Copy';
-import Qr from './Qr';
 
 export default {
-  components: { Qr },
   mixins: [Copy],
   computed: {
-    redeemUrl() {
-      return `${window.location.protocol}//${window.location.host}/redeem/${this.payment.redeemcode}`;
-    },
     fee() {
       return this.$format(this.payment.fee || 0);
     },
@@ -106,9 +85,6 @@ export default {
   },
 
   methods: {
-    redeem() {
-      window.location.href = this.redeemUrl;
-    },
     clearPayment: call('clearPayment'),
 
     fiat(n) {

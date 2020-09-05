@@ -81,6 +81,7 @@ export default {
   },
 
   methods: {
+    getAssets: call('getAssets'),
     refresh() {
       window.location.reload(true);
     },
@@ -98,6 +99,7 @@ export default {
   },
 
   mounted() {
+    this.getAssets();
     this.setupNfc();
   },
 };

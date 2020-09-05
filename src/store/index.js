@@ -208,8 +208,11 @@ export default new Vuex.Store({
       const { path } = router.currentRoute;
 
       if (!(publicPaths.includes(path) || token || path.includes('login'))) {
-        await dispatch('createUser', { username: `Guest-${v4().substr(0, 12)}`, password: '' });
-      } 
+        await dispatch('createUser', {
+          username: `Guest-${v4().substr(0, 12)}`,
+          password: '',
+        });
+      }
 
       if (
         !(
@@ -270,8 +273,6 @@ export default new Vuex.Store({
     },
 
     async getAssets({ commit, getters, dispatch }) {
-      if (getters.assets) return;
-      commit('loading', true);
       try {
         const { data: assets } = await Vue.axios.get('/assets');
         commit('assets', assets);
@@ -279,7 +280,6 @@ export default new Vuex.Store({
         l(e);
         commit('error', 'Problem fetching assets');
       }
-      commit('loading', false);
     },
 
     async getBalances({ commit, getters, dispatch }) {
@@ -421,19 +421,11 @@ export default new Vuex.Store({
           dispatch('addLinkingKey', key);
         }
 
-        if (
-          !user.accounts.find(
-            a => a.ticker === 'BTC' && a.pubkey
-          )
-        ) {
+        if (!user.accounts.find(a => a.ticker === 'BTC' && a.pubkey)) {
           dispatch('addBitcoinAccount');
         }
 
-        if (
-          !user.accounts.find(
-            a => a.ticker === 'LBTC' && a.pubkey
-          )
-        ) {
+        if (!user.accounts.find(a => a.ticker === 'LBTC' && a.pubkey)) {
           dispatch('addLiquidAccount');
         }
 
@@ -787,16 +779,6 @@ export default new Vuex.Store({
             case 'login':
               if (data) {
                 commit('user', data);
-
-                data.accounts.map(({ asset, name, precision, ticker }) => {
-                  getters.assets[asset] = {
-                    ...getters.assets[asset],
-                    name,
-                    precision,
-                    ticker,
-                  };
-                });
-
                 resolve();
               } else {
                 dispatch('logout');
@@ -998,14 +980,15 @@ export default new Vuex.Store({
           throw new Error('Amount must be greater than zero');
         }
 
-        let res = await Vue.axios.post('/send', {
+        let { data: payment } = await Vue.axios.post('/send', {
           amount,
           asset,
           memo,
           username,
         });
-        res.data.sent = true;
-        commit('payment', res.data);
+        payment.sent = true;
+        commit('payment', payment);
+        if (payment.redeemcode) go(`/redeem/${payment.redeemcode}`);
       } catch (e) {
         await dispatch('clearPayment');
         state.payment.method = method;
@@ -1498,7 +1481,9 @@ export default new Vuex.Store({
             let { reason } = params;
             try {
               ({ reason } = JSON.parse(reason.replace(/.*{/, '{')));
-            } catch { /**/ }
+            } catch {
+              /**/
+            }
 
             commit('loading', false);
             return commit('error', reason);
@@ -1724,7 +1709,7 @@ export default new Vuex.Store({
       if (index > -1) s.user.accounts[index] = v;
       else s.user.accounts.unshift(v);
       if (s.user.account.id === v.id) s.user.account = v;
-      s.assets[v.asset] = v;
+      if (s.assets) s.assets[v.asset] = v;
       s.user = JSON.parse(JSON.stringify(s.user));
     },
     addKey(s, v) {

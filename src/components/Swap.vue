@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-progress-linear v-if="loading" indeterminate></v-progress-linear>
+    <v-progress-linear v-if="loading" indeterminate />
     <v-card v-else-if="proposal">
       <v-card-text>
         <v-card color="secondary" class="mb-2">
@@ -67,8 +67,8 @@
         </v-card>
       </div>
       <div class="d-flex">
-        <v-btn color="green" @click="submit" class="flex-grow-1 wide">
-          <v-icon left>$assignment</v-icon><span>Generate Proposal</span>
+        <v-btn @click="submit" class="flex-grow-1 wide">
+          <v-icon left color="green">$send</v-icon><span>Go</span>
         </v-btn>
       </div>
     </div>
@@ -88,6 +88,7 @@ export default {
 
   data() {
     return {
+      loading: false,
       showcode: false,
       a1: null,
       a2: null,
@@ -98,7 +99,6 @@ export default {
 
   computed: {
     assets: get('assets'),
-    loading: get('loading'),
     all() {
       return Object.keys(this.assets)
         .map(asset => ({
@@ -119,6 +119,7 @@ export default {
 
   methods: {
     ticker(asset) {
+      if (asset === process.env.VUE_APP_LBTC) return 'BTC';
       return this.assets[asset] ? this.assets[asset].ticker : '';
     },
     publish: call('publish'),
@@ -143,7 +144,6 @@ export default {
       }
     },
 
-    getAssets: call('getAssets'),
     propose: call('propose'),
 
     async submit() {
@@ -155,7 +155,8 @@ export default {
   },
 
   async mounted() {
-    await this.getAssets();
+    this.loading = true;
+    this.loading = false;
     this.proposal = null;
   },
 };
