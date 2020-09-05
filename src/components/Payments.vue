@@ -64,7 +64,8 @@
                 }"
               >
                 <v-chip v-if="!confirmed" color="red" class="mr-2">
-                  <v-icon left>$alert</v-icon>
+                  <v-icon left class="d-none d-sm-inline">$alert</v-icon>
+                  <v-icon class="d-sm-none">$alert</v-icon>
                   <span class="d-none d-sm-inline" title="UNCONFIRMED"
                     >UNCONFIRMED</span
                   >
