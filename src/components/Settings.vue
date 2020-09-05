@@ -194,7 +194,6 @@ import FullScreen from '../mixins/FullScreen';
 import LinkingKeys from './LinkingKeys';
 import Seed from './Seed';
 import Window from '../window';
-import goTo from 'vuetify/es5/services/goto';
 
 export default {
   components: { SetPin, PincodeInput, Seed, LinkingKeys },
@@ -260,7 +259,7 @@ export default {
     setupNotifications: call('setupNotifications'),
     startScanning: call('startScanning'),
     scroll(e) {
-      goTo.scrollTo(e.target);
+      this.$vuetify.goTo.scrollTo(e.target, { offset: 15 });
     },
     clear() {
       this.tokenKey += 'a';
@@ -307,7 +306,7 @@ export default {
       if (this.changingPassword)
         this.$nextTick(() => {
           this.$refs.password.focus();
-          goTo(this.$refs.password.$refs.input);
+          this.$vuetify.goTo(this.$refs.password.$refs.input, { offset: 15 });
         });
     },
     pin(pin) {

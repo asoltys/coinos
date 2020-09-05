@@ -6,6 +6,9 @@
       <v-btn class="mr-1 mb-1 mb-sm-0 wide" @click="$go('/settings')">
         <v-icon left color="yellow">$settings</v-icon><span>Setup Account</span>
       </v-btn>
+      <v-btn class="mr-1 mb-1 mb-sm-0 wide" @click="$go('/about')">
+        <v-icon left color="blue">$info</v-icon><span>About Coinos</span>
+      </v-btn>
       <v-btn class="mr-1 wide" @click="$go('/logout')">
         <v-icon left color="pink">$power</v-icon><span>Sign Out</span>
       </v-btn>

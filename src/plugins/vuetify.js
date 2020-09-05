@@ -44,6 +44,7 @@ import Send from 'vue-material-design-icons/Send';
 import Settings from 'vue-material-design-icons/Settings';
 import SwapHorizontal from 'vue-material-design-icons/SwapHorizontal';
 import Sync from 'vue-material-design-icons/Sync';
+import Tor from 'vue-material-design-icons/Tor';
 import Undo from 'vue-material-design-icons/Undo';
 import UnfoldLess from 'vue-material-design-icons/UnfoldLessHorizontal';
 import UnfoldMore from 'vue-material-design-icons/UnfoldMoreHorizontal';
@@ -108,6 +109,7 @@ export default new Vuetify({
       'settings': { component: Settings},
       'swap': { component: SwapHorizontal },
       'sync': { component: Sync },
+      'tor': { component: Tor },
       'undo': { component: Undo },
       'unfold_less': { component: UnfoldLess },
       'unfold_more': { component: UnfoldMore },
