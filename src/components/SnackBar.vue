@@ -1,30 +1,60 @@
 <template>
-  <v-snackbar class="snack" v-model="snack" :timeout="5000" top color="yellow" absolute>
-    <v-icon color="black" left>$info</v-icon>
-    <b v-if="message" class="black--text">{{ message }}</b>
+  <v-snackbar
+    v-if="text"
+    class="snack elevation-4"
+    v-model="open"
+    :timeout="timeout"
+    fixed
+    top
+    color="black"
+  >
+    <template v-slot:action="{ attrs }">
+      <v-btn color="error" text v-bind="attrs" icon @click="open = false">
+        <v-icon>$cancel</v-icon>
+      </v-btn>
+    </template>
+    <div class="d-flex">
+      <div class="my-auto">
+        <v-icon v-if="type === 'error'" color="error" left>$alert</v-icon>
+        <v-icon v-else color="yellow" left>$info</v-icon>
+      </div>
+      <div>
+        <b>{{ text }}</b>
+      </div>
+    </div>
   </v-snackbar>
 </template>
 
 <script>
-
+import { get } from 'vuex-pathify';
 export default {
-  computed: {
-    message: {
-      get() {
-        return this.$store.getters.snack;
-      },
-      set(v) {
-        this.$store.commit('snack', v);
-      },
+  props: {
+    timeout: {
+      type: Number,
+      default: null,
     },
-    snack: {
-      get() {
-        return this.message;
-      },
-      set(v) {
-        if (!v) this.message = v;
-      },
+    type: {
+      type: String,
+      default: 'info',
+    },
+    text: {
+      type: String,
+      default: '',
+    },
+  },
+  data: () => ({ open: false }),
+  watch: {
+    open(v) {
+      if (!v) this.$emit('done');
+    },
+    text() {
+      this.open = true;
     },
   },
 };
 </script>
+
+<style lang="stylus" scoped>
+.snack
+  max-width 100% !important
+</style>

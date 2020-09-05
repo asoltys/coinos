@@ -1,10 +1,12 @@
 <template>
   <v-app id="app">
     <top-bar />
-    <snack-bar />
+    <snack-bar type="info" :text="snack" :timeout="1500" @done="snack = null" />
+    <snack-bar type="error" :text="error" @done="error = null" />
     <v-main style="background: #333">
       <v-container class="mr-3" style="margin-bottom: 50px !important">
         <v-alert
+          border="top"
           class="mb-2 black--text"
           v-if="versionMismatch"
           color="primary"
@@ -31,14 +33,6 @@
             </v-card-text>
           </v-card>
         </v-alert>
-        <v-alert
-          class="mb-2"
-          v-if="error"
-          color="error"
-          dismissible
-          transition="scale-transition"
-          >{{ error }}</v-alert
-        >
         <two-fa />
         <password />
         <router-view v-if="!initializing" :key="$route.path" />
@@ -68,6 +62,7 @@ export default {
   },
 
   computed: {
+    snack: sync('snack'),
     initializing: get('initializing'),
     socket: get('socket'),
     user: sync('user'),

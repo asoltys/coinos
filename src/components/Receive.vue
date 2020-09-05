@@ -81,6 +81,7 @@ import Request from './Request';
 import Flash from 'vue-material-design-icons/Flash';
 import Water from 'vue-material-design-icons/Water';
 import { get, call, sync } from 'vuex-pathify';
+import goTo from 'vuetify/es5/services/goto';
 
 export default {
   components: { Balance, Flash, Numpad, Received, Request, Water },
@@ -132,6 +133,7 @@ export default {
       this.showingMemo = true;
       this.$nextTick(() => {
         this.$refs.memo.focus();
+        goTo(this.$refs.memo);
       });
     },
     addInvoice: call('addInvoice'),

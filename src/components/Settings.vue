@@ -191,10 +191,10 @@ import SetPin from './SetPin';
 import qr from 'qrcode';
 import PincodeInput from 'vue-pincode-input';
 import FullScreen from '../mixins/FullScreen';
-import VueScrollTo from 'vue-scrollto';
 import LinkingKeys from './LinkingKeys';
 import Seed from './Seed';
 import Window from '../window';
+import goTo from 'vuetify/es5/services/goto';
 
 export default {
   components: { SetPin, PincodeInput, Seed, LinkingKeys },
@@ -260,7 +260,7 @@ export default {
     setupNotifications: call('setupNotifications'),
     startScanning: call('startScanning'),
     scroll(e) {
-      VueScrollTo.scrollTo(e.target, 100, { offset: -15 });
+      goTo.scrollTo(e.target);
     },
     clear() {
       this.tokenKey += 'a';
@@ -307,9 +307,7 @@ export default {
       if (this.changingPassword)
         this.$nextTick(() => {
           this.$refs.password.focus();
-          VueScrollTo.scrollTo(this.$refs.password.$refs.input, 100, {
-            offset: -15,
-          });
+          goTo(this.$refs.password.$refs.input);
         });
     },
     pin(pin) {
