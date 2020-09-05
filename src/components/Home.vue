@@ -1,23 +1,23 @@
 <template>
   <div v-if="user.username" class="text-center">
     <balance />
-    <div
-      v-if="user.account.ticker === 'BTC' && !(user.account.balance || user.account.pending)"
-      class="mx-auto mb-2"
-    >
-      <div class="headline mb-2">Welcome! Your account is empty</div>
-      <v-btn class="mr-1 wide" @click="$router.push('/receive')">
-        <v-icon left>$download</v-icon><span>Receive Funds</span>
-      </v-btn>
-    </div>
     <payments class="mb-2" />
+    <div class="mt-4">
+    <v-btn
+      v-if="!user.password"
+      class="mr-1 mb-1 mb-sm-0 wide"
+      @click="$go('/settings')"
+    >
+      <v-icon left color="yellow">$settings</v-icon><span>Setup Account</span>
+    </v-btn>
     <v-btn
       v-if="!user.password"
       class="mr-1 wide"
-      @click="$router.push('/settings')"
+      @click="$go('/logout')"
     >
-      <v-icon left color="yellow">$alert</v-icon><span>Setup Account</span>
+      <v-icon left color="pink">$power</v-icon><span>Sign Out</span>
     </v-btn>
+    </div>
   </div>
 </template>
 

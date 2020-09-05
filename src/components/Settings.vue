@@ -139,6 +139,7 @@
                 v-bind="attrs"
                 :input-value="selected"
                 close
+                close-icon="$cancel"
                 @click="select"
                 @click:close="remove(item)"
               >

@@ -202,9 +202,14 @@ export default new Vuex.Store({
       }
 
       if (token === 'null') token = null;
+
       commit('token', token);
 
       const { path } = router.currentRoute;
+
+      if (!(publicPaths.includes(path) || token || path.includes('login'))) {
+        await dispatch('createUser', { username: `Guest-${v4().substr(0, 12)}`, password: '' });
+      } 
 
       if (
         !(

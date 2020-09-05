@@ -1,5 +1,6 @@
 <template>
   <div>
+    {{ jwt }}
     <v-progress-linear v-if="loading" indeterminate />
     <div v-else>
       <div class="text-center">
@@ -88,6 +89,10 @@ export default {
   mixins: [Copy],
 
   props: {
+    jwt: {
+      type: String,
+      default: null
+    },
     logout: {
       type: Boolean,
       default: false,
@@ -164,6 +169,10 @@ export default {
   },
 
   mounted() {
+    if (this.jwt) {
+      this.token = this.jwt;
+      this.$go('/home');
+    }
     if (window.innerWidth > 600 && this.$refs.username) {
       this.$refs.username.focus();
     }

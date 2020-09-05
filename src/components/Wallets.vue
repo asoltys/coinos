@@ -2,9 +2,21 @@
   <div>
     <div v-for="{ accounts, title } in accountTypes" :key="title">
       <h1 v-if="accounts.length">{{ title }}</h1>
-      <v-expansion-panels accordion class="mb-2">
-        <v-expansion-panel v-for="a in accounts" :key="a.id">
-          <v-expansion-panel-header ripple class="d-flex" expand-icon="">
+      <v-expansion-panels accordion class="mb-2" v-model="panels[title]" multiple>
+        <v-expansion-panel v-for="(a, i) in accounts" :key="a.id">
+          <v-expansion-panel-header
+            ripple
+            class="d-flex"
+            expand-icon=""
+            @click.prevent.stop="select(a)"
+          >
+              <v-btn
+                @click.prevent.stop="edit(i, title)"
+                class="flex-grow-0 ml-auto my-auto elevation-1 mr-1"
+                icon
+              >
+                <v-icon title="Edit" color="yellow">$pencil</v-icon>
+              </v-btn>
             <div
               class="asset d-flex flex-grow-1"
               :class="{
@@ -14,12 +26,12 @@
             >
               <v-icon
                 v-if="assets[a.asset].registered"
-                class="mr-1"
+                class="mr-1 my-auto"
                 color="yellow"
                 title="Registered"
                 >$assignment</v-icon
               >
-              <div class="mb-1">
+              <div>
                 {{ a.name }}
                 <v-btn
                   class="toggle ml-1"
@@ -47,13 +59,6 @@
                   >({{ $format(a.pending, a.precision) }} pending)</span
                 >
               </div>
-              <v-btn
-                @click.prevent.stop="select(a)"
-                class="flex-grow-0 ml-auto my-auto black--text"
-                color="yellow"
-              >
-                <v-icon title="Go">$forward</v-icon>
-              </v-btn>
             </div>
           </v-expansion-panel-header>
           <v-expansion-panel-content class="text-left">
@@ -174,12 +179,12 @@
         </v-expansion-panel>
       </v-expansion-panels>
     </div>
+    <div class="text-center">
     <v-btn
-      class="mx-auto mb-2 black--text mr-2"
+      class="mx-auto mb-2 mr-2"
       @click="$go('/asset')"
-      color="yellow"
     >
-      <v-icon>$add</v-icon>
+      <v-icon color="yellow">$add</v-icon>
       <span>Issue New Asset</span>
     </v-btn>
     <v-btn
@@ -190,6 +195,7 @@
       <v-icon>$archive</v-icon>
       <span>Show Archived</span>
     </v-btn>
+    </div>
   </div>
 </template>
 
@@ -233,10 +239,22 @@ export default {
       showcode: false,
       BTC,
       registering: {},
+      panels: {
+        'Custodial': [],
+        'Non-Custodial': [],
+      }, 
       success: {},
     };
   },
   methods: {
+    edit(i, title) {
+      let index = this.panels[title].indexOf(i);
+      if (index > -1) {
+        this.panels[title].splice(index, 1);
+      } else {
+        this.panels[title].push(i);
+      }
+    },
     archive(a) {
       a.hide = !a.hide;
       this.updateAccount(a);

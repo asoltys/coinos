@@ -16,7 +16,7 @@
           </v-avatar>
           <v-icon v-else>$account</v-icon>
           <span class="truncate">{{
-            user.username
+            username
           }}
           </span>
         </v-btn>
@@ -28,18 +28,6 @@
           </v-list-item-action>
           <v-list-item-content>About</v-list-item-content>
         </v-list-item>
-        <v-list-item v-if="user && user.accounts" @click="$go('/wallets')">
-          <v-list-item-action>
-            <v-icon>$wallet</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>Wallets</v-list-item-content>
-        </v-list-item>
-        <v-list-item @click="$go('/swaps')">
-          <v-list-item-action>
-            <v-icon>$swap</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>Exchange</v-list-item-content>
-        </v-list-item>
         <v-list-item @click="$go('/settings')">
           <v-list-item-action>
             <v-icon>$settings</v-icon>
@@ -48,10 +36,11 @@
         </v-list-item>
         <v-list-item @click="$go('/logout')">
           <v-list-item-action>
-            <power-settings-icon title="Logout" />
+            <v-icon title="Logout">$power</v-icon>
           </v-list-item-action>
-          <v-list-item-content>Logout</v-list-item-content>
+          <v-list-item-content>Sign Out</v-list-item-content>
         </v-list-item>
+        <!--
         <v-list-item v-if="!$prod" @click="generateBlock('bitcoin')">
           <v-list-item-action>
             <v-icon>$sync</v-icon>
@@ -64,6 +53,7 @@
           </v-list-item-action>
           <v-list-item-content>Generate Liquid</v-list-item-content>
         </v-list-item>
+        -->
       </v-card>
     </v-menu>
     <v-btn icon v-else @click="$go('/about')">
@@ -73,12 +63,14 @@
 </template>
 
 <script>
-import PowerSettingsIcon from 'vue-material-design-icons/PowerSettings';
 import { call, get, sync } from 'vuex-pathify';
 
 export default {
-  components: { PowerSettingsIcon },
   computed: {
+    username() {
+      if (this.user.username.startsWith('Guest')) return 'Guest';
+      return this.user.username;
+    },
     accounts() {
       return ['BTC', ...this.user.accounts.map(a => a.asset)];
     },

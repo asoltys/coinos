@@ -1,13 +1,5 @@
 <template>
   <div v-if="user.id" class="mb-2 text-center no-print">
-    <v-btn
-      v-if="!$prod"
-      class="ml-1 black--text mb-1"
-      :color="custodial ? 'orange' : 'green'"
-      @click="toggleCustodial"
-    >
-      {{ custodial ? 'Custodial' : 'Non-Custodial' }}
-    </v-btn>
     <div class="d-flex">
       <div class="display-2 font-weight-black flex-grow-1 text-right mr-2">
         {{ $format(user.account.balance, precision) }}

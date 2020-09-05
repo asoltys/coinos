@@ -35,6 +35,8 @@ import Nfc from 'vue-material-design-icons/Nfc';
 import Note from 'vue-material-design-icons/Note';
 import OpenInNew from 'vue-material-design-icons/OpenInNew';
 import PackageDown from 'vue-material-design-icons/PackageDown';
+import Pencil from 'vue-material-design-icons/Pencil';
+import Power from 'vue-material-design-icons/Power';
 import Qrcode from 'vue-material-design-icons/Qrcode';
 import Refresh from 'vue-material-design-icons/Refresh';
 import Search from 'vue-material-design-icons/AccountSearch';
@@ -97,6 +99,8 @@ export default new Vuetify({
       'open': { component: OpenInNew },
       'archive': { component: PackageDown },
       'payments': { component: FormatLineWeight },
+      'pencil': { component: Pencil },
+      'power': { component: Power },
       'qrcode': { component: Qrcode },
       'refresh': { component: Refresh },
       'search': { component: Search },

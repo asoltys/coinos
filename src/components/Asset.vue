@@ -1,5 +1,5 @@
 <template>
-  <v-card class="pa-4" style="background: #333">
+  <v-card class="pa-4">
     <h1>Issue Asset</h1>
     <v-alert
       v-if="success"
@@ -32,10 +32,10 @@
         rows="1"
         auto-grow
       />
-      <v-text-field label="Domain" v-model="asset.domain" />
-      <v-text-field label="Ticker" v-model="asset.ticker" />
+      <v-text-field label="Domain (optional)" v-model="asset.domain" />
+      <v-text-field label="Ticker (optional)" v-model="asset.ticker" />
       <v-text-field
-        label="Precision"
+        label="Precision (0-8)"
         v-model="asset.precision"
         type="number"
         @input="e => limit(e)"
