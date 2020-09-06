@@ -16,6 +16,7 @@
     <div class="d-flex">
       <div class="my-auto">
         <v-icon v-if="type === 'error'" color="error" left>$alert</v-icon>
+        <v-icon v-else-if="type === 'success'" color="green" left>$check</v-icon>
         <v-icon v-else color="yellow" left>$info</v-icon>
       </div>
       <div class="my-auto">

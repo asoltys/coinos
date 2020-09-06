@@ -1,18 +1,6 @@
 <template>
   <v-card class="pa-4">
     <h1>Issue Asset</h1>
-    <v-alert
-      v-if="success"
-      class="mb-4"
-      color="success"
-      icon="$info"
-      v-model="success"
-      dismissible
-      transition="scale-transition"
-      dark
-    >
-      Settings saved successfully
-    </v-alert>
     <v-form @submit.prevent="submit">
       <v-text-field
         label="# of Asset Tokens"
@@ -59,7 +47,6 @@ export default {
 
   data() {
     return {
-      success: false,
       asset: {
         name: '',
         ticker: '',

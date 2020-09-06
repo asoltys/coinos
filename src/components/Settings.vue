@@ -1,15 +1,6 @@
 <template>
   <div>
     <v-progress-linear v-if="saving" indeterminate />
-    <v-alert
-      class="mb-4"
-      color="success"
-      icon="$info"
-      v-model="success"
-      dismissible
-      transition="scale-transition"
-      >Settings saved successfully</v-alert
-    >
     <v-card class="mb-2">
       <v-card-title>Security</v-card-title>
       <v-card-text>
@@ -185,7 +176,6 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
 import { get, call, sync } from 'vuex-pathify';
 import SetPin from './SetPin';
 import qr from 'qrcode';
@@ -194,6 +184,7 @@ import FullScreen from '../mixins/FullScreen';
 import LinkingKeys from './LinkingKeys';
 import Seed from './Seed';
 import Window from '../window';
+import goTo from 'vuetify/es5/services/goto';
 
 export default {
   components: { SetPin, PincodeInput, Seed, LinkingKeys },
@@ -208,7 +199,6 @@ export default {
       saving: false,
       searchInput: '',
       showPinDialog: false,
-      success: false,
       changingPassword: false,
       set2fa: false,
       initialized: false,
@@ -228,7 +218,10 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['error', 'fx', 'user']),
+    fx: get('fx'),
+    user: get('user'),
+    error: sync('error'),
+    success: sync('success'),
     nfcEnabled: sync('nfcEnabled'),
     noNfc: get('noNfc'),
     hasNfc() {
@@ -259,7 +252,7 @@ export default {
     setupNotifications: call('setupNotifications'),
     startScanning: call('startScanning'),
     scroll(e) {
-      this.$vuetify.goTo.scrollTo(e.target, { offset: 15 });
+      goTo.scrollTo(e.target, { offset: 15 });
     },
     clear() {
       this.tokenKey += 'a';
@@ -306,7 +299,7 @@ export default {
       if (this.changingPassword)
         this.$nextTick(() => {
           this.$refs.password.focus();
-          this.$vuetify.goTo(this.$refs.password.$refs.input, { offset: 15 });
+          goTo(this.$refs.password.$refs.input, { offset: 15 });
         });
     },
     pin(pin) {
@@ -320,18 +313,19 @@ export default {
         this.$nextTick(() => (this.saving = false));
 
         if (res) {
-          this.success = true;
           this.changingPassword = false;
           window.scrollTo(0, 0);
-          setTimeout(() => (this.success = false), 5000);
           this.$store.commit('error', '');
+          this.success = 'Settings saved successfully';
         }
       } else {
         this.$store.commit('error', "Passwords don't match");
       }
     },
 
-    ...mapActions(['updateUser', 'enable2fa', 'disable2fa']),
+    updateUser: call('updateUser'),
+    enable2fa: call('enable2fa'),
+    disable2fa: call('disable2fa'),
   },
 
   watch: {

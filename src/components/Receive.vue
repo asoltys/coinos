@@ -38,7 +38,10 @@
       </div>
       <div class="d-flex flex-wrap buttons">
         <v-btn
-          v-if="nodes.includes('bitcoin') && (!user.account.pubkey || user.account.ticker === 'BTC')"
+          v-if="
+            nodes.includes('bitcoin') &&
+              (!user.account.pubkey || user.account.ticker === 'BTC')
+          "
           class="flex-grow-1 mb-1 mr-1"
           @click="addInvoice({ method: 'bitcoin', user })"
           :disabled="!isBtc"
@@ -60,7 +63,10 @@
         </v-btn>
 
         <v-btn
-          v-if="nodes.includes('liquid') && (!user.account.pubkey || user.account.ticker === 'LBTC')"
+          v-if="
+            nodes.includes('liquid') &&
+              (!user.account.pubkey || user.account.ticker === 'LBTC')
+          "
           class="flex-grow-1 mr-0"
           @click="addInvoice({ method: 'liquid', user })"
           :style="buttonStyle"
@@ -81,6 +87,7 @@ import Request from './Request';
 import Flash from 'vue-material-design-icons/Flash';
 import Water from 'vue-material-design-icons/Water';
 import { get, call, sync } from 'vuex-pathify';
+import goTo from 'vuetify/es5/services/goto';
 
 export default {
   components: { Balance, Flash, Numpad, Received, Request, Water },
@@ -95,9 +102,9 @@ export default {
     buttonStyle() {
       let numButtons = this.user.account.pubkey ? 1 : this.nodes.length;
       return {
-        maxWidth: `${(
-          100 / (window.innerWidth < 600 ? 1 : numButtons)
-        ).toFixed(0)}%`,
+        maxWidth: `${(100 / (window.innerWidth < 600 ? 1 : numButtons)).toFixed(
+          0
+        )}%`,
       };
     },
     isBtc() {
@@ -110,7 +117,10 @@ export default {
         'SAT',
         'BTC',
         ...[
-          ...this.user.accounts.filter(a => !a.hide && a.pubkey === this.user.account.pubkey).map(a => a.ticker).filter(a => a !== 'BTC'),
+          ...this.user.accounts
+            .filter(a => !a.hide && a.pubkey === this.user.account.pubkey)
+            .map(a => a.ticker)
+            .filter(a => a !== 'BTC'),
         ].sort(),
         ...[...this.user.currencies].sort(),
       ];
@@ -132,8 +142,10 @@ export default {
       this.showingMemo = true;
       this.$nextTick(() => {
         this.$refs.memo.focus();
-        setTimeout(() =>
-        this.$vuetify.goTo(this.$refs.memo, { offset: 15 }), 100);
+        setTimeout(
+          () => goTo(this.$refs.memo, { offset: 15 }),
+          100
+        );
       });
     },
     addInvoice: call('addInvoice'),

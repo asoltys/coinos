@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import goTo from 'vuetify/es5/services/goto'
+import goTo from 'vuetify/es5/services/goto';
 
 const About = () =>
   import(
@@ -97,6 +97,11 @@ const Swaps = () =>
     /* webpackChunkName: "swaps" */
     '../components/Swaps'
   );
+const Wallet = () =>
+  import(
+    /* webpackChunkName: "wallet" */
+    '../components/Wallet'
+  );
 const Wallets = () =>
   import(
     /* webpackChunkName: "wallets" */
@@ -116,12 +121,12 @@ const routes = [
   { path: '/decrypt', component: Decrypt },
   { path: '/home', component: Home },
   { name: 'login', path: '/login/:jwt', component: Login, props: true },
-  { path: '/login', component: Login, props: { logout: false }},
+  { path: '/login', component: Login, props: { logout: false } },
   { path: '/logout', component: Login, props: { logout: true } },
   { path: '/payments', component: Payments },
   { path: '/receive', component: Receive },
   { path: '/redeem/:redeemcode', component: Redeem, props: true },
-  { path: '/register', name:'register', component: Register, props: true },
+  { path: '/register', name: 'register', component: Register, props: true },
   { path: '/scan', component: Scan },
   { name: 'send', path: '/send', component: Send, props: true },
   { path: '/settings', component: Settings },
@@ -130,6 +135,7 @@ const routes = [
   { path: '/pay', component: Pay },
   { path: '/propose', component: Swap },
   { path: '/swaps', component: Swaps },
+  { path: '/wallet', component: Wallet },
   { path: '/wallets', component: Wallets },
   { path: '/withdraw', component: Withdraw },
   { path: '/:username', component: User, props: true },
@@ -140,15 +146,15 @@ Vue.use(VueRouter);
 export default new VueRouter({
   mode: 'history',
   routes: routes,
-scrollBehavior: (to, from, savedPosition) => {
-    let scrollTo = 0
+  scrollBehavior: (to, from, savedPosition) => {
+    let scrollTo = 0;
 
     if (to.hash) {
-      scrollTo = to.hash
+      scrollTo = to.hash;
     } else if (savedPosition) {
-      scrollTo = savedPosition.y
+      scrollTo = savedPosition.y;
     }
 
-    return goTo(scrollTo)
+    return goTo(scrollTo);
   },
 });

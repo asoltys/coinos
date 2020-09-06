@@ -12,6 +12,7 @@ import Cancel from 'vue-material-design-icons/Close';
 import CellphoneAndroid from 'vue-material-design-icons/CellphoneAndroid';
 import Check from 'vue-material-design-icons/Check';
 import Clear from 'vue-material-design-icons/Close';
+import Cloud from 'vue-material-design-icons/Cloud';
 import ClipboardText from 'vue-material-design-icons/ClipboardText';
 import Code from 'vue-material-design-icons/CodeTags';
 import ContentCopy from 'vue-material-design-icons/ContentCopy';
@@ -19,6 +20,7 @@ import Delete from 'vue-material-design-icons/Delete';
 import Dialpad from 'vue-material-design-icons/Dialpad';
 import Download from 'vue-material-design-icons/Download';
 import Edit from 'vue-material-design-icons/FileDocumentEdit';
+import Eye from 'vue-material-design-icons/Eye';
 import Fire from 'vue-material-design-icons/Fire';
 import Snowflake from 'vue-material-design-icons/Snowflake';
 import Flash from 'vue-material-design-icons/Flash';
@@ -78,12 +80,14 @@ export default new Vuetify({
       'cellphone': { component: CellphoneAndroid },
       'check': { component: Check },
       'clear': { component: Clear },
+      'cloud': { component: Cloud },
       'code': { component: Code },
       'copy': { component: ContentCopy },
       'delete': { component: Delete },
       'dialpad': { component: Dialpad },
       'download': { component: Download },
       'edit': { component: Edit },
+      'eye': { component: Eye },
       'fire': { component: Fire },
       'snowflake': { component: Snowflake },
       'flash': { component: Flash },

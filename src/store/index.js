@@ -23,6 +23,11 @@ import sha256, { HMAC } from 'fast-sha256';
 import secp256k1 from 'secp256k1';
 import { validate as isUuid, v4 } from 'uuid';
 
+const {
+  AES: aes,
+  enc: { Utf8 },
+} = cryptojs;
+
 const expectedType = process.env.VUE_APP_COINTYPE;
 
 const linkingKey = (domain, seed) => {
@@ -154,6 +159,7 @@ const state = {
   nodes: [],
   noNfc: false,
   orders: [],
+  password: null,
   payment: JSON.parse(blankPayment),
   payments: [],
   proposal: null,
@@ -182,6 +188,7 @@ const state = {
     account: { ticker: 'BTC' },
   },
   user: JSON.parse(JSON.stringify(blankUser)),
+  success: null,
   versionMismatch: null,
   version: null,
 };
@@ -209,8 +216,9 @@ export default new Vuex.Store({
 
       if (!(publicPaths.includes(path) || token || path.includes('login'))) {
         await dispatch('createUser', {
-          username: `Guest-${v4().substr(0, 12)}`,
-          password: '',
+          username: `snakamoto-${v4().substr(0, 8)}`,
+          password: 'password',
+          confirm: 'password',
         });
       }
 
@@ -247,11 +255,8 @@ export default new Vuex.Store({
       try {
         const { data: match } = await Vue.axios.post('/password', { password });
         if (match) {
-          const {
-            AES: aes,
-            enc: { Utf8 },
-          } = cryptojs;
           const seed = aes.decrypt(getters.user.seed, password).toString(Utf8);
+          commit('password', password);
           commit('seed', seed);
           return seed;
         }
@@ -379,10 +384,6 @@ export default new Vuex.Store({
       commit('user', user);
       user.token = state.twofa;
       const { password } = user;
-      const {
-        AES: aes,
-        enc: { Utf8 },
-      } = cryptojs;
 
       try {
         let res = await Vue.axios.post('/login', user);
@@ -399,6 +400,7 @@ export default new Vuex.Store({
           user.seed = aes.encrypt(seed, password).toString();
         }
 
+        commit('password', password);
         commit('seed', seed);
 
         if (!user.keys.length) {
@@ -409,14 +411,6 @@ export default new Vuex.Store({
             )
           );
           dispatch('addLinkingKey', key);
-        }
-
-        if (!user.accounts.find(a => a.ticker === 'BTC' && a.pubkey)) {
-          dispatch('addBitcoinAccount');
-        }
-
-        if (!user.accounts.find(a => a.ticker === 'LBTC' && a.pubkey)) {
-          dispatch('addLiquidAccount');
         }
 
         dispatch('updateUser', user);
@@ -433,38 +427,24 @@ export default new Vuex.Store({
       await dispatch('init');
     },
 
-    async addBitcoinAccount({ getters }) {
-      const { seed, user } = getters;
-      const root = fromSeed(
-        Buffer.from(sha256(seed), 'hex'),
-        this._vm.$network
-      );
+    async addAccount({ dispatch, getters }, { seed, path, pubkey }) {
+      if (!getters.password) await dispatch('passwordPrompt');
+      const { password, user } = getters;
+      seed = aes.encrypt(seed, password).toString();
 
-      Vue.axios.post('/accounts', {
-        pubkey: root
-          .derivePath(`m/84'/0'/0'/0`)
-          .neutered()
-          .toBase58(),
-        name: 'Bitcoin',
-        ticker: 'BTC',
-      });
-    },
+      try {
+        await Vue.axios.post('/accounts', {
+          seed,
+          pubkey,
+          path,
+          name: 'Bitcoin',
+          ticker: 'BTC',
+        });
 
-    async addLiquidAccount({ getters }) {
-      const { seed, user } = getters;
-      const root = fromSeed(
-        Buffer.from(sha256(seed), 'hex'),
-        this._vm.$lqnetwork
-      );
-
-      Vue.axios.post('/accounts', {
-        pubkey: root
-          .derivePath(`m/84'/0'/0'/0`)
-          .neutered()
-          .toBase58(),
-        name: 'Bitcoin',
-        ticker: 'LBTC',
-      });
+        go('/wallets');
+      } catch (e) {
+        commit('error', e.response ? e.response.data : e.message);
+      }
     },
 
     async addLinkingKey({}, key) {
@@ -846,6 +826,7 @@ export default new Vuex.Store({
       commit('loading', true);
       try {
         await Vue.axios.post('/register', { user });
+        console.log(user.password);
         dispatch('login', user);
       } catch (e) {
         commit('error', e.response ? e.response.data : e.message);

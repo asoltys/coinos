@@ -1,12 +1,12 @@
 <template>
   <div class="d-flex flex-wrap buttons">
     <v-btn
-      @click="payment.method = 'paper'"
       class="flex-grow-1 mb-2 mr-1 wide"
+      @click="payment.method = 'url'"
       :style="buttonStyle"
     >
-      <file-outline fillColor="#4CAF50" class="mr-1" />
-      Paper Wallet
+      <v-icon color="pink" left>$gift</v-icon>
+      Voucher
     </v-btn>
     <v-btn
       class="flex-grow-1 mb-2 mr-1 wide"
@@ -17,20 +17,12 @@
       <span>Coinos User</span>
     </v-btn>
     <v-btn
+      @click="payment.method = 'paper'"
       class="flex-grow-1 mb-2 mr-1 wide"
-      @click="payment.method = 'url'"
       :style="buttonStyle"
     >
-      <v-icon color="pink" left>$gift</v-icon>
-      Voucher
-    </v-btn>
-    <v-btn
-      class="flex-grow-1 mb-2 mr-1 wide"
-      @click="payment.method = 'swap'"
-      :style="buttonStyle"
-    >
-      <v-icon color="blue" left>$swap</v-icon>
-      Swap
+      <file-outline fillColor="#4CAF50" class="mr-1" />
+      Paper Wallet
     </v-btn>
   </div>
 </template>

@@ -1,6 +1,7 @@
 <template>
   <v-app id="app">
     <top-bar />
+    <snack-bar type="success" :text="success" :timeout="1500" @done="success = null" />
     <snack-bar type="info" :text="snack" :timeout="1500" @done="snack = null" />
     <snack-bar type="error" :text="error" @done="error = null" />
     <v-main style="background: #333">
@@ -72,6 +73,7 @@ export default {
       return this.scanning && !window.QRScanner;
     },
 
+    success: sync('success'),
     error: sync('error'),
   },
 

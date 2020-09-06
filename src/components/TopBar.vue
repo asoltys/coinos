@@ -68,7 +68,7 @@ import { call, get, sync } from 'vuex-pathify';
 export default {
   computed: {
     username() {
-      if (this.user.username.startsWith('Guest')) return 'Guest';
+      if (this.user.username.startsWith('snakamoto')) return 'snakamoto';
       return this.user.username;
     },
     accounts() {

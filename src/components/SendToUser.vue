@@ -3,14 +3,14 @@
       <v-text-field
         ref="username"
         class="my-4"
-        label="Username:"
+        label="Enter Username"
         v-model="username"
         autocapitalize="none"
         clearable
       />
       <div class="d-flex">
         <v-btn
-          class="ml-auto wide"
+          class="flex-grow-1 ml-auto wide"
           @click="sendToUser"
         >
           <v-icon left color="primary">$search</v-icon>
