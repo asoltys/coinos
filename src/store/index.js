@@ -215,11 +215,15 @@ export default new Vuex.Store({
       const { path } = router.currentRoute;
 
       if (!(publicPaths.includes(path) || token || path.includes('login'))) {
-        await dispatch('createUser', {
+        let user = {
           username: `satoshi-${v4().substr(0, 8)}`,
           password: 'password',
           confirm: 'password',
-        });
+        };
+        user = await dispatch('createUser', user);
+        user.password = 'password';
+        await dispatch('login', user);
+        return go(path);
       }
 
       if (
@@ -247,7 +251,7 @@ export default new Vuex.Store({
 
       if (!(path === '/login' || path === '/register')) dispatch('getInfo');
       if (token) {
-        if (['/', '/login', '/register'].includes(path)) return go('/home');
+        if (['/', '/register'].includes(path)) return go('/home');
       } else if (restrictedPaths.includes(path)) return go('/login');
     },
 
@@ -414,6 +418,7 @@ export default new Vuex.Store({
         }
 
         dispatch('updateUser', user);
+        if (router.currentRoute.path === '/login') go('/home');
       } catch (e) {
         if (e.response && e.response.data.startsWith('2fa'))
           commit('prompt2fa', true);
@@ -427,10 +432,13 @@ export default new Vuex.Store({
       await dispatch('init');
     },
 
-    async deleteAccount( { commit, dispatch, getters }, { id }) {
+    async deleteAccount({ commit, dispatch, getters }, { id }) {
       try {
         await Vue.axios.post('/accounts/delete', { id });
-        getters.user.accounts.splice(getters.user.accounts.findIndex(a => a.id === id), 1);
+        getters.user.accounts.splice(
+          getters.user.accounts.findIndex(a => a.id === id),
+          1
+        );
         go('/wallets');
       } catch (e) {
         commit('error', e.response ? e.response.data : e.message);
@@ -840,8 +848,8 @@ export default new Vuex.Store({
       commit('error', null);
       commit('loading', true);
       try {
-        await Vue.axios.post('/register', { user });
-        dispatch('login', user);
+        let { data } = await Vue.axios.post('/register', { user });
+        return data;
       } catch (e) {
         commit('error', e.response ? e.response.data : e.message);
       }
@@ -1722,8 +1730,13 @@ export default new Vuex.Store({
       else s.user.accounts.unshift(v);
       if (!s.user.account || s.user.account.id === v.id) s.user.account = v;
       if (s.assets) s.assets[v.asset] = v;
-      s.user.accounts
-        .sort((a, b) => a.name === b.name ? a.balance < b.balance ? 1 : -1 : ('' + a.name).localeCompare(b.name));
+      s.user.accounts.sort((a, b) =>
+        a.name === b.name
+          ? a.balance < b.balance
+            ? 1
+            : -1
+          : ('' + a.name).localeCompare(b.name)
+      );
       s.user = JSON.parse(JSON.stringify(s.user));
     },
     addKey(s, v) {
@@ -1763,8 +1776,13 @@ export default new Vuex.Store({
     user(s, v) {
       if (v && s.user) {
         if (v.accounts)
-          v.accounts
-        .sort((a, b) => a.name === b.name ? a.balance < b.balance ? 1 : -1 : ('' + a.name).localeCompare(b.name));
+          v.accounts.sort((a, b) =>
+            a.name === b.name
+              ? a.balance < b.balance
+                ? 1
+                : -1
+              : ('' + a.name).localeCompare(b.name)
+          );
         if (v.currencies && !Array.isArray(v.currencies))
           v.currencies = JSON.parse(v.currencies);
         Object.keys(v).map(k => (s.user[k] = v[k]));

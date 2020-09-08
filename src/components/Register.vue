@@ -70,8 +70,13 @@ export default {
   methods: {
     createUser: call('createUser'),
     getChallenge: call('getChallenge'),
-    submit() {
-      if (this.form.confirm === this.form.password) this.createUser(this.form);
+    login: call('login'),
+    async submit() {
+      if (this.form.confirm === this.form.password) {
+        let user = await this.createUser(this.form);
+        user.password = this.form.password;
+        await this.login(user);
+      }
     },
   },
 
