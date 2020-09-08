@@ -5,8 +5,12 @@
       View Seed / Backup Account
     </v-btn>
     <v-card v-else class="flex-grow-1">
-      <v-card-title>Non-Custodial Wallet Seed</v-card-title>
+      <v-card-title>Default Wallet Seed</v-card-title>
       <v-card-text>
+        <v-alert color="#333">
+          <v-icon left>$info</v-icon>
+          <span>Non-custodial wallets in your account will be derived from this seed by default but you can provide/generate custom seeds per account if you like. Take care to back them up separately if you do.</span>
+        </v-alert>
         <v-textarea label="Seed" :value="seed" readonly rows="1" auto-grow>
           <template v-slot:append>
             <v-btn @click="copy(seed)" class="ml-1" icon>

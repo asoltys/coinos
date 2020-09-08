@@ -17,7 +17,7 @@
       <div class="my-auto">
         <v-icon v-if="type === 'error'" color="error" left>$alert</v-icon>
         <v-icon v-else-if="type === 'success'" color="green" left>$check</v-icon>
-        <v-icon v-else color="blue" left>$info</v-icon>
+        <v-icon v-else color="black" left>$info</v-icon>
       </div>
       <div class="my-auto">
         <b class="black--text">{{ text }}</b>
