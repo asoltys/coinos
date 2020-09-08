@@ -1201,6 +1201,7 @@ export default new Vuex.Store({
     },
 
     async addInvoice({ commit, dispatch, state }, { method, user }) {
+      commit('loading', true);
       const { controller, invoice, rate, socket } = state;
       if (controller) controller.abort();
 
@@ -1267,6 +1268,7 @@ export default new Vuex.Store({
       }
 
       dispatch('write', invoice.uuid);
+      commit('loading', false);
     },
 
     async write({ commit, dispatch }, text) {
@@ -1423,7 +1425,6 @@ export default new Vuex.Store({
         if (!asset) asset = BTC;
         let account = user.accounts.find(a => a.asset === asset);
         if (account) {
-          l(account.asset, user.account.asset);
           if (account.asset !== user.account.asset)
             await dispatch('shiftAccount', account.id);
         } else return commit('error', 'Unrecognized asset');
