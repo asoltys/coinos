@@ -165,7 +165,7 @@
           </v-btn>
         </div>
       </div>
-      <v-alert color="primary" class="black--text">No payments found</v-alert>
+      <v-alert v-else color="primary" class="black--text">No payments found</v-alert>
     </template>
   </div>
 </template>
@@ -298,7 +298,7 @@ export default {
           isBefore(parse(a.createdAt), parse(b.createdAt)) ? -1 : 1
         )
         .filter(p => p.amount < 0 || p.received)
-        .filter(p => p.account_id === this.user.account.id)
+        .filter(p => !this.user.account || (p.account_id === this.user.account.id))
         .reverse();
     },
 

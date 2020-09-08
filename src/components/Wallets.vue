@@ -32,7 +32,7 @@
               <v-btn
                 class="toggle ml-1"
                 :color="a.ticker === 'BTC' ? 'white' : '#0ae'"
-                >{{ a.ticker }}</v-btn
+                >{{ ticker(a) }}</v-btn
               >
             </div>
           </div>
@@ -279,6 +279,9 @@ export default {
     };
   },
   methods: {
+    ticker(a) {
+      return a.ticker || a.asset.substr(0,3);
+    },
     deleteAccount: call('deleteAccount'),
     passwordPrompt: call('passwordPrompt'),
     hide(a) {

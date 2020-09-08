@@ -181,10 +181,9 @@ body
   background white
   padding 5px
 
-.v-textarea textarea[readonly="readonly"] {
-    color: #aaa;
-}
-:not(.v-select).v-text-field input[readonly="readonly"] {
-    color: #aaa;
-}
+.v-textarea textarea[readonly="readonly"]
+  color #ccc;
+
+:not(.v-select).v-text-field input[readonly="readonly"]
+  color #ccc
 </style>

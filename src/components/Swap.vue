@@ -120,7 +120,7 @@ export default {
   methods: {
     ticker(asset) {
       if (asset === process.env.VUE_APP_LBTC) return 'BTC';
-      return this.assets[asset] ? this.assets[asset].ticker : '';
+      return this.assets[asset] ? (this.assets[asset].ticker || asset.substr(0,3).toUpperCase()) : '';
     },
     publish: call('publish'),
     download() {

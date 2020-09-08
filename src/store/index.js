@@ -959,7 +959,6 @@ export default new Vuex.Store({
           }
         } catch (e) {
           commit('error', e.response ? e.response.data : e.message);
-          throw e;
         }
       }
 
@@ -1374,7 +1373,6 @@ export default new Vuex.Store({
             throw new Error('Wrong network');
           }
 
-          l('ticker', user.account.ticker);
           if (user.account.ticker !== 'BTC')
             await dispatch(
               'shiftAccount',
@@ -1721,14 +1719,10 @@ export default new Vuex.Store({
       let index = s.user.accounts.findIndex(a => a.id === v.id);
       if (index > -1) s.user.accounts[index] = v;
       else s.user.accounts.unshift(v);
-      if (s.user.account.id === v.id) s.user.account = v;
+      if (!s.user.account || s.user.account.id === v.id) s.user.account = v;
       if (s.assets) s.assets[v.asset] = v;
       s.user.accounts
-        .sort((a, b) => {
-          if (a.pubkey && !b.pubkey) return 1;
-          return -1;
-        })
-        .sort((a, b) => ('' + a.name).localeCompare(b.name));
+        .sort((a, b) => a.name === b.name ? a.balance < b.balance ? 1 : -1 : ('' + a.name).localeCompare(b.name));
       s.user = JSON.parse(JSON.stringify(s.user));
     },
     addKey(s, v) {
@@ -1769,11 +1763,7 @@ export default new Vuex.Store({
       if (v && s.user) {
         if (v.accounts)
           v.accounts
-            .sort((a, b) => {
-              if (a.pubkey && !b.pubkey) return 1;
-              return -1;
-            })
-            .sort((a, b) => ('' + a.name).localeCompare(b.name));
+        .sort((a, b) => a.name === b.name ? a.balance < b.balance ? 1 : -1 : ('' + a.name).localeCompare(b.name));
         if (v.currencies && !Array.isArray(v.currencies))
           v.currencies = JSON.parse(v.currencies);
         Object.keys(v).map(k => (s.user[k] = v[k]));

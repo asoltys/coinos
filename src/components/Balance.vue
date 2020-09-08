@@ -1,5 +1,5 @@
 <template>
-  <div v-if="user.id" class="mb-2 text-center no-print">
+  <div v-if="user.id && user.account" class="mb-2 text-center no-print">
     <div class="d-flex">
       <div class="display-2 font-weight-black flex-grow-1 text-right mr-2">
         {{ $format(user.account.balance, precision) }}
@@ -74,7 +74,7 @@ export default {
         ...new Set([
           ...arr,
           ...this.user.accounts.filter(a => !a.hide && a.pubkey === this.user.account.pubkey)
-            .map(a => a.ticker)
+            .map(a => (a.ticker || a.asset.substr(0,3)))
         ]),
       ];
 
@@ -86,7 +86,7 @@ export default {
     },
     ...mapGetters(['rate', 'user']),
     ticker() {
-      return this.isBtc ? this.user.unit : this.user.account.ticker;
+      return this.isBtc ? this.user.unit : (this.user.account.ticker || this.user.account.asset.substr(0,3));
     },
     isBtc() {
       return this.user.account.ticker === 'BTC';

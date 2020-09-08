@@ -3,7 +3,7 @@
     <v-progress-linear v-if="loading || !rates" indeterminate />
     <template v-else-if="invoice.text">
       <request
-        v-if="invoice.amount === null || invoice.received < invoice.amount"
+        v-if="!(invoice.amount || invoice.received) || (invoice.amount && invoice.received < invoice.amount)"
         @clear="clearInvoice"
       />
       <balance v-else-if="user.username === currentUser.username" />
@@ -40,7 +40,7 @@
         <v-btn
           v-if="
             nodes.includes('bitcoin') &&
-              (!user.account.pubkey || user.account.ticker === 'BTC')
+              user.account.asset === btc
           "
           class="flex-grow-1 mb-1 mr-1"
           @click="addInvoice({ method: 'bitcoin', user })"
@@ -52,7 +52,7 @@
         </v-btn>
 
         <v-btn
-          v-if="nodes.includes('lightning') && !user.account.pubkey"
+          v-if="nodes.includes('lightning') && !user.account.pubkey && user.account.asset === btc"
           class="flex-grow-1 mb-1 mr-1"
           @click="addInvoice({ method: 'lightning', user })"
           :disabled="!isBtc"
@@ -64,8 +64,7 @@
 
         <v-btn
           v-if="
-            nodes.includes('liquid') &&
-              (!user.account.pubkey || user.account.ticker === 'LBTC')
+            nodes.includes('liquid')
           "
           class="flex-grow-1 mr-0"
           @click="addInvoice({ method: 'liquid', user })"
@@ -94,13 +93,14 @@ export default {
 
   data() {
     return {
+      btc: process.env.VUE_APP_LBTC,
       showingMemo: false,
     };
   },
 
   computed: {
     buttonStyle() {
-      let numButtons = this.user.account.pubkey ? 1 : this.nodes.length;
+      let numButtons = this.user.account.pubkey ? 2 : this.user.account.asset === this.btc ? this.nodes.length : 1;
       return {
         maxWidth: `${(100 / (window.innerWidth < 600 ? 1 : numButtons)).toFixed(
           0
@@ -119,7 +119,7 @@ export default {
         ...[
           ...this.user.accounts
             .filter(a => !a.hide && a.pubkey === this.user.account.pubkey)
-            .map(a => a.ticker)
+            .map(a => (a.ticker || a.asset.substr(0,3).toUpperCase()))
             .filter(a => a !== 'BTC'),
         ].sort(),
         ...[...this.user.currencies].sort(),

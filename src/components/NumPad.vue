@@ -80,7 +80,7 @@ export default {
       ? 'SAT'
       : !this.currencies.includes(this.user.currency)
       ? this.currencies[0]
-      : this.user.account.ticker;
+      : this.user.account.ticker || this.user.account.asset.substr(0,3).toUpperCase();
     this.inputAmount =
       this.currency === 'SAT'
         ? this.initialAmount
