@@ -21,7 +21,7 @@
               >$cloud</v-icon
             >
             <v-icon
-              v-if="assets[a.asset].registered"
+              v-if="assets[a.asset] && assets[a.asset].registered"
               class="mr-2 my-auto"
               color="yellow"
               title="Registered"
@@ -59,8 +59,8 @@
               @click.prevent.stop="select(a)"
               class="flex-grow-0 my-auto elevation-1 ml-1 d-none d-sm-flex"
             >
-              <v-icon title="Payments" color="yellow" left>$payments</v-icon>
-              Payments
+              <v-icon title="Payments" color="yellow" left>$send</v-icon>
+              Go
             </v-btn>
           </div>
         </v-expansion-panel-header>
@@ -74,13 +74,13 @@
               </div>
               <div class="d-flex">
                 <div class="flex-grow-1 text-center">
-                  <v-icon large @click="showcode = !showcode" class="pa-4"
+                  <v-icon large @click="showCode = !showCode" class="pa-4"
                     >$assignment</v-icon
                   >
                 </div>
               </div>
               <v-textarea
-                v-if="showcode"
+                v-if="showCode"
                 :value="proof(a)"
                 rows="1"
                 auto-grow
@@ -108,7 +108,7 @@
             </div>
             <v-form v-else @submit.prevent="() => submit(a)">
               <v-text-field
-                label="Account Type"
+                label="Wallet Type"
                 :value="a.pubkey ? 'Non-Custodial' : 'Hosted'"
                 append-icon="$key"
                 readonly
@@ -121,7 +121,7 @@
               <v-textarea
                 v-if="!a.pubkey"
                 label="Asset Id"
-                :value="a.asset"
+                v-model="a.asset"
                 rows="1"
                 auto-grow
                 readonly
@@ -132,11 +132,7 @@
                   </v-btn>
                 </template>
               </v-textarea>
-              <v-text-field
-                label="Name"
-                v-model="a.name"
-                :readonly="a.asset === BTC"
-              />
+              <v-text-field label="Name" v-model="a.name" />
               <v-text-field
                 v-if="a.asset !== BTC"
                 label="Domain"
@@ -148,41 +144,77 @@
                 :readonly="a.asset === BTC"
               />
               <v-text-field
-                label="Precision"
+                label="Precision (0-8)"
                 v-model="a.precision"
                 type="number"
                 @input="e => limit(e, a)"
-                :readonly="a.asset === BTC"
               />
-              <div class="text-right">
-                <v-btn type="submit" class="mr-1 mb-1 mb-sm-0 wide">
-                  <v-icon left class="yellow--text">$check</v-icon>
-                  <span>save</span>
+              <div v-if="seeds[a.id]">
+                <v-textarea
+                  label="Seed"
+                  :value="seeds[a.id]"
+                  rows="1"
+                  auto-grow
+                  readonly
+                >
+                  <template v-slot:append>
+                    <v-btn @click="() => copy(seeds[a.id])" icon class="ml-1">
+                      <v-icon>$copy</v-icon>
+                    </v-btn>
+                  </template>
+                </v-textarea>
+                <v-text-field
+                  label="Path"
+                  v-model="a.path"
+                  rows="1"
+                  auto-grow
+                  readonly
+                />
+              </div>
+              <div class="d-flex justify-center mb-sm-2 flex-wrap">
+                <v-btn
+                  v-if="a.pubkey"
+                  @click="getSeed(a)"
+                  class="flex-grow-1 mr-1 mb-1 mb-sm-0 wide"
+                >
+                  <v-icon left color="green">$settings</v-icon>
+                  <span>Wallet Details</span>
+                </v-btn>
+                <v-btn
+                  v-if="
+                    !(assets[a.asset] && assets[a.asset].registered) &&
+                      a.contract
+                  "
+                  class="flex-grow-1 mr-1 wide mb-1 mb-sm-0 wide"
+                  @click.prevent="startRegistering(a.asset)"
+                >
+                  <v-icon left color="blue">$assignment</v-icon>
+                  <span>Register Asset</span>
                 </v-btn>
                 <v-btn
                   @click.prevent.stop="select(a)"
-                  class="mr-1 mb-1 mb-sm-0 wide"
+                  class="flex-grow-1 mr-1 mb-1 mb-sm-0 wide"
                 >
-                  <v-icon left class="yellow--text">$payments</v-icon>
-                  <span>view payments</span>
+                  <v-icon left class="yellow--text">$send</v-icon>
+                  <span>Go to Wallet</span>
                 </v-btn>
-                <v-btn
-                  class="mr-1 mb-1 mb-sm-0 wide"
-                  @click.prevent="hide(a)"
-                  v-if="a.ticker !== 'BTC'"
-                >
+                </div>
+              <div class="d-flex justify-center mb-sm-2 flex-wrap">
+                <v-btn class="flex-grow-1 mr-1 mb-1 mb-sm-0 wide" @click.prevent="hide(a)">
                   <v-icon left>$eye</v-icon>
-                  <span>{{ a.hide ? 'Stop Hiding' : 'Hide' }}</span>
+                  <span>{{ a.hide ? 'Show' : 'Hide' }} Wallet</span>
                 </v-btn>
-                <v-btn
-                  v-if="!assets[a.asset].registered && a.contract"
-                  class="mr-1 wide"
-                  @click.prevent="startRegistering(a.asset)"
-                >
-                  <v-icon left>$assignment</v-icon>
-                  <span>Register</span>
+                <v-btn class="flex-grow-1 mr-1 mb-1 mb-sm-0 wide" @click.prevent="deleteAccount(a)">
+                  <v-icon left color="error">$delete</v-icon>
+                  <span>Delete Wallet</span>
                 </v-btn>
-              </div>
+                </div>
+              <div class="d-flex text-right mb-2">
+                <v-btn type="submit" class="flex-grow-1 mr-1 mb-1 mb-sm-0 wide">
+                  <v-icon left class="yellow--text">$check</v-icon>
+                  <span>save edits</span>
+                </v-btn>
+                </div>
             </v-form>
           </v-card>
         </v-expansion-panel-content>
@@ -198,12 +230,12 @@
         <span>Issue New Asset</span>
       </v-btn>
       <v-btn
-        v-if="!showHidden && user.accounts.filter(a => a.hide).length"
+        v-if="user.accounts.filter(a => a.hide).length"
         class="mx-auto mb-2 wide"
-        @click="showHidden = true"
+        @click="showHidden = !showHidden"
       >
         <v-icon left>$eye</v-icon>
-        <span>Show Hidden</span>
+        <span>{{ showHidden ? 'Hide' : 'Show' }} Hidden</span>
       </v-btn>
     </div>
   </div>
@@ -212,39 +244,43 @@
 <script>
 import { get, sync, call } from 'vuex-pathify';
 import Copy from '../mixins/Copy';
+import cryptojs from 'crypto-js';
+
 const BTC = process.env.VUE_APP_LBTC;
+const {
+  AES: aes,
+  enc: { Utf8 },
+} = cryptojs;
 
 export default {
   mixins: [Copy],
   computed: {
+    error: sync('error'),
+    password: get('password'),
     success: sync('success'),
     accounts() {
       let { accounts } = this.user;
-      return accounts
-        .sort((a, b) => ('' + a.ticker).localeCompare(b.ticker))
-        .sort((a, b) => (a.ticker === 'BTC' ? -1 : 1))
-        .sort((a, b) => {
-          if (a.pubkey && !b.pubkey) return 1;
-          return -1;
-        })
-        .filter(a => (!a.hide || this.showHidden) && this.assets[a.asset]);
+      return accounts.filter(a => !a.hide || this.showHidden);
     },
     assets: get('assets'),
     user: sync('user'),
   },
   data() {
     return {
+      seeds: {},
       showHidden: false,
-      showcode: false,
+      showCode: false,
       BTC,
       registering: {},
       panels: {
-        Custodial: [],
+        Hosted: [],
         'Non-Custodial': [],
       },
     };
   },
   methods: {
+    deleteAccount: call('deleteAccount'),
+    passwordPrompt: call('passwordPrompt'),
     hide(a) {
       this.showHidden = false;
       a.hide = !a.hide;
@@ -291,7 +327,15 @@ export default {
     registerAsset: call('registerAsset'),
     shiftAccount: call('shiftAccount'),
     updateAccount: call('updateAccount'),
-    async startRegistering(a) {
+    async getSeed(a) {
+      if (this.seeds[a.id]) return (this.seeds[a.id] = null);
+      let { password } = this;
+      if (!password) ({ password } = await this.passwordPrompt());
+      const seed = aes.decrypt(a.seed, password).toString(Utf8);
+      if (!seed) this.error = 'Unable to decrypt account seed';
+      this.$set(this.seeds, a.id, seed);
+    },
+    startRegistering(a) {
       this.$set(this.registering, a, true);
     },
     async register(a) {
@@ -305,6 +349,7 @@ export default {
   },
 };
 </script>
+
 <style lang="stylus" scoped>
 .asset
   max-width 70%

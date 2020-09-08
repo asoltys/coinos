@@ -42,6 +42,7 @@ import Power from 'vue-material-design-icons/Power';
 import Qrcode from 'vue-material-design-icons/Qrcode';
 import Refresh from 'vue-material-design-icons/Refresh';
 import Search from 'vue-material-design-icons/AccountSearch';
+import Seed from 'vue-material-design-icons/Seed';
 import Send from 'vue-material-design-icons/Send';
 import Settings from 'vue-material-design-icons/Settings';
 import SwapHorizontal from 'vue-material-design-icons/SwapHorizontal';
@@ -109,6 +110,7 @@ export default new Vuetify({
       'qrcode': { component: Qrcode },
       'refresh': { component: Refresh },
       'search': { component: Search },
+      'seed': { component: Seed },
       'send': { component: Send },
       'settings': { component: Settings},
       'swap': { component: SwapHorizontal },

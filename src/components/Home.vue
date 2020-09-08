@@ -2,7 +2,7 @@
   <div v-if="user.username" class="text-center">
     <balance />
     <payments class="mb-2" />
-    <div v-if="user.username.startsWith('snakamoto')" class="mb-4">
+    <div v-if="user.username.startsWith('satoshi')" class="mb-4">
       <v-btn class="mr-1 mb-1 mb-sm-0 wide" @click="$go('/settings')">
         <v-icon left color="yellow">$settings</v-icon><span>Setup Account</span>
       </v-btn>

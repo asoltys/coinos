@@ -89,7 +89,7 @@
             </div>
             <v-text-field
               label="Confirm Password"
-              v-model="form.passconfirm"
+              v-model="form.confirm"
               type="password"
             />
             <div class="text-right">
@@ -208,7 +208,7 @@ export default {
         id: '',
         username: '',
         password: '',
-        passconfirm: '',
+        confirm: '',
         currency: '',
         currencies: '',
         pin: '',
@@ -307,7 +307,7 @@ export default {
     },
     async submit(e) {
       if (e) e.preventDefault();
-      if (!this.form.password || this.form.password === this.form.passconfirm) {
+      if (!this.form.password || this.form.password === this.form.confirm) {
         this.saving = true;
         let res = await this.updateUser(this.form);
         this.$nextTick(() => (this.saving = false));
@@ -338,7 +338,7 @@ export default {
           .filter(key => key in this.form && user[key])
           .forEach(key => (this.form[key] = user[key]));
         this.form['password'] = '';
-        this.form['passconfirm'] = '';
+        this.form['confirm'] = '';
         try {
           this.form.currencies = JSON.parse(user.currencies);
         } catch (e) {
@@ -354,7 +354,7 @@ export default {
       .filter(key => key in this.form && user[key])
       .forEach(key => (this.form[key] = user[key]));
     this.form['password'] = '';
-    this.form['passconfirm'] = '';
+    this.form['confirm'] = '';
     try {
       this.form.currencies = JSON.parse(user.currencies);
     } catch (e) {

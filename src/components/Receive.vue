@@ -108,7 +108,7 @@ export default {
       };
     },
     isBtc() {
-      return this.user.account && this.user.account.ticker === 'BTC';
+      return this.user.account && this.user.account.asset === process.env.VUE_APP_LBTC;
     },
     currencies() {
       if (!(this.user.accounts && this.user.currencies)) return [];

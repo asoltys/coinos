@@ -123,6 +123,7 @@ export default {
     user: get('user'),
   },
   methods: {
+    getAssets: call('getAssets'),
     accept: call('accept'),
     deleteProposal: call('deleteProposal'),
     download(text) {

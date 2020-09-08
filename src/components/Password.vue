@@ -59,8 +59,7 @@ export default {
       this.$nextTick(() => (this.promptPassword = false));
     },
     async submit() {
-      let match = await this.checkPassword(this.password);
-      if (match) this.close();
+      if (await this.checkPassword(this.password)) this.close();
       else this.error = true;
     },
   },

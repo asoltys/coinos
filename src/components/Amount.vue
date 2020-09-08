@@ -24,7 +24,6 @@
       class="amount"
       :label="label"
       v-model="displayAmount"
-      readonly
       @click="editing = true"
     >
       <template v-slot:append>

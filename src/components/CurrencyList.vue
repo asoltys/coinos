@@ -2,7 +2,7 @@
   <div v-if="currencies.length === 1">
     <v-btn
       class="black--text"
-      :color="color(currency)"
+      :color="color(display)"
       @click="select(currencies[0])"
       >{{ display }}</v-btn
     >
@@ -65,7 +65,7 @@ export default {
 
       let account = this.user.accounts.find(a => a.ticker === c && a.pubkey === this.user.account.pubkey);
       let currency = this.user.currencies.find(cr => cr === c);
-      let btc = this.user.accounts.find(a => a.asset === BTC && a.pubkey === this.user.account.pubkey);
+      let btc = this.user.accounts.find(a => a.ticker === c && a.asset === BTC && a.pubkey === this.user.account.pubkey);
 
       if (account) {
         await this.shiftAccount(account.id);

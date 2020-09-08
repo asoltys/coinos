@@ -180,4 +180,11 @@ body
 .v-application code
   background white
   padding 5px
+
+.v-textarea textarea[readonly="readonly"] {
+    color: #aaa;
+}
+:not(.v-select).v-text-field input[readonly="readonly"] {
+    color: #aaa;
+}
 </style>

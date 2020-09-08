@@ -216,7 +216,7 @@ export default new Vuex.Store({
 
       if (!(publicPaths.includes(path) || token || path.includes('login'))) {
         await dispatch('createUser', {
-          username: `snakamoto-${v4().substr(0, 8)}`,
+          username: `satoshi-${v4().substr(0, 8)}`,
           password: 'password',
           confirm: 'password',
         });
@@ -258,7 +258,7 @@ export default new Vuex.Store({
           const seed = aes.decrypt(getters.user.seed, password).toString(Utf8);
           commit('password', password);
           commit('seed', seed);
-          return seed;
+          return true;
         }
 
         return false;
@@ -419,7 +419,7 @@ export default new Vuex.Store({
           commit('prompt2fa', true);
         else commit('error', 'Login failed');
         commit('loading', false);
-        l(e);
+        l(e.message);
         return;
       }
 
@@ -427,7 +427,20 @@ export default new Vuex.Store({
       await dispatch('init');
     },
 
-    async addAccount({ dispatch, getters }, { seed, path, pubkey }) {
+    async deleteAccount( { commit, dispatch, getters }, { id }) {
+      try {
+        await Vue.axios.post('/accounts/delete', { id });
+        getters.user.accounts.splice(getters.user.accounts.findIndex(a => a.id === id), 1);
+        go('/wallets');
+      } catch (e) {
+        commit('error', e.response ? e.response.data : e.message);
+      }
+    },
+
+    async createAccount(
+      { commit, dispatch, getters },
+      { name, ticker, precision, seed, path, pubkey }
+    ) {
       if (!getters.password) await dispatch('passwordPrompt');
       const { password, user } = getters;
       seed = aes.encrypt(seed, password).toString();
@@ -437,8 +450,9 @@ export default new Vuex.Store({
           seed,
           pubkey,
           path,
-          name: 'Bitcoin',
-          ticker: 'BTC',
+          name,
+          ticker,
+          precision,
         });
 
         go('/wallets');
@@ -465,7 +479,8 @@ export default new Vuex.Store({
       clearInterval(interval);
       commit('promptPassword', false);
 
-      return getters.seed;
+      const { seed, password } = getters;
+      return { seed, password };
     },
 
     async getNewAddress({ commit, dispatch, state }, type) {
@@ -480,7 +495,7 @@ export default new Vuex.Store({
       let address;
 
       if (user.account.pubkey) {
-        if (!seed) seed = await dispatch('passwordPrompt');
+        if (!seed) ({ seed } = await dispatch('passwordPrompt'));
         const root = fromSeed(
           Buffer.from(sha256(seed), 'hex'),
           this._vm.$network
@@ -826,12 +841,30 @@ export default new Vuex.Store({
       commit('loading', true);
       try {
         await Vue.axios.post('/register', { user });
-        console.log(user.password);
         dispatch('login', user);
       } catch (e) {
         commit('error', e.response ? e.response.data : e.message);
       }
       commit('loading', false);
+    },
+
+    async reencryptAccountSeeds({ commit, dispatch, state }, newPassword) {
+      let { password, user } = state;
+      let seeds = {};
+      user.accounts.map(a => {
+        if (a.pubkey) {
+          a.seed = aes
+            .encrypt(aes.decrypt(a.seed, password).toString(Utf8), newPassword)
+            .toString();
+          seeds[a.id] = a.seed;
+        }
+      });
+
+      try {
+        await Vue.axios.post('/updateSeeds', { seeds });
+      } catch (e) {
+        commit('error', e.response ? e.response.data : e.message);
+      }
     },
 
     async updateUser({ commit, dispatch, state }, user) {
@@ -841,10 +874,19 @@ export default new Vuex.Store({
         params[k] = user[k];
       });
 
+      let { seed } = state;
+      if (user.password && user.password === user.confirm) {
+        if (!seed) ({ seed } = await dispatch('passwordPrompt'));
+        params.seed = aes.encrypt(seed, user.password).toString();
+        dispatch('reencryptAccountSeeds', user.password);
+      }
+
       if (user.id) {
         try {
           let res = await Vue.axios.post('/user', params);
           commit('user', res.data.user);
+          commit('seed', seed);
+          if (params.password) commit('password', params.password);
           if (res.data.token) commit('token', res.data.token);
           return true;
         } catch (e) {
@@ -876,7 +918,7 @@ export default new Vuex.Store({
 
           if (user.account.pubkey) {
             commit('psbt', tx);
-            if (!seed) seed = await dispatch('passwordPrompt');
+            if (!seed) ({ seed } = await dispatch('passwordPrompt'));
             const root = fromSeed(Buffer.from(sha256(seed), 'hex'));
 
             let psbt, network;
@@ -1467,7 +1509,7 @@ export default new Vuex.Store({
               await dispatch('openChannel', params);
               break;
             case 'login':
-              if (!seed) seed = await dispatch('passwordPrompt');
+              if (!seed) ({ seed } = await dispatch('passwordPrompt'));
               try {
                 const key = linkingKey(params.domain, seed);
                 const signedMessage = secp256k1.ecdsaSign(
@@ -1681,6 +1723,12 @@ export default new Vuex.Store({
       else s.user.accounts.unshift(v);
       if (s.user.account.id === v.id) s.user.account = v;
       if (s.assets) s.assets[v.asset] = v;
+      s.user.accounts
+        .sort((a, b) => {
+          if (a.pubkey && !b.pubkey) return 1;
+          return -1;
+        })
+        .sort((a, b) => ('' + a.name).localeCompare(b.name));
       s.user = JSON.parse(JSON.stringify(s.user));
     },
     addKey(s, v) {
@@ -1719,6 +1767,13 @@ export default new Vuex.Store({
     },
     user(s, v) {
       if (v && s.user) {
+        if (v.accounts)
+          v.accounts
+            .sort((a, b) => {
+              if (a.pubkey && !b.pubkey) return 1;
+              return -1;
+            })
+            .sort((a, b) => ('' + a.name).localeCompare(b.name));
         if (v.currencies && !Array.isArray(v.currencies))
           v.currencies = JSON.parse(v.currencies);
         Object.keys(v).map(k => (s.user[k] = v[k]));

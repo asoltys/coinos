@@ -70,14 +70,16 @@ export default {
     cryptos() {
       let arr = [this.ticker === 'SAT' ? 'BTC' : 'SAT'];
       if (!this.user.accounts) return arr;
-      return [
+      arr = [
         ...new Set([
           ...arr,
           ...this.user.accounts.filter(a => !a.hide && a.pubkey === this.user.account.pubkey)
             .map(a => a.ticker)
-            .filter(a => a !== this.user.account.ticker),
         ]),
       ];
+
+      if (this.ticker === 'BTC') arr.splice(arr.indexOf('BTC'), 1);
+      return arr;
     },
     fiats() {
       return this.user.currencies.filter(c => c !== this.user.currency);

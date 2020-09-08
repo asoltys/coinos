@@ -7,13 +7,13 @@
     <v-card v-else class="flex-grow-1">
       <v-card-title>Non-Custodial Wallet Seed</v-card-title>
       <v-card-text>
-        <v-text-field label="Seed" :value="seed" readonly>
+        <v-textarea label="Seed" :value="seed" readonly rows="1" auto-grow>
           <template v-slot:append>
             <v-btn @click="copy(seed)" class="ml-1" icon>
               <v-icon>$copy</v-icon>
             </v-btn>
           </template>
-        </v-text-field>
+        </v-textarea>
       </v-card-text>
     </v-card>
   </div>
