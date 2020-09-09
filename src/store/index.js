@@ -209,7 +209,6 @@ export default new Vuex.Store({
         if (cookie && cookie[1] && cookie[1] !== 'null') token = cookie[1];
       }
 
-
       if (token === 'null') token = null;
 
       commit('token', token);
@@ -1569,6 +1568,19 @@ export default new Vuex.Store({
       }
 
       if (isUuid(text)) {
+        try {
+          const { data: payment } = await Vue.axios.post('/checkRedeemCode', {
+            redeemcode: text,
+          });
+
+          if (payment)
+            window.location.href = `${window.location.protocol}//${window.location.host}/redeem/${text}`;
+
+          return;
+        } catch (e) {
+          commit('error', e.response ? e.response.data : e.message);
+        }
+
         try {
           const { data: invoice } = await Vue.axios.get(
             `/invoice?uuid=${text}`

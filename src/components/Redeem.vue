@@ -7,8 +7,6 @@
           Redeem code
           <span
              class="yellow--text"
-             @click="redeem"
-             style="cursor: pointer"
              >{{ payment.redeemcode }}</span
            >
         </div>
