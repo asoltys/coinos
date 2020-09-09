@@ -200,13 +200,15 @@ export default new Vuex.Store({
     async init({ commit, getters, dispatch, state }) {
       commit('error', null);
 
-      let { token } = getters;
+      let { token } = router.currentRoute.query;
+      if (!token) ({ token } = getters);
       if (!token) token = window.sessionStorage.getItem('token');
 
       if (!token) {
         let cookie = `; ${document.cookie}`.match(';\\s*token=([^;]+)');
         if (cookie && cookie[1] && cookie[1] !== 'null') token = cookie[1];
       }
+
 
       if (token === 'null') token = null;
 
