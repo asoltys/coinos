@@ -31,12 +31,12 @@
       </v-textarea>
     </v-form>
 
-    <methods v-if="!payment.method"/>
-    <send-to-user v-if="payment.method === 'coinos'" />
-    <paper v-if="payment.method === 'paper'" />
-    <voucher v-if="payment.method === 'url'" />
-    <swap v-if="payment.method === 'swap'" />
-    <v-btn v-if="payment.method" @click="payment.method = null" class="my-2 wide">
+    <methods v-if="!payment.network"/>
+    <send-to-user v-if="payment.network === 'coinos'" />
+    <paper v-if="payment.network === 'paper'" />
+    <voucher v-if="payment.network === 'url'" />
+    <swap v-if="payment.network === 'swap'" />
+    <v-btn v-if="payment.network" @click="payment.network = null" class="my-2 wide">
       <v-icon>$arrow_back</v-icon>
       Back</v-btn
     >

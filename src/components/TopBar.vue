@@ -1,5 +1,5 @@
 <template>
-  <v-app-bar absolute app dark color="black" fixed>
+  <v-app-bar v-if="!fullscreen" absolute app dark color="black" fixed>
     <v-toolbar-title
       dark
       @click="goHome"
@@ -67,6 +67,7 @@ import { call, get, sync } from 'vuex-pathify';
 
 export default {
   computed: {
+    fullscreen: get('fullscreen'),
     username() {
       if (this.user.username.startsWith('satoshi')) return 'satoshi';
       return this.user.username;

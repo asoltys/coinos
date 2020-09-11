@@ -63,6 +63,7 @@ export default {
   components: { Numpad },
   mixins: [Copy],
   props: {
+    fiatAmountOverride: { type: String, default: null },
     button: { type: Boolean, default: true },
     currency: { type: String, default: null },
     label: { type: String, default: 'Amount' },
@@ -73,6 +74,7 @@ export default {
   data() {
     return {
       editing: this.startEditing,
+      fixedRate: null,
     };
   },
   computed: {
@@ -87,7 +89,7 @@ export default {
       return this.user.fiat ? this.user.currency : this.user.unit;
     },
     fiatAmount() {
-      return ((this.value * this.rate) / SATS).toFixed(2);
+      return this.fiatAmountOverride || ((this.value * this.fixedRate) / SATS).toFixed(2);
     },
     precision() {
       if (this.currency) {
@@ -130,7 +132,8 @@ export default {
         ? '#ffeb3b'
         : '#0ae';
     },
-    input (amount, fiatAmount, currency) {
+    input (amount, fiatAmount, currency, rate) {
+      this.fixedRate = rate;
       this.$emit('input', amount, fiatAmount, currency);
     }, 
     done() {
@@ -143,6 +146,10 @@ export default {
     },
     toggleUnit: call('toggleUnit'),
   },
+
+  mounted() {
+    this.fixedRate = this.rate;
+  }, 
 };
 </script>
 

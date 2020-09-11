@@ -1,14 +1,14 @@
 <template>
   <div>
     <flash
-      v-if="network === 'LNBTC'"
+      v-if="network === 'lightning'"
       fillColor="yellow"
       title="Lightning Payment"
     />
     <v-icon v-else-if="network === 'COINOS'" color="#ccc">$forward</v-icon>
     <v-icon v-else-if="network === 'GIFT'" color="yellow">$gift</v-icon>
     <img
-      v-else-if="network === 'BTC'"
+      v-else-if="network === 'bitcoin'"
       src="../assets/bitcoin.png"
       width="24px"
       title="Bitcoin Payment"

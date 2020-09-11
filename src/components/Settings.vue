@@ -148,7 +148,6 @@
         </v-form>
       </v-card-text>
     </v-card>
-    <seed />
     <linking-keys />
     <div class="d-flex my-2" v-if="promptInstall">
       <v-btn class="flex-grow-1" @click="install">
@@ -182,12 +181,11 @@ import qr from 'qrcode';
 import PincodeInput from 'vue-pincode-input';
 import FullScreen from '../mixins/FullScreen';
 import LinkingKeys from './LinkingKeys';
-import Seed from './Seed';
 import Window from '../window';
 import goTo from 'vuetify/es5/services/goto';
 
 export default {
-  components: { SetPin, PincodeInput, Seed, LinkingKeys },
+  components: { SetPin, PincodeInput, LinkingKeys },
   mixins: [FullScreen],
   data() {
     return {

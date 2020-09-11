@@ -73,6 +73,7 @@ export default {
   },
 
   mounted() {
+    this.$refs.amount.focus();
     this.rates = this.globalRates;
     this.currency = this.user.fiat && this.currencies.includes(this.user.currency)
       ? this.user.currency
@@ -141,7 +142,7 @@ export default {
 
       if (!this.amount) this.amount = 0;
       if (!this.fiatAmount) this.fiatAmount = 0;
-      this.$emit('input', this.amount, this.fiatAmount, this.currency);
+      this.$emit('input', this.amount, this.fiatAmount, this.currency, this.rate);
     },
   },
 

@@ -1,116 +1,37 @@
 <template>
   <div>
     <tippad v-if="tipping" @input="setTip" />
-    <div v-else>
-      <div v-if="invoice.amount > 0 || invoice.network === 'LNBTC'">
-        <h1 class="text-center font-weight-black">Requesting</h1>
-        <div v-if="invoice.amount > 0" class="d-flex flex-wrap justify-center">
-          <div class="display-1 mr-1">
-            <span>{{ total }}</span>
-            <v-btn
-              class="black--text toggle"
-              :color="color(ticker)"
-              @click="toggleUnit"
-              >{{ ticker }}</v-btn
-            >
-            <span class="print body-1">{{ ticker }}</span>
-          </div>
-          <div v-if="isBtc" class="yellow--text display-1">
-            <span>{{ invoice.fiatAmount }}</span>
-            <span v-if="invoice.tip"
-              >&nbsp;<span class="headline">+{{ invoice.fiatTip }}</span></span
-            >
-            <v-btn
-              class="black--text toggle"
-              color="yellow"
-              @click="shiftCurrency"
-              >{{ invoice.currency }}</v-btn
-            >
-            <span class="print body-1">{{ invoice.currency }}</span>
-          </div>
-        </div>
+    <v-card v-else class="pa-3 text-center mb-2">
+      <div v-if="lnurl && lnurl.encoded">
+        <lnurl :lnurl="lnurl" />
+        <v-btn @click="lnurl = null" class="mb-1 mb-sm-0 wide">
+          <v-icon left>$arrow_back</v-icon>
+          Back
+        </v-btn>
       </div>
-      <h1 v-else class="text-center font-weight-black">Receiving Address</h1>
-      <v-card class="pa-3 text-center mb-2">
-        <lnurl v-if="lnurl && lnurl.encoded" :lnurl="lnurl" />
-        <qr v-else-if="!showcode" :text="invoice.text" />
-        <div
-          class="mb-2"
-          v-if="
-            invoice.amount <= 0 && !invoice.memo && invoice.network !== 'LNBTC'
-          "
-        >
-          <code class="black--text mb-2" :data-clipboard-text="invoice.text">{{
-            invoice.text
-          }}</code>
-        </div>
-        <div v-if="!lnurl">
-          <div class="code mb-4" :class="{ print: !showcode }">
-            {{ invoice.text }}
-          </div>
-          <v-btn
-            v-if="invoice.amount > 0"
-            @click.native="tipping = true"
-            class="mr-2 mb-2 mb-sm-0 wide"
-          >
-            <template v-if="invoice.tip">
-              <v-icon left>$edit</v-icon><span>Edit Tip</span>
-            </template>
-            <template v-else>
-              <v-icon left>$add</v-icon><span>Add Tip</span>
-            </template>
-          </v-btn>
-          <v-btn
-            v-if="
-              invoice.amount > 0 || invoice.memo || invoice.network === 'LNBTC'
-            "
-            @click.native="showcode = !showcode"
-            class="mr-2 mb-2 mb-sm-0 wide"
-          >
-            <v-icon v-if="showcode" left>$qrcode</v-icon>
-            <v-icon v-else left>$code</v-icon>
-            <span>{{ code }}</span>
-          </v-btn>
-          <v-btn
-            @click.native="copy(invoice.text)"
-            class="wide mr-2 mb-2 mb-sm-0"
-          >
-            <v-icon left>$copy</v-icon>
-            <span>Copy</span>
-          </v-btn>
-          <v-btn
-            v-if="invoice.network === 'LNBTC'"
-            @click.native="getPaymentUrl"
-            class="wide mr-2 mb-2 mb-sm-0"
-          >
-            <v-icon left>$qrcode</v-icon>
-            LNURL
-          </v-btn>
-          <v-btn
-            v-if="invoice.method === 'bitcoin'"
-            @click="newAddress"
-            class="wide"
-          >
-            <v-icon left>$refresh</v-icon><span>Address</span>
-          </v-btn>
-        </div>
-      </v-card>
-    </div>
+      <div v-else>
+        <invoice-balance v-if="fullscreen" />
+        <qr :text="invoice.text" />
+        <div v-if="fullscreen" class="ma-4">{{ invoice.memo }}</div>
+        <customer-controls v-if="fullscreen" @cancel="fullscreen = false" @tipping="tipping = true" />
+        <invoice-controls v-else @lock="fullscreen = true" />
+      </div>
+    </v-card>
   </div>
 </template>
 
 <script>
-import { mapActions } from 'vuex';
-import { get, sync } from 'vuex-pathify';
+import { call, get, sync } from 'vuex-pathify';
 import Copy from '../mixins/Copy';
-import Tippad from './TipPad';
-import Qr from './Qr';
 import Lnurl from './Lnurl';
-
-const SATS = 100000000;
+import Qr from './Qr';
+import Tippad from './TipPad';
+import InvoiceBalance from './InvoiceBalance';
+import CustomerControls from './InvoiceCustomerControls';
+import InvoiceControls from './InvoiceControls';
 
 export default {
-  components: { Qr, Tippad, Lnurl },
+  components: { Qr, Tippad, Lnurl, InvoiceBalance, CustomerControls, InvoiceControls },
   mixins: [Copy],
   props: {
     clear: { type: Function },
@@ -118,14 +39,22 @@ export default {
 
   data() {
     return {
-      showcode: false,
       tipping: false,
     };
   },
 
   computed: {
-    isBtc() {
-      return this.user.account.ticker === 'BTC';
+    fullscreen: sync('fullscreen'),
+    loading: get('loading'),
+    networks() {
+      return this.nodes.map(n => ({
+        text: n[0].toUpperCase() + n.slice(1),
+        value: n,
+      }));
+    },
+    nodes: get('nodes'),
+    text() {
+      return this.invoice.address || this.invoice.text;
     },
     ticker() {
       return this.user.unit === 'BTC' ? this.user.account.ticker : 'SAT';
@@ -133,67 +62,42 @@ export default {
     total() {
       return this.$format(this.invoice.amount + this.invoice.tip);
     },
-    lnurl: get('lnurl'),
-    invoice: get('invoice'),
+    lnurl: sync('lnurl'),
+    invoice: sync('invoice'),
+    amount: sync('invoice@amount'),
+    path: sync('invoice@path'),
+    type: sync('invoice@addressType'),
     user: get('user'),
-    code() {
-      return this.showcode ? 'Show QR' : 'Show Text';
-    },
   },
 
   methods: {
-    ...mapActions([
-      'addInvoice',
-      'getNewAddress',
-      'getPaymentUrl',
-      'shiftCurrency',
-      'snack',
-      'toggleUnit',
-      'stopWriting',
-    ]),
+    clearInvoice: call('clearInvoice'),
 
-    async newAddress() {
-      await this.getNewAddress();
-      await this.addInvoice({ method: 'bitcoin', user: this.invoice.user });
-    },
+    addInvoice: call('addInvoice'),
 
-    color(c) {
-      return ['BTC', 'SAT'].includes(c)
-        ? 'white'
-        : this.user.currencies.includes(c)
-        ? '#ffeb3b'
-        : '#0ae';
-    },
+    getPaymentUrl: call('getPaymentUrl'),
+    shiftCurrency: call('shiftCurrency'),
+    toggleUnit: call('toggleUnit'),
+    stopWriting: call('stopWriting'),
+
 
     async setTip(tip, fiatTip) {
       this.tipping = false;
       this.invoice.tip = tip;
       this.invoice.fiatTip = fiatTip;
-      await this.addInvoice({ user: this.invoice.user });
+      await this.addInvoice();
     },
   },
-  beforeRouteLeave() {
-    this.stopWriting();
+  async mounted() {
+    const waitForUser = resolve => {
+      if (!this.user.index && this.user.index !== 0)
+        return this.timeout = setTimeout(() => waitForUser(resolve), 1000);
+      resolve();
+    };
+    await new Promise(waitForUser);
+    await this.clearInvoice();
+    this.addInvoice();
   },
 };
 </script>
 
-<style lang="stylus" scoped>
-.code
-  margin auto
-  width 260px
-  background #333
-  min-height 30vh
-  word-wrap break-word
-  padding 15px
-
-.v-application code
-  max-width 100%
-  word-wrap break-word
-  font-size 0.8em
-
-.toggle
-  margin auto 0.25rem !important
-  margin-top -0.3rem !important
-  height 1.7rem !important
-</style>

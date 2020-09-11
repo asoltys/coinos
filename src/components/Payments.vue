@@ -140,10 +140,10 @@
                     <v-btn
                       v-if="!success[id]"
                       @click="updateMemo(id)"
-                      class="ml-1 mb-1"
+                      class="ml-1 mb-1 toggle"
                       color="secondary"
                     >
-                      <v-icon left>$update</v-icon>
+                      <v-icon left color="green">$save</v-icon>
                       Save
                     </v-btn>
                   </template>
@@ -281,9 +281,9 @@ export default {
           if (isNaN(o.tip) || o.tip <= 0) o.tip = null;
           o.color = o.amount < 0 ? 'red--text' : 'green--text';
           o.sign = o.amount < 0 ? '-' : '+';
-          if (o.network === 'BTC') o.link = `${bs}/tx/${o.hash}`;
-          if (o.network === 'LBTC') o.link = `${bs}/liquid/tx/${o.hash}`;
-          if (o.network === 'LNBTC') {
+          if (o.network === 'bitcoin') o.link = `${bs}/tx/${o.hash}`;
+          if (o.network === 'liquid') o.link = `${bs}/liquid/tx/${o.hash}`;
+          if (o.network === 'lightning') {
             try {
               o.hash = bolt11
                 .decode(o.hash.toLowerCase())
@@ -332,8 +332,7 @@ code
   cursor pointer
 
 .toggle
-  max-height 24px
-  margin-top -12px
-  margin-bottom 6px
-  min-width 44px !important
+  margin auto 0.25rem !important
+  margin-top -0.3rem !important
+  height 1.7rem !important
 </style>

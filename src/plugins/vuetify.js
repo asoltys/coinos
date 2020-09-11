@@ -14,6 +14,8 @@ import Check from 'vue-material-design-icons/Check';
 import Clear from 'vue-material-design-icons/Close';
 import Cloud from 'vue-material-design-icons/Cloud';
 import ClipboardText from 'vue-material-design-icons/ClipboardText';
+import ChevronDown from 'vue-material-design-icons/ChevronDown';
+import ChevronUp from 'vue-material-design-icons/ChevronUp';
 import Code from 'vue-material-design-icons/CodeTags';
 import ContentCopy from 'vue-material-design-icons/ContentCopy';
 import Delete from 'vue-material-design-icons/Delete';
@@ -41,6 +43,7 @@ import Pencil from 'vue-material-design-icons/Pencil';
 import Power from 'vue-material-design-icons/Power';
 import Qrcode from 'vue-material-design-icons/Qrcode';
 import Refresh from 'vue-material-design-icons/Refresh';
+import Save from 'vue-material-design-icons/ContentSave';
 import Search from 'vue-material-design-icons/AccountSearch';
 import Seed from 'vue-material-design-icons/Seed';
 import Send from 'vue-material-design-icons/Send';
@@ -53,6 +56,7 @@ import UnfoldLess from 'vue-material-design-icons/UnfoldLessHorizontal';
 import UnfoldMore from 'vue-material-design-icons/UnfoldMoreHorizontal';
 import Update from 'vue-material-design-icons/Update';
 import Wallet from 'vue-material-design-icons/Wallet';
+import Water from 'vue-material-design-icons/Water';
 
 Vue.use(Vuetify);
 
@@ -86,6 +90,7 @@ export default new Vuetify({
       'copy': { component: ContentCopy },
       'delete': { component: Delete },
       'dialpad': { component: Dialpad },
+      'down': { component: ChevronDown },
       'download': { component: Download },
       'edit': { component: Edit },
       'eye': { component: Eye },
@@ -109,6 +114,7 @@ export default new Vuetify({
       'power': { component: Power },
       'qrcode': { component: Qrcode },
       'refresh': { component: Refresh },
+      'save': { component: Save },
       'search': { component: Search },
       'seed': { component: Seed },
       'send': { component: Send },
@@ -119,8 +125,10 @@ export default new Vuetify({
       'undo': { component: Undo },
       'unfold_less': { component: UnfoldLess },
       'unfold_more': { component: UnfoldMore },
+      'up': { component: ChevronUp },
       'update': { component: Update },
       'wallet': { component: Wallet },
+      'water': { component: Water },
     },
   },
 });

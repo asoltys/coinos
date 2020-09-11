@@ -221,12 +221,16 @@
       </v-expansion-panel>
     </v-expansion-panels>
     <div class="text-center">
+      <v-btn class="mx-auto mb-2 mr-2 wide" @click="$go('/')">
+        <v-icon left color="blue">$payments</v-icon>
+        <span>View Payments</span>
+      </v-btn>
       <v-btn class="mx-auto mb-2 mr-2 wide" @click="$go('/wallet')">
-        <v-icon left color="yellow">$add</v-icon>
+        <v-icon left color="primary">$add</v-icon>
         <span>New Wallet</span>
       </v-btn>
       <v-btn class="mx-auto mb-2 mr-2 wide" @click="$go('/asset')">
-        <v-icon left color="yellow">$assignment</v-icon>
+        <v-icon left color="green">$assignment</v-icon>
         <span>Issue New Asset</span>
       </v-btn>
       <v-btn

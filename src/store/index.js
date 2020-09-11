@@ -61,14 +61,6 @@ Vue.use(Vuex);
 
 const SATS = 100000000;
 
-const methods = {
-  bitcoin: 'BTC',
-  liquid: 'LBTC',
-  lightning: 'LNBTC',
-};
-
-const addressTypes = ['p2sh-segwit', 'legacy', 'bech32'];
-
 pathify.options.mapping = 'simple';
 
 const isLiquid = text =>
@@ -100,12 +92,13 @@ const blankUser = {
 
 const blankInvoice = JSON.stringify({
   address: null,
+  addressType: 'bech32',
   amount: null,
   currency: '',
   fiatAmount: null,
   fiatTip: null,
   memo: null,
-  method: '',
+  network: '',
   rate: 0,
   received: 0,
   user: JSON.parse(JSON.stringify(blankUser)),
@@ -121,7 +114,6 @@ const blankPayment = JSON.stringify({
   feeRate: null,
   fiatAmount: null,
   memo: null,
-  method: null,
   network: null,
   payment: null,
   payobj: null,
@@ -134,13 +126,14 @@ const blankPayment = JSON.stringify({
 });
 
 const state = {
-  addressTypes,
+  addressType: 'bech32',
   asset: BTC,
   assets: {},
   balances: null,
   challenge: '',
   channels: [],
   channelRequest: null,
+  fullscreen: false,
   readController: null,
   writeController: null,
   ecpair: null,
@@ -492,48 +485,62 @@ export default new Vuex.Store({
       return { seed, password };
     },
 
-    async getNewAddress({ commit, dispatch, state }, type) {
-      let { invoice, addressTypes, seed, user } = state;
-      if (!type) {
-        type = addressTypes.shift();
-        addressTypes.push(type);
-      }
+    async getNewAddress({ commit, dispatch, state }) {
+      let { invoice, password, user } = state;
+      let { addressType, network } = invoice;
 
-      let { method } = invoice;
-      if (!method) method = 'bitcoin';
+      if (!['bitcoin', 'liquid'].includes(network))
+        commit('error', 'Invalid network');
       let address;
 
+      let { index, pubkey, id, seed } = user.account;
+
       if (user.account.pubkey) {
-        if (!seed) ({ seed } = await dispatch('passwordPrompt'));
+        if (!password) ({ password } = await dispatch('passwordPrompt'));
+        const decryptedSeed = aes.decrypt(seed, password).toString(Utf8);
         const root = fromSeed(
-          Buffer.from(sha256(seed), 'hex'),
+          Buffer.from(sha256(decryptedSeed), 'hex'),
           this._vm.$network
         );
-        let { id, index } = user.account;
+        const hd = root.derivePath(invoice.path);
+        const type = {
+          bech32: 'p2wpkh',
+          'p2sh-segwit': 'p2sh',
+          legacy: 'p2pkh',
+        }[addressType];
+
+        let p, n;
+        if (network === 'bitcoin') {
+          p = payments;
+          n = this._vm.$network;
+        } else {
+          p = lqpayments;
+          n = this._vm.$lqnetwork;
+        }
+
+        if (addressType !== 'p2sh-segwit') {
+          ({ address } = p[type]({
+            pubkey: hd.publicKey,
+            network: n,
+          }));
+        } else {
+          ({ address } = p[type]({
+            redeem: p.p2wpkh({
+              pubkey: hd.publicKey,
+              network: n,
+            }),
+            network: n,
+          }));
+        }
+
         index++;
-        const hd = root.derivePath(`m/84'/0'/0'/0/${index}`);
-
-        if (method === 'bitcoin') {
-          ({ address } = payments.p2wpkh({
-            pubkey: hd.publicKey,
-            network: this._vm.$network,
-          }));
-        }
-
-        if (method === 'liquid') {
-          ({ address } = lqpayments.p2wpkh({
-            pubkey: hd.publicKey,
-            network: this._vm.$lqnetwork,
-          }));
-        }
-
         await Vue.axios.post('/account', { id, address, index });
 
         invoice.address = address;
         return address;
       } else {
         ({ data: address } = await Vue.axios.get(
-          `/address?network=${method}&type=${type}`
+          `/address?network=${network}&type=${addressType}`
         ));
       }
 
@@ -988,7 +995,7 @@ export default new Vuex.Store({
       let {
         payment: {
           amount,
-          method,
+          network,
           memo,
           recipient: { username },
         },
@@ -1012,7 +1019,6 @@ export default new Vuex.Store({
         if (payment.redeemcode) go(`/redeem/${payment.redeemcode}`);
       } catch (e) {
         await dispatch('clearPayment');
-        state.payment.method = method;
         commit('error', e.response ? e.response.data : e.message);
       }
     },
@@ -1117,11 +1123,13 @@ export default new Vuex.Store({
 
       if (signed) {
         try {
-          let method = network === 'LBTC' ? 'liquid' : 'bitcoin';
-          let { data: payment } = await Vue.axios.post(`/${method}/broadcast`, {
-            tx: tx.toHex(),
-            payment: getters.payment,
-          });
+          let { data: payment } = await Vue.axios.post(
+            `/${payment.network}/broadcast`,
+            {
+              tx: tx.toHex(),
+              payment: getters.payment,
+            }
+          );
           payment.sent = true;
           commit('payment', payment);
         } catch (e) {
@@ -1209,28 +1217,32 @@ export default new Vuex.Store({
       }
     },
 
-    async addInvoice({ commit, dispatch, state }, { method, user }) {
+    async addInvoice({ commit, dispatch, state }, params) {
       commit('loading', true);
       const { controller, invoice, rate, socket } = state;
-      if (controller) controller.abort();
+      if (!(invoice.user && invoice.user.id)) invoice.user = state.user;
+      const { user } = invoice;
+      if (!invoice.path)
+        invoice.path = `${user.account.path}/${user.account.index}`;
+      if (!invoice.currency) invoice.currency = user.currency;
 
-      if (!invoice.user.username && user.username) {
-        invoice.user = user;
+      if (!invoice.network) {
+        if (user.account.pubkey) invoice.network = 'bitcoin';
+        else invoice.network = 'lightning';
       }
+
+      if (controller) controller.abort();
 
       if (!invoice.amount) invoice.amount = null;
       const { amount, memo, tip } = invoice;
 
-      method = method || invoice.method;
+      invoice.address = null;
       invoice.received = 0;
       invoice.rate = rate;
-      invoice.memo = memo;
-      invoice.method = method;
-      invoice.network = methods[method];
       invoice.uuid = v4();
 
       const url = address => {
-        let url = amount || memo ? `${method}:${address}?` : address;
+        let url = amount || memo ? `${invoice.network}:${address}?` : address;
         if (amount)
           url += `amount=${((amount + tip) / SATS).toFixed(8)}${
             memo ? '&' : ''
@@ -1240,15 +1252,13 @@ export default new Vuex.Store({
       };
 
       let address;
-      switch (method) {
+      switch (invoice.network) {
         case 'bitcoin':
-          if (!invoice.address)
-            invoice.address = await dispatch('getNewAddress', 'bech32');
+          invoice.address = await dispatch('getNewAddress', invoice.type);
           invoice.text = url(invoice.address);
           break;
         case 'liquid':
-          if (!invoice.address)
-            invoice.address = await dispatch('getNewAddress', 'p2sh-segwit');
+          invoice.address = await dispatch('getNewAddress', 'p2sh-segwit');
           let text = url(invoice.address);
           text = text.replace('liquid', 'liquidnetwork');
           if (amount) text += `&asset=${user.account.asset}`;
@@ -1295,11 +1305,6 @@ export default new Vuex.Store({
           /* */
         }
       }
-    },
-
-    async stopWriting({ getters }) {
-      const { controller } = getters;
-      controller.abort();
     },
 
     async paste({ commit, dispatch }) {
@@ -1387,7 +1392,7 @@ export default new Vuex.Store({
           if (user.account.ticker !== 'BTC')
             await dispatch(
               'shiftAccount',
-              user.accounts.find(a => a.asset === process.env.VUE_APP_LBTC).id
+              user.accounts.find(a => a.asset === BTC).id
             );
 
           let { tags, satoshis, millisatoshis } = payment.payobj;
@@ -1399,7 +1404,7 @@ export default new Vuex.Store({
           payment.fiatAmount = ((payment.amount * getters.rate) / SATS).toFixed(
             2
           );
-          payment.network = 'LNBTC';
+          payment.network = 'lightning';
 
           await Vue.axios.post('/lightning/query', { payreq });
 
@@ -1414,14 +1419,14 @@ export default new Vuex.Store({
       try {
         if (nodes.includes('bitcoin')) {
           url = bip21.decode(text);
-          payment.network = 'BTC';
+          payment.network = 'bitcoin';
           url.options.asset = BTC;
         }
       } catch (e) {
         if (nodes.includes('liquid')) {
           try {
             url = bip21.decode(text, 'liquidnetwork');
-            payment.network = 'LBTC';
+            payment.network = 'liquid';
           } catch (e) {
             /**/
           }
@@ -1456,7 +1461,7 @@ export default new Vuex.Store({
 
       if (nodes.includes('bitcoin') && validate(text)) {
         payment.address = text;
-        payment.network = 'BTC';
+        payment.network = 'bitcoin';
         go({ name: 'send', params: { keep: true } });
         return;
       }
@@ -1464,7 +1469,7 @@ export default new Vuex.Store({
       // Liquid
       if (nodes.includes('liquid') && isLiquid(text)) {
         payment.address = text;
-        payment.network = 'LBTC';
+        payment.network = 'liquid';
         go({ name: 'send', params: { keep: true } });
         return;
       }

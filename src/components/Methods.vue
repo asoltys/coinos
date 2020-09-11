@@ -47,7 +47,7 @@ export default {
       };
     },
     label() {
-      switch (this.payment.method) {
+      switch (this.payment.network) {
         case 'lightning':
           return 'Invoice';
         case 'bitcoin':

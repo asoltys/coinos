@@ -11,7 +11,7 @@
     </template>
     <div v-else>
       <numpad
-        @done="addInvoice({ method: 'lightning', user })"
+        @done="addInvoice()"
         @input="updateAmount"
         :currencies="currencies"
         :initialAmount="invoice.amount"
@@ -31,47 +31,9 @@
         </v-card-text>
       </v-card>
       <div class="d-flex flex-wrap buttons" v-else>
-        <v-btn class="flex-grow-1 mb-1" @click="showMemo">
-          <v-icon left>$note</v-icon>
-          Add Memo
-        </v-btn>
-      </div>
-      <div class="d-flex flex-wrap buttons">
-        <v-btn
-          v-if="
-            nodes.includes('bitcoin') &&
-              user.account.asset === btc
-          "
-          class="flex-grow-1 mb-1 mr-1"
-          @click="addInvoice({ method: 'bitcoin', user })"
-          :disabled="!isBtc"
-          :style="buttonStyle"
-        >
-          <img class="mr-1" src="../assets/bitcoin.png" width="30px" />
-          <span>Bitcoin</span>
-        </v-btn>
-
-        <v-btn
-          v-if="nodes.includes('lightning') && !user.account.pubkey && user.account.asset === btc"
-          class="flex-grow-1 mb-1 mr-1"
-          @click="addInvoice({ method: 'lightning', user })"
-          :disabled="!isBtc"
-          :style="buttonStyle"
-        >
-          <flash fillColor="yellow" />
-          <span>Lightning</span>
-        </v-btn>
-
-        <v-btn
-          v-if="
-            nodes.includes('liquid')
-          "
-          class="flex-grow-1 mr-0"
-          @click="addInvoice({ method: 'liquid', user })"
-          :style="buttonStyle"
-        >
-          <water fillColor="#00aaee" />
-          <span>Liquid</span>
+        <v-btn class="flex-grow-1 mb-1" @click="addInvoice()">
+          <v-icon left color="primary">$send</v-icon>
+          Go
         </v-btn>
       </div>
     </div>
@@ -83,22 +45,24 @@ import Balance from './Balance';
 import Numpad from './NumPad';
 import Received from './Received';
 import Request from './Request';
-import Flash from 'vue-material-design-icons/Flash';
-import Water from 'vue-material-design-icons/Water';
 import { get, call, sync } from 'vuex-pathify';
 import goTo from 'vuetify/es5/services/goto';
 
 export default {
-  components: { Balance, Flash, Numpad, Received, Request, Water },
+  components: { Balance, Numpad, Received, Request },
 
   data() {
     return {
+      loading: false,
       btc: process.env.VUE_APP_LBTC,
       showingMemo: false,
     };
   },
 
   computed: {
+    networks() {
+      return this.nodes.map(n => n.charAt(0).toUpperCase() + n.slice(1));
+    },
     buttonStyle() {
       let numButtons = this.user.account.pubkey ? 2 : this.user.account.asset === this.btc ? this.nodes.length : 1;
       return {
@@ -126,7 +90,6 @@ export default {
       ];
     },
     invoice: sync('invoice'),
-    loading: sync('loading'),
     nodes: get('nodes'),
     rate: get('rate'),
     rates: get('rates'),

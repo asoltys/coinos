@@ -1,5 +1,5 @@
 <template>
-  <div id="footer">
+  <div id="footer" v-if="!fullscreen">
     <v-bottom-navigation
       class="d-flex justify-space-around text-center"
       height="60"
@@ -31,18 +31,20 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
+import { get } from 'vuex-pathify';
+import goTo from 'vuetify/es5/services/goto';
 
 export default {
-  computed: mapGetters(['user']),
+  computed: {
+    fullscreen: get('fullscreen'),
+    user: get('user'),
+  },
 
   methods: {
     home() {
       this.$go('/home');
-      window.scrollTo(0, 0);
+      goTo(0);
     },
-
-    ...mapActions(['scan']),
   },
 };
 </script>

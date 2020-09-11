@@ -114,7 +114,9 @@ export default {
   },
   methods: {
     async self() {
-      await this.addInvoice({ method: 'bitcoin', user: this.user });
+      this.invoice.network = 'bitcoin';
+      this.invoice.user = this.user;
+      await this.addInvoice();
       this.$nextTick(() => {
         this.to = this.invoice.address;
       });
