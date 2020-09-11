@@ -128,6 +128,12 @@
       </v-btn>
     </div>
     <div class="d-flex flex-wrap mb-sm-1">
+      <v-btn @click="copy(invoice.text)" class="flex-grow-1 wide mb-1 mb-sm-0">
+        <v-icon left>$copy</v-icon>
+        Copy
+      </v-btn>
+    </div>
+    <div class="d-flex flex-wrap mb-sm-1">
       <v-btn
         @click.native="toggleSettings"
         class="flex-grow-1 wide mr-2 mb-1 mb-sm-0"
@@ -136,16 +142,10 @@
         Invoice Settings
       </v-btn>
     </div>
-    <div class="d-flex flex-wrap mb-sm-1">
+    <div class="d-flex flex-wrap">
       <v-btn @click="$emit('lock')" class="flex-grow-1 mr-1 mb-1 mb-sm-0 wide">
         <v-icon left color="blue">$eye</v-icon>
         Display
-      </v-btn>
-    </div>
-    <div class="d-flex flex-wrap">
-      <v-btn @click="copy(invoice.text)" class="flex-grow-1 wide">
-        <v-icon left>$copy</v-icon>
-        Copy
       </v-btn>
     </div>
   </div>

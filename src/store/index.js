@@ -114,6 +114,7 @@ const blankPayment = JSON.stringify({
   feeRate: null,
   fiatAmount: null,
   memo: null,
+  method: null,
   network: null,
   payment: null,
   payobj: null,
