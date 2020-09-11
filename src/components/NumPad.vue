@@ -73,7 +73,9 @@ export default {
   },
 
   mounted() {
-    this.$refs.amount.focus();
+    if (window.innerWidth > 600 && this.$refs.amount) {
+      this.$refs.amount.focus();
+    }
     this.rates = this.globalRates;
     this.currency = this.user.fiat && this.currencies.includes(this.user.currency)
       ? this.user.currency

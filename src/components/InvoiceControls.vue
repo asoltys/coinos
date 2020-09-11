@@ -1,12 +1,12 @@
 <template>
   <div>
     <amount
-      v-if="showAmount"
+      v-if="invoice.amount || showAmount"
       v-model.number="invoice.amount"
       class="mb-2"
       @input="updateAmount"
       @done="submit"
-      :startEditing="true"
+      :startEditing="!invoice.amount"
     />
     <v-textarea
       :label="invoice.network === 'lightning' ? 'Invoice' : 'Address'"
@@ -20,28 +20,8 @@
       :key="grow"
     >
       <template v-slot:append>
-        <v-btn
-          v-if="invoice.network === 'lightning'"
-          @click="grow = !grow"
-          icon
-          class="ml-1"
-          title="Copy"
-        >
-          <v-icon v-if="grow">$unfold_less</v-icon>
-          <v-icon v-else>$unfold_more</v-icon>
-        </v-btn>
-        <v-btn @click="copy(text)" icon class="ml-1" title="Copy">
+        <v-btn v-if="invoice.amount && invoice.network !== 'lightning'" @click="copy(text)" icon class="ml-1" title="Copy">
           <v-icon>$copy</v-icon>
-        </v-btn>
-        <v-btn
-          @click="
-            settings = !settings;
-            grow = settings;
-          "
-          icon
-          title="Address Settings"
-        >
-          <v-icon>$settings</v-icon>
         </v-btn>
         <v-btn
           v-if="invoice.network !== 'lightning'"
@@ -101,6 +81,7 @@
         </template>
       </v-select>
       <v-select
+        v-if="invoice.network !== 'lightning'"
         label="Address Type"
         :items="types"
         v-model="type"
@@ -110,25 +91,34 @@
         v-if="user.account.pubkey"
         label="Derivation Path"
         v-model="path"
+        @input="dirtyPath = true"
       >
         <template v-slot:append>
-          <v-btn class="toggle" @click="submit">
+          <v-btn v-if="dirtyPath" class="toggle" @click="submit">
             <v-icon left color="success">$check</v-icon> Apply
           </v-btn>
         </template>
       </v-text-field>
+      <div class="d-flex mb-1">
+        <v-btn
+          v-if="!lnurl && invoice.network === 'lightning'"
+          @click.native="getPaymentUrl"
+          class="flex-grow-1 wide mr-2 mb-1 mb-sm-0"
+        >
+          <v-icon left color="primary">$qrcode</v-icon>
+          LNURL Pay Request
+        </v-btn>
+      </div>
     </div>
-    <div class="d-flex mb-sm-1">
+    <div class="d-flex flex-wrap mb-sm-1">
       <v-btn
-        v-if="!showAmount"
+        v-if="!invoice.amount && !showAmount"
         @click.native="toggleAmount"
         class="flex-grow-1 wide mr-2 mb-1 mb-sm-0"
       >
         <v-icon left color="pink">$edit</v-icon>
         Set Amount
       </v-btn>
-    </div>
-    <div class="d-flex flex-wrap mb-sm-1">
       <v-btn
         @click.native="toggleMemo"
         class="flex-grow-1 wide mr-1 mb-1 mb-sm-0"
@@ -136,20 +126,23 @@
         <v-icon left color="green">$note</v-icon>
         {{ showMemo ? 'Remove' : 'Add' }} Memo
       </v-btn>
+    </div>
+    <div class="d-flex flex-wrap mb-sm-1">
       <v-btn
-        v-if="!lnurl && invoice.network === 'lightning'"
-        @click.native="getPaymentUrl"
+        @click.native="toggleSettings"
         class="flex-grow-1 wide mr-2 mb-1 mb-sm-0"
       >
-        <v-icon left color="primary">$qrcode</v-icon>
-        LNURL Pay Request
+        <v-icon left color="primary">$settings</v-icon>
+        Invoice Settings
+      </v-btn>
+    </div>
+    <div class="d-flex flex-wrap mb-sm-1">
+      <v-btn @click="$emit('lock')" class="flex-grow-1 mr-1 mb-1 mb-sm-0 wide">
+        <v-icon left color="blue">$eye</v-icon>
+        Display
       </v-btn>
     </div>
     <div class="d-flex flex-wrap">
-      <v-btn @click="$emit('lock')" class="flex-grow-1 mr-1 mb-1 mb-sm-0 wide">
-        <v-icon left color="blue">$eye</v-icon>
-        Display Mode
-      </v-btn>
       <v-btn @click="copy(invoice.text)" class="flex-grow-1 wide">
         <v-icon left>$copy</v-icon>
         Copy
@@ -171,6 +164,7 @@ export default {
   },
 
   data: () => ({
+    dirtyPath: false,
     dirtyMemo: false,
     showAmount: false,
     showMemo: false,
@@ -203,6 +197,10 @@ export default {
   },
 
   methods: {
+    toggleSettings() {
+      this.settings = !this.settings;
+      this.grow = this.settings;
+    },
     toggleAmount() {
       this.showAmount = !this.showAmount;
       if (!this.showAmount) {
@@ -211,6 +209,7 @@ export default {
       }
     },
     async submit() {
+      this.dirtyPath = false;
       this.dirtyMemo = false;
       this.addInvoice();
     },
@@ -218,7 +217,10 @@ export default {
       this.showMemo = !this.showMemo;
       this.$nextTick(() => {
         if (this.showMemo) this.$refs.memo.focus();
-        else this.invoice.memo = '';
+        else {
+          this.invoice.memo = '';
+          this.submit();
+        }
       });
     },
     setCurrency: call('setCurrency'),

@@ -24,19 +24,19 @@
       <v-card tile class="mx-auto menu" max-width="400">
         <v-list-item @click="$go('/about')">
           <v-list-item-action>
-            <v-icon>$help</v-icon>
+            <v-icon color="blue" title="About">$help</v-icon>
           </v-list-item-action>
           <v-list-item-content>About</v-list-item-content>
         </v-list-item>
         <v-list-item @click="$go('/settings')">
           <v-list-item-action>
-            <v-icon>$settings</v-icon>
+            <v-icon color="yellow" title="Settings">$settings</v-icon>
           </v-list-item-action>
           <v-list-item-content>Settings</v-list-item-content>
         </v-list-item>
         <v-list-item @click="$go('/logout')">
           <v-list-item-action>
-            <v-icon title="Logout">$power</v-icon>
+            <v-icon title="Logout" color="pink">$power</v-icon>
           </v-list-item-action>
           <v-list-item-content>Sign Out</v-list-item-content>
         </v-list-item>

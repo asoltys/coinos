@@ -7,7 +7,6 @@
     <v-main style="background: #333">
       <v-container class="mr-3" style="margin-bottom: 50px !important">
         <v-alert
-          border="top"
           class="mb-2 black--text"
           v-if="versionMismatch"
           color="primary"

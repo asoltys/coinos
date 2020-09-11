@@ -221,21 +221,21 @@
       </v-expansion-panel>
     </v-expansion-panels>
     <div class="text-center">
-      <v-btn class="mx-auto mb-2 mr-2 wide" @click="$go('/')">
+      <v-btn class="mx-auto mb-1 mr-2 wide" @click="$go('/')">
         <v-icon left color="blue">$payments</v-icon>
         <span>View Payments</span>
       </v-btn>
-      <v-btn class="mx-auto mb-2 mr-2 wide" @click="$go('/wallet')">
+      <v-btn class="mx-auto mb-1 mr-2 wide" @click="$go('/wallet')">
         <v-icon left color="primary">$add</v-icon>
         <span>New Wallet</span>
       </v-btn>
-      <v-btn class="mx-auto mb-2 mr-2 wide" @click="$go('/asset')">
+      <v-btn class="mx-auto mb-1 mr-2 wide" @click="$go('/asset')">
         <v-icon left color="green">$assignment</v-icon>
         <span>Issue New Asset</span>
       </v-btn>
       <v-btn
         v-if="user.accounts.filter(a => a.hide).length"
-        class="mx-auto mb-2 wide"
+        class="mx-auto mb-1 wide"
         @click="showHidden = !showHidden"
       >
         <v-icon left>$eye</v-icon>
