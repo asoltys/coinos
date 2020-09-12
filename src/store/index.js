@@ -120,6 +120,7 @@ const blankPayment = JSON.stringify({
   payobj: null,
   payreq: '',
   recipient: null,
+  replaceable: false,
   route: null,
   sent: false,
   tip: null,
@@ -168,6 +169,7 @@ const state = {
   received: JSON.parse(blankPayment),
   reader: null,
   seed: null,
+  selected: null,
   snack: '',
   socket: null,
   stopScanning: false,
@@ -757,7 +759,7 @@ export default new Vuex.Store({
           reject(new Error('socket closed'));
         };
 
-        ws.onmessage = msg => {
+        ws.onmessage = async msg => {
           commit('socket', ws);
           let { type, data } = JSON.parse(msg.data);
 
@@ -796,7 +798,12 @@ export default new Vuex.Store({
               break;
 
             case 'payment':
+              if (data.amount > 0) commit('snack', 'Payment received!');
+              if (router.currentRoute.path === '/receive') {
+                await go('/home');
+              } 
               commit('addPayment', data);
+              commit('selected', 0);
               break;
 
             case 'proposal':
@@ -919,9 +926,9 @@ export default new Vuex.Store({
 
       let { payment, user, seed } = getters;
       let { asset } = user.account;
-      let { address, amount, feeRate } = payment;
+      let { address, amount, feeRate, replaceable } = payment;
 
-      let params = { address, amount, asset, feeRate };
+      let params = { address, amount, asset, feeRate, replaceable };
 
       if (address) {
         try {
@@ -1117,6 +1124,7 @@ export default new Vuex.Store({
           memo,
           tx,
           payreq,
+          replaceable,
           route,
           signed,
         },

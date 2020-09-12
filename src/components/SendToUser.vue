@@ -7,16 +7,17 @@
         v-model="username"
         autocapitalize="none"
         clearable
-      />
-      <div class="d-flex">
+      >
+      <template v-slot:append>
         <v-btn
-          class="flex-grow-1 ml-auto wide"
+          class="flex-grow-1 ml-auto wide toggle"
           @click="sendToUser"
         >
           <v-icon left color="primary">$search</v-icon>
-          Find User
+          Find
         </v-btn>
-      </div>
+      </template>
+      </v-text-field>
     </v-form>
     </template>
 
@@ -45,3 +46,7 @@ export default {
   },
 };
 </script>
+
+<style>
+
+</style>

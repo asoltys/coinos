@@ -185,4 +185,9 @@ body
 
 :not(.v-select).v-text-field input[readonly="readonly"]
   color #ccc
+
+.toggle
+  margin auto 0.25rem !important
+  margin-top -0.3rem !important
+  height 1.7rem !important
 </style>

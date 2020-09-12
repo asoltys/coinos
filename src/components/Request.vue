@@ -1,6 +1,7 @@
 <template>
   <div>
     <tippad v-if="tipping" @input="setTip" />
+    <received v-else-if="invoice.received" />
     <v-card v-else class="pa-3 text-center mb-2">
       <div v-if="lnurl && lnurl.encoded">
         <lnurl :lnurl="lnurl" />
@@ -29,9 +30,10 @@ import Tippad from './TipPad';
 import InvoiceBalance from './InvoiceBalance';
 import CustomerControls from './InvoiceCustomerControls';
 import InvoiceControls from './InvoiceControls';
+import Received from './Received';
 
 export default {
-  components: { Qr, Tippad, Lnurl, InvoiceBalance, CustomerControls, InvoiceControls },
+  components: { Qr, Tippad, Lnurl, InvoiceBalance, CustomerControls, InvoiceControls, Received },
   mixins: [Copy],
   props: {
     clear: { type: Function },

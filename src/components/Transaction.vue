@@ -56,7 +56,8 @@
           class="toggle black--text mt-auto"
           :color="color(feeUnit)"
           @click.prevent="toggle"
-          >{{ feeUnit }}</v-btn>
+          >{{ feeUnit }}</v-btn
+        >
         <v-btn icon @click="copy(displayFee)" class="ml-1" text>
           <v-icon>$copy</v-icon>
         </v-btn>
@@ -65,6 +66,8 @@
     <set-fee :adjusting="adjusting" @closed="$emit('feeRate')" />
 
     <v-textarea label="Memo" v-model="payment.memo" rows="1" auto-grow />
+
+    <v-switch label="Replaceable" v-model="payment.replaceable" @change="$emit('feeRate')"/>
 
     <div class="d-flex" v-if="psbt">
       <v-btn @click="copy(psbt)" class="ml-auto">

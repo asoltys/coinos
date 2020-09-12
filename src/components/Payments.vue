@@ -5,10 +5,10 @@
       indeterminate
     />
     <template v-else>
-      <div v-if="filteredPayments().length">
-        <v-expansion-panels accordion>
+      <div v-if="length">
+        <v-expansion-panels accordion v-model="selected">
           <v-expansion-panel
-            v-for="{
+            v-for="({
               account,
               color,
               confirmed,
@@ -27,7 +27,7 @@
               sign,
               tip,
               updatedAt,
-            } in filteredPayments()"
+            }) in filteredPayments()"
             :key="id"
           >
             <v-expansion-panel-header
@@ -73,7 +73,7 @@
                 {{ updatedAt | format }}
               </div>
             </v-expansion-panel-header>
-            <v-expansion-panel-content class="text-left">
+            <v-expansion-panel-content class="text-left" :eager="true">
               <v-card class="pa-4" style="background: #333">
                 <v-textarea
                   label="Payment Hash"
@@ -161,11 +161,13 @@
             <v-icon left>$refresh</v-icon><span>Load All</span>
           </v-btn>
           <v-btn @click="exportCSV" class="flex-grow-1 wide">
-          <v-icon left>$download</v-icon><span>Export CSV</span>
+            <v-icon left>$download</v-icon><span>Export CSV</span>
           </v-btn>
         </div>
       </div>
-      <v-alert v-else color="primary" class="black--text">No payments found</v-alert>
+      <v-alert v-else color="primary" class="black--text"
+        >No payments found</v-alert
+      >
     </template>
   </div>
 </template>
@@ -173,7 +175,7 @@
 <script>
 import { format, parse, isBefore } from 'date-fns';
 import { mapGetters } from 'vuex';
-import { call, sync } from 'vuex-pathify';
+import { get, call, sync } from 'vuex-pathify';
 import bolt11 from 'bolt11';
 import colors from 'vuetify/lib/util/colors';
 import Copy from '../mixins/Copy';
@@ -199,10 +201,14 @@ export default {
       copytext: '',
       loaded: false,
       success: {},
+      selected: null,
     };
   },
 
   computed: {
+    length() {
+      return this.filteredPayments().length;
+    },
     precision() {
       if (this.user.unit === 'SAT') return 0;
       else return undefined;
@@ -298,7 +304,9 @@ export default {
           isBefore(parse(a.createdAt), parse(b.createdAt)) ? -1 : 1
         )
         .filter(p => p.amount < 0 || p.received)
-        .filter(p => !this.user.account || (p.account_id === this.user.account.id))
+        .filter(
+          p => !this.user.account || p.account_id === this.user.account.id
+        )
         .reverse();
     },
 
@@ -306,6 +314,12 @@ export default {
       window.open(link, '_blank');
     },
   },
+
+  watch: {
+    length(v) {
+      setTimeout(() => (this.selected = v - 1), 100);
+    },
+  } 
 };
 </script>
 
@@ -335,4 +349,16 @@ code
   margin auto 0.25rem !important
   margin-top -0.3rem !important
   height 1.7rem !important
+
+.list-item {
+  display: inline-block;
+  margin-right: 10px;
+}
+.list-enter-active, .list-leave-active {
+  transition: all 1s;
+}
+.list-enter, .list-leave-to /* .list-leave-active below version 2.1.8 */ {
+  opacity: 0;
+  transform: translateY(30px);
+}
 </style>
