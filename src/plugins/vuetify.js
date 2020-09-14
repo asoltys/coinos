@@ -35,6 +35,7 @@ import Info from 'vue-material-design-icons/Information';
 import Key from 'vue-material-design-icons/Key';
 import Link from 'vue-material-design-icons/Link';
 import Lock from 'vue-material-design-icons/Lock';
+import Login from 'vue-material-design-icons/Login';
 import Nfc from 'vue-material-design-icons/Nfc';
 import Note from 'vue-material-design-icons/Note';
 import OpenInNew from 'vue-material-design-icons/OpenInNew';
@@ -105,6 +106,7 @@ export default new Vuetify({
       'key': { component: Key, props: { size: 64 } },
       'link': { component: Link},
       'lock': { component: Lock },
+      'login': { component: Login },
       'nfc': { component: Nfc },
       'note': { component: Note },
       'open': { component: OpenInNew },

@@ -73,8 +73,6 @@ export default {
   },
 
   methods: {
-    clearInvoice: call('clearInvoice'),
-
     addInvoice: call('addInvoice'),
 
     getPaymentUrl: call('getPaymentUrl'),
@@ -97,7 +95,6 @@ export default {
       resolve();
     };
     await new Promise(waitForUser);
-    await this.clearInvoice();
     this.addInvoice();
   },
 };

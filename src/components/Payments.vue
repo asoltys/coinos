@@ -206,6 +206,7 @@ export default {
   },
 
   computed: {
+    paymentCount: get('paymentCount'),
     length() {
       return this.filteredPayments().length;
     },
@@ -316,7 +317,7 @@ export default {
   },
 
   watch: {
-    length(v) {
+    paymentCount(v) {
       setTimeout(() => (this.selected = v - 1), 100);
     },
   } 

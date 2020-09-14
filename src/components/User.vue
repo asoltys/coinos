@@ -7,19 +7,19 @@
       </h1>
       <request v-if="invoice.text" />
       <div v-else>
-      <numpad
-        @done="addInvoice()"
-        :currencies="['SAT', 'BTC', ...user.currencies]"
-        :initialAmount="0"
-        :initialRate="rate"
-              @input="updateAmount"
-      />
-      <div class="d-flex flex-wrap buttons">
-        <v-btn class="flex-grow-1 mb-1" @click="addInvoice()">
-          <v-icon left color="primary">$send</v-icon>
-          Go
-        </v-btn>
-      </div>
+        <numpad
+          @done="addInvoice"
+          :currencies="['SAT', 'BTC', ...user.currencies]"
+          :initialAmount="0"
+          :initialRate="rate"
+          @input="updateAmount"
+        />
+        <div class="d-flex flex-wrap buttons">
+          <v-btn class="flex-grow-1 mb-1" @click="addInvoice">
+            <v-icon left color="primary">$send</v-icon>
+            Go
+          </v-btn>
+        </div>
       </div>
       <v-btn
         v-if="received || invoice.address || invoice.text"
@@ -56,6 +56,7 @@ export default {
     rates: get('rates'),
     invoice: sync('invoice'),
     received: get('received'),
+    recipient: sync('recipient'),
     user: get('user'),
   },
   methods: {
@@ -78,15 +79,20 @@ export default {
     },
   },
   async mounted() {
-    this.$set(this.user, 'username', this.username);
+    this.recipient.username = this.username;
+    this.recipient.account.pubkey = null;
     this.exists = await this.checkUser(this.username);
     const waitForRates = resolve => {
       if (!this.rates)
-        return this.timeout = setTimeout(() => waitForRates(resolve), 1000);
+        return (this.timeout = setTimeout(() => waitForRates(resolve), 1000));
       resolve();
     };
     await new Promise(waitForRates);
     this.loading = false;
+  },
+
+  beforeDestroy() {
+    this.recipient.username = null;
   },
 };
 </script>

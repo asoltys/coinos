@@ -20,7 +20,13 @@
       :key="grow"
     >
       <template v-slot:append>
-        <v-btn v-if="invoice.amount && invoice.network !== 'lightning'" @click="copy(text)" icon class="ml-1" title="Copy">
+        <v-btn
+          v-if="invoice.amount && invoice.network !== 'lightning'"
+          @click="copy(text)"
+          icon
+          class="ml-1"
+          title="Copy"
+        >
           <v-icon>$copy</v-icon>
         </v-btn>
         <v-btn
@@ -42,6 +48,7 @@
       auto-grow
       auto-focus
       @input="dirtyMemo = true"
+      @keydown.enter.prevent="submit"
     >
       <template v-slot:append>
         <v-btn v-if="dirtyMemo" class="toggle" @click="submit">
@@ -99,7 +106,7 @@
           </v-btn>
         </template>
       </v-text-field>
-      <div class="d-flex mb-1">
+      <div class="d-flex mb-sm-1">
         <v-btn
           v-if="!lnurl && invoice.network === 'lightning'"
           @click.native="getPaymentUrl"
@@ -119,18 +126,20 @@
         <v-icon left color="pink">$edit</v-icon>
         Set Amount
       </v-btn>
+    </div>
+    <div class="d-flex flex-wrap mb-sm-1">
+      <v-btn @click="copy(invoice.text)" class="flex-grow-1 wide mb-1 mb-sm-0">
+        <v-icon left>$copy</v-icon>
+        Copy
+      </v-btn>
+    </div>
+    <div class="d-flex flex-wrap mb-sm-1">
       <v-btn
         @click.native="toggleMemo"
         class="flex-grow-1 wide mr-1 mb-1 mb-sm-0"
       >
         <v-icon left color="green">$note</v-icon>
         {{ showMemo ? 'Remove' : 'Add' }} Memo
-      </v-btn>
-    </div>
-    <div class="d-flex flex-wrap mb-sm-1">
-      <v-btn @click="copy(invoice.text)" class="flex-grow-1 wide mb-1 mb-sm-0">
-        <v-icon left>$copy</v-icon>
-        Copy
       </v-btn>
     </div>
     <div class="d-flex flex-wrap mb-sm-1">
@@ -193,7 +202,7 @@ export default {
     invoice: sync('invoice'),
     path: sync('invoice@path'),
     type: sync('invoice@addressType'),
-    user: get('user'),
+    user: get('invoice@user'),
   },
 
   methods: {

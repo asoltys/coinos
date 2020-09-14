@@ -28,6 +28,11 @@
           <v-btn color="red" text @click="close">
             Cancel
           </v-btn>
+          <!--
+          <v-btn text @click="lnurl">
+            <v-icon left>$qrcode</v-icon> Lnurl Auth
+          </v-btn>
+          -->
           <v-spacer></v-spacer>
           <v-btn type="submit" color="primary" text>
             Ok

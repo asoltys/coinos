@@ -1,7 +1,7 @@
 <template>
   <v-card class="elevation-1 mb-4 pa-4">
     <v-card-text class="white--text text-center">
-      <div class="headline mb-2">
+      <div class="headline mb-2" v-if="payment.recipient.username">
         Sending to
         <span class="yellow--text">{{ payment.recipient.username }}</span>
       </div>

@@ -152,6 +152,7 @@ const state = {
   loadingFee: false,
   lnurl: null,
   memo: null,
+  paymentCount: 0,
   nfcEnabled: false,
   nodes: [],
   noNfc: false,
@@ -179,12 +180,7 @@ const state = {
   text: '',
   token: null,
   twofa: '',
-  recipient: {
-    currencies: ['CAD'],
-    currency: 'CAD',
-    accounts: [],
-    account: { ticker: 'BTC' },
-  },
+  recipient: JSON.parse(JSON.stringify(blankUser)),
   user: JSON.parse(JSON.stringify(blankUser)),
   success: null,
   versionMismatch: null,
@@ -207,6 +203,8 @@ export default new Vuex.Store({
         if (cookie && cookie[1] && cookie[1] !== 'null') token = cookie[1];
       }
 
+      commit('password', window.sessionStorage.getItem('password'));
+
       if (token === 'null') token = null;
 
       commit('token', token);
@@ -214,7 +212,14 @@ export default new Vuex.Store({
       const { path } = router.currentRoute;
 
       let redirect = false;
-      if (!(router.currentRoute.params.username || publicPaths.includes(path) || token || path.includes('login'))) {
+      if (
+        !(
+          router.currentRoute.params.username ||
+          publicPaths.includes(path) ||
+          token ||
+          path.includes('login')
+        )
+      ) {
         let user = {
           username: `satoshi-${v4().substr(0, 8)}`,
           password: 'password',
@@ -493,8 +498,10 @@ export default new Vuex.Store({
     },
 
     async getNewAddress({ commit, dispatch, state }) {
-      let { invoice, password, user } = state;
-      let { addressType, network } = invoice;
+      let { invoice, password, recipient } = state;
+      let { addressType, network, user } = invoice;
+
+      l("huhhh", user.username, user.account.pubkey, recipient);
 
       if (!['bitcoin', 'liquid'].includes(network))
         commit('error', 'Invalid network');
@@ -606,6 +613,7 @@ export default new Vuex.Store({
       let { subscription } = state;
 
       document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+      window.sessionStorage.removeItem('password');
       window.sessionStorage.removeItem('token');
       commit('token', null);
       commit('pin', null);
@@ -728,11 +736,11 @@ export default new Vuex.Store({
         const proto = location.protocol === 'https:' ? 'wss://' : 'ws://';
 
         const open = () => {
-          const { socket: ws, user, token } = getters;
+          const { socket: ws, recipient, user, token } = getters;
           if (ws && ws.readyState === 1) {
             ws.send(JSON.stringify({ type: 'heartbeat' }));
 
-            if (!user || (!user.username && !user.payments)) {
+            if (!user || (!user.payments && !recipient.username)) {
               ws.send(JSON.stringify({ type: 'login', data: token }));
             } else {
               resolve();
@@ -767,54 +775,69 @@ export default new Vuex.Store({
           commit('socket', ws);
           let { type, data } = JSON.parse(msg.data);
 
-          switch (type) {
-            case 'connected':
+          let handlers = {
+            connected() {
               getters.socket.id = data;
-              break;
+            },
 
-            case 'account':
+            account() {
               commit('addAccount', data);
-              break;
+            },
 
-            case 'accounts':
+            accounts() {
               getters.user.accounts = data;
-              break;
+            },
 
-            case 'key':
+            key() {
               commit('addKey', data);
-              break;
+            },
 
-            case 'login':
-              if (data) {
-                commit('user', data);
+            login() {
+              let user = data;
+              if (user) {
+                if (getters.password) {
+                  let seed;
+                  if (user.seed) {
+                    seed = aes
+                      .decrypt(user.seed, getters.password)
+                      .toString(Utf8);
+                  } else {
+                    seed = generateMnemonic();
+                    user.seed = aes.encrypt(seed, getters.password).toString();
+                    dispatch('updateUser', user);
+                  }
+                  commit('seed', seed);
+                }
+                commit('user', user);
+
                 resolve();
               } else {
                 dispatch('logout');
               }
-              break;
+            },
 
-            case 'logout':
+            logout() {
               dispatch('logout');
-              break;
+            },
 
-            case 'otpsecret':
+            otpsecret() {
               commit('user', { ...state.user, otpsecret: data });
-              break;
+            },
 
-            case 'payment':
+            async payment() {
               if (data.amount > 0) commit('snack', 'Payment received!');
               if (router.currentRoute.path === '/receive') {
                 await go('/home');
-              } 
+              }
               commit('addPayment', data);
               commit('selected', 0);
-              break;
+            },
 
-            case 'proposal':
+            proposal() {
               commit('addProposal', data);
-              break;
+            },
 
-            case 'rate':
+            rate() {
               const rate = data;
               const rates = {};
               const { fx, user } = getters;
@@ -826,21 +849,22 @@ export default new Vuex.Store({
 
               commit('rates', rates);
               if (user && user.currency) commit('rate', rates[user.currency]);
-              break;
+            },
 
-            case 'to':
+            to() {
               let { payment } = getters;
               if (!getters.user.account.pubkey) payment.recipient = data;
-              break;
+            },
 
-            case 'user':
+            user() {
               commit('user', data);
-              break;
+            },
 
-            case 'version':
+            version() {
               commit('version', data.trim());
-              break;
-          }
+            },
+          };
+          handlers[type]();
         };
       });
     },
@@ -1232,8 +1256,9 @@ export default new Vuex.Store({
 
     async addInvoice({ commit, dispatch, state }, params) {
       commit('loading', true);
-      const { controller, invoice, rate, socket } = state;
-      if (!(invoice.user && invoice.user.id)) invoice.user = state.user;
+      const { controller, invoice, rate, recipient, socket } = state;
+      if (recipient.username) invoice.user = recipient;
+      else if (!(invoice.user && invoice.user.id)) invoice.user = state.user;
       const { user } = invoice;
       if (!invoice.path)
         invoice.path = `${user.account.path}/${user.account.index}`;
@@ -1702,16 +1727,41 @@ export default new Vuex.Store({
       }
     },
 
-    async getLoginUrl({ commit, getters }) {
+    async lnurlAuth({ commit, getters }) {
       const { user } = getters;
       let url = '/login';
       if (user.username) url += `?username=${user.username}`;
 
+      let lnurl;
       try {
-        const { data: lnurl } = await Vue.axios.get(url);
+        ({ data: lnurl } = await Vue.axios.get(url));
         commit('lnurl', lnurl);
       } catch (e) {
         commit('error', e.response ? e.response.data : e.message);
+      }
+
+      try {
+        const proto = location.protocol === 'https:' ? 'wss://' : 'ws://';
+        const ws = new WebSocket(`${proto}${location.host}/ws`);
+        ws.onmessage = msg => {
+          let { type, data } = JSON.parse(msg.data);
+
+          switch (type) {
+            case 'connected':
+              ws.send(JSON.stringify({ type: 'lnurl', data: lnurl.secret }));
+              break;
+
+            case 'token':
+              let { token, key } = data;
+              commit('password', key), commit('token', token);
+              window.sessionStorage.setItem('password', key);
+              ws.close();
+              go('/home');
+              break;
+          }
+        };
+      } catch (e) {
+        console.log('socket error', e);
       }
     },
 
@@ -1794,6 +1844,8 @@ export default new Vuex.Store({
 
         s.user = JSON.parse(JSON.stringify(s.user));
       }
+
+      s.paymentCount = s.user.payments.length;
     },
     error(s, v) {
       s.error = v;
