@@ -1,7 +1,7 @@
 <template>
   <div>
     <amount
-      v-if="invoice.amount || showAmount"
+      v-if="showAmount"
       v-model.number="invoice.amount"
       class="mb-2"
       @input="updateAmount"
@@ -119,7 +119,7 @@
     </div>
     <div class="d-flex flex-wrap mb-sm-1">
       <v-btn
-        v-if="!invoice.amount && !showAmount"
+        v-if="!showAmount"
         @click.native="toggleAmount"
         class="flex-grow-1 wide mr-2 mb-1 mb-sm-0"
       >
@@ -203,6 +203,7 @@ export default {
     path: sync('invoice@path'),
     type: sync('invoice@addressType'),
     user: get('invoice@user'),
+    amount: get('invoice@amount'),
   },
 
   methods: {
@@ -213,8 +214,8 @@ export default {
     toggleAmount() {
       this.showAmount = !this.showAmount;
       if (!this.showAmount) {
-        this.invoice.amount = 0;
         this.submit();
+        this.invoice.amount = null;
       }
     },
     async submit() {
@@ -251,6 +252,11 @@ export default {
       this.submit();
     },
   },
+    watch: {
+      amount(n, o) {
+        if (o && !n) this.showAmount = false;
+      },
+    },
 };
 </script>
 

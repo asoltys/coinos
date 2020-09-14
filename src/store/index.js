@@ -501,8 +501,6 @@ export default new Vuex.Store({
       let { invoice, password, recipient } = state;
       let { addressType, network, user } = invoice;
 
-      l("huhhh", user.username, user.account.pubkey, recipient);
-
       if (!['bitcoin', 'liquid'].includes(network))
         commit('error', 'Invalid network');
       let address;

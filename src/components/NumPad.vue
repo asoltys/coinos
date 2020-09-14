@@ -142,7 +142,7 @@ export default {
       this.convert(v);
       this.$nextTick(() => {
         if (
-          !this.amount &&
+          !this.amount && this.$refs.amount &&
           this.$refs.amount.$refs.input !== document.activeElement
         )
           this.inputAmount = '';
