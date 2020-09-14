@@ -275,7 +275,7 @@ export default {
     },
 
     filteredPayments() {
-      if (!this.user.payments.length) return [];
+      if (!this.user.payments || !this.user.payments.length) return [];
       return this.user.payments
         .map(p => {
           let o = JSON.parse(JSON.stringify(p));

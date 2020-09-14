@@ -88,6 +88,8 @@ const blankUser = {
   currency: 'USD',
   accounts: [{ asset: BTC, ticker: 'BTC', precision: 8 }],
   account: { asset: BTC, ticker: 'BTC', precision: 8 },
+  unit: 'SAT',
+  fiat: false,
 };
 
 const blankInvoice = JSON.stringify({
@@ -211,7 +213,8 @@ export default new Vuex.Store({
 
       const { path } = router.currentRoute;
 
-      if (!(publicPaths.includes(path) || token || path.includes('login'))) {
+      let redirect = false;
+      if (!(router.currentRoute.params.username || publicPaths.includes(path) || token || path.includes('login'))) {
         let user = {
           username: `satoshi-${v4().substr(0, 8)}`,
           password: 'password',
@@ -220,7 +223,7 @@ export default new Vuex.Store({
         user = await dispatch('createUser', user);
         user.password = 'password';
         await dispatch('login', user);
-        return go(path);
+        redirect = true;
       }
 
       if (
@@ -246,6 +249,7 @@ export default new Vuex.Store({
       commit('initializing', false);
       commit('loading', false);
 
+      if (redirect) return go(path);
       if (!(path === '/login' || path === '/register')) dispatch('getInfo');
       if (token) {
         if (['/', '/register'].includes(path)) return go('/home');
@@ -728,7 +732,7 @@ export default new Vuex.Store({
           if (ws && ws.readyState === 1) {
             ws.send(JSON.stringify({ type: 'heartbeat' }));
 
-            if (!user || !user.payments) {
+            if (!user || (!user.username && !user.payments)) {
               ws.send(JSON.stringify({ type: 'login', data: token }));
             } else {
               resolve();

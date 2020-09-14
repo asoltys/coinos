@@ -72,10 +72,16 @@ export default {
     };
   },
 
-  mounted() {
+  async mounted() {
     if (window.innerWidth > 600 && this.$refs.amount) {
       this.$refs.amount.focus();
     }
+    const waitForRates = resolve => {
+      if (!this.globalRates)
+        return this.timeout = setTimeout(() => waitForRates(resolve), 1000);
+      resolve();
+    };
+    await new Promise(waitForRates);
     this.rates = this.globalRates;
     this.currency = this.user.fiat && this.currencies.includes(this.user.currency)
       ? this.user.currency

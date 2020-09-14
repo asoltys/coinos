@@ -85,7 +85,7 @@ export default {
       if (this.user.account.ticker !== 'BTC') {
         return this.user.account.ticker;
       }
-      
+
       return this.user.fiat ? this.user.currency : this.user.unit;
     },
     fiatAmount() {

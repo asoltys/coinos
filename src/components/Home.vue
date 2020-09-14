@@ -1,5 +1,5 @@
 <template>
-  <div v-if="user.username" class="text-center">
+  <div v-if="user.id" class="text-center">
     <balance />
     <payments class="mb-2" />
     <div v-if="user.username.startsWith('satoshi')" class="mb-4 d-flex flex-wrap">
