@@ -44,25 +44,26 @@
                 placeholder="0"
                 :length="6"
               />
-              <v-btn @click="disable">
+              <v-btn @click="disable2fa(token)">
                 <v-icon left class="red--text">$cancel</v-icon>
                 <span>Disable</span>
               </v-btn>
             </div>
             <div v-else>
-              <canvas
-                id="qr"
-                width="100"
-                height="100"
-                @click="fullscreen"
-                class="w-100 mx-auto mb-2"
-              />
+              <qr :text="uri" />
               <div class="mb-2">
-                <code
-                  class="black--text"
-                  :data-clipboard-text="user.otpsecret"
-                  >{{ user.otpsecret }}</code
-                >
+                <v-text-field :value="user.otpsecret" label="2fa Secret Token">
+                  <template v-slot:append>
+                    <v-btn
+                      @click="copy(user.otpsecret)"
+                      icon
+                      class="ml-1"
+                      title="Copy"
+                    >
+                      <v-icon>$copy</v-icon>
+                    </v-btn>
+                  </template>
+                </v-text-field>
               </div>
 
               <label class="font-weight-bold">Enter Code to Enable</label>
@@ -176,8 +177,10 @@
 
 <script>
 import { get, call, sync } from 'vuex-pathify';
+import Copy from '../mixins/Copy';
 import SetPin from './SetPin';
 import qr from 'qrcode';
+import Qr from './Qr';
 import PincodeInput from 'vue-pincode-input';
 import FullScreen from '../mixins/FullScreen';
 import LinkingKeys from './LinkingKeys';
@@ -185,8 +188,8 @@ import Window from '../window';
 import goTo from 'vuetify/es5/services/goto';
 
 export default {
-  components: { SetPin, PincodeInput, LinkingKeys },
-  mixins: [FullScreen],
+  components: { SetPin, PincodeInput, LinkingKeys, Qr },
+  mixins: [Copy, FullScreen],
   data() {
     return {
       installed: false,
@@ -216,6 +219,10 @@ export default {
   },
 
   computed: {
+    uri() {
+      let { username, otpsecret } = this.user;
+      return `otpauth://totp/CoinOS:${username}?secret=${otpsecret}&period=30&digits=6&algorithm=SHA1&issuer=CoinOS`;
+    },
     fx: get('fx'),
     user: get('user'),
     error: sync('error'),
@@ -281,16 +288,6 @@ export default {
     },
     twofa() {
       this.set2fa = !this.set2fa;
-      this.$nextTick(() => {
-        let canvas = document.getElementById('qr');
-        let { otpsecret, username } = this.user;
-        let uri = `otpauth://totp/CoinOS:${username}?secret=${otpsecret}&period=30&digits=6&algorithm=SHA1&issuer=CoinOS`;
-        if (!canvas) return;
-
-        qr.toCanvas(canvas, uri, e => {
-          if (e) console.log(e);
-        });
-      });
     },
     changePassword() {
       this.changingPassword = !this.changingPassword;
@@ -367,11 +364,4 @@ export default {
   .v-btn
     width 100%
     height 62px !important
-
-canvas
-  position relative
-  display block
-  height 100%
-  margin-left auto
-  margin-right auto
 </style>
