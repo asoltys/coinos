@@ -144,7 +144,7 @@
                 :readonly="a.asset === BTC"
               />
               <v-text-field
-                label="Precision (0-8)"
+                label="Unit Decimal Precision (0-8)"
                 v-model="a.precision"
                 type="number"
                 @input="e => limit(e, a)"
