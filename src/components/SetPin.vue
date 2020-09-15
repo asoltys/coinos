@@ -10,7 +10,9 @@
       </v-card-text>
 
       <v-card-text class="text-center">
-        <v-alert v-if="success" color="green">PIN Set Successfully!</v-alert>
+        <v-alert v-if="success" class="elevation-2" color="secondary">
+          <v-icon color="green" left>$check</v-icon> PIN Set Successfully!
+        </v-alert>
 
         <div v-else>
           <pincode-input
@@ -21,7 +23,6 @@
             :length="6"
             ref="oldPin"
             :key="oldPinKey"
-            @keyup.prevent="keyup"
           />
           <div v-show="!pinRequired">
             <pincode-input

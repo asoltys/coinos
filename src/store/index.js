@@ -153,6 +153,7 @@ const state = {
   lnurl: null,
   memo: null,
   paymentCount: 0,
+  pin: '',
   nfcEnabled: false,
   nodes: [],
   noNfc: false,
@@ -167,6 +168,7 @@ const state = {
   poll: null,
   prompt2fa: false,
   promptPassword: false,
+  promptPin: false,
   rate: 0,
   rates: null,
   received: JSON.parse(blankPayment),
@@ -203,7 +205,8 @@ export default new Vuex.Store({
         if (cookie && cookie[1] && cookie[1] !== 'null') token = cookie[1];
       }
 
-      commit('password', window.sessionStorage.getItem('password'));
+      let password = window.sessionStorage.getItem('password');
+      if (password) commit('password', password);
 
       if (token === 'null') token = null;
 
@@ -440,6 +443,7 @@ export default new Vuex.Store({
 
     async deleteAccount({ commit, dispatch, getters }, { id }) {
       try {
+        if (getters.user.account.id === id) throw new Error("Can't delete account while in use");
         await Vue.axios.post('/accounts/delete', { id });
         getters.user.accounts.splice(
           getters.user.accounts.findIndex(a => a.id === id),
@@ -455,6 +459,7 @@ export default new Vuex.Store({
       { commit, dispatch, getters },
       { name, ticker, precision, seed, path, pubkey }
     ) {
+      console.log("password", getters.password);
       if (!getters.password) await dispatch('passwordPrompt');
       const { password, user } = getters;
       seed = aes.encrypt(seed, password).toString();
@@ -479,6 +484,26 @@ export default new Vuex.Store({
       const res = await Vue.axios.post('/keys', { key });
     },
 
+    async pinPrompt({ commit, dispatch, getters }, resolve) {
+      if (!getters.user.pin) return true;
+
+      commit('promptPin', true);
+
+      let interval;
+
+      let ok = await new Promise((resolve, reject) => {
+        interval = setInterval(() => {
+          if (getters.pin === getters.user.pin) resolve(true) && l('resolved');
+        }, 1000);
+      });
+
+      clearInterval(interval);
+      commit('promptPin', false);
+      commit('pin', null);
+
+      return ok;
+    },
+
     async passwordPrompt({ commit, dispatch, getters }, resolve) {
       commit('promptPassword', true);
 
@@ -486,7 +511,7 @@ export default new Vuex.Store({
 
       await new Promise((resolve, reject) => {
         interval = setInterval(() => {
-          if (getters.seed) resolve() && l('resolved');
+          if (getters.password) resolve() && l('resolved');
         }, 1000);
       });
 
@@ -1037,6 +1062,10 @@ export default new Vuex.Store({
       } = getters;
       let asset = user.account.asset;
 
+      if (!(await dispatch('pinPrompt'))) {
+        commit('error', 'Invalid pin');
+      } 
+
       try {
         if (amount <= 0) {
           throw new Error('Amount must be greater than zero');
@@ -1138,6 +1167,10 @@ export default new Vuex.Store({
     },
 
     async sendPayment({ commit, dispatch, getters }) {
+      if (!(await dispatch('pinPrompt'))) {
+        return commit('error', 'Invalid pin');
+      } 
+
       commit('loading', true);
       commit('error', null);
 

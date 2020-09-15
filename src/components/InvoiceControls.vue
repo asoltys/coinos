@@ -1,7 +1,7 @@
 <template>
   <div>
     <amount
-      v-if="showAmount"
+      v-if="showAmount || invoice.amount"
       v-model.number="invoice.amount"
       class="mb-2"
       @input="updateAmount"
@@ -21,13 +21,20 @@
     >
       <template v-slot:append>
         <v-btn
-          v-if="invoice.amount && invoice.network !== 'lightning'"
           @click="copy(text)"
           icon
           class="ml-1"
           title="Copy"
         >
           <v-icon>$copy</v-icon>
+        </v-btn>
+        <v-btn
+          v-if="invoice.network === 'lightning' && !grow"
+          @click="grow = true"
+          title="Expand"
+          icon
+        >
+          <v-icon>$unfold_more</v-icon>
         </v-btn>
         <v-btn
           v-if="invoice.network !== 'lightning'"
@@ -118,16 +125,6 @@
       </div>
     </div>
     <div class="d-flex flex-wrap mb-sm-1">
-      <v-btn
-        v-if="!showAmount"
-        @click.native="toggleAmount"
-        class="flex-grow-1 wide mr-2 mb-1 mb-sm-0"
-      >
-        <v-icon left color="pink">$edit</v-icon>
-        Set Amount
-      </v-btn>
-    </div>
-    <div class="d-flex flex-wrap mb-sm-1">
       <v-btn @click="copy(invoice.text)" class="flex-grow-1 wide mb-1 mb-sm-0">
         <v-icon left>$copy</v-icon>
         Copy
@@ -135,24 +132,31 @@
     </div>
     <div class="d-flex flex-wrap mb-sm-1">
       <v-btn
-        @click.native="toggleMemo"
+        v-if="!showAmount && !invoice.amount"
+        @click.native="toggleAmount"
         class="flex-grow-1 wide mr-1 mb-1 mb-sm-0"
       >
+        <v-icon left color="pink">$edit</v-icon>
+        Set Amount
+      </v-btn>
+      <v-btn
+                     v-if="!showMemo"
+        @click.native="toggleMemo"
+        class="flex-grow-1 wide mb-1 mb-sm-0"
+      >
         <v-icon left color="green">$note</v-icon>
-        {{ showMemo ? 'Remove' : 'Add' }} Memo
+        Add Memo
       </v-btn>
     </div>
-    <div class="d-flex flex-wrap mb-sm-1">
+    <div class="d-flex flex-wrap">
       <v-btn
         @click.native="toggleSettings"
-        class="flex-grow-1 wide mr-2 mb-1 mb-sm-0"
+        class="flex-grow-1 wide mr-1 mb-1 mb-sm-0"
       >
         <v-icon left color="primary">$settings</v-icon>
         Invoice Settings
       </v-btn>
-    </div>
-    <div class="d-flex flex-wrap">
-      <v-btn @click="$emit('lock')" class="flex-grow-1 mr-1 mb-1 mb-sm-0 wide">
+      <v-btn @click="$emit('lock')" class="flex-grow-1 mb-1 mb-sm-0 wide">
         <v-icon left color="blue">$eye</v-icon>
         Display
       </v-btn>
@@ -196,7 +200,7 @@ export default {
     },
     nodes: get('nodes'),
     text() {
-      return this.invoice.address || this.invoice.text;
+      return this.loading ? '' : this.invoice.address || this.invoice.text;
     },
     lnurl: sync('lnurl'),
     invoice: sync('invoice'),

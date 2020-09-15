@@ -1,9 +1,9 @@
 <template>
-  <v-dialog v-model="promptPassword" width="500" @click:outside="close">
+  <v-dialog v-model="promptPin" width="500" @click:outside="close">
     <v-form @submit.prevent="submit">
       <v-card>
         <v-card-title class="headline" primary-title>
-          Password
+          Enter PIN
         </v-card-title>
 
         <v-card-text>
@@ -15,13 +15,12 @@
         >
           Try again
         </v-alert>
-          <v-text-field
-            type="password"
-            v-model="password"
-            ref="password"
-            autofocus
-            :error="error"
-            @input="error = false"
+          <pincode-input
+            class="mx-auto yellow--text"
+            v-model="pin"
+            placeholder="0"
+            :length="6"
+            :key="promptPin"
           />
         </v-card-text>
         <v-card-actions>
@@ -39,35 +38,43 @@
 </template>
 
 <script>
-import { call, sync } from 'vuex-pathify';
+import { get, call, sync } from 'vuex-pathify';
+import PincodeInput from 'vue-pincode-input';
 
 export default {
+  components: { PincodeInput },
   data() {
     return {
       error: null,
-      password: '',
     };
   },
 
   computed: {
-    promptPassword: sync('promptPassword'),
+    pin: sync('pin'),
+    user: get('user'),
+    promptPin: sync('promptPin'),
   },
 
   methods: {
-    checkPassword: call('checkPassword'),
+    checkPin: call('checkPin'),
     close() {
-      this.$nextTick(() => (this.promptPassword = false));
+      this.$nextTick(() => (this.promptPin = false));
     },
     async submit() {
-      if (await this.checkPassword(this.password)) this.close();
+      if (this.pin === this.user.pin) this.close();
       else this.error = true;
     },
   },
-
   watch: {
-    promptPassword(v) {
-      if (v) this.$nextTick(() => this.$refs.password.focus());
-    },
-  },
+    promptPin() {
+      this.pin = '';
+      this.error = null;
+    } 
+  } 
 };
 </script>
+
+<style lang="stylus">
+.vue-pincode-input
+  color #ffeb3b
+</style>

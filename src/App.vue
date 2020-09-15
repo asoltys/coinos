@@ -35,6 +35,7 @@
         </v-alert>
         <two-fa />
         <password />
+        <pin />
         <router-view v-if="!initializing" :key="$route.path" />
         <v-progress-linear v-else indeterminate />
       </v-container>
@@ -49,10 +50,11 @@ import BottomNav from './components/BottomNav';
 import SnackBar from './components/SnackBar';
 import TopBar from './components/TopBar';
 import Password from './components/Password';
+import Pin from './components/Pin';
 import TwoFa from './components/TwoFa';
 
 export default {
-  components: { BottomNav, SnackBar, TopBar, Password, TwoFa },
+  components: { BottomNav, SnackBar, TopBar, Password, TwoFa, Pin },
 
   data() {
     return {
