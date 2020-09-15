@@ -72,8 +72,8 @@ const isLiquid = text =>
   ((text.startsWith('H') || text.startsWith('G')) && text.length === 34) ||
   (text.startsWith('ert1q') && text.length === 43) ||
   (text.startsWith('ex1q') && text.length === 42) ||
-    (text.startsWith('el1qq')) ||
-      (text.startsWith('lq1qq'));
+  text.startsWith('el1qq') ||
+  text.startsWith('lq1qq');
 
 const l = console.log;
 const go = path => {
@@ -445,7 +445,8 @@ export default new Vuex.Store({
 
     async deleteAccount({ commit, dispatch, getters }, { id }) {
       try {
-        if (getters.user.account.id === id) throw new Error("Can't delete account while in use");
+        if (getters.user.account.id === id)
+          throw new Error("Can't delete account while in use");
         await Vue.axios.post('/accounts/delete', { id });
         getters.user.accounts.splice(
           getters.user.accounts.findIndex(a => a.id === id),
@@ -461,7 +462,6 @@ export default new Vuex.Store({
       { commit, dispatch, getters },
       { name, ticker, precision, seed, path, pubkey }
     ) {
-      console.log("password", getters.password);
       if (!getters.password) await dispatch('passwordPrompt');
       const { password, user } = getters;
       seed = aes.encrypt(seed, password).toString();
@@ -852,6 +852,8 @@ export default new Vuex.Store({
             async payment() {
               if (data.amount > 0) commit('snack', 'Payment received!');
               if (router.currentRoute.path === '/receive') {
+                if (data.account_id !== getters.user.account.id)
+                  await dispatch('shiftAccount', data.account_id);
                 await go('/home');
               }
               commit('addPayment', data);
@@ -1066,7 +1068,7 @@ export default new Vuex.Store({
 
       if (!(await dispatch('pinPrompt'))) {
         commit('error', 'Invalid pin');
-      } 
+      }
 
       try {
         if (amount <= 0) {
@@ -1171,7 +1173,7 @@ export default new Vuex.Store({
     async sendPayment({ commit, dispatch, getters }) {
       if (!(await dispatch('pinPrompt'))) {
         return commit('error', 'Invalid pin');
-      } 
+      }
 
       commit('loading', true);
       commit('error', null);
