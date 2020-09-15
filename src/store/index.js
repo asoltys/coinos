@@ -71,7 +71,9 @@ const isLiquid = text =>
   text.startsWith('XR') ||
   ((text.startsWith('H') || text.startsWith('G')) && text.length === 34) ||
   (text.startsWith('ert1q') && text.length === 43) ||
-  (text.startsWith('ex1q') && text.length === 42);
+  (text.startsWith('ex1q') && text.length === 42) ||
+    (text.startsWith('el1qq')) ||
+      (text.startsWith('lq1qq'));
 
 const l = console.log;
 const go = path => {
