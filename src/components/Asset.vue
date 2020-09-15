@@ -3,27 +3,29 @@
     <h1>Issue Asset</h1>
     <v-form @submit.prevent="submit">
       <v-text-field
-        label="# of Asset Tokens"
+        label="Total Supply / Number of Tokens"
         v-model="asset.asset_amount"
         rows="1"
         auto-grow
       />
+        <!--
       <v-text-field
         label="# of Reissuance Tokens"
         v-model="asset.token_amount"
         rows="1"
         auto-grow
       />
+        -->
       <v-text-field
-        label="Asset Name"
+        label="Asset Name (optional)"
         v-model="asset.name"
         rows="1"
         auto-grow
       />
-      <v-text-field label="Domain (optional)" v-model="asset.domain" />
       <v-text-field label="Ticker (optional)" v-model="asset.ticker" />
+      <v-text-field label="Domain Name of Issuer (optional, for Blockstream registry)" v-model="asset.domain" />
       <v-text-field
-        label="Precision (0-8)"
+        label="Unit Decimal Precision (0-8)"
         v-model="asset.precision"
         type="number"
         @input="e => limit(e)"

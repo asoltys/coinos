@@ -53,10 +53,10 @@
           </template>
         </v-textarea>
       </div>
-      <v-text-field label="Name" v-model="account.name" />
-      <v-text-field label="Ticker" v-model="account.ticker" />
+      <v-text-field label="Asset Name (optional)" v-model="account.name" />
+      <v-text-field label="Ticker Symbol (optional)" v-model="account.ticker" />
       <v-text-field
-        label="Precision"
+        label="Unit Decimal Precision (0-8)"
         v-model="account.precision"
         type="number"
         @input="e => limit(e, a)"

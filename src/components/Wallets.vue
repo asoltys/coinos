@@ -67,17 +67,18 @@
         <v-expansion-panel-content class="text-left">
           <v-card class="pa-4" style="background: #333">
             <div v-if="registering[a.asset]">
-              <h2 class="text-center white--text">Proof of Domain</h2>
+              <h2 class="text-center white--text">Proof of Domain Ownership</h2>
               <div class="text-center">
-                Place file at <a :href="url(a)">{{ url(a) }}</a> and click
-                Register
-              </div>
-              <div class="d-flex">
-                <div class="flex-grow-1 text-center">
-                  <v-icon large @click="showCode = !showCode" class="pa-4"
-                    >$assignment</v-icon
-                  >
-                </div>
+                <p class="mt-2">
+                1. Serve the proof file at: 
+                </p>
+                <v-card class="pa-2 mb-2 elevation-2">
+                  {{ url(a) }}
+                </v-card>
+                  
+                <p>
+                  2. Then click <b>Register</b> to register the asset on the <a href="https://assets.blockstream.info/" style="text-decoration: none">Blockstream Asset Registry</a>
+                  </p>
               </div>
               <v-textarea
                 v-if="showCode"
@@ -90,7 +91,7 @@
                   @click="download(filename(a), proof(a))"
                   class="flex-grow-1 mr-1"
                 >
-                  <v-icon left>$download</v-icon><span>Download</span>
+                  <v-icon left color="success">$download</v-icon><span>Proof File</span>
                 </v-btn>
                 <v-btn @click="copy(proof(a))" class="flex-grow-1">
                   <v-icon left>$copy</v-icon><span>Copy</span>
@@ -99,10 +100,9 @@
               <div class="d-flex flex-grow-1" style="width: 100%">
                 <v-btn
                   @click="register(a)"
-                  color="yellow"
-                  class="black--text flex-grow-1"
+                  class="flex-grow-1"
                 >
-                  <v-icon left>$assignment</v-icon><span>Register</span>
+                  <v-icon left color="primary">$assignment</v-icon><span>Register</span>
                 </v-btn>
               </div>
             </div>
