@@ -1,5 +1,35 @@
 <template>
   <div>
+      <v-select
+        label="Network"
+        v-model="invoice.network"
+        :items="networks"
+        @change="submit"
+      >
+        <template v-slot:selection="data">
+          <v-icon
+            class="ma-2 my-auto"
+            color="primary"
+            title="Lightning"
+            v-if="data.item.text === 'Lightning'"
+            >$flash</v-icon
+          >
+          <v-icon
+            class="ma-2 my-auto"
+            color="#00aaee"
+            title="Lightning"
+            v-if="data.item.text === 'Liquid'"
+            >$water</v-icon
+          >
+          <img
+            class="ma-2"
+            src="../assets/bitcoin.png"
+            width="22px"
+            v-if="data.item.text === 'Bitcoin'"
+          />
+          <span class="text--white">{{ data.item.text }}</span>
+        </template>
+      </v-select>
     <amount
       v-if="showAmount || invoice.amount"
       v-model.number="invoice.amount"
@@ -20,12 +50,14 @@
       :key="grow"
     >
       <template v-slot:append>
-        <v-btn
-          @click="copy(text)"
-          icon
-          class="ml-1"
-          title="Copy"
-        >
+      <v-btn
+      v-if="invoice.network !== 'lightning'"
+      icon
+        @click.native="toggleSettings"
+      >
+        <v-icon>$settings</v-icon>
+      </v-btn>
+        <v-btn @click="copy(text)" icon title="Copy">
           <v-icon>$copy</v-icon>
         </v-btn>
         <v-btn
@@ -64,36 +96,6 @@
       </template>
     </v-textarea>
     <div v-if="settings">
-      <v-select
-        label="Network"
-        v-model="invoice.network"
-        :items="networks"
-        @change="submit"
-      >
-        <template v-slot:selection="data">
-          <v-icon
-            class="ma-2 my-auto"
-            color="primary"
-            title="Lightning"
-            v-if="data.item.text === 'Lightning'"
-            >$flash</v-icon
-          >
-          <v-icon
-            class="ma-2 my-auto"
-            color="#00aaee"
-            title="Lightning"
-            v-if="data.item.text === 'Liquid'"
-            >$water</v-icon
-          >
-          <img
-            class="ma-2"
-            src="../assets/bitcoin.png"
-            width="22px"
-            v-if="data.item.text === 'Bitcoin'"
-          />
-          <span class="text--white">{{ data.item.text }}</span>
-        </template>
-      </v-select>
       <v-select
         v-if="invoice.network !== 'lightning'"
         label="Address Type"
@@ -140,7 +142,7 @@
         Set Amount
       </v-btn>
       <v-btn
-                     v-if="!showMemo"
+        v-if="!showMemo"
         @click.native="toggleMemo"
         class="flex-grow-1 wide mb-1 mb-sm-0"
       >
@@ -149,13 +151,6 @@
       </v-btn>
     </div>
     <div class="d-flex flex-wrap">
-      <v-btn
-        @click.native="toggleSettings"
-        class="flex-grow-1 wide mr-1 mb-1 mb-sm-0"
-      >
-        <v-icon left color="primary">$settings</v-icon>
-        Invoice Settings
-      </v-btn>
       <v-btn @click="$emit('lock')" class="flex-grow-1 mb-1 mb-sm-0 wide">
         <v-icon left color="blue">$eye</v-icon>
         Display
@@ -208,6 +203,7 @@ export default {
     type: sync('invoice@addressType'),
     user: get('invoice@user'),
     amount: get('invoice@amount'),
+    network: get('invoice@network'),
   },
 
   methods: {
@@ -256,11 +252,11 @@ export default {
       this.submit();
     },
   },
-    watch: {
-      amount(n, o) {
-        if (o && !n) this.showAmount = false;
-      },
+  watch: {
+    amount(n, o) {
+      if (o && !n) this.showAmount = false;
     },
+  },
 };
 </script>
 

@@ -102,7 +102,7 @@ const blankInvoice = JSON.stringify({
   fiatAmount: null,
   fiatTip: null,
   memo: null,
-  network: '',
+  network: null,
   rate: 0,
   received: 0,
   user: JSON.parse(JSON.stringify(blankUser)),
@@ -154,6 +154,7 @@ const state = {
   loadingFee: false,
   lnurl: null,
   memo: null,
+  network: null,
   paymentCount: 0,
   pin: '',
   nfcEnabled: false,
@@ -777,6 +778,7 @@ export default new Vuex.Store({
         };
 
         if (open()) return;
+        getters.user.payments = null;
 
         let ws = new WebSocket(`${proto}${location.host}/ws`);
         commit('socket', ws);

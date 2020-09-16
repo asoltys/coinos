@@ -70,15 +70,20 @@
               <h2 class="text-center white--text">Proof of Domain Ownership</h2>
               <div class="text-center">
                 <p class="mt-2">
-                1. Serve the proof file at: 
+                  1. Serve the proof file at:
                 </p>
                 <v-card class="pa-2 mb-2 elevation-2">
                   {{ url(a) }}
                 </v-card>
-                  
+
                 <p>
-                  2. Then click <b>Register</b> to register the asset on the <a href="https://assets.blockstream.info/" style="text-decoration: none">Blockstream Asset Registry</a>
-                  </p>
+                  2. Click <b>Register</b> to register the asset on the
+                  <a
+                    href="https://assets.blockstream.info/"
+                    style="text-decoration: none"
+                    >Blockstream Asset Registry</a
+                  >
+                </p>
               </div>
               <v-textarea
                 v-if="showCode"
@@ -91,22 +96,21 @@
                   @click="download(filename(a), proof(a))"
                   class="flex-grow-1 mr-1"
                 >
-                  <v-icon left color="success">$download</v-icon><span>Proof File</span>
+                  <v-icon left color="success">$download</v-icon
+                  ><span>Proof File</span>
                 </v-btn>
                 <v-btn @click="copy(proof(a))" class="flex-grow-1">
                   <v-icon left>$copy</v-icon><span>Copy</span>
                 </v-btn>
               </div>
               <div class="d-flex flex-grow-1" style="width: 100%">
-                <v-btn
-                  @click="register(a)"
-                  class="flex-grow-1"
-                >
-                  <v-icon left color="primary">$assignment</v-icon><span>Register</span>
+                <v-btn @click="register(a)" class="flex-grow-1">
+                  <v-icon left color="primary">$assignment</v-icon
+                  ><span>Register</span>
                 </v-btn>
               </div>
             </div>
-            <v-form v-else @submit.prevent="() => submit(a)">
+            <v-form v-else @submit.prevent="submit(a)">
               <v-text-field
                 label="Wallet Type"
                 :value="a.pubkey ? 'Non-Custodial' : 'Hosted'"
@@ -132,21 +136,27 @@
                   </v-btn>
                 </template>
               </v-textarea>
-              <v-text-field label="Name" v-model="a.name" />
+              <v-text-field label="Name" v-model="a.name" @change="change(a)" @blur="blur(a)" />
               <v-text-field
                 v-if="a.asset !== BTC"
                 label="Domain"
                 v-model="a.domain"
+                @change="change(a)"
+                @blur="blur(a)"
               />
               <v-text-field
                 label="Ticker"
                 v-model="a.ticker"
                 :readonly="a.asset === BTC"
+                @change="change(a)"
+                @blur="blur(a)"
               />
               <v-text-field
                 label="Unit Decimal Precision (0-8)"
                 v-model="a.precision"
                 type="number"
+                @change="change(a)"
+                @blur="blur(a)"
                 @input="e => limit(e, a)"
               />
               <div v-if="seeds[a.id]">
@@ -156,6 +166,8 @@
                   rows="1"
                   auto-grow
                   readonly
+                @change="change(a)"
+                @blur="blur(a)"
                 >
                   <template v-slot:append>
                     <v-btn @click="() => copy(seeds[a.id])" icon class="ml-1">
@@ -169,6 +181,8 @@
                   rows="1"
                   auto-grow
                   readonly
+                @change="change(a)"
+                @blur="blur(a)"
                 />
               </div>
               <div class="d-flex justify-center mb-sm-2 flex-wrap">
@@ -198,23 +212,23 @@
                   <v-icon left class="yellow--text">$send</v-icon>
                   <span>Go to Wallet</span>
                 </v-btn>
-                </div>
+              </div>
               <div class="d-flex justify-center mb-sm-2 flex-wrap">
-                <v-btn class="flex-grow-1 mr-1 mb-1 mb-sm-0 wide" @click.prevent="hide(a)">
+                <v-btn
+                  class="flex-grow-1 mr-1 mb-1 mb-sm-0 wide"
+                  @click.prevent="hide(a)"
+                >
                   <v-icon left>$eye</v-icon>
                   <span>{{ a.hide ? 'Show' : 'Hide' }} Wallet</span>
                 </v-btn>
-                <v-btn class="flex-grow-1 mr-1 mb-1 mb-sm-0 wide" @click.prevent="deleteAccount(a)">
+                <v-btn
+                  class="flex-grow-1 mr-1 mb-1 mb-sm-0 wide"
+                  @click.prevent="deleteAccount(a)"
+                >
                   <v-icon left color="error">$delete</v-icon>
                   <span>Delete Wallet</span>
                 </v-btn>
-                </div>
-              <div class="d-flex text-right mb-2">
-                <v-btn type="submit" class="flex-grow-1 mr-1 mb-1 mb-sm-0 wide">
-                  <v-icon left class="yellow--text">$check</v-icon>
-                  <span>save edits</span>
-                </v-btn>
-                </div>
+              </div>
             </v-form>
           </v-card>
         </v-expansion-panel-content>
@@ -269,22 +283,24 @@ export default {
     assets: get('assets'),
     user: sync('user'),
   },
-  data() {
-    return {
-      seeds: {},
-      showHidden: false,
-      showCode: false,
-      BTC,
-      registering: {},
-      panels: {
-        Hosted: [],
-        'Non-Custodial': [],
-      },
-    };
-  },
+  data: () => ({
+    changed: {},
+    seeds: {},
+    showHidden: false,
+    showCode: false,
+    BTC,
+    registering: {},
+    panels: {
+      Hosted: [],
+      'Non-Custodial': [],
+    },
+  }),
   methods: {
+    change(a) {
+      this.changed[a.id] = true;
+    },
     ticker(a) {
-      return a.ticker || a.asset.substr(0,3);
+      return a.ticker || a.asset.substr(0, 3);
     },
     deleteAccount: call('deleteAccount'),
     passwordPrompt: call('passwordPrompt'),
@@ -327,9 +343,15 @@ export default {
       if (e < 0) this.$nextTick(() => (a.precision = 0));
       if (e > 8) this.$nextTick(() => (a.precision = 8));
     },
-    async submit(a) {
+    blur(a) {
+      if (this.changed[a.id]) {
+        this.changed[a.id] = false;
+        this.submit(a, true);
+      }
+    }, 
+    async submit(a, supress) {
       await this.updateAccount(a);
-      this.success = 'Account updated successfully';
+      if (!supress) this.success = 'Account updated successfully';
     },
     registerAsset: call('registerAsset'),
     shiftAccount: call('shiftAccount'),
