@@ -257,7 +257,7 @@ export default {
     setupNotifications: call('setupNotifications'),
     startScanning: call('startScanning'),
     scroll(e) {
-      goTo.scrollTo(e.target, { offset: 15 });
+      goTo(e.target, { offset: 15 });
     },
     clear() {
       this.tokenKey += 'a';
