@@ -1206,7 +1206,7 @@ export default new Vuex.Store({
       if (signed) {
         try {
           let { data: payment } = await Vue.axios.post(
-            `/${payment.network}/broadcast`,
+            `/${network}/broadcast`,
             {
               tx: tx.toHex(),
               payment: getters.payment,
