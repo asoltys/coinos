@@ -88,6 +88,7 @@ export default {
     },
   },
   beforeDestroy() {
+    this.fullscreen = false;
     this.clearInvoice();
   },
   async mounted() {

@@ -318,7 +318,7 @@ export default {
 
   watch: {
     paymentCount(v) {
-      setTimeout(() => (this.selected = v - 1), 100);
+      setTimeout(() => (this.selected = this.length - 1), 100);
     },
   } 
 };
