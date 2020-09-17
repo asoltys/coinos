@@ -4,7 +4,7 @@
     <template v-else>
       <Balance />
       <sent v-if="payment.sent" />
-      <recipient v-else-if="payment.recipient" @internal="sendInternal" />
+      <recipient v-else-if="recipient" @internal="sendInternal" />
       <template v-else>
         <to v-if="!(payment.payobj || payment.address)" @edit="edit" :text="text" />
         <lightning-payment v-else-if="payment.payobj && !editing" @edit="edit" />
@@ -52,6 +52,7 @@ export default {
   computed: {
     loading: get('loading'),
     payment: get('payment'),
+    recipient: get('payment@recipient'),
     user: get('user'),
   },
 

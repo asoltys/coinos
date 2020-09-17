@@ -69,7 +69,8 @@ const isLiquid = text =>
   text.startsWith('VJL') ||
   text.startsWith('VT') ||
   text.startsWith('XR') ||
-  ((text.startsWith('H') || text.startsWith('G') || text.startsWith('Q')) && text.length === 34) ||
+  ((text.startsWith('H') || text.startsWith('G') || text.startsWith('Q')) &&
+    text.length === 34) ||
   (text.startsWith('ert1q') && text.length === 43) ||
   (text.startsWith('ex1q') && text.length === 42) ||
   text.startsWith('el1qq') ||
@@ -855,9 +856,11 @@ export default new Vuex.Store({
             async payment() {
               if (data.amount > 0) commit('snack', 'Payment received!');
               if (router.currentRoute.path === '/receive') {
-                if (!getters.user.accounts.find(a => a.id === data.account_id)) {
+                if (
+                  !getters.user.accounts.find(a => a.id === data.account_id)
+                ) {
                   await new Promise(r => setTimeout(r, 1000));
-                } 
+                }
                 if (data.account_id !== getters.user.account.id)
                   await dispatch('shiftAccount', data.account_id);
                 await go('/home');
@@ -885,8 +888,9 @@ export default new Vuex.Store({
             },
 
             to() {
-              let { payment } = getters;
-              if (!getters.user.account.pubkey) payment.recipient = data;
+              if (!getters.user.account.pubkey)
+                getters.payment.recipient = data;
+              commit('payment', JSON.parse(JSON.stringify(getters.payment)));
             },
 
             user() {
@@ -1307,7 +1311,8 @@ export default new Vuex.Store({
 
       if (!invoice.network) {
         if (user.account.pubkey) invoice.network = user.account.network;
-        else invoice.network = user.account.asset === BTC ? 'lightning' : 'liquid';
+        else
+          invoice.network = user.account.asset === BTC ? 'lightning' : 'liquid';
       }
 
       if (controller) controller.abort();
@@ -1448,7 +1453,7 @@ export default new Vuex.Store({
       if (!text) return;
       if (typeof text !== 'string') return router.go(-1);
       await dispatch('clearPayment');
-      let { nodes, payment, user } = getters;
+      let { nodes, networks, payment, user } = getters;
 
       if (nodes.includes('lightning')) {
         try {
@@ -1458,6 +1463,8 @@ export default new Vuex.Store({
           payment.payreq = payreq;
           payment.payobj = bolt11.decode(payment.payreq);
           let { coinType } = payment.payobj;
+
+          if (!networks.includes('lightning')) return commit('error', 'Lightning not supported in this account');
 
           if (coinType !== expectedType) {
             dispatch('clearPayment');
@@ -1486,8 +1493,9 @@ export default new Vuex.Store({
           payment.network = 'lightning';
 
           await Vue.axios.post('/lightning/query', { payreq });
+          if (!getters.payment.recipient)
+            go({ name: 'send', params: { keep: true } });
 
-          go({ name: 'send', params: { keep: true } });
           return;
         } catch (e) {
           if (e.response) commit('error', e.response.data);
@@ -1498,6 +1506,7 @@ export default new Vuex.Store({
       try {
         if (nodes.includes('bitcoin')) {
           url = bip21.decode(text);
+          if (!networks.includes('bitcoin')) return commit('error', 'Bitcoin not supported in this account');
           payment.network = 'bitcoin';
           url.options.asset = BTC;
         }
@@ -1505,6 +1514,7 @@ export default new Vuex.Store({
         if (nodes.includes('liquid')) {
           try {
             url = bip21.decode(text, 'liquidnetwork');
+            if (!networks.includes('liquid')) return commit('error', 'Liquid not supported in this account');
             payment.network = 'liquid';
           } catch (e) {
             /**/
@@ -1539,6 +1549,7 @@ export default new Vuex.Store({
       }
 
       if (nodes.includes('bitcoin') && validate(text)) {
+        if (!networks.includes('bitcoin')) return commit('error', 'Bitcoin not supported in this account');
         payment.address = text;
         payment.network = 'bitcoin';
         go({ name: 'send', params: { keep: true } });
@@ -1547,6 +1558,7 @@ export default new Vuex.Store({
 
       // Liquid
       if (nodes.includes('liquid') && isLiquid(text)) {
+        if (!networks.includes('liquid')) return commit('error', 'Liquid not supported in this account');
         payment.address = text;
         payment.network = 'liquid';
         go({ name: 'send', params: { keep: true } });
@@ -1923,5 +1935,17 @@ export default new Vuex.Store({
         s.versionMismatch = `Server expects ${v}, currently running ${version}`;
     },
   },
-  getters: make.getters(state),
+  getters: {
+    ...make.getters(state),
+    networks(s) {
+      return s.nodes
+        .filter(
+          n =>
+            (!s.user.account.pubkey &&
+              (s.user.account.asset === process.env.VUE_APP_LBTC ||
+                n === 'liquid')) ||
+            s.user.account.network === n
+        );
+    },
+  },
 });
