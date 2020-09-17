@@ -2,7 +2,7 @@
   <div v-if="user.id" class="text-center">
     <balance />
     <payments class="mb-2" />
-    <div v-if="user.username.startsWith('satoshi')" class="mb-4 d-flex flex-wrap">
+    <div class="mb-4 d-flex flex-wrap">
       <v-btn class="flex-grow-1 mr-1 mb-1 mb-md-0 wide" @click="$go('/receive')">
         <v-icon left color="green">$download</v-icon><span>Deposit Funds</span>
       </v-btn>
