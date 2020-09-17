@@ -1,166 +1,104 @@
 <template>
   <div>
-    <v-progress-linear v-if="loading || !rates" indeterminate />
-    <template v-else-if="invoice.text">
-      <request
-        v-if="!(invoice.amount || invoice.received) || (invoice.amount && invoice.received < invoice.amount)"
-        @clear="clearInvoice"
-      />
-      <balance v-else-if="user.username === currentUser.username" />
-      <received v-if="invoice.received" />
-    </template>
-    <div v-else>
-      <numpad
-        @done="addInvoice()"
-        @input="updateAmount"
-        :currencies="currencies"
-        :initialAmount="invoice.amount"
-        :initialRate="rate"
-      />
-
-      <v-card class="mb-1" v-if="showingMemo">
-        <v-card-text>
-          <v-textarea
-            label="Memo"
-            v-model="invoice.memo"
-            rows="1"
-            ref="memo"
-            auto-grow
-            auto-focus
-          />
-        </v-card-text>
-      </v-card>
-      <div class="d-flex flex-wrap buttons" v-else>
-        <v-btn class="flex-grow-1 mb-1" @click="addInvoice()">
-          <v-icon left color="primary">$send</v-icon>
-          Go
+    <tippad v-if="tipping" @input="setTip" />
+    <v-card v-else class="pa-3 text-center mb-2">
+      <div v-if="lnurl && lnurl.encoded">
+        <lnurl :lnurl="lnurl" />
+        <v-btn @click="lnurl = null" class="mb-1 mb-sm-0 wide">
+          <v-icon left>$arrow_back</v-icon>
+          Back
         </v-btn>
       </div>
-    </div>
+      <div v-else>
+        <invoice-balance v-if="fullscreen" />
+        <qr :text="invoice.text" />
+        <div v-if="fullscreen" class="ma-4">{{ invoice.memo }}</div>
+        <customer-controls v-if="fullscreen" @cancel="fullscreen = false" @tipping="tipping = true" />
+        <invoice-controls v-else @lock="fullscreen = true" />
+      </div>
+    </v-card>
   </div>
 </template>
 
 <script>
-import Balance from './Balance';
-import Numpad from './NumPad';
-import Received from './Received';
-import Request from './Request';
-import { get, call, sync } from 'vuex-pathify';
-import goTo from 'vuetify/es5/services/goto';
+import { call, get, sync } from 'vuex-pathify';
+import Copy from '../mixins/Copy';
+import Lnurl from './Lnurl';
+import Qr from './Qr';
+import Tippad from './TipPad';
+import InvoiceBalance from './InvoiceBalance';
+import CustomerControls from './InvoiceCustomerControls';
+import InvoiceControls from './InvoiceControls';
 
 export default {
-  components: { Balance, Numpad, Received, Request },
+  components: { Qr, Tippad, Lnurl, InvoiceBalance, CustomerControls, InvoiceControls },
+  mixins: [Copy],
+  props: {
+    clear: { type: Function },
+  },
 
   data() {
     return {
-      loading: false,
-      btc: process.env.VUE_APP_LBTC,
-      showingMemo: false,
+      tipping: false,
     };
   },
 
   computed: {
+    fullscreen: sync('fullscreen'),
+    loading: get('loading'),
     networks() {
-      return this.nodes.map(n => n.charAt(0).toUpperCase() + n.slice(1));
+      return this.nodes.map(n => ({
+        text: n[0].toUpperCase() + n.slice(1),
+        value: n,
+      }));
     },
-    buttonStyle() {
-      let numButtons = this.user.account.pubkey ? 2 : this.user.account.asset === this.btc ? this.nodes.length : 1;
-      return {
-        maxWidth: `${(100 / (window.innerWidth < 600 ? 1 : numButtons)).toFixed(
-          0
-        )}%`,
-      };
-    },
-    isBtc() {
-      return this.user.account && this.user.account.asset === process.env.VUE_APP_LBTC;
-    },
-    currencies() {
-      if (!(this.user.accounts && this.user.currencies)) return [];
-
-      return [
-        'SAT',
-        'BTC',
-        ...[
-          ...this.user.accounts
-            .filter(a => !a.hide && a.pubkey === this.user.account.pubkey)
-            .map(a => (a.ticker || a.asset.substr(0,3).toUpperCase()))
-            .filter(a => a !== 'BTC'),
-        ].sort(),
-        ...[...this.user.currencies].sort(),
-      ];
-    },
-    invoice: sync('invoice'),
     nodes: get('nodes'),
-    rate: get('rate'),
-    rates: get('rates'),
-    received: sync('received'),
-    currentUser: get('user'),
-    user() {
-      return this.invoice.user.username ? this.invoice.user : this.currentUser;
+    text() {
+      return this.invoice.address || this.invoice.text;
     },
+    ticker() {
+      return this.user.unit === 'BTC' ? this.user.account.ticker : 'SAT';
+    },
+    total() {
+      return this.$format(this.invoice.amount + this.invoice.tip);
+    },
+    lnurl: sync('lnurl'),
+    invoice: sync('invoice'),
+    amount: sync('invoice@amount'),
+    path: sync('invoice@path'),
+    type: sync('invoice@addressType'),
+    user: get('user'),
   },
 
   methods: {
-    showMemo() {
-      this.showingMemo = true;
-      this.$nextTick(() => {
-        this.$refs.memo.focus();
-        setTimeout(
-          () => goTo(this.$refs.memo, { offset: 15 }),
-          100
-        );
-      });
-    },
     addInvoice: call('addInvoice'),
     clearInvoice: call('clearInvoice'),
-    snack: call('snack'),
-    setCurrency: call('setCurrency'),
 
-    updateAmount(amount, fiatAmount, currency) {
-      this.setCurrency(currency);
-      this.$nextTick(() => {
-        this.invoice.amount = amount;
-        this.invoice.fiatAmount = fiatAmount;
-      });
-    },
+    getPaymentUrl: call('getPaymentUrl'),
+    shiftCurrency: call('shiftCurrency'),
+    toggleUnit: call('toggleUnit'),
+    stopWriting: call('stopWriting'),
 
-    checkRefresh() {
-      if (this.$route.query.refresh !== undefined) {
-        this.$router.replace(this.$route.path);
-      } else {
-        this.clearInvoice();
-      }
+
+    async setTip(tip, fiatTip) {
+      this.tipping = false;
+      this.invoice.tip = tip;
+      this.invoice.fiatTip = fiatTip;
+      await this.addInvoice();
     },
   },
-
-  beforeRouteUpdate(to, from, next) {
-    next();
-    this.checkRefresh();
-  },
-
-  mounted() {
+  beforeDestroy() {
     this.clearInvoice();
-    this.checkRefresh();
-    this.$nextTick(() => {
-      if (!this.invoice.user.username && this.user.username) {
-        this.$set(this.invoice, 'user', JSON.parse(JSON.stringify(this.user)));
-      }
-    });
+  },
+  async mounted() {
+    const waitForUser = resolve => {
+      if (!this.user.index && this.user.index !== 0)
+        return this.timeout = setTimeout(() => waitForUser(resolve), 1000);
+      resolve();
+    };
+    await new Promise(waitForUser);
+    this.addInvoice();
   },
 };
 </script>
 
-<style lang="stylus" scoped>
-.buttons
-  width: 100%;
-
-@media (max-width: 600px)
-  .buttons .v-btn
-    max-width none
-    width 100%
-    height 62px !important
-
-.buttons .v-btn
-  height 8vh !important
-  min-height 60px
-</style>

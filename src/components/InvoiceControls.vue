@@ -1,35 +1,35 @@
 <template>
   <div>
-      <v-select
-        label="Network"
-        v-model="invoice.network"
-        :items="networks"
-        @change="submit"
-      >
-        <template v-slot:selection="data">
-          <v-icon
-            class="ma-2 my-auto"
-            color="primary"
-            title="Lightning"
-            v-if="data.item.text === 'Lightning'"
-            >$flash</v-icon
-          >
-          <v-icon
-            class="ma-2 my-auto"
-            color="#00aaee"
-            title="Lightning"
-            v-if="data.item.text === 'Liquid'"
-            >$water</v-icon
-          >
-          <img
-            class="ma-2"
-            src="../assets/bitcoin.png"
-            width="22px"
-            v-if="data.item.text === 'Bitcoin'"
-          />
-          <span class="text--white">{{ data.item.text }}</span>
-        </template>
-      </v-select>
+    <v-select
+      label="Network"
+      v-model="invoice.network"
+      :items="networks"
+      @change="submit"
+    >
+      <template v-slot:selection="data">
+        <v-icon
+          class="ma-2 my-auto"
+          color="primary"
+          title="Lightning"
+          v-if="data.item.text === 'Lightning'"
+          >$flash</v-icon
+        >
+        <v-icon
+          class="ma-2 my-auto"
+          color="#00aaee"
+          title="Lightning"
+          v-if="data.item.text === 'Liquid'"
+          >$water</v-icon
+        >
+        <img
+          class="ma-2"
+          src="../assets/bitcoin.png"
+          width="22px"
+          v-if="data.item.text === 'Bitcoin'"
+        />
+        <span class="text--white">{{ data.item.text }}</span>
+      </template>
+    </v-select>
     <amount
       v-if="showAmount || invoice.amount"
       v-model.number="invoice.amount"
@@ -38,11 +38,19 @@
       @done="submit"
       :startEditing="!invoice.amount"
     />
+    <amount
+      v-if="invoice.tip"
+      v-model.number="invoice.tip"
+      label="Tip"
+      class="mb-2"
+      @input="updateTip"
+      @done="submit"
+    />
     <v-textarea
       :label="invoice.network === 'lightning' ? 'Invoice' : 'Address'"
       :loading="loading"
       v-model="text"
-      class="my-auto"
+      class="my-auto readonly"
       rows="1"
       :auto-grow="invoice.network !== 'lightning' || grow"
       style="overflow: hidden"
@@ -50,13 +58,13 @@
       :key="grow"
     >
       <template v-slot:append>
-      <v-btn
-      v-if="invoice.network !== 'lightning'"
-      icon
-        @click.native="toggleSettings"
-      >
-        <v-icon>$settings</v-icon>
-      </v-btn>
+        <v-btn
+          v-if="invoice.network !== 'lightning'"
+          icon
+          @click.native="toggleSettings"
+        >
+          <v-icon>$settings</v-icon>
+        </v-btn>
         <v-btn @click="copy(text)" icon title="Copy">
           <v-icon>$copy</v-icon>
         </v-btn>
@@ -187,7 +195,9 @@ export default {
     loading: get('loading'),
     networks() {
       return this.nodes
-        .filter(n => !(this.user.account.pubkey && n === 'lightning'))
+        .filter(
+          n => !this.user.account.pubkey && (this.user.account.asset === process.env.VUE_APP_LBTC || n === 'liquid') || this.user.account.network === n
+        )
         .map(n => ({
           text: n[0].toUpperCase() + n.slice(1),
           value: n,
@@ -242,13 +252,22 @@ export default {
         this.invoice.fiatAmount = fiatAmount;
       });
     },
+
+    updateTip(amount, fiatAmount, currency) {
+      this.setCurrency(currency);
+      this.$nextTick(() => {
+        this.invoice.tip = amount;
+        this.invoice.fiatTip = fiatAmount;
+      });
+    },
+
     addInvoice: call('addInvoice'),
     getPaymentUrl: call('getPaymentUrl'),
     getNewAddress() {
       const { path } = this.invoice;
       this.user.account.index++;
       let index = parseInt(path[path.length - 1]);
-      this.$set(this.invoice, 'path', path.replace(/.$/, ++index));
+      this.path = path.replace(/.$/, ++index);
       this.submit();
     },
   },

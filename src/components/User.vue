@@ -5,7 +5,7 @@
       <h1 class="text-center">
         Send to <span class="yellow--text">{{ username }}</span>
       </h1>
-      <request v-if="invoice.text" />
+      <receive v-if="invoice.text" />
       <div v-else>
         <numpad
           @done="addInvoice"
@@ -39,11 +39,11 @@
 
 <script>
 import Numpad from './NumPad';
-import Request from './Request';
+import Receive from './Receive';
 import { get, call, sync } from 'vuex-pathify';
 
 export default {
-  components: { Numpad, Request },
+  components: { Numpad, Receive },
   data: () => ({
     exists: false,
     loading: true,

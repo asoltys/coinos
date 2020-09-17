@@ -25,6 +25,8 @@
       :label="label"
       v-model="displayAmount"
       @click="editing = true"
+      readonly
+      style="color: white"
     >
       <template v-slot:append>
         <v-btn v-if="max" @click="setMax" class="ml-1" text>
@@ -159,4 +161,10 @@ export default {
   margin-top -12px
   margin-bottom 6px
   min-width 44px !important
+
+.v-textarea textarea[readonly="readonly"]
+  color #fff;
+
+:not(.v-select).v-text-field input[readonly="readonly"]
+  color #fff
 </style>

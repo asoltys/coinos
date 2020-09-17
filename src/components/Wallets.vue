@@ -116,12 +116,44 @@
                 :value="a.pubkey ? 'Non-Custodial' : 'Hosted'"
                 append-icon="$key"
                 readonly
+                class="readonly"
               >
                 <template v-slot:append>
                   <v-icon v-if="a.pubkey" color="yellow">$key</v-icon>
                   <v-icon v-else color="yellow">$cloud</v-icon>
                 </template>
               </v-text-field>
+              <v-select
+                v-if="a.pubkey"
+                label="Network"
+                v-model="a.network"
+                :items="networks"
+                readonly
+              >
+                <template v-slot:selection="data">
+                  <v-icon
+                    class="ma-2 my-auto"
+                    color="primary"
+                    title="Lightning"
+                    v-if="data.item.text === 'Lightning'"
+                    >$flash</v-icon
+                  >
+                  <v-icon
+                    class="ma-2 my-auto"
+                    color="#00aaee"
+                    title="Lightning"
+                    v-if="data.item.text === 'Liquid'"
+                    >$water</v-icon
+                  >
+                  <img
+                    class="ma-2"
+                    src="../assets/bitcoin.png"
+                    width="22px"
+                    v-if="data.item.text === 'Bitcoin'"
+                  />
+                  <span class="text--white">{{ data.item.text }}</span>
+                </template>
+              </v-select>
               <v-textarea
                 v-if="!a.pubkey"
                 label="Asset Id"
@@ -129,6 +161,7 @@
                 rows="1"
                 auto-grow
                 readonly
+                class="readonly"
               >
                 <template v-slot:append>
                   <v-btn @click="() => copy(a.asset)" icon class="ml-1">
@@ -136,11 +169,9 @@
                   </v-btn>
                 </template>
               </v-textarea>
-              <v-text-field label="Name" v-model="a.name" @change="change(a)" @blur="blur(a)" />
               <v-text-field
-                v-if="a.asset !== BTC"
-                label="Domain"
-                v-model="a.domain"
+                label="Asset Name"
+                v-model="a.name"
                 @change="change(a)"
                 @blur="blur(a)"
               />
@@ -148,6 +179,7 @@
                 label="Ticker"
                 v-model="a.ticker"
                 :readonly="a.asset === BTC"
+                :class="a.asset === BTC && 'readonly'"
                 @change="change(a)"
                 @blur="blur(a)"
               />
@@ -166,8 +198,9 @@
                   rows="1"
                   auto-grow
                   readonly
-                @change="change(a)"
-                @blur="blur(a)"
+                  class="readonly"
+                  @change="change(a)"
+                  @blur="blur(a)"
                 >
                   <template v-slot:append>
                     <v-btn @click="() => copy(seeds[a.id])" icon class="ml-1">
@@ -181,8 +214,9 @@
                   rows="1"
                   auto-grow
                   readonly
-                @change="change(a)"
-                @blur="blur(a)"
+                  class="readonly"
+                  @change="change(a)"
+                  @blur="blur(a)"
                 />
               </div>
               <div class="d-flex justify-center mb-sm-2 flex-wrap">
@@ -197,7 +231,7 @@
                 <v-btn
                   v-if="
                     !(assets[a.asset] && assets[a.asset].registered) &&
-                      a.contract
+                      a.contract && a.contract.entity.domain
                   "
                   class="flex-grow-1 mr-1 wide mb-1 mb-sm-0 wide"
                   @click.prevent="startRegistering(a.asset)"
@@ -273,6 +307,14 @@ const {
 export default {
   mixins: [Copy],
   computed: {
+    networks() {
+      return this.nodes
+        .map(n => ({
+          text: n[0].toUpperCase() + n.slice(1),
+          value: n,
+        }));
+    },
+    nodes: get('nodes'),
     error: sync('error'),
     password: get('password'),
     success: sync('success'),
@@ -348,7 +390,7 @@ export default {
         this.changed[a.id] = false;
         this.submit(a, true);
       }
-    }, 
+    },
     async submit(a, supress) {
       await this.updateAccount(a);
       if (!supress) this.success = 'Account updated successfully';

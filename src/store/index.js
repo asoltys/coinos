@@ -461,7 +461,7 @@ export default new Vuex.Store({
 
     async createAccount(
       { commit, dispatch, getters },
-      { name, ticker, precision, seed, path, pubkey }
+      { name, ticker, precision, seed, path, pubkey, network }
     ) {
       if (!getters.password) await dispatch('passwordPrompt');
       const { password, user } = getters;
@@ -475,9 +475,10 @@ export default new Vuex.Store({
           name,
           ticker,
           precision,
+          network,
         });
 
-        go('/wallets');
+        go('/home');
       } catch (e) {
         commit('error', e.response ? e.response.data : e.message);
       }
@@ -854,6 +855,9 @@ export default new Vuex.Store({
             async payment() {
               if (data.amount > 0) commit('snack', 'Payment received!');
               if (router.currentRoute.path === '/receive') {
+                if (!getters.user.accounts.find(a => a.id === data.account_id)) {
+                  await new Promise(r => setTimeout(r, 1000));
+                } 
                 if (data.account_id !== getters.user.account.id)
                   await dispatch('shiftAccount', data.account_id);
                 await go('/home');
@@ -1302,8 +1306,8 @@ export default new Vuex.Store({
       if (!invoice.currency) invoice.currency = user.currency;
 
       if (!invoice.network) {
-        if (user.account.pubkey) invoice.network = 'bitcoin';
-        else invoice.network = 'lightning';
+        if (user.account.pubkey) invoice.network = user.account.network;
+        else invoice.network = user.account.asset === BTC ? 'lightning' : 'liquid';
       }
 
       if (controller) controller.abort();

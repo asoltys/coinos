@@ -182,11 +182,8 @@ body
   background white
   padding 5px
 
-.v-textarea textarea[readonly="readonly"]
+.readonly.theme--dark.v-input input, .readonly.theme--dark.v-input textarea
   color #ccc;
-
-:not(.v-select).v-text-field input[readonly="readonly"]
-  color #ccc
 
 .toggle
   margin auto 0.25rem !important

@@ -40,7 +40,7 @@ const Payments = () =>
 const Receive = () =>
   import(
     /* webpackChunkName: "receive" */
-    '../components/Request'
+    '../components/Receive'
   );
 const Redeem = () =>
   import(

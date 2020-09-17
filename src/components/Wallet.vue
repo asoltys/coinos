@@ -33,6 +33,36 @@
           <span class="text--white">{{ data.item }}</span>
         </template>
       </v-combobox>
+      <v-select
+        v-if="type !== 'Hosted'"
+        label="Network"
+        v-model="account.network"
+        :items="networks"
+      >
+        <template v-slot:selection="data">
+          <v-icon
+            class="ma-2 my-auto"
+            color="primary"
+            title="Lightning"
+            v-if="data.item.text === 'Lightning'"
+            >$flash</v-icon
+          >
+          <v-icon
+            class="ma-2 my-auto"
+            color="#00aaee"
+            title="Lightning"
+            v-if="data.item.text === 'Liquid'"
+            >$water</v-icon
+          >
+          <img
+            class="ma-2"
+            src="../assets/bitcoin.png"
+            width="22px"
+            v-if="data.item.text === 'Bitcoin'"
+          />
+          <span class="text--white">{{ data.item.text }}</span>
+        </template>
+      </v-select>
       <div v-if="type === 'Hosted'">
         <v-autocomplete
           label="Asset Lookup"
@@ -102,7 +132,11 @@
         </div>
       </div>
       <div class="text-right">
-        <v-btn v-if="type === 'Non-Custodial'" @click="details = !details" class="mr-1 mb-1 mb-sm-0 wide">
+        <v-btn
+          v-if="type === 'Non-Custodial'"
+          @click="details = !details"
+          class="mr-1 mb-1 mb-sm-0 wide"
+        >
           <v-icon left color="green">$settings</v-icon>
           <span>Wallet Details</span>
         </v-btn>
@@ -136,11 +170,24 @@ export default {
       precision: 8,
       seed: '',
       path: `m/84'/0'/0'`,
+      network: 'bitcoin',
     },
     timeout: null,
   }),
 
   computed: {
+    network() {
+      return this.account.network;
+    },
+    nodes: get('nodes'),
+    networks() {
+      return this.nodes
+        .filter(n => n !== 'lightning')
+        .map(n => ({
+          text: n[0].toUpperCase() + n.slice(1),
+          value: n,
+        }));
+    },
     seed: get('seed'),
     asset() {
       return this.account.asset;
@@ -195,25 +242,31 @@ export default {
       this.$nextTick(() => (this.account.precision = Math.round(e)));
     },
     async setupKeys() {
-    const waitForUser = resolve => {
-      if (!this.user.index && this.user.index !== 0)
-        return this.timeout = setTimeout(() => waitForUser(resolve), 1000);
-      resolve();
-    };
-    await new Promise(waitForUser);
-    let { seed } = this;
-    if (!seed) ({ seed } = await this.passwordPrompt());
-    this.account.seed = seed;
-    this.account.path += '/' + this.user.index;
-    } 
+      const waitForUser = resolve => {
+        if (!this.user.index && this.user.index !== 0)
+          return (this.timeout = setTimeout(() => waitForUser(resolve), 1000));
+        resolve();
+      };
+      await new Promise(waitForUser);
+      let { seed } = this;
+      if (!seed) ({ seed } = await this.passwordPrompt());
+      this.account.seed = seed;
+      this.account.path += '/' + this.user.index;
+    },
   },
   watch: {
+    network(v) {
+      if (v === 'bitcoin' && this.account.ticker === 'LBTC') this.account.ticker = 'BTC';
+      if (v === 'liquid' && this.account.ticker === 'BTC') this.account.ticker = 'LBTC';
+
+      if (v === 'bitcoin' && this.account.name === 'Liquid Bitcoin') this.account.name = 'Bitcoin';
+      if (v === 'liquid' && this.account.name === 'Bitcoin') this.account.name = 'Liquid Bitcoin';
+    },
     type(v) {
       if (v === 'Hosted') {
         this.account.seed = '';
         this.account.path = `m/84'/0'/0'`;
-      } 
-      else this.setupKeys();
+      } else this.setupKeys();
     },
 
     asset(v) {
