@@ -62,6 +62,7 @@
               class="mb-2"
               :currency="ticker(a2)"
               :key="a2"
+              :precision="precision(a2)"
             />
           </v-card-text>
         </v-card>
@@ -118,6 +119,9 @@ export default {
   },
 
   methods: {
+    precision(asset) {
+      return this.assets[asset] ? this.assets[asset].precision : 0;
+    },
     ticker(asset) {
       if (asset === process.env.VUE_APP_LBTC) return 'BTC';
       return this.assets[asset] ? (this.assets[asset].ticker || asset.substr(0,3).toUpperCase()) : '';

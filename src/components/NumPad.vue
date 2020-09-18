@@ -50,6 +50,7 @@ export default {
     initialAmount: { type: Number },
     initialRate: { type: Number },
     currencies: { type: Array },
+    precision: { type: Number, default: null },
   },
   filters: {
     format(n, d) {
@@ -102,8 +103,9 @@ export default {
 
   computed: {
     decimals() {
-      if (this.user.currencies.includes(this.currency)) return 2;
       if (this.currency === 'SAT') return 0;
+      if (this.precision || this.precision === 0) return this.precision;
+      if (this.user.currencies.includes(this.currency)) return 2;
       let account = this.user.accounts.find(a => a.ticker === this.currency);
       if (account) return account.precision;
       if (this.user.account.ticker !== 'BTC')

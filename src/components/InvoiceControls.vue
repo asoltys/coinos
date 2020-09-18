@@ -39,7 +39,7 @@
       :startEditing="!invoice.amount"
     />
     <amount
-      v-if="invoice.tip"
+      v-if="invoice.tip || invoice.tip === 0"
       v-model.number="invoice.tip"
       label="Tip"
       class="mb-2"
@@ -269,11 +269,6 @@ export default {
       let index = parseInt(path[path.length - 1]);
       this.path = path.replace(/.$/, ++index);
       this.submit();
-    },
-  },
-  watch: {
-    amount(n, o) {
-      if (o && !n) this.showAmount = false;
     },
   },
 };

@@ -108,7 +108,7 @@ const blankInvoice = JSON.stringify({
   received: 0,
   user: JSON.parse(JSON.stringify(blankUser)),
   text: '',
-  tip: 0,
+  tip: null,
 });
 
 const blankPayment = JSON.stringify({

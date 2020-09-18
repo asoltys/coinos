@@ -9,6 +9,7 @@
         :initialRate="rate"
         @input="input"
         :key="editing"
+        :precision="precision"
       />
       <div class="d-flex" v-if="button">
         <v-btn
@@ -72,6 +73,7 @@ export default {
     max: { type: Number, default: null },
     value: { type: Number, default: null },
     startEditing: { type: Boolean, default: false },
+    precision: { type: Number, default: 2 },
   },
   data() {
     return {
@@ -93,7 +95,7 @@ export default {
     fiatAmount() {
       return this.fiatAmountOverride || ((this.value * this.fixedRate) / SATS).toFixed(2);
     },
-    precision() {
+    decimals() {
       if (this.currency) {
         let account = this.user.accounts.find(a => a.ticker === this.currency);
         if (account) return account.precision;
@@ -104,15 +106,15 @@ export default {
       return this.user.account.ticker === 'BTC';
     },
     displayAmount() {
-      let { precision, value } = this;
+      let { decimals, value } = this;
       if (!value) value = 0;
-      if (!precision && precision !== 0) precision = 8;
+      if (!decimals && decimals !== 0) decimals = 8;
 
       return this.user.fiat && !this.currency
         ? this.fiatAmount
         : this.user.unit === 'SAT'
         ? value
-        : parseFloat(this.$format(value, precision)).toFixed(precision);
+        : parseFloat(this.$format(value, decimals)).toFixed(decimals);
     },
     currencies() {
       if (this.currency) return [this.currency, 'SAT'];
