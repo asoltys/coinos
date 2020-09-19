@@ -864,8 +864,10 @@ export default new Vuex.Store({
                 ) {
                   await new Promise(r => setTimeout(r, 1000));
                 }
-                if (data.account_id !== getters.user.account.id)
+                if (data.account_id !== getters.user.account.id) {
                   await dispatch('shiftAccount', data.account_id);
+                  if (getters.user.unit === 'SAT') await dispatch('toggleUnit');
+                }
                 await go('/home');
               }
               commit('addPayment', data);
