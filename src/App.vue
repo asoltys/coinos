@@ -1,8 +1,8 @@
 <template>
   <v-app id="app">
     <top-bar />
-    <snack-bar type="success" :text="success" :timeout="1500" @done="success = null" />
-    <snack-bar type="info" :text="snack" :timeout="1500" @done="snack = null" />
+    <snack-bar type="success" :text="success" :timeout="2500" @done="success = null" />
+    <snack-bar type="info" :text="snack" :timeout="2500" @done="snack = null" />
     <snack-bar type="error" :text="error" @done="error = null" />
     <v-main style="background: #333">
       <v-container class="mr-3" style="margin-bottom: 50px !important">

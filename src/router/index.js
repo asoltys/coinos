@@ -22,6 +22,11 @@ const Decrypt = () =>
     /* webpackChunkName: "decrypt" */
     '../components/Decrypt'
   );
+const Faucet = () =>
+  import(
+    /* webpackChunkName: "faucet" */
+    '../components/Faucet'
+  );
 const Home = () =>
   import(
     /* webpackChunkName: "home" */
@@ -119,6 +124,8 @@ const routes = [
   { name: 'accept', path: '/accept', component: Accept, props: true },
   { path: '/asset', component: Asset },
   { path: '/decrypt', component: Decrypt },
+  { name: 'faucet', path: '/faucet', component: Faucet, props: true },
+  { path: '/faucet/:asset', component: Faucet, props: true },
   { path: '/home', component: Home },
   { name: 'login', path: '/login/:jwt', component: Login, props: true },
   { path: '/login', component: Login, props: { logout: false } },

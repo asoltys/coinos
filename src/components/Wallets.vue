@@ -164,7 +164,10 @@
                 class="readonly"
               >
                 <template v-slot:append>
-                  <v-btn @click="() => copy(a.asset)" icon class="ml-1">
+                  <v-btn @click="$go({ name: 'faucet', params: { asset: a.asset } })" icon class="ml-1">
+                    <v-icon title="Load Faucet">$waterpump</v-icon>
+                  </v-btn>
+                  <v-btn @click="copy(a.asset)" icon class="ml-1">
                     <v-icon>$copy</v-icon>
                   </v-btn>
                 </template>

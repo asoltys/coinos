@@ -14,11 +14,10 @@
       <div>
         <v-btn
           class="order-first order-sm-last mb-2 flex-grow-1"
-          color="green"
           dark
           @click="send"
         >
-          <v-icon left>$send</v-icon><span>Send</span>
+          <v-icon color="success" left>$send</v-icon><span>Send</span>
         </v-btn>
       </div>
     </v-card-text>

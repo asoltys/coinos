@@ -73,7 +73,7 @@ export default {
     max: { type: Number, default: null },
     value: { type: Number, default: null },
     startEditing: { type: Boolean, default: false },
-    precision: { type: Number, default: 2 },
+    precision: { type: Number, default: null },
   },
   data() {
     return {

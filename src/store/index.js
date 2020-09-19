@@ -854,8 +854,11 @@ export default new Vuex.Store({
             },
 
             async payment() {
-              if (data.amount > 0) commit('snack', 'Payment received!');
-              if (router.currentRoute.path === '/receive') {
+              const { path } = router.currentRoute;
+              if ((data.amount > 0 && path.includes('receive') || path.includes('faucet')) || path.includes('send')) {
+                if (data.amount > 0) commit('snack', 'Payment received!');
+                else commit('snack', 'Payment sent!');
+
                 if (
                   !getters.user.accounts.find(a => a.id === data.account_id)
                 ) {
@@ -1299,6 +1302,29 @@ export default new Vuex.Store({
       }
     },
 
+    async getFaucet({ commit, dispatch, state }, asset) {
+      try {
+        let { data } = await Vue.axios.get(`/faucet?asset=${asset}`);
+        return data;
+      } catch (e) {
+        commit('error', e.response ? e.response.data : e.message);
+      }
+    },
+
+    async loadFaucet({ commit, dispatch, state }, asset) {
+      const { amount } = state.payment;
+      try {
+        await Vue.axios.post(`/loadFaucet`, {
+          amount,
+          asset,
+        });
+        commit('snack', `Faucet loaded with ${amount} SAT`)
+        commit('error', null);
+      } catch (e) {
+        commit('error', e.response ? e.response.data : e.message);
+      }
+    },
+
     async addInvoice({ commit, dispatch, state }, params) {
       commit('loading', true);
       const { controller, invoice, rate, recipient, socket } = state;
@@ -1464,7 +1490,8 @@ export default new Vuex.Store({
           payment.payobj = bolt11.decode(payment.payreq);
           let { coinType } = payment.payobj;
 
-          if (!networks.includes('lightning')) return commit('error', 'Lightning not supported in this account');
+          if (!networks.includes('lightning'))
+            return commit('error', 'Lightning not supported in this account');
 
           if (coinType !== expectedType) {
             dispatch('clearPayment');
@@ -1506,7 +1533,8 @@ export default new Vuex.Store({
       try {
         if (nodes.includes('bitcoin')) {
           url = bip21.decode(text);
-          if (!networks.includes('bitcoin')) return commit('error', 'Bitcoin not supported in this account');
+          if (!networks.includes('bitcoin'))
+            return commit('error', 'Bitcoin not supported in this account');
           payment.network = 'bitcoin';
           url.options.asset = BTC;
         }
@@ -1514,7 +1542,8 @@ export default new Vuex.Store({
         if (nodes.includes('liquid')) {
           try {
             url = bip21.decode(text, 'liquidnetwork');
-            if (!networks.includes('liquid')) return commit('error', 'Liquid not supported in this account');
+            if (!networks.includes('liquid'))
+              return commit('error', 'Liquid not supported in this account');
             payment.network = 'liquid';
           } catch (e) {
             /**/
@@ -1549,7 +1578,8 @@ export default new Vuex.Store({
       }
 
       if (nodes.includes('bitcoin') && validate(text)) {
-        if (!networks.includes('bitcoin')) return commit('error', 'Bitcoin not supported in this account');
+        if (!networks.includes('bitcoin'))
+          return commit('error', 'Bitcoin not supported in this account');
         payment.address = text;
         payment.network = 'bitcoin';
         go({ name: 'send', params: { keep: true } });
@@ -1558,7 +1588,8 @@ export default new Vuex.Store({
 
       // Liquid
       if (nodes.includes('liquid') && isLiquid(text)) {
-        if (!networks.includes('liquid')) return commit('error', 'Liquid not supported in this account');
+        if (!networks.includes('liquid'))
+          return commit('error', 'Liquid not supported in this account');
         payment.address = text;
         payment.network = 'liquid';
         go({ name: 'send', params: { keep: true } });
@@ -1938,14 +1969,13 @@ export default new Vuex.Store({
   getters: {
     ...make.getters(state),
     networks(s) {
-      return s.nodes
-        .filter(
-          n =>
-            (!s.user.account.pubkey &&
-              (s.user.account.asset === process.env.VUE_APP_LBTC ||
-                n === 'liquid')) ||
-            s.user.account.network === n
-        );
+      return s.nodes.filter(
+        n =>
+          (!s.user.account.pubkey &&
+            (s.user.account.asset === process.env.VUE_APP_LBTC ||
+              n === 'liquid')) ||
+          s.user.account.network === n
+      );
     },
   },
 });

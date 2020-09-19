@@ -58,6 +58,7 @@ import UnfoldMore from 'vue-material-design-icons/UnfoldMoreHorizontal';
 import Update from 'vue-material-design-icons/Update';
 import Wallet from 'vue-material-design-icons/Wallet';
 import Water from 'vue-material-design-icons/Water';
+import WaterPump from 'vue-material-design-icons/WaterPump';
 
 Vue.use(Vuetify);
 
@@ -131,6 +132,7 @@ export default new Vuetify({
       'update': { component: Update },
       'wallet': { component: Wallet },
       'water': { component: Water },
+      'waterpump': { component: WaterPump },
     },
   },
 });
