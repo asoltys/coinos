@@ -1,7 +1,9 @@
 <template>
   <div>
   <v-progress-linear v-if="loading" indeterminate />
-  <v-card class="elevation-1 mb-4 pa-4" v-else-if="faucet">
+    <div v-else-if="faucet">
+    <balance />
+  <v-card class="elevation-1 mb-4 pa-4">
     <v-card-text class="white--text text-center">
       <div class="headline mb-2">
         Faucet for
@@ -33,11 +35,13 @@
     </v-card-text>
   </v-card>
   </div>
+  </div>
 </template>
 
 <script>
 import { call, get } from 'vuex-pathify';
 import Amount from './Amount';
+import Balance from './Balance';
 import CurrencyList from './CurrencyList';
 
 export default {
@@ -48,7 +52,7 @@ export default {
     loading: false,
     faucet: null,
   }),
-  components: { Amount, CurrencyList },
+  components: { Amount, Balance, CurrencyList },
   computed: {
     precision() {
       if (this.user.unit === 'SAT') return 0;
