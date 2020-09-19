@@ -55,7 +55,7 @@
         <v-btn
           class="toggle black--text mt-auto"
           :color="color(feeUnit)"
-          @click.prevent="toggle"
+          @click.prevent="toggleUnit"
           >{{ feeUnit }}</v-btn
         >
         <v-btn icon @click="copy(displayFee)" class="ml-1" text>
@@ -139,7 +139,7 @@ export default {
         ? this.user.currency
         : this.user.unit === 'SAT'
         ? 'SAT'
-        : this.user.account.ticker;
+        : 'BTC'
     },
     loadingFee: get('loadingFee'),
     payment: sync('payment'),
@@ -147,6 +147,7 @@ export default {
     user: get('user'),
   },
   methods: {
+    toggleUnit: call('toggleUnit'),
     color(c) {
       return ['BTC', 'SAT'].includes(c)
         ? 'white'
