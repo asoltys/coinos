@@ -44,7 +44,7 @@
     "vue-pincode-input": "^0.0.4",
     "vue-router": "^3.0.7",
     "vue-scrollto": "^2.17.1",
-    "vuetify": "^2.2.10",
+    "vuetify": "^2.3.10",
     "vuex": "^3.1.1",
     "vuex-pathify": "^1.2.4"
   },
@@ -70,7 +70,7 @@
     "vue-cli-plugin-vuetify": "^0.6.3",
     "vue-cli-plugin-webpack-bundle-analyzer": "~2.0.0",
     "vue-template-compiler": "^2.6.10",
-    "vuetify-loader": "^1.2.2",
+    "vuetify-loader": "^1.6.0",
     "webpack": "^4.35.2"
   }
 }

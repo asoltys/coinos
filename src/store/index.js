@@ -345,8 +345,9 @@ export default new Vuex.Store({
           )}&a1=${a1}&a2=${a2}`
         );
         commit('proposal', proposal);
+        await dispatch('publish');
       } catch (e) {
-        commit('error', e.response ? e.response.data : e.message);
+        commit('error', e.response ? e.response.data.toString() : e.message);
       }
     },
 
@@ -1887,6 +1888,7 @@ export default new Vuex.Store({
   mutations: {
     ...make.mutations(state),
     addProposal(s, v) {
+      console.log("adding", v);
       let index = s.proposals.findIndex(p => p.id === v.id);
       if (index > -1) s.proposals[index] = v;
       else s.proposals.unshift(v);

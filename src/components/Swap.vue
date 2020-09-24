@@ -1,50 +1,14 @@
 <template>
   <div>
     <v-progress-linear v-if="loading" indeterminate />
-    <v-card v-else-if="proposal">
-      <v-card-text>
-        <v-card color="secondary" class="mb-2">
-          <v-card-text>
-            <h2 class="text-center white--text">Proposal Created</h2>
-            <div class="d-flex">
-              <div class="flex-grow-1 text-center">
-                <v-btn icon @click="showcode = !showcode">
-                  <v-icon large>$assignment</v-icon>
-                </v-btn>
-              </div>
-            </div>
-          </v-card-text>
-        </v-card>
-        <v-textarea v-if="showcode" :value="proposal.text" rows="20" />
-        <div class="d-flex flex-wrap mb-2">
-          <div class="d-flex flex-grow-1 mb-2">
-            <v-btn @click="download" class="flex-grow-1 mr-1">
-              <v-icon left>$download</v-icon><span>Download</span>
-            </v-btn>
-            <v-btn @click="copy(proposal.text)" class="flex-grow-1">
-              <v-icon left>$copy</v-icon><span>Copy</span>
-            </v-btn>
-          </div>
-          <div class="d-flex flex-grow-1" style="width: 100%">
-            <v-btn
-              @click="publish"
-              color="yellow"
-              class="black--text flex-grow-1"
-            >
-              <v-icon left>$assignment</v-icon><span>Publish</span>
-            </v-btn>
-          </div>
-        </div>
-      </v-card-text>
-    </v-card>
-    <div v-else>
+    <div>
       <div class="d-flex flex-wrap flex-md-nowrap">
         <v-card class="flex-grow-1 mr-md-2 mb-2">
           <v-card-text>
             <h2 class="text-center white--text">Trade</h2>
-            <v-autocomplete label="Select" v-model="a1" :items="accounts" />
-            <v-textarea label="Asset" v-model="a1" auto-grow rows="1" />
+            <v-autocomplete label="Select" v-model="a1" :items="accounts" @input="$emit('a1', a1)" />
             <amount
+              v-if="a1"
               v-model.number="v1"
               class="mb-2"
               :currency="ticker(a1)"
@@ -55,9 +19,9 @@
         <v-card class="flex-grow-1 mb-2">
           <v-card-text>
             <h2 class="text-center white--text">For</h2>
-            <v-autocomplete label="Select" v-model="a2" :items="all" />
-            <v-textarea label="Asset" v-model="a2" auto-grow rows="1" />
+            <v-autocomplete label="Select" v-model="a2" :items="all" @input="$emit('a2', a2)" />
             <amount
+              v-if="a2"
               v-model.number="v2"
               class="mb-2"
               :currency="ticker(a2)"
@@ -67,9 +31,9 @@
           </v-card-text>
         </v-card>
       </div>
-      <div class="d-flex">
+      <div class="d-flex mb-2">
         <v-btn @click="submit" class="flex-grow-1 wide">
-          <v-icon left color="green">$send</v-icon><span>Go</span>
+          <v-icon left color="primary">$send</v-icon><span>Place Order</span>
         </v-btn>
       </div>
     </div>
@@ -91,10 +55,10 @@ export default {
     return {
       loading: false,
       showcode: false,
-      a1: null,
-      a2: null,
-      v1: 0,
-      v2: 0,
+      a1: process.env.VUE_APP_LBTC,
+      a2: process.env.VUE_APP_LCAD,
+      v1: 1000,
+      v2: 100000000,
     };
   },
 
@@ -124,7 +88,9 @@ export default {
     },
     ticker(asset) {
       if (asset === process.env.VUE_APP_LBTC) return 'BTC';
-      return this.assets[asset] ? (this.assets[asset].ticker || asset.substr(0,3).toUpperCase()) : '';
+      return this.assets[asset]
+        ? this.assets[asset].ticker || asset.substr(0, 3).toUpperCase()
+        : '';
     },
     publish: call('publish'),
     download() {
