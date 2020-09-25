@@ -16,6 +16,17 @@ module.exports = IS_PRODUCTION
         },
       },
       runtimeCompiler: true,
+chainWebpack: config => {
+    config.module
+      .rule("vue")
+      .use("vue-loader")
+      .loader("vue-loader")
+      .tap(options => {
+        // modify the options...
+        options.compilerOptions.whitespace = 'preserve';
+        return options;
+      });
+  },
       devServer: {
         host: '0.0.0.0',
         disableHostCheck: true,

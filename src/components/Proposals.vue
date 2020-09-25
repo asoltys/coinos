@@ -5,13 +5,25 @@
       <v-progress-linear v-if="loading" indeterminate></v-progress-linear>
       <v-container class="pb-0">
         <v-row v-for="p in proposals" :key="p.id">
-          <v-col class="my-auto">{{ format(p.a1, p.v1) }} <span class="yellow--text">{{ format(p.a1) }}</span></v-col>
-          <v-col class="my-auto">{{ format(p.a2, p.v2) }} <span class="yellow--text">{{ format(p.a2) }}</span></v-col>
+          <div class="my-auto">
+          <span class="mx-1">{{ format(p.a1, p.v1) }}</span>
+          <span class="yellow--text">{{ format(p.a1) }}</span>
+          <span class="mx-1">{{ format(p.a2, p.v2) }}</span>
+          <span class="yellow--text">{{ format(p.a2) }}</span>
+          </div>
           <v-col class="text-right">
             <v-btn
               v-if="p.user_id === user.id"
               @click.stop="deleteProposal(p.id)"
-              class="toggle my-1"
+              class="my-1 d-sm-none"
+              icon
+            >
+              <v-icon color="error">$cancel</v-icon>
+            </v-btn>
+            <v-btn
+              v-if="p.user_id === user.id"
+              @click.stop="deleteProposal(p.id)"
+              class="toggle my-1 d-none d-sm-inline"
             >
               <v-icon color="error" left>$cancel</v-icon>
               Cancel

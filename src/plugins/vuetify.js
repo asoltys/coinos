@@ -51,6 +51,7 @@ import Seed from 'vue-material-design-icons/Seed';
 import Send from 'vue-material-design-icons/Send';
 import Settings from 'vue-material-design-icons/Settings';
 import SwapHorizontal from 'vue-material-design-icons/SwapHorizontal';
+import SwapVertical from 'vue-material-design-icons/SwapVertical';
 import Sync from 'vue-material-design-icons/Sync';
 import Tor from 'vue-material-design-icons/Tor';
 import Undo from 'vue-material-design-icons/Undo';
@@ -125,6 +126,7 @@ export default new Vuetify({
       'send': { component: Send },
       'settings': { component: Settings},
       'swap': { component: SwapHorizontal },
+      'swapv': { component: SwapVertical },
       'sync': { component: Sync },
       'tor': { component: Tor },
       'undo': { component: Undo },

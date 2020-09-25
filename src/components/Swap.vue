@@ -2,11 +2,16 @@
   <div>
     <v-progress-linear v-if="loading" indeterminate />
     <div>
-      <div class="d-flex flex-wrap flex-md-nowrap">
-        <v-card class="flex-grow-1 mr-md-2 mb-2">
+      <div class="d-sm-flex flex-wrap flex-sm-nowrap">
+        <v-card class="flex-grow-1 mb-sm-2">
           <v-card-text>
             <h2 class="text-center white--text">Trade</h2>
-            <v-autocomplete label="Select" v-model="a1" :items="accounts" @input="$emit('a1', a1)" />
+            <v-autocomplete
+              label="Asset"
+              v-model="a1"
+              :items="accounts"
+              @input="$emit('a1', a1)"
+            />
             <amount
               v-if="a1"
               v-model.number="v1"
@@ -16,10 +21,21 @@
             />
           </v-card-text>
         </v-card>
+        <div class="flex-shrink-1 text-center mx-auto my-auto">
+          <v-btn @click="switcheroo" icon class="my-1">
+            <v-icon color="primary" class="d-none d-sm-inline">$swap</v-icon>
+            <v-icon color="primary" class="d-sm-none">$swapv</v-icon>
+          </v-btn>
+        </div>
         <v-card class="flex-grow-1 mb-2">
           <v-card-text>
             <h2 class="text-center white--text">For</h2>
-            <v-autocomplete label="Select" v-model="a2" :items="all" @input="$emit('a2', a2)" />
+            <v-autocomplete
+              label="Asset"
+              v-model="a2"
+              :items="all"
+              @input="$emit('a2', a2)"
+            />
             <amount
               v-if="a2"
               v-model.number="v2"
@@ -31,7 +47,7 @@
           </v-card-text>
         </v-card>
       </div>
-      <div class="d-flex mb-2">
+      <div class="d-flex flex-wrap mb-2">
         <v-btn @click="submit" class="flex-grow-1 wide">
           <v-icon left color="primary">$send</v-icon><span>Place Order</span>
         </v-btn>
@@ -57,8 +73,8 @@ export default {
       showcode: false,
       a1: process.env.VUE_APP_LBTC,
       a2: process.env.VUE_APP_LCAD,
-      v1: 1000,
-      v2: 100000000,
+      v1: 100000000,
+      v2: 1500000000000,
     };
   },
 
@@ -115,6 +131,17 @@ export default {
     },
 
     propose: call('propose'),
+
+    switcheroo() {
+      let temp = this.a1;
+      this.a1 = this.a2;
+      this.a2 = temp;
+      temp = this.v1;
+      this.v1 = this.v2;
+      this.v2 = temp;
+      this.$emit('a1', this.a1);
+      this.$emit('a2', this.a2);
+    },
 
     async submit() {
       const { a1, a2, v1, v2 } = this;

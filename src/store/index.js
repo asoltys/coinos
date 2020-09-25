@@ -344,8 +344,6 @@ export default new Vuex.Store({
             8
           )}&a1=${a1}&a2=${a2}`
         );
-        commit('proposal', proposal);
-        await dispatch('publish');
       } catch (e) {
         commit('error', e.response ? e.response.data.toString() : e.message);
       }
@@ -355,11 +353,6 @@ export default new Vuex.Store({
       const { proposals } = state;
       try {
         await Vue.axios.delete(`/proposal/${id}`);
-        proposals.splice(
-          proposals.findIndex(p => p.id === id),
-          1
-        );
-        state.proposals = JSON.parse(JSON.stringify(proposals));
       } catch (e) {
         commit('error', e.response ? e.response.data : e.message);
       }
@@ -877,6 +870,11 @@ export default new Vuex.Store({
 
             proposal() {
               commit('addProposal', data);
+            },
+
+            removeProposal() {
+              l("removing", data);
+              commit('removeProposal', data);
             },
 
             rate() {
@@ -1888,11 +1886,16 @@ export default new Vuex.Store({
   mutations: {
     ...make.mutations(state),
     addProposal(s, v) {
-      console.log("adding", v);
       let index = s.proposals.findIndex(p => p.id === v.id);
       if (index > -1) s.proposals[index] = v;
       else s.proposals.unshift(v);
       s.proposals = JSON.parse(JSON.stringify(s.proposals));
+    },
+    removeProposal(s, v) {
+      let index = s.proposals.findIndex(p => p.id === parseInt(v));
+      if (index > -1) {
+        s.proposals.splice(index, 1);
+      } 
     },
     addAccount(s, v) {
       let index = s.user.accounts.findIndex(a => a.id === v.id);
