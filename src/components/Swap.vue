@@ -3,7 +3,7 @@
     <v-progress-linear v-if="loading" indeterminate />
     <div>
       <div class="d-sm-flex flex-wrap flex-sm-nowrap">
-        <v-card class="flex-grow-1 mb-sm-2">
+        <v-card class="flex-grow-1 mb-sm-2" color="secondary">
           <v-card-text>
             <h2 class="text-center white--text">Trade</h2>
             <v-autocomplete
@@ -27,7 +27,7 @@
             <v-icon color="primary" class="d-sm-none">$swapv</v-icon>
           </v-btn>
         </div>
-        <v-card class="flex-grow-1 mb-2">
+        <v-card class="flex-grow-1 mb-2" color="secondary">
           <v-card-text>
             <h2 class="text-center white--text">For</h2>
             <v-autocomplete
@@ -47,7 +47,7 @@
           </v-card-text>
         </v-card>
       </div>
-      <div class="d-flex flex-wrap mb-2">
+      <div class="d-flex flex-wrap">
         <v-btn @click="submit" class="flex-grow-1 wide">
           <v-icon left color="primary">$send</v-icon><span>Place Order</span>
         </v-btn>

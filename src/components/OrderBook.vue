@@ -1,6 +1,6 @@
 <template>
   <div v-if="asks.length || bids.length">
-    <v-card class="mb-1">
+    <v-card class="mb-1 pa-2">
       <v-card-text class="white--text flex-grow-1 text-right py-0">
         <v-container class="pa-0">
           <v-row class="font-weight-bold">

@@ -873,7 +873,6 @@ export default new Vuex.Store({
             },
 
             removeProposal() {
-              l("removing", data);
               commit('removeProposal', data);
             },
 

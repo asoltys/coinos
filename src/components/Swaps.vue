@@ -1,10 +1,13 @@
 <template>
   <div>
+    <v-card class="pa-2 mb-1">
     <swap @a1="setA1" @a2="setA2" />
+    </v-card>
 
     <v-progress-linear v-if="loading" indeterminate />
     <order-book :a1="a1" :a2="a2" />
-    <proposals :proposals="own" class="mb-1" />
+    <orders :proposals="own" class="mb-1" />
+    <last-trades :proposals="completed" :a1="a1" class="mb-1" />
 
     <v-btn @click="$go('/')" class="wide mb-2 mr-2">
       <v-icon>$arrow_back</v-icon>
@@ -20,11 +23,14 @@
 <script>
 import { get, sync, call } from 'vuex-pathify';
 import Swap from './Swap';
-import Proposals from './Proposals';
+import Orders from './Orders';
+import LastTrades from './LastTrades';
 import OrderBook from './OrderBook';
 
+const SATS = 100000000;
+
 export default {
-  components: { OrderBook, Proposals, Swap },
+  components: { OrderBook, Orders, LastTrades, Swap },
   data: () => ({
     a1: process.env.VUE_APP_LBTC,
     a2: process.env.VUE_APP_LCAD,
@@ -36,6 +42,22 @@ export default {
       return this.proposals.filter(
         p => !p.accepted && p.user_id === this.user.id
       );
+    },
+    completed() {
+      let d = (n, p) => {
+        if (!p) return '';
+        let r = p.a1 === n.a1 ? p.rate : Math.round(SATS / p.rate)/SATS;
+        console.log(r, n.rate);
+        if (r.toFixed(8) === n.rate.toFixed(8)) return '';
+        return r < n.rate ? 'up' : 'down';
+      };
+      return [...this.proposals
+        .filter(p => p.accepted && ((p.a1 === this.a1 && p.a2 === this.a2) || (p.a1 === this.a2 && p.a2 === this.a1)))
+        .sort((a, b) => new Date(a.completedAt) - new Date(b.completedAt))
+        .reduce((a, x, i) => [...a, { ...x, direction: d(x, a[i-1]) }], [])
+        .reverse()
+      ]
+        .splice(0, 5)
     },
     proposals: sync('proposals'),
     user: get('user'),
