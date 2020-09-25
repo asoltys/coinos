@@ -45,7 +45,7 @@
             <v-list-item-title>User Balances</v-list-item-title>
           </v-list-item-content>
           <v-list-item-action class="title">
-            {{ user }}
+            {{ custodial }}
           </v-list-item-action>
         </v-list-item>
       </v-list>
@@ -72,8 +72,11 @@ export default {
       assets.shift();
       return assets;
     },
-    user() {
-      return this.balances.accounts.find(a => a.asset === process.env.VUE_APP_LBTC).total;
+    custodial() {
+      return this.balances.accounts.find(a => a.asset === process.env.VUE_APP_LBTC && !a.pubkey).total;
+    },
+    noncustodial() {
+      return this.balances.accounts.find(a => a.asset === process.env.VUE_APP_LBTC && a.pubkey).total;
     },
     loading: get('loading'),
     nodes: get('nodes'),
