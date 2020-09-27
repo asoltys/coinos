@@ -3,32 +3,31 @@
     <v-card-text class="white--text">
       <h2>Open Orders</h2>
       <v-progress-linear v-if="loading" indeterminate></v-progress-linear>
-      <v-container class="pb-0">
+      <v-container class="pb-0 text-right">
+        <v-row>
+          <v-col>Send</v-col>
+          <v-col>Receive</v-col>
+          <v-btn icon class="toggle" style="visibility: hidden; height: 0;">
+            <v-icon color="error">$cancel</v-icon>
+          </v-btn>
+        </v-row>
         <v-row v-for="p in proposals" :key="p.id">
-          <div class="my-auto">
-          <span class="mx-1">{{ format(p.a1, p.v1) }}</span>
-          <span class="yellow--text">{{ format(p.a1) }}</span>
-          <span class="mx-1">{{ format(p.a2, p.v2) }}</span>
-          <span class="yellow--text">{{ format(p.a2) }}</span>
-          </div>
-          <v-col class="text-right">
-            <v-btn
-              v-if="p.user_id === user.id"
-              @click.stop="deleteProposal(p.id)"
-              class="my-1 d-sm-none"
-              icon
-            >
-              <v-icon color="error">$cancel</v-icon>
-            </v-btn>
-            <v-btn
-              v-if="p.user_id === user.id"
-              @click.stop="deleteProposal(p.id)"
-              class="toggle my-1 d-none d-sm-inline"
-            >
-              <v-icon color="error" left>$cancel</v-icon>
-              Cancel
-            </v-btn>
+          <v-col class="my-auto">
+            <span>{{ format(p.a1, p.v1) }}</span>
+            <span class="yellow--text">{{ format(p.a1) }}</span>
           </v-col>
+          <v-col class="my-auto">
+            <span>{{ format(p.a2, p.v2) }}</span>
+            <span class="yellow--text">{{ format(p.a2) }}</span>
+          </v-col>
+          <v-btn
+            v-if="p.user_id === user.id"
+            @click.stop="deleteProposal(p.id)"
+            class="my-auto toggle"
+            icon
+          >
+            <v-icon color="error">$cancel</v-icon>
+          </v-btn>
         </v-row>
       </v-container>
     </v-card-text>
@@ -98,3 +97,25 @@ export default {
   },
 };
 </script>
+
+<style lang="stylus">
+.bg
+  position absolute
+  right -4px
+  top -4px
+  height 30px
+  opacity 0.4
+
+.ask
+  background #b71c1c
+
+.bid
+  background #4CAF50
+
+.col
+  padding 0
+
+.hover
+  &:hover
+    background #333
+</style>

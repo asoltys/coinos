@@ -73,8 +73,8 @@ export default {
       showcode: false,
       a1: process.env.VUE_APP_LBTC,
       a2: process.env.VUE_APP_LCAD,
-      v1: 100000000,
-      v2: 1500000000000,
+      v1: 10000,
+      v2: 100000000,
     };
   },
 

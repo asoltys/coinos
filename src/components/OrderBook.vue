@@ -1,6 +1,6 @@
 <template>
   <div v-if="asks.length || bids.length">
-    <v-card class="mb-1 pa-2">
+    <v-card class="mb-1 pa-2 pb-0">
       <v-card-text class="white--text flex-grow-1 text-right py-0">
         <v-container class="pa-0">
           <v-row class="font-weight-bold">
@@ -8,16 +8,7 @@
             <v-btn icon style="visibility: hidden; height: 0;"
               ><v-icon color="primary">$atom</v-icon></v-btn
             >
-            <v-col
-              >
-              Price
-              <span
-                class="yellow--text"
-                @click="priceToggle"
-                style="cursor: pointer"
-                >{{ format(inverse ? a1 : a2) }}/{{ format(inverse ? a2 : a1) }}</span
-              >
-            </v-col>
+            <v-col @click="priceToggle" style="cursor: pointer">Price</v-col>
             <v-col>Amount</v-col>
             <v-col>Total</v-col>
           </v-row>
@@ -35,7 +26,7 @@
         </v-container>
       </v-card-text>
     </v-card>
-    <v-card class="mb-1">
+    <v-card class="mb-1 pa-2 pt-0">
       <v-card-text class="white--text flex-grow-1 text-right py-0">
         <v-container class="pa-0">
           <v-row v-for="p in bids" :key="p.id" class="hover">
@@ -127,7 +118,7 @@ export default {
 <style lang="stylus">
 .bg
   position absolute
-  right -2px
+  right -4px
   top -4px
   height 30px
   opacity 0.4
