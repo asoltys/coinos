@@ -6,17 +6,17 @@
       <v-container class="pb-0 text-right">
         <v-row>
           <v-col>Time</v-col>
-          <v-col>Price</v-col>
           <v-col>Amount</v-col>
+          <v-col>Price</v-col>
         </v-row>
         <v-row v-for="p in proposals" :key="p.id">
-          <v-col>
+          <v-col class="mr-1">
             <v-icon v-if="(p.a1 === a1 && p.direction === 'up') || (p.a2 === a1 && p.direction === 'down')" color="green">$up</v-icon> 
             <v-icon v-if="(p.a1 === a1 && p.direction === 'down') || (p.a2 === a1 && p.direction === 'up')" color="red">$down</v-icon> 
-            {{ dateFormat(p.completedAt, 'MMM D HH:mm:ss') }}
+            {{ dateFormat(p.completedAt) }}
           </v-col>
+          <v-col class="mr-1">{{ p.a1 === a1 ? format(p.a1, p.v1) : format(p.a2, p.v2) }}</v-col>
           <v-col>{{ price(p) }}</v-col>
-          <v-col>{{ p.a1 === a1 ? format(p.a1, p.v1) : format(p.a2, p.v2) }}</v-col>
         </v-row>
       </v-container>
     </v-card-text>
@@ -55,12 +55,12 @@ export default {
       return 'red';
     },
     dateFormat(d) {
-      return format(d, 'MM/D HH:mm:ss');
+      return format(d, 'HH:mm:ss');
     },
     price(p) {
       let price = p.v2 / p.v1;
       if (p.a2 === this.a1) price = p.v1 / p.v2;
-      return price.toFixed(8)
+      return parseFloat(price.toFixed(8));
     },
     getAssets: call('getAssets'),
     accept: call('accept'),

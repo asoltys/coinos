@@ -6,27 +6,21 @@
       <v-container class="pb-0 text-right">
         <v-row>
           <v-col>Time</v-col>
-          <v-col>Send</v-col>
-          <v-col>Receive</v-col>
+          <v-col>Amount</v-col>
           <v-col>Price</v-col>
           <v-btn icon class="toggle" style="visibility: hidden; height: 0;">
             <v-icon color="error">$cancel</v-icon>
           </v-btn>
         </v-row>
         <v-row v-for="p in proposals" :key="p.id">
-          <v-col class="my-auto">
+          <v-col class="my-auto mr-1">
             <span>{{ dateFormat(p.updatedAt) }}</span>
           </v-col>
-          <v-col class="my-auto">
+          <v-col class="my-auto mr-1">
             <span>{{ format(p.a1, p.v1) }}</span>
-            <span class="yellow--text">{{ format(p.a1) }}</span>
           </v-col>
           <v-col class="my-auto">
-            <span>{{ format(p.a2, p.v2) }}</span>
-            <span class="yellow--text">{{ format(p.a2) }}</span>
-          </v-col>
-          <v-col class="my-auto">
-            {{ p.rate }}
+            {{ parseFloat(p.rate.toFixed(8)) }}
             </v-col>
           <v-btn
             v-if="p.user_id === user.id"
@@ -67,7 +61,7 @@ export default {
   },
   methods: {
     dateFormat(d) {
-      return format(d, 'MM/D HH:mm:ss');
+      return format(d, 'HH:mm:ss');
     },
     getAssets: call('getAssets'),
     accept: call('accept'),
