@@ -6,6 +6,8 @@ import Account from 'vue-material-design-icons/Account';
 import Add from 'vue-material-design-icons/Plus';
 import Alert from 'vue-material-design-icons/Alert';
 import ArrowLeft from 'vue-material-design-icons/ArrowLeft';
+import ArrowCollapseVertical from 'vue-material-design-icons/ArrowCollapseVertical';
+import ArrowExpandVertical from 'vue-material-design-icons/ArrowExpandVertical';
 import Atom from 'vue-material-design-icons/Atom';
 import BellRing from 'vue-material-design-icons/BellRing';
 import Camera from 'vue-material-design-icons/Camera';
@@ -82,6 +84,8 @@ export default new Vuetify({
       'add': { component: Add },
       'alert': { component: Alert },
       'arrow_back': { component: ArrowLeft },
+      'collapse': { component: ArrowCollapseVertical },
+      'expand': { component: ArrowExpandVertical },
       'atom': { component: Atom },
       'assignment': { component: ClipboardText },
       'bell': { component: BellRing },

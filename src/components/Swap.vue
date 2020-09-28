@@ -31,9 +31,16 @@
           <v-autocomplete
             label="Asset"
             v-model="a2"
-            :items="all"
+            :items="showAll ? all : active"
             @input="$emit('a2', a2)"
-          />
+          >
+            <template v-slot:append>
+              <v-btn @click="showAll = !showAll" class="ml-1" icon>
+                <v-icon v-if="showAll">$collapse</v-icon>
+                <v-icon v-else>$expand</v-icon>
+              </v-btn>
+            </template>
+          </v-autocomplete>
           <amount
             v-if="a2"
             v-model.number="v2"
@@ -46,7 +53,12 @@
       </v-card>
     </div>
     <div class="d-flex flex-wrap">
-      <v-btn @click="submit" class="flex-grow-1 wide" :loading="loading" :disabled="loading">
+      <v-btn
+        @click="submit"
+        class="flex-grow-1 wide"
+        :loading="loading"
+        :disabled="loading"
+      >
         <v-icon left color="primary">$send</v-icon><span>Place Order</span>
       </v-btn>
     </div>
@@ -66,8 +78,8 @@ export default {
 
   data() {
     return {
+      showAll: false,
       loading: false,
-      showcode: false,
       a1: process.env.VUE_APP_LBTC,
       a2: process.env.VUE_APP_LCAD,
       v1: 10000,
@@ -77,12 +89,24 @@ export default {
 
   computed: {
     assets: get('assets'),
+    active() {
+      return [
+        ...new Set([
+          ...this.proposals.map(p => p.a1),
+          ...this.proposals.map(p => p.a2),
+        ]),
+      ].map(asset => ({
+        text: `${this.assets[asset].ticker} - ${this.assets[asset].name}`,
+        value: asset,
+      }));
+    },
     all() {
       return Object.keys(this.assets)
         .map(asset => ({
           text: `${this.assets[asset].ticker} - ${this.assets[asset].name}`,
           value: asset,
         }))
+        .filter(a => this.assets[a.value].ticker && this.assets[a.value].name)
         .sort((a, b) => ('' + a.text).localeCompare(b.text));
     },
     accounts() {
@@ -91,6 +115,7 @@ export default {
         .sort((a, b) => ('' + a.text).localeCompare(b.text));
     },
 
+    proposals: get('proposals'),
     proposal: sync('proposal'),
     user: get('user'),
   },
