@@ -335,15 +335,9 @@ export default new Vuex.Store({
       commit('loading', false);
     },
 
-    async propose({ commit, getters, dispatch }, { a1, a2, v1, v2 }) {
+    async createOrder({ commit, getters, dispatch }, order) {
       try {
-        let {
-          data: { proposal },
-        } = await Vue.axios.get(
-          `/proposal?v1=${(v1 / SATS).toFixed(8)}&v2=${(v2 / SATS).toFixed(
-            8
-          )}&a1=${a1}&a2=${a2}`
-        );
+        await Vue.axios.post('/orders', order);
       } catch (e) {
         commit('error', e.response ? e.response.data.toString() : e.message);
       }
