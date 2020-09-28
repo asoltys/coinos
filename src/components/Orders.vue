@@ -5,13 +5,18 @@
       <v-progress-linear v-if="loading" indeterminate></v-progress-linear>
       <v-container class="pb-0 text-right">
         <v-row>
+          <v-col>Time</v-col>
           <v-col>Send</v-col>
           <v-col>Receive</v-col>
+          <v-col>Price</v-col>
           <v-btn icon class="toggle" style="visibility: hidden; height: 0;">
             <v-icon color="error">$cancel</v-icon>
           </v-btn>
         </v-row>
         <v-row v-for="p in proposals" :key="p.id">
+          <v-col class="my-auto">
+            <span>{{ dateFormat(p.updatedAt) }}</span>
+          </v-col>
           <v-col class="my-auto">
             <span>{{ format(p.a1, p.v1) }}</span>
             <span class="yellow--text">{{ format(p.a1) }}</span>
@@ -20,6 +25,9 @@
             <span>{{ format(p.a2, p.v2) }}</span>
             <span class="yellow--text">{{ format(p.a2) }}</span>
           </v-col>
+          <v-col class="my-auto">
+            {{ p.rate }}
+            </v-col>
           <v-btn
             v-if="p.user_id === user.id"
             @click.stop="deleteProposal(p.id)"
@@ -37,6 +45,7 @@
 <script>
 import { get, sync, call } from 'vuex-pathify';
 import Copy from '../mixins/Copy';
+import { format } from 'date-fns';
 
 export default {
   props: {
@@ -57,6 +66,9 @@ export default {
     user: get('user'),
   },
   methods: {
+    dateFormat(d) {
+      return format(d, 'MM/D HH:mm:ss');
+    },
     getAssets: call('getAssets'),
     accept: call('accept'),
     deleteProposal: call('deleteProposal'),
