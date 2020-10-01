@@ -2,7 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import bech32 from 'bech32';
 import bip21 from 'bip21';
-import { fromSeed } from 'bip32';
+import { fromSeed, fromBase58 } from 'bip32';
 import bolt11 from 'bolt11';
 import router from '../router';
 import validate from 'bitcoin-address-validation';
@@ -17,7 +17,7 @@ import pathify, { make } from 'vuex-pathify';
 import restrictedPaths from '../restrictedPaths';
 import publicPaths from '../publicPaths';
 import format from '../format';
-import { generateMnemonic } from 'bip39';
+import { generateMnemonic, mnemonicToSeedSync } from 'bip39';
 import cryptojs from 'crypto-js';
 import sha256, { HMAC } from 'fast-sha256';
 import secp256k1 from 'secp256k1';
@@ -30,8 +30,22 @@ const {
 
 const expectedType = process.env.VUE_APP_COINTYPE;
 
+const getRoot = (privkey, seed, dispatch, user, password, network) => {
+  let root;
+  if (privkey) {
+    privkey = aes.decrypt(privkey, password).toString(Utf8);
+    root = fromBase58(privkey, network);
+  } else {
+    seed = aes.decrypt(seed, password).toString(Utf8);
+    root = fromSeed(mnemonicToSeedSync(seed), network);
+    user.account.privkey = aes.encrypt(root.toBase58(), password).toString();
+    dispatch('updateAccount', user.account);
+  }
+  return root;
+};
+
 const linkingKey = (domain, seed) => {
-  const root = fromSeed(Buffer.from(sha256(seed), 'hex'));
+  const root = fromSeed(mnemonicToSeedSync(seed));
   const hashingKey = root.derivePath("m/138'/0");
   const hmac = new HMAC(hashingKey.privateKey);
   const derivationMaterial = hmac.update(stringToUint8Array(domain)).digest();
@@ -450,15 +464,17 @@ export default new Vuex.Store({
 
     async createAccount(
       { commit, dispatch, getters },
-      { name, ticker, precision, seed, path, pubkey, network }
+      { name, ticker, precision, seed, path, pubkey, privkey, network }
     ) {
       if (!getters.password) await dispatch('passwordPrompt');
       const { password, user } = getters;
       seed = aes.encrypt(seed, password).toString();
+      privkey = aes.encrypt(privkey, password).toString();
 
       try {
         await Vue.axios.post('/accounts', {
           seed,
+          privkey,
           pubkey,
           path,
           name,
@@ -523,16 +539,15 @@ export default new Vuex.Store({
         commit('error', 'Invalid network');
       let address;
 
-      let { index, pubkey, id, seed } = user.account;
+      let { index, pubkey, privkey, id, seed, path } = user.account;
 
-      if (user.account.pubkey) {
+      if (pubkey) {
         if (!password) ({ password } = await dispatch('passwordPrompt'));
-        const decryptedSeed = aes.decrypt(seed, password).toString(Utf8);
-        const root = fromSeed(
-          Buffer.from(sha256(decryptedSeed), 'hex'),
-          this._vm.$network
-        );
-        const hd = root.derivePath(invoice.path);
+
+        const root = getRoot(privkey, seed, dispatch, user, password, this._vm.$network);
+        const parts = invoice.path.split('/');
+        const hd = root.derive(parseInt(parts[parts.length - 1]));
+
         const type = {
           bech32: 'p2wpkh',
           'p2sh-segwit': 'p2sh',
@@ -843,7 +858,11 @@ export default new Vuex.Store({
 
             async payment() {
               const { path } = router.currentRoute;
-              if ((data.amount > 0 && path.includes('receive') || path.includes('faucet')) || path.includes('send')) {
+              if (
+                (data.amount > 0 && path.includes('receive')) ||
+                path.includes('faucet') ||
+                path.includes('send')
+              ) {
                 if (data.amount > 0) commit('snack', 'Payment received!');
                 else commit('snack', 'Payment sent!');
 
@@ -986,8 +1005,8 @@ export default new Vuex.Store({
       commit('error', null);
       commit('loadingFee', true);
 
-      let { payment, user, seed } = getters;
-      let { asset } = user.account;
+      let { payment, password, user, seed } = getters;
+      let { asset, privkey } = user.account;
       let { address, amount, feeRate, replaceable } = payment;
 
       let params = { address, amount, asset, feeRate, replaceable };
@@ -1004,9 +1023,7 @@ export default new Vuex.Store({
 
           if (user.account.pubkey) {
             commit('psbt', tx);
-            if (!seed) ({ seed } = await dispatch('passwordPrompt'));
-            const root = fromSeed(Buffer.from(sha256(seed), 'hex'));
-
+            if (!seed) ({ password, seed } = await dispatch('passwordPrompt'));
             let psbt, network;
 
             if (user.account.ticker === 'LBTC') {
@@ -1017,9 +1034,11 @@ export default new Vuex.Store({
               network = this._vm.$network;
             }
 
+            const root = getRoot(privkey, seed, dispatch, user, password, this._vm.$network);
+
             psbt.data.inputs.map((input, inputIndex) => {
               for (let i = user.account.index; i >= 0; i--) {
-                const hd = root.derivePath(`m/84'/0'/0'/0/${i}`);
+                const hd = root.derive(i);
 
                 const pair = ECPair.fromPrivateKey(hd.privateKey, {
                   compressed: true,
@@ -1312,7 +1331,7 @@ export default new Vuex.Store({
           amount,
           asset,
         });
-        commit('snack', `Faucet loaded with ${amount} SAT`)
+        commit('snack', `Faucet loaded with ${amount} SAT`);
         commit('error', null);
       } catch (e) {
         commit('error', e.response ? e.response.data : e.message);
@@ -1694,10 +1713,10 @@ export default new Vuex.Store({
             redeemcode: text,
           });
 
-          if (payment)
+          if (payment) {
             window.location.href = `${window.location.protocol}//${window.location.host}/redeem/${text}`;
-
-          return;
+            return;
+          }
         } catch (e) {
           commit('error', e.response ? e.response.data : e.message);
         }
@@ -1888,7 +1907,7 @@ export default new Vuex.Store({
       let index = s.proposals.findIndex(p => p.id === parseInt(v));
       if (index > -1) {
         s.proposals.splice(index, 1);
-      } 
+      }
     },
     addAccount(s, v) {
       let index = s.user.accounts.findIndex(a => a.id === v.id);

@@ -65,6 +65,7 @@ export default {
 
   computed: {
     snack: sync('snack'),
+    seed: get('seed'),
     initializing: get('initializing'),
     socket: get('socket'),
     user: sync('user'),

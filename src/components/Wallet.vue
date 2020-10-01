@@ -93,7 +93,7 @@
       />
       <div v-if="type === 'Non-Custodial'">
         <div v-if="details">
-          <v-textarea label="Seed" v-model="account.seed" rows="1" auto-grow>
+          <v-textarea label="Seed" v-model="account.seed" rows="1" auto-grow :loading="loading">
             <template v-slot:append>
               <v-btn @click="copy(account.seed)" class="ml-1" icon>
                 <v-icon>$copy</v-icon>
@@ -109,7 +109,12 @@
             rows="1"
             auto-grow
           />
-          <v-textarea label="Master Pubkey" v-model="pubkey" rows="1" auto-grow>
+          <v-textarea
+            label="Master Pubkey"
+            v-model="account.pubkey"
+            rows="1"
+            auto-grow
+          >
             <template v-slot:append>
               <v-btn @click="copy(account.pubkey)" class="ml-1" icon>
                 <v-icon>$copy</v-icon>
@@ -119,7 +124,7 @@
           <v-textarea
             label="Master Private Key"
             type="password"
-            v-model="privkey"
+            v-model="account.privkey"
             rows="1"
             auto-grow
           >
@@ -152,14 +157,16 @@
 <script>
 import { call, get } from 'vuex-pathify';
 import Copy from '../mixins/Copy';
-import { generateMnemonic } from 'bip39';
-import { fromSeed } from 'bip32';
+import { generateMnemonic, mnemonicToSeed } from 'bip39';
+import { fromSeed, fromBase58 } from 'bip32';
 import sha256, { HMAC } from 'fast-sha256';
 
 export default {
   mixins: [Copy],
 
   data: () => ({
+    root: null,
+    loading: false,
     type: 'Non-Custodial',
     details: false,
     success: false,
@@ -171,11 +178,14 @@ export default {
       seed: '',
       path: `m/84'/0'/0'`,
       network: 'bitcoin',
+      privkey: '',
+      pubkey: '',
     },
     timeout: null,
   }),
 
   computed: {
+    accountPath() { return this.account.path },
     network() {
       return this.account.network;
     },
@@ -201,24 +211,11 @@ export default {
         }))
         .sort((a, b) => ('' + a.text).localeCompare(b.text));
     },
-    privkey() {
-      if (!this.account.seed) return null;
-      const root = fromSeed(
-        Buffer.from(sha256(this.account.seed), 'hex'),
-        this.$network
-      );
-      return root.derivePath(this.account.path).toBase58();
+    accountSeed() {
+      return this.account.seed;
     },
-    pubkey() {
-      if (!this.account.seed) return null;
-      const root = fromSeed(
-        Buffer.from(sha256(this.account.seed), 'hex'),
-        this.$network
-      );
-      return root
-        .derivePath(this.account.path)
-        .neutered()
-        .toBase58();
+    accountPrivkey() {
+      return this.account.privkey;
     },
     user: get('user'),
   },
@@ -233,7 +230,6 @@ export default {
 
     issueAsset: call('issueAsset'),
     submit() {
-      this.account.pubkey = this.pubkey;
       this.createAccount(this.account);
     },
     limit(e) {
@@ -252,15 +248,41 @@ export default {
       if (!seed) ({ seed } = await this.passwordPrompt());
       this.account.seed = seed;
       this.account.path += '/' + this.user.index;
+      this.generate();
     },
   },
   watch: {
-    network(v) {
-      if (v === 'bitcoin' && this.account.ticker === 'LBTC') this.account.ticker = 'BTC';
-      if (v === 'liquid' && this.account.ticker === 'BTC') this.account.ticker = 'LBTC';
+    accountPrivkey(v) {
+      this.account.pubkey = fromBase58(v, this.$network) 
+        .neutered()
+        .toBase58();
+    },
 
-      if (v === 'bitcoin' && this.account.name === 'Liquid Bitcoin') this.account.name = 'Bitcoin';
-      if (v === 'liquid' && this.account.name === 'Bitcoin') this.account.name = 'Liquid Bitcoin';
+    async accountSeed(v) {
+      if (!v) return;
+      this.loading = true;
+      this.root = fromSeed(await mnemonicToSeed(v), this.$network);
+      this.account.privkey = this.root.derivePath(this.account.path).toBase58();
+      this.loading = false;
+    },
+
+    accountPath(v) {
+      if (!this.root) return;
+      try {
+        this.account.privkey = this.root.derivePath(v).toBase58();
+      } catch(e) {} 
+    },
+
+    network(v) {
+      if (v === 'bitcoin' && this.account.ticker === 'LBTC')
+        this.account.ticker = 'BTC';
+      if (v === 'liquid' && this.account.ticker === 'BTC')
+        this.account.ticker = 'LBTC';
+
+      if (v === 'bitcoin' && this.account.name === 'Liquid Bitcoin')
+        this.account.name = 'Bitcoin';
+      if (v === 'liquid' && this.account.name === 'Bitcoin')
+        this.account.name = 'Liquid Bitcoin';
     },
     type(v) {
       if (v === 'Hosted') {

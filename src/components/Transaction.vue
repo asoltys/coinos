@@ -14,18 +14,43 @@
         <network-icon :network="payment.network" />
       </template>
       <template v-slot:append>
-        <v-btn @click="clearPayment" class="ml-1" icon>
-          <v-icon>$cancel</v-icon>
-        </v-btn>
-        <v-btn icon @click="show = !show" class="ml-1" text>
-          <qrcode />
-        </v-btn>
-        <v-btn @click="explore" class="ml-1" icon>
-          <v-icon>$open</v-icon>
-        </v-btn>
-        <v-btn @click="copy(recipient)" class="ml-1" icon>
-          <v-icon>$copy</v-icon>
-        </v-btn>
+        <v-speed-dial v-model="fab" direction="bottom">
+          <template v-slot:activator>
+            <v-btn class="ml-1" icon>
+              <v-icon>$dotsv</v-icon>
+            </v-btn>
+          </template>
+          <v-btn
+            @click="clearPayment"
+            class="elevation-2"
+            fab
+            small
+            color="white"
+          >
+            <v-icon color="red">$cancel</v-icon>
+          </v-btn>
+          <v-btn
+            @click="show = !show"
+            class="elevation-2"
+            fab
+            small
+            color="white"
+          >
+            <v-icon color="black">$qrcode</v-icon>
+          </v-btn>
+          <v-btn @click="explore" class="elevation-2" fab small color="white">
+            <v-icon color="black">$open</v-icon>
+          </v-btn>
+          <v-btn
+            @click="copy(recipient)"
+            class="elevation-2"
+            fab
+            small
+            color="white"
+          >
+            <v-icon color="black">$copy</v-icon>
+          </v-btn>
+        </v-speed-dial>
       </template>
     </v-textarea>
     <v-select
@@ -67,7 +92,11 @@
 
     <v-textarea label="Memo" v-model="payment.memo" rows="1" auto-grow />
 
-    <v-switch label="Replaceable" v-model="payment.replaceable" @change="$emit('feeRate')"/>
+    <v-switch
+      label="Replaceable"
+      v-model="payment.replaceable"
+      @change="$emit('feeRate')"
+    />
 
     <div class="d-flex" v-if="psbt">
       <v-btn @click="copy(psbt)" class="ml-auto">
@@ -83,7 +112,6 @@ import { call, get, sync } from 'vuex-pathify';
 import SetFee from './SetFee';
 import Copy from '../mixins/Copy';
 import NetworkIcon from './NetworkIcon';
-import Qrcode from 'vue-material-design-icons/Qrcode';
 import Qr from './Qr';
 import Amount from './Amount';
 
@@ -91,20 +119,20 @@ const SATS = 100000000;
 const bs = 'https://blockstream.info';
 
 export default {
-  components: { Amount, NetworkIcon, SetFee, Qr, Qrcode },
+  components: { Amount, NetworkIcon, SetFee, Qr },
   mixins: [Copy],
   props: {
     amount: { type: Number },
     fiatAmount: { type: String },
     max: { type: Number },
   },
-  data() {
-    return {
-      asset: null,
-      adjusting: false,
-      show: false,
-    };
-  },
+  data: () => ({
+    fab: false,
+    asset: null,
+    adjusting: false,
+    show: false,
+    showActions: false,
+  }),
   computed: {
     psbt: get('psbt'),
     recipient() {
@@ -139,7 +167,7 @@ export default {
         ? this.user.currency
         : this.user.unit === 'SAT'
         ? 'SAT'
-        : 'BTC'
+        : 'BTC';
     },
     loadingFee: get('loadingFee'),
     payment: sync('payment'),

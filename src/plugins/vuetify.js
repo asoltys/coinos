@@ -23,6 +23,7 @@ import Code from 'vue-material-design-icons/CodeTags';
 import ContentCopy from 'vue-material-design-icons/ContentCopy';
 import Delete from 'vue-material-design-icons/Delete';
 import Dialpad from 'vue-material-design-icons/Dialpad';
+import DotsVertical from 'vue-material-design-icons/DotsVertical';
 import Download from 'vue-material-design-icons/Download';
 import Edit from 'vue-material-design-icons/FileDocumentEdit';
 import Eye from 'vue-material-design-icons/Eye';
@@ -99,6 +100,7 @@ export default new Vuetify({
       'copy': { component: ContentCopy },
       'delete': { component: Delete },
       'dialpad': { component: Dialpad },
+      'dotsv': { component: DotsVertical },
       'down': { component: ChevronDown },
       'download': { component: Download },
       'edit': { component: Edit },

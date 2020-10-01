@@ -161,7 +161,7 @@
             <v-icon left>$refresh</v-icon><span>Load All</span>
           </v-btn>
           <v-btn @click="exportCSV" class="flex-grow-1 wide">
-            <v-icon left>$download</v-icon><span>Export CSV</span>
+            <v-icon left color="grey">$assignment</v-icon><span>Export CSV</span>
           </v-btn>
         </div>
       </div>
