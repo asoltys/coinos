@@ -83,14 +83,15 @@ export default {
   },
   computed: {
     displayCurrency() {
-      if (this.user.unit === 'SAT' && !this.user.fiat) return 'SAT';
+      if (this.user.fiat) return this.user.currency;
+      if (this.user.unit === 'SAT') return 'SAT';
       if (this.currency) return this.currency;
 
       if (this.user.account.ticker !== 'BTC') {
         return this.user.account.ticker;
       }
 
-      return this.user.fiat ? this.user.currency : this.user.unit;
+      return this.user.unit;
     },
     fiatAmount() {
       return this.fiatAmountOverride || ((this.value * this.fixedRate) / SATS).toFixed(2);
