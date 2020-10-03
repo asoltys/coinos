@@ -2,7 +2,6 @@
   <v-card v-if="proposals.length">
     <v-card-text class="white--text">
       <h2>Open Orders</h2>
-      <v-progress-linear v-if="loading" indeterminate></v-progress-linear>
       <v-container class="pb-0 text-right">
         <v-row>
           <v-col>Time</v-col>
@@ -56,7 +55,6 @@ export default {
   },
   computed: {
     assets: get('assets'),
-    loading: get('loading'),
     user: get('user'),
   },
   methods: {

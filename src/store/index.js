@@ -335,7 +335,6 @@ export default new Vuex.Store({
     },
 
     async accept({ commit, getters, dispatch }, { id, text }) {
-      commit('loading', true);
       try {
         let { data: acceptance } = await Vue.axios.post('/accept', {
           id,
@@ -346,7 +345,6 @@ export default new Vuex.Store({
       } catch (e) {
         commit('error', e.response ? e.response.data : e.message);
       }
-      commit('loading', false);
     },
 
     async createOrder({ commit, getters, dispatch }, order) {

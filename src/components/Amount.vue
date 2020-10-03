@@ -83,9 +83,10 @@ export default {
   },
   computed: {
     displayCurrency() {
-      if (this.user.fiat) return this.user.currency;
-      if (this.user.unit === 'SAT') return 'SAT';
-      if (this.currency) return this.currency;
+      if (!this.user.fiat) {
+        if (this.user.unit === 'SAT') return 'SAT';
+        if (this.currency) return this.currency;
+      }
 
       if (this.user.account.ticker !== 'BTC') {
         return this.user.account.ticker;

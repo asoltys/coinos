@@ -5,7 +5,16 @@
         Atomic Swap Proposal
       </v-card-title>
 
-      <v-card-text>
+      <v-progress-linear v-if="loading" indeterminate />
+      <v-card-text v-else>
+        <p>
+          Advanced users can accept this trade with the
+          <a href="https://docs.blockstream.com/liquid/swap_tool.html"
+            >liquid swap tool</a
+          >
+          by pasting the resulting partially signed transaction below to be
+          finalized
+        </p>
         <div class="d-flex flex-wrap mb-2">
           <div class="d-flex flex-grow-1 mb-2">
             <v-btn @click="download(proposal.text)" class="flex-grow-1 mr-1">
@@ -15,28 +24,20 @@
               <v-icon left>$copy</v-icon><span>Copy</span>
             </v-btn>
           </div>
-          <div class="d-flex" style="width: 100%">
-            <v-btn @click="accepting = !accepting" class="flex-grow-1">
-              <v-icon left color="green">$assignment</v-icon><span>Accept</span>
-            </v-btn>
-          </div>
-          <v-textarea
-            v-if="accepting"
-            label="Base64 Encoded Acceptance Transaction"
-            v-model="acceptance"
-          />
         </div>
+        <v-textarea
+          label="Base64 Encoded Acceptance Transaction"
+          v-model="acceptance"
+          auto-focus
+          ref="acceptance"
+        />
       </v-card-text>
       <v-card-actions>
         <v-btn text @click="close">
           Cancel
         </v-btn>
         <v-spacer></v-spacer>
-        <v-btn
-          @click="accept({ id: proposal.id, text: acceptance })"
-          color="primary"
-          text
-        >
+        <v-btn @click="submit" color="primary" text>
           Ok
         </v-btn>
       </v-card-actions>
@@ -58,12 +59,22 @@ export default {
 
   data() {
     return {
-      accepting: false,
       acceptance: '',
+      loading: false,
+      error: null,
     };
   },
 
   methods: {
+    async submit() {
+      this.loading = true;
+      try {
+        await this.accept({ id: this.proposal.id, text: this.acceptance });
+      } catch (e) {
+        this.error = e.message;
+      }
+      this.loading = false;
+    },
     accept: call('accept'),
 
     download(text) {
@@ -89,6 +100,10 @@ export default {
     close() {
       this.$emit('close');
     },
+  },
+
+  mounted() {
+    setTimeout(() => this.$refs.acceptance.focus(), 50);
   },
 };
 </script>
