@@ -1,25 +1,43 @@
 <template>
   <div>
-    <div v-if="editing">
-      <numpad
-        class="mb-2"
-        @done="editing = false"
-        :currencies="currencies"
-        :initialAmount="value"
-        :initialRate="rate"
-        @input="input"
-        :key="editing"
-        :precision="precision"
-      />
-      <div class="d-flex" v-if="button">
-        <v-btn
-          class="flex-grow-1 wide"
-          @click="done"
-        >
-          <v-icon left color="yellow">$check</v-icon><span>Set Amount</span>
-        </v-btn>
-      </div>
-    </div>
+    <v-dialog
+      v-if="editing"
+      v-model="editing"
+      :fullscreen="$vuetify.breakpoint.xsOnly"
+      @click:outside="done"
+      class="my-auto"
+      width="500"
+      style="height: 100%"
+      transition="dialog-bottom-transition"
+    >
+      <v-card>
+        <v-toolbar dark color="black">
+          <v-spacer></v-spacer>
+          <v-toolbar-items>
+            <v-btn text @click="done">
+              <v-icon left color="yellow">$check</v-icon><span>Done</span>
+            </v-btn>
+          </v-toolbar-items>
+        </v-toolbar>
+        <v-card-text>
+          <numpad
+            @done="editing = false"
+            :currencies="currencies"
+            :initialAmount="value"
+            :initialRate="rate"
+            @input="input"
+            :key="editing"
+            :precision="precision"
+                        class="mt-4"
+          />
+          <div class="d-flex" v-if="button">
+            <v-btn class="flex-grow-1 wide" @click="done">
+              <v-icon left color="yellow">$check</v-icon><span>Done</span>
+            </v-btn>
+          </div>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
     <v-text-field
       v-else
       class="amount"
@@ -72,12 +90,12 @@ export default {
     label: { type: String, default: 'Amount' },
     max: { type: Number, default: null },
     value: { type: Number, default: null },
-    startEditing: { type: Boolean, default: false },
+    triggerEditing: { type: Boolean, default: false },
     precision: { type: Number, default: null },
   },
   data() {
     return {
-      editing: this.startEditing,
+      editing: this.triggerEditing,
       fixedRate: null,
     };
   },
@@ -95,13 +113,16 @@ export default {
       return this.user.unit;
     },
     fiatAmount() {
-      return this.fiatAmountOverride || ((this.value * this.fixedRate) / SATS).toFixed(2);
+      return (
+        this.fiatAmountOverride ||
+        ((this.value * this.fixedRate) / SATS).toFixed(2)
+      );
     },
     decimals() {
       if (this.currency) {
         let account = this.user.accounts.find(a => a.ticker === this.currency);
         if (account) return account.precision;
-      } 
+      }
       return 8;
     },
     isBtc() {
@@ -138,10 +159,10 @@ export default {
         ? '#ffeb3b'
         : '#0ae';
     },
-    input (amount, fiatAmount, currency, rate) {
+    input(amount, fiatAmount, currency, rate) {
       this.fixedRate = rate;
       this.$emit('input', amount, fiatAmount, currency);
-    }, 
+    },
     done() {
       this.$emit('done');
       this.editing = false;
@@ -153,9 +174,15 @@ export default {
     toggleUnit: call('toggleUnit'),
   },
 
+  watch: {
+    triggerEditing(v) {
+      this.editing = v;
+    },
+  },
+
   mounted() {
     this.fixedRate = this.rate;
-  }, 
+  },
 };
 </script>
 

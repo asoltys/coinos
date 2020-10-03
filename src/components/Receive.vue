@@ -1,19 +1,52 @@
 <template>
   <div>
-    <tippad v-if="tipping" @input="setTip" />
-    <v-card v-else class="pa-3 text-center mb-2">
+    <tippad v-if="tipping" :tipping="tipping" @input="setTip" />
+    <v-card v-else class="text-center mb-2 py-2 px-0 mx-0">
       <div v-if="lnurl && lnurl.encoded">
         <lnurl :lnurl="lnurl" />
         <v-btn @click="lnurl = null" class="mb-1 mb-sm-0 wide">
-          <v-icon left>$arrow_back</v-icon>
+          <v-icon left>$left</v-icon>
           Back
         </v-btn>
       </div>
       <div v-else>
-        <invoice-balance v-if="fullscreen" />
-        <qr :text="invoice.text" />
-        <div v-if="fullscreen" class="ma-4">{{ invoice.memo }}</div>
-        <customer-controls v-if="fullscreen" @cancel="fullscreen = false" @tipping="tipping = true" />
+        <div class="d-flex" v-if="!fullscreen">
+          <v-btn-toggle
+            v-model="invoice.network"
+            tile
+            color="primary accent-3"
+            group
+            @change="addInvoice"
+            class="mx-auto flex-wrap"
+          >
+            <v-btn value="bitcoin" class="flex-grow-1">
+              <v-icon left title="Bitcoin">$bitcoin</v-icon>
+              Bitcoin
+            </v-btn>
+            <v-btn value="liquid" class="flex-grow-1">
+              <v-icon left color="liquid" title="Liquid">$liquid</v-icon>
+              Liquid
+            </v-btn>
+
+            <v-btn value="lightning" class="flex-grow-1">
+              <v-icon left color="primary" title="Lightning">$flash</v-icon>
+              Lightning
+            </v-btn>
+
+          </v-btn-toggle>
+        </div>
+        <qr :text="invoice.text" v-if="fullscreen" />
+          <invoice-balance />
+        <div class="ma-4 px-1">
+          <v-progress-linear v-if="loading" indeterminate color="primary" />
+          <div v-else>{{ text }}</div>
+        </div>
+        <div class="ma-4 font-weight-bold">{{ invoice.memo }}</div>
+        <customer-controls
+          v-if="fullscreen"
+          @cancel="fullscreen = false"
+          @tipping="tipping = true"
+        />
         <invoice-controls v-else @lock="fullscreen = true" />
       </div>
     </v-card>
@@ -31,17 +64,24 @@ import CustomerControls from './InvoiceCustomerControls';
 import InvoiceControls from './InvoiceControls';
 
 export default {
-  components: { Qr, Tippad, Lnurl, InvoiceBalance, CustomerControls, InvoiceControls },
+  components: {
+    Qr,
+    Tippad,
+    Lnurl,
+    InvoiceBalance,
+    CustomerControls,
+    InvoiceControls,
+  },
   mixins: [Copy],
   props: {
     clear: { type: Function },
   },
 
-  data() {
-    return {
-      tipping: false,
-    };
-  },
+  data: () => ({
+    model: 0,
+    colors: ['secondary', 'secondary'],
+    tipping: false,
+  }),
 
   computed: {
     fullscreen: sync('fullscreen'),
@@ -79,7 +119,6 @@ export default {
     toggleUnit: call('toggleUnit'),
     stopWriting: call('stopWriting'),
 
-
     async setTip(tip, fiatTip) {
       this.tipping = false;
       this.invoice.tip = tip;
@@ -94,7 +133,7 @@ export default {
   async mounted() {
     const waitForUser = resolve => {
       if (!this.user.index && this.user.index !== 0)
-        return this.timeout = setTimeout(() => waitForUser(resolve), 1000);
+        return (this.timeout = setTimeout(() => waitForUser(resolve), 1000));
       resolve();
     };
     await new Promise(waitForUser);
@@ -102,4 +141,3 @@ export default {
   },
 };
 </script>
-

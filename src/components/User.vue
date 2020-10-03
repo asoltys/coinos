@@ -26,7 +26,7 @@
         @click="back"
         class="mr-1"
       >
-        <v-icon left>$arrow_back</v-icon>
+        <v-icon left>$left</v-icon>
         Back
       </v-btn>
     </div>

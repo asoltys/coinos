@@ -14,61 +14,81 @@
       Settings saved successfully
     </v-alert>
     <v-form @submit.prevent="submit">
-      <v-combobox
+      <v-btn-toggle
         v-model="type"
-        :items="['Hosted', 'Non-Custodial']"
-        label="Account Type"
+        tile
+        color="primary accent-3"
+        group
+        class="d-flex"
       >
-        <template v-slot:selection="data">
-          <v-icon
-            v-if="data.item === 'Non-Custodial'"
-            class="mr-2 my-auto"
-            color="yellow"
-            title="Non-Custodial"
+        <v-btn value="Non-Custodial" class="flex-grow-1">
+          <v-icon class="ma-2 my-auto" color="primary" title="Non-Custodial"
             >$key</v-icon
           >
-          <v-icon v-else class="mr-2 my-auto" color="yellow" title="Hosted"
+          Non-Custodial
+        </v-btn>
+        <v-btn value="Hosted" class="flex-grow-1">
+          <v-icon class="ma-2 my-auto" color="primary" title="Hosted"
             >$cloud</v-icon
           >
-          <span class="text--white">{{ data.item }}</span>
-        </template>
-      </v-combobox>
-      <v-select
-        v-if="type !== 'Hosted'"
-        label="Network"
+          Hosted
+        </v-btn>
+
+      </v-btn-toggle>
+
+      <v-btn-toggle
         v-model="account.network"
-        :items="networks"
+        tile
+        color="primary accent-3"
+        group
+        class="d-flex mb-2"
+        v-if="type !== 'Hosted'"
       >
-        <template v-slot:selection="data">
-          <v-icon
-            class="ma-2 my-auto"
-            color="primary"
-            title="Lightning"
-            v-if="data.item.text === 'Lightning'"
-            >$flash</v-icon
+        <v-btn value="bitcoin" class="flex-grow-1">
+          <img class="ma-2" src="../assets/bitcoin.png" width="22px" />
+          Bitcoin
+        </v-btn>
+        <v-btn value="liquid" class="flex-grow-1">
+          <v-icon class="ma-2 my-auto" color="liquid" title="Liquid"
+            >$liquid</v-icon
           >
-          <v-icon
-            class="ma-2 my-auto"
-            color="#00aaee"
-            title="Lightning"
-            v-if="data.item.text === 'Liquid'"
-            >$water</v-icon
-          >
-          <img
-            class="ma-2"
-            src="../assets/bitcoin.png"
-            width="22px"
-            v-if="data.item.text === 'Bitcoin'"
-          />
-          <span class="text--white">{{ data.item.text }}</span>
-        </template>
-      </v-select>
+          Liquid
+        </v-btn>
+
+      </v-btn-toggle>
       <div v-if="type === 'Hosted'">
         <v-autocomplete
           label="Asset Lookup"
           v-model="account.asset"
           :items="all"
-        />
+        >
+            <template v-slot:item="{ item }">
+              <v-list-item-content>
+                <v-list-item-title v-text="item.text"></v-list-item-title>
+                <v-list-item-subtitle
+                  v-text="item.value"
+                ></v-list-item-subtitle>
+              </v-list-item-content>
+              <v-list-item-action>
+                <v-avatar>
+              <img
+            v-if="item.value === btc"
+                class="ma-2"
+                :src="
+                  `data:image/png;base64, ${icons['6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d']}`
+                "
+              />
+              <img
+            v-if="icons[item.value]"
+                class="ma-2"
+                :src="
+                  `data:image/png;base64, ${icons[item.value]}`
+                "
+              />
+              </v-avatar>
+              </v-list-item-action>
+            </template>
+            </v-autocomplete>
         <v-textarea
           v-if="!account.pubkey"
           label="Asset Id"
@@ -83,17 +103,15 @@
           </template>
         </v-textarea>
       </div>
-      <v-text-field label="Asset Name (optional)" v-model="account.name" />
-      <v-text-field label="Ticker Symbol (optional)" v-model="account.ticker" />
-      <v-text-field
-        label="Unit Decimal Precision (0-8)"
-        v-model="account.precision"
-        type="number"
-        @input="e => limit(e, a)"
-      />
       <div v-if="type === 'Non-Custodial'">
         <div v-if="details">
-          <v-textarea label="Seed" v-model="account.seed" rows="1" auto-grow :loading="loading">
+          <v-textarea
+            label="Seed"
+            v-model="account.seed"
+            rows="1"
+            auto-grow
+            :loading="loading"
+          >
             <template v-slot:append>
               <v-btn @click="copy(account.seed)" class="ml-1" icon>
                 <v-icon>$copy</v-icon>
@@ -142,8 +160,8 @@
           @click="details = !details"
           class="mr-1 mb-1 mb-sm-0 wide"
         >
-          <v-icon left color="green">$settings</v-icon>
-          <span>Wallet Details</span>
+          <v-icon left color="pink">$settings</v-icon>
+          <span>Advanced Settings</span>
         </v-btn>
         <v-btn type="submit" class="wide">
           <v-icon left class="yellow--text">$send</v-icon>
@@ -156,22 +174,27 @@
 
 <script>
 import { call, get } from 'vuex-pathify';
+import icons from '../icons.json';
 import Copy from '../mixins/Copy';
 import { generateMnemonic, mnemonicToSeed } from 'bip39';
 import { fromSeed, fromBase58 } from 'bip32';
 import sha256, { HMAC } from 'fast-sha256';
 
+const btc = process.env.VUE_APP_LBTC;
+
 export default {
   mixins: [Copy],
 
   data: () => ({
+    btc,
+    icons,
     root: null,
     loading: false,
     type: 'Non-Custodial',
     details: false,
     success: false,
     account: {
-      asset: process.env.VUE_APP_LBTC,
+      asset: btc,
       name: 'Bitcoin',
       ticker: 'BTC',
       precision: 8,
@@ -185,7 +208,9 @@ export default {
   }),
 
   computed: {
-    accountPath() { return this.account.path },
+    accountPath() {
+      return this.account.path;
+    },
     network() {
       return this.account.network;
     },
@@ -253,7 +278,7 @@ export default {
   },
   watch: {
     accountPrivkey(v) {
-      this.account.pubkey = fromBase58(v, this.$network) 
+      this.account.pubkey = fromBase58(v, this.$network)
         .neutered()
         .toBase58();
     },
@@ -270,7 +295,7 @@ export default {
       if (!this.root) return;
       try {
         this.account.privkey = this.root.derivePath(v).toBase58();
-      } catch(e) {} 
+      } catch (e) {}
     },
 
     network(v) {

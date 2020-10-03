@@ -6,6 +6,7 @@ import Account from 'vue-material-design-icons/Account';
 import Add from 'vue-material-design-icons/Plus';
 import Alert from 'vue-material-design-icons/Alert';
 import ArrowLeft from 'vue-material-design-icons/ArrowLeft';
+import ArrowRight from 'vue-material-design-icons/ArrowRight';
 import ArrowCollapseVertical from 'vue-material-design-icons/ArrowCollapseVertical';
 import ArrowExpandVertical from 'vue-material-design-icons/ArrowExpandVertical';
 import Atom from 'vue-material-design-icons/Atom';
@@ -65,6 +66,9 @@ import Wallet from 'vue-material-design-icons/Wallet';
 import Water from 'vue-material-design-icons/Water';
 import WaterPump from 'vue-material-design-icons/WaterPump';
 
+import Bitcoin from '../icons/Bitcoin';
+import Liquid from '../icons/Liquid';
+
 Vue.use(Vuetify);
 
 export default new Vuetify({
@@ -76,6 +80,7 @@ export default new Vuetify({
         secondary: '#333',
         accent: colors.yellow,
         error: '#b71c1c',
+        liquid: '#2cccbf',
       },
     },
   },
@@ -84,7 +89,8 @@ export default new Vuetify({
       'account': { component: Account },
       'add': { component: Add },
       'alert': { component: Alert },
-      'arrow_back': { component: ArrowLeft },
+      'left': { component: ArrowLeft },
+      'right': { component: ArrowRight },
       'collapse': { component: ArrowCollapseVertical },
       'expand': { component: ArrowExpandVertical },
       'atom': { component: Atom },
@@ -114,7 +120,9 @@ export default new Vuetify({
       'home': { component: Home },
       'info': { component: Info },
       'key': { component: Key, props: { size: 64 } },
-      'link': { component: Link},
+      'link': { component: Link },
+      'liquid': { component: Liquid },
+      'bitcoin': { component: Bitcoin },
       'lock': { component: Lock },
       'login': { component: Login },
       'nfc': { component: Nfc },

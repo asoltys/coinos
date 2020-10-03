@@ -37,7 +37,7 @@
     <voucher v-if="payment.method === 'url'" />
     <swap v-if="payment.method === 'swap'" />
     <v-btn v-if="payment.method" @click="payment.method = null" class="my-2 wide">
-      <v-icon>$arrow_back</v-icon>
+      <v-icon>$left</v-icon>
       Back</v-btn
     >
   </div>

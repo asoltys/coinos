@@ -12,7 +12,7 @@
         </div>
             <qr :text="redeemUrl" />
             <v-btn @click="share = false" class="mr-1">
-              <v-icon left>$arrow_back</v-icon>
+              <v-icon left>$left</v-icon>
               Back
             </v-btn>
             <v-btn @click="copy(redeemUrl)" class="mr-1">

@@ -1,8 +1,8 @@
 <template>
   <div>
-    <v-expansion-panels accordion class="mb-2">
+    <v-expansion-panels v-model="selected" accordion class="mb-2">
       <v-expansion-panel v-for="a in accounts" :key="a.id">
-        <v-expansion-panel-header ripple class="d-flex" expand-icon="">
+        <v-expansion-panel-header ripple class="d-flex" expand-icon="$down">
           <div
             class="asset d-flex flex-grow-1"
             :class="{
@@ -55,17 +55,10 @@
                 >({{ $format(a.pending, a.precision) }} pending)</span
               >
             </div>
-            <v-btn
-              @click.prevent.stop="select(a)"
-              class="flex-grow-0 my-auto elevation-1 ml-1 d-none d-sm-flex"
-            >
-              <v-icon title="Payments" color="yellow" left>$send</v-icon>
-              Go
-            </v-btn>
           </div>
         </v-expansion-panel-header>
         <v-expansion-panel-content class="text-left">
-          <v-card class="pa-4" style="background: #333">
+          <v-card color="secondary">
             <div v-if="registering[a.asset]">
               <h2 class="text-center white--text">Proof of Domain Ownership</h2>
               <div class="text-center">
@@ -110,7 +103,7 @@
                 </v-btn>
               </div>
             </div>
-            <v-form v-else @submit.prevent="submit(a)">
+            <v-form v-else-if="showDetails[a.id]" @submit.prevent="submit(a)" class="pa-4">
               <v-text-field
                 label="Wallet Type"
                 :value="a.pubkey ? 'Non-Custodial' : 'Hosted'"
@@ -234,7 +227,8 @@
                 <v-btn
                   v-if="
                     !(assets[a.asset] && assets[a.asset].registered) &&
-                      a.contract && a.contract.entity.domain
+                      a.contract &&
+                      a.contract.entity.domain
                   "
                   class="flex-grow-1 mr-1 wide mb-1 mb-sm-0 wide"
                   @click.prevent="startRegistering(a.asset)"
@@ -242,40 +236,48 @@
                   <v-icon left color="blue">$assignment</v-icon>
                   <span>Register Asset</span>
                 </v-btn>
-                <v-btn
-                  @click.prevent.stop="select(a)"
-                  class="flex-grow-1 mr-1 mb-1 mb-sm-0 wide"
-                >
-                  <v-icon left class="yellow--text">$send</v-icon>
-                  <span>Go to Wallet</span>
-                </v-btn>
-              </div>
-              <div class="d-flex justify-center mb-sm-2 flex-wrap">
-                <v-btn
-                  class="flex-grow-1 mr-1 mb-1 mb-sm-0 wide"
-                  @click.prevent="hide(a)"
-                >
-                  <v-icon left>$eye</v-icon>
-                  <span>{{ a.hide ? 'Show' : 'Hide' }} Wallet</span>
-                </v-btn>
-                <v-btn
-                  class="flex-grow-1 mr-1 mb-1 mb-sm-0 wide"
-                  @click.prevent="deleteAccount(a)"
-                >
-                  <v-icon left color="error">$delete</v-icon>
-                  <span>Delete Wallet</span>
-                </v-btn>
               </div>
             </v-form>
+            <v-btn-toggle
+              tile
+              color="primary accent-3"
+              group
+              class="d-flex flex-wrap"
+            >
+            <v-btn
+              class="flex-grow-1"
+              @click.prevent.stop="select(a)"
+            >
+              <v-icon left color="blue">$payments</v-icon>
+              <span>Payments</span>
+            </v-btn>
+            <v-btn
+              class="flex-grow-1"
+              @click.prevent.stop="toggleForm(a)"
+            >
+              <v-icon left color="primary">$pencil</v-icon>
+              <span>Edit</span>
+            </v-btn>
+              <v-btn
+              class="flex-grow-1"
+                @click.prevent="hide(a)"
+              >
+                <v-icon left>$eye</v-icon>
+                <span>{{ a.hide ? 'Show' : 'Hide' }}</span>
+              </v-btn>
+              <v-btn
+              class="flex-grow-1"
+                @click.prevent="deleteAccount(a)"
+              >
+                <v-icon left color="error">$delete</v-icon>
+                <span>Delete</span>
+              </v-btn>
+            </v-btn-toggle>
           </v-card>
         </v-expansion-panel-content>
       </v-expansion-panel>
     </v-expansion-panels>
     <div class="text-center">
-      <v-btn class="mx-auto mb-1 mr-2 wide" @click="$go('/')">
-        <v-icon left color="blue">$payments</v-icon>
-        <span>View Payments</span>
-      </v-btn>
       <v-btn class="mx-auto mb-1 mr-2 wide" @click="$go('/wallet')">
         <v-icon left color="primary">$add</v-icon>
         <span>New Wallet</span>
@@ -289,8 +291,9 @@
         class="mx-auto mb-1 wide"
         @click="showHidden = !showHidden"
       >
-        <v-icon left>$eye</v-icon>
-        <span>{{ showHidden ? 'Hide' : 'Show' }} Hidden</span>
+        <v-icon left color="grey" v-if="showHidden">$eye</v-icon>
+        <v-icon left v-else>$eye</v-icon>
+        <span>{{ showHidden ? 'Hide Wallets' : 'Show Hidden' }}</span>
       </v-btn>
     </div>
   </div>
@@ -311,11 +314,10 @@ export default {
   mixins: [Copy],
   computed: {
     networks() {
-      return this.nodes
-        .map(n => ({
-          text: n[0].toUpperCase() + n.slice(1),
-          value: n,
-        }));
+      return this.nodes.map(n => ({
+        text: n[0].toUpperCase() + n.slice(1),
+        value: n,
+      }));
     },
     nodes: get('nodes'),
     error: sync('error'),
@@ -329,6 +331,8 @@ export default {
     user: sync('user'),
   },
   data: () => ({
+    showDetails: {},
+    selected: null,
     changed: {},
     seeds: {},
     showHidden: false,
@@ -394,6 +398,9 @@ export default {
         this.submit(a, true);
       }
     },
+    toggleForm(a) {
+      this.$set(this.showDetails, a.id, !this.showDetails[a.id]);
+    },
     async submit(a, supress) {
       await this.updateAccount(a);
       if (!supress) this.success = 'Account updated successfully';
@@ -420,6 +427,9 @@ export default {
       await this.shiftAccount(a.id);
       this.$go('/home');
     },
+  },
+  mounted() {
+    this.selected = this.accounts.findIndex(a => a.id === this.user.account.id);
   },
 };
 </script>

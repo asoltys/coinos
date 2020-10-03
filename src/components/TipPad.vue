@@ -1,49 +1,71 @@
 <template>
-  <div class="tippad">
-    <div v-if="custom">
-      <numpad
-        @input="updateTip"
-        :initialAmount="tip"
-        :initialRate="invoice.rate"
-        :currencies="[invoice.currency, 'SAT', 'BTC']"
-      />
-      <div class="d-flex my-2">
-        <v-btn
-          class="black--text flex-grow-1"
-          color="primary"
-          dark
-          @click="done"
-        >
-          <v-icon left>$check</v-icon><span>Done</span>
-        </v-btn>
-      </div>
-    </div>
-    <div v-else>
-      <div class="d-flex display-1 text-center justify-center">
-        <div class="flex-grow-1">{{ tip }} <span class="body-1">{{ ticker }}</span></div>
-        <div class="flex-grow-1">{{ percent }}%</div>
-        <div v-if="user.account.ticker === 'BTC'" class="flex-grow-1 yellow--text">
-          {{ fiatTip }} <span class="body-1">{{ invoice.currency }}</span>
+  <v-dialog
+    v-if="tipping"
+    v-model="tipping"
+    :fullscreen="$vuetify.breakpoint.xsOnly"
+    @click:outside="done"
+    class="my-auto"
+    width="500"
+    style="height: 100%"
+    transition="dialog-bottom-transition"
+  >
+    <v-card>
+      <v-toolbar dark color="black">
+        <v-spacer></v-spacer>
+        <v-toolbar-items>
+          <v-btn text @click="done">
+            <v-icon left color="yellow">$check</v-icon><span>Done</span>
+          </v-btn>
+        </v-toolbar-items>
+      </v-toolbar>
+      <div v-if="custom">
+        <numpad
+           @input="updateTip"
+           :initialAmount="tip"
+           :initialRate="invoice.rate"
+           :currencies="[invoice.currency, 'SAT', 'BTC']"
+           />
+        <div class="d-flex my-2">
+          <v-btn
+             class="flex-grow-1"
+             @click="done"
+             >
+             <v-icon left color="yellow">$check</v-icon><span>Done</span>
+          </v-btn>
         </div>
       </div>
-      <v-slider v-model="percent" min="0" :max="max" />
-      <v-btn v-for="i in percents" class="mb-2" @click="select(i)" :key="i">
-        <span>{{ i }}%</span>
-      </v-btn>
-      <v-btn class="mb-2" @click="custom = true">
-        <span>Custom</span>
-      </v-btn>
-      <v-btn class="mb-2" @click="select(0)">
-        <span>None</span>
-      </v-btn>
-      <div class="text-center">
-        <v-btn class="mb-2 ok" @click="done">
-          <v-icon left color="primary">$check</v-icon>
-          <span>Done</span>
-        </v-btn>
+      <div v-else>
+        <div class="d-flex display-1 text-center justify-center">
+          <div class="flex-grow-1">
+            {{ tip }} <span class="body-1">{{ ticker }}</span>
+          </div>
+          <div class="flex-grow-1">{{ percent }}%</div>
+          <div
+               v-if="user.account.ticker === 'BTC'"
+               class="flex-grow-1 yellow--text"
+               >
+               {{ fiatTip }} <span class="body-1">{{ invoice.currency }}</span>
+          </div>
+        </div>
+        <v-slider v-model="percent" min="0" :max="max" />
+          <v-btn v-for="i in percents" class="mb-2" @click="select(i)" :key="i">
+            <span>{{ i }}%</span>
+          </v-btn>
+          <v-btn class="mb-2" @click="custom = true">
+            <span>Custom</span>
+          </v-btn>
+          <v-btn class="mb-2" @click="select(0)">
+            <span>None</span>
+          </v-btn>
+          <div class="text-center">
+            <v-btn class="mb-2 ok" @click="done">
+              <v-icon left color="primary">$check</v-icon>
+              <span>Done</span>
+            </v-btn>
+          </div>
       </div>
-    </div>
-  </div>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script>
@@ -53,6 +75,10 @@ import { get } from 'vuex-pathify';
 const SATS = 100000000;
 
 export default {
+  props: {
+    tipping: { type: Boolean, default: false },
+  },
+
   components: { Numpad },
 
   data() {
@@ -70,7 +96,7 @@ export default {
   computed: {
     isBtc() {
       return this.user.account.ticker === 'BTC';
-    }, 
+    },
     ticker() {
       return this.isBtc ? this.user.unit : this.user.account.ticker;
     },
@@ -108,7 +134,6 @@ export default {
         this.tip = this.invoice.tip;
         this.fiatTip = this.invoice.fiatTip;
       });
-
     } else this.percent = 15;
   },
 

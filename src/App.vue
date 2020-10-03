@@ -4,8 +4,8 @@
     <snack-bar type="success" :text="success" :timeout="2500" @done="success = null" />
     <snack-bar type="info" :text="snack" :timeout="2500" @done="snack = null" />
     <snack-bar type="error" :text="error" @done="error = null" />
-    <v-main style="background: #333">
-      <v-container class="mr-3" style="margin-bottom: 50px !important">
+    <v-main>
+      <v-container>
         <v-alert
           class="mb-2 black--text"
           v-if="versionMismatch"
@@ -147,7 +147,7 @@ body
   text-overflow ellipsis
   white-space nowrap
 
-@media (max-width: 600px)
+@media (max-width: 599px)
   .truncate
     max-width 100px
 

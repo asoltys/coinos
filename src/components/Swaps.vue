@@ -1,8 +1,6 @@
 <template>
   <div>
-    <v-card class="pa-2 mb-1">
     <swap @a1="setA1" @a2="setA2" />
-    </v-card>
 
     <v-progress-linear v-if="loading" indeterminate />
     <order-book :a1="a1" :a2="a2" />

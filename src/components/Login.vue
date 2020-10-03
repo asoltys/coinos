@@ -9,8 +9,8 @@
           <a href="https://bitcoin.org/" class="yellow--text">bitcoin</a>
         </h2>
         <p style="display: inline-flex" class="mb-0">
-          with <v-icon color="#06ddff">$water</v-icon>
-          <a href="https://blockstream.com/liquid/" style="color: #06ddff"
+          with <v-icon color="liquid" class="mx-1">$liquid</v-icon>
+          <a href="https://blockstream.com/liquid/" class="liquid--text"
             >Liquid</a
           >
           <span class="ml-1">and</span>
@@ -52,7 +52,7 @@
         </v-card-text>
       </v-card>
       <v-btn v-if="lnurl" @click="lnurl = null" class="mt-2">
-        <v-icon left>$arrow_back</v-icon>
+        <v-icon left>$left</v-icon>
         Back
       </v-btn>
     </div>

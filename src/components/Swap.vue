@@ -3,12 +3,51 @@
     <div class="d-sm-flex flex-wrap flex-sm-nowrap">
       <v-card class="flex-grow-1 mb-sm-2" color="secondary">
         <v-card-text>
-          <h2 class="text-center white--text">Trade</h2>
+          <div class="text-center">
+            <v-btn-toggle v-model="type" tile color="primary accent-3" group>
+              <v-btn value="buy">
+                Buy
+              </v-btn>
+
+              <v-btn value="sell">
+                Sell
+              </v-btn>
+            </v-btn-toggle>
+          </div>
           <v-autocomplete
             label="Asset"
             v-model="a1"
             :items="accounts"
             @input="$emit('a1', a1)"
+            @change="showAsset = true"
+          >
+            <template v-slot:item="{ item }">
+              <img
+                v-if="icons[item.value]"
+                class="ma-2"
+                :src="
+                  `data:image/png;base64, ${icons['6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d']}`
+                "
+                width="22px"
+              />
+              <v-list-item-content>
+                <v-list-item-title v-text="item.text"></v-list-item-title>
+                <v-list-item-subtitle
+                  v-text="item.value"
+                ></v-list-item-subtitle>
+              </v-list-item-content>
+              <v-list-item-action>
+                <v-icon>$settings</v-icon>
+              </v-list-item-action>
+            </template>
+          </v-autocomplete>
+
+          <v-textarea
+            label="Asset ID"
+            v-if="showAsset"
+            v-model="a1"
+            auto-grow
+            rows="1"
           />
           <amount
             v-if="a1"
@@ -25,9 +64,20 @@
           <v-icon color="primary" class="d-sm-none">$swapv</v-icon>
         </v-btn>
       </div>
-      <v-card class="flex-grow-1 mb-2" color="secondary">
+      <v-card class="flex-grow-1 mb-0 mb-sm-2" color="secondary">
         <v-card-text>
-          <h2 class="text-center white--text">For</h2>
+          <div class="text-center">
+            <v-btn-toggle v-model="type" tile color="primary accent-3" group>
+              <v-btn value="buy">
+                With
+              </v-btn>
+
+              <v-btn value="sell">
+                For
+              </v-btn>
+            </v-btn-toggle>
+          </div>
+
           <v-autocomplete
             label="Asset"
             v-model="a2"
@@ -41,6 +91,13 @@
               </v-btn>
             </template>
           </v-autocomplete>
+          <v-textarea
+            label="Asset ID"
+            v-if="showAsset"
+            v-model="a2"
+            auto-grow
+            rows="1"
+          />
           <amount
             v-if="a2"
             v-model.number="v2"
@@ -52,10 +109,10 @@
         </v-card-text>
       </v-card>
     </div>
-    <div class="d-flex flex-wrap">
+    <div class="d-flex">
       <v-btn
         @click="submit"
-        class="flex-grow-1 wide"
+        class="my-4 mx-auto"
         :loading="loading"
         :disabled="loading"
       >
@@ -66,6 +123,7 @@
 </template>
 
 <script>
+import icons from '../icons.json';
 import Amount from './Amount';
 import { get, call, sync } from 'vuex-pathify';
 import Copy from '../mixins/Copy';
@@ -76,16 +134,17 @@ export default {
   components: { Amount },
   mixins: [Copy],
 
-  data() {
-    return {
-      showAll: false,
-      loading: false,
-      a1: process.env.VUE_APP_LBTC,
-      a2: process.env.VUE_APP_LCAD,
-      v1: 10000,
-      v2: 100000000,
-    };
-  },
+  data: () => ({
+    icons,
+    showAsset: false,
+    type: 'buy',
+    showAll: false,
+    loading: false,
+    a1: process.env.VUE_APP_LBTC,
+    a2: process.env.VUE_APP_LCAD,
+    v1: 10000,
+    v2: 100000000,
+  }),
 
   computed: {
     assets: get('assets'),
