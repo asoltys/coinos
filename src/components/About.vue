@@ -64,6 +64,9 @@ export default {
   components: { LightningNode, Social, Info },
 
   methods: {
+    go(url) {
+      window.location.href = url;
+    },
     ...mapActions(['snack']),
   },
 
