@@ -5,7 +5,7 @@
     <snack-bar type="info" :text="snack" :timeout="2500" @done="snack = null" />
     <snack-bar type="error" :text="error" @done="error = null" />
     <v-main>
-      <v-container>
+      <v-container style="margin-bottom: 50px !important">
         <v-alert
           class="mb-2 black--text"
           v-if="versionMismatch"

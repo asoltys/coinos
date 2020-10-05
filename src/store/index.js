@@ -617,11 +617,11 @@ export default new Vuex.Store({
 
     async setCurrency({ commit, dispatch, getters, state }, currency) {
       const { invoice, rates, user } = state;
+      user.fiat = true;
       if (user.currency === currency) return;
       if (!(user.currencies.includes(currency) && rates[currency])) return;
       const rate = rates[currency];
 
-      user.fiat = true;
       user.currency = currency;
       invoice.currency = currency;
       invoice.rate = rate;
@@ -1357,9 +1357,10 @@ export default new Vuex.Store({
       if (!invoice.amount) invoice.amount = null;
       const { amount, memo, tip } = invoice;
 
+      if (!invoice.rate) invoice.rate = rate;
+
       invoice.address = null;
       invoice.received = 0;
-      invoice.rate = rate;
       invoice.uuid = v4();
 
       const url = address => {

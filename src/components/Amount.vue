@@ -28,7 +28,7 @@
             @input="input"
             :key="editing"
             :precision="precision"
-                        class="mt-4"
+            class="mt-4"
           />
           <div class="d-flex" v-if="button">
             <v-btn class="flex-grow-1 wide" @click="done">
@@ -110,7 +110,7 @@ export default {
         return this.user.account.ticker;
       }
 
-      return this.user.unit;
+      return this.user.fiat ? this.user.currency : this.user.unit;
     },
     fiatAmount() {
       return (

@@ -69,7 +69,7 @@
         @click.native="toggleAmount"
         class="flex-grow-1"
       >
-        <v-icon left color="blue">$edit</v-icon>
+        <v-icon left color="primary">$edit</v-icon>
         Set Amount
       </v-btn>
       <v-btn v-if="!showMemo" @click.native="toggleMemo" class="flex-grow-1">
@@ -81,8 +81,12 @@
         Copy
       </v-btn>
       <v-btn @click="$emit('lock')" class="flex-grow-1">
-        <v-icon left color="pink">$qrcode</v-icon>
+        <v-icon left color="blue">$eye</v-icon>
         Display
+      </v-btn>
+      <v-btn @click="settings = !settings" class="flex-grow-1">
+        <v-icon left color="pink">$settings</v-icon>
+        Advanced
       </v-btn>
     </v-btn-toggle>
   </v-form>

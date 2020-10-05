@@ -17,7 +17,7 @@
             color="primary accent-3"
             group
             @change="addInvoice"
-            class="mx-auto flex-wrap"
+            class="mx-auto flex-wrap mb-4"
           >
             <v-btn value="bitcoin" class="flex-grow-1">
               <v-icon left title="Bitcoin">$bitcoin</v-icon>
@@ -32,14 +32,13 @@
               <v-icon left color="primary" title="Lightning">$flash</v-icon>
               Lightning
             </v-btn>
-
           </v-btn-toggle>
         </div>
         <qr :text="invoice.text" v-if="fullscreen" />
           <invoice-balance />
         <div class="ma-4 px-1">
           <v-progress-linear v-if="loading" indeterminate color="primary" />
-          <div v-else>{{ text }}</div>
+          <div v-else class="body-1">{{ text }}</div>
         </div>
         <div class="ma-4 font-weight-bold">{{ invoice.memo }}</div>
         <customer-controls

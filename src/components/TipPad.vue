@@ -10,7 +10,7 @@
     transition="dialog-bottom-transition"
   >
     <v-card>
-      <v-toolbar dark color="black">
+      <v-toolbar dark color="black" class="mb-2">
         <v-spacer></v-spacer>
         <v-toolbar-items>
           <v-btn text @click="done">
@@ -113,7 +113,7 @@ export default {
       let percent = Math.round(tip / (this.amount * 0.01));
       if (percent > this.max) this.max = percent;
       this.tip = tip;
-      this.fiatTip = fiatTip;
+      this.fiatTip = tip * invoice.rate;
     },
     select(i) {
       this.percent = i;
@@ -140,7 +140,7 @@ export default {
   watch: {
     percent(v) {
       this.tip = Math.round(v * this.invoice.amount * 0.01);
-      this.fiatTip = ((this.tip / SATS) * this.invoice.rate).toFixed(2);
+      this.fiatTip = (v * this.invoice.fiatAmount * 0.01).toFixed(2);
     },
   },
 };
