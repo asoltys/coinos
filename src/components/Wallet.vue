@@ -20,6 +20,7 @@
         color="primary accent-3"
         group
         class="d-flex"
+        mandatory
       >
         <v-btn value="Non-Custodial" class="flex-grow-1">
           <v-icon class="ma-2 my-auto" color="primary" title="Non-Custodial"
@@ -33,7 +34,6 @@
           >
           Hosted
         </v-btn>
-
       </v-btn-toggle>
 
       <v-btn-toggle
@@ -54,7 +54,6 @@
           >
           Liquid
         </v-btn>
-
       </v-btn-toggle>
       <div v-if="type === 'Hosted'">
         <v-autocomplete
@@ -62,33 +61,22 @@
           v-model="account.asset"
           :items="all"
         >
-            <template v-slot:item="{ item }">
-              <v-list-item-content>
-                <v-list-item-title v-text="item.text"></v-list-item-title>
-                <v-list-item-subtitle
-                  v-text="item.value"
-                ></v-list-item-subtitle>
-              </v-list-item-content>
-              <v-list-item-action>
-                <v-avatar>
-              <img
-            v-if="item.value === btc"
-                class="ma-2"
-                :src="
-                  `data:image/png;base64, ${icons['6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d']}`
-                "
-              />
-              <img
-            v-if="icons[item.value]"
-                class="ma-2"
-                :src="
-                  `data:image/png;base64, ${icons[item.value]}`
-                "
-              />
+          <template v-slot:item="{ item }">
+            <v-list-item-content>
+              <v-list-item-title v-text="item.text"></v-list-item-title>
+              <v-list-item-subtitle v-text="item.value"></v-list-item-subtitle>
+            </v-list-item-content>
+            <v-list-item-action>
+              <v-avatar>
+                <img
+                  v-if="icons[item.value]"
+                  class="ma-2"
+                  :src="`data:image/png;base64, ${icons[item.value]}`"
+                />
               </v-avatar>
-              </v-list-item-action>
-            </template>
-            </v-autocomplete>
+            </v-list-item-action>
+          </template>
+        </v-autocomplete>
         <v-textarea
           v-if="!account.pubkey"
           label="Asset Id"
@@ -186,7 +174,6 @@ export default {
   mixins: [Copy],
 
   data: () => ({
-    btc,
     icons,
     root: null,
     loading: false,

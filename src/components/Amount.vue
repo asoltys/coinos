@@ -11,11 +11,14 @@
       transition="dialog-bottom-transition"
     >
       <v-card>
-        <v-toolbar dark color="black">
+        <v-toolbar color="black">
+            <v-btn text @click="cancel">
+              <v-icon left color="red">$cancel</v-icon><span>cancel</span>
+            </v-btn>
           <v-spacer></v-spacer>
           <v-toolbar-items>
             <v-btn text @click="done">
-              <v-icon left color="yellow">$check</v-icon><span>Done</span>
+              <v-icon left color="primary">$check</v-icon><span>Done</span>
             </v-btn>
           </v-toolbar-items>
         </v-toolbar>
@@ -101,10 +104,8 @@ export default {
   },
   computed: {
     displayCurrency() {
-      if (!this.user.fiat) {
-        if (this.user.unit === 'SAT') return 'SAT';
-        if (this.currency) return this.currency;
-      }
+      if (this.user.unit === 'SAT') return 'SAT';
+      if (!this.user.fiat && this.currency) return this.currency;
 
       if (this.user.account.ticker !== 'BTC') {
         return this.user.account.ticker;
@@ -152,6 +153,11 @@ export default {
     user: get('user'),
   },
   methods: {
+    cancel() {
+      this.editing = false;
+      this.$emit('input', 0, 0, this.currency);
+      this.$emit('cancel');
+    },
     color(c) {
       return ['BTC', 'SAT'].includes(c)
         ? 'white'

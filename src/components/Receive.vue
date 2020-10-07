@@ -18,6 +18,7 @@
             group
             @change="addInvoice"
             class="mx-auto flex-wrap mb-4"
+            mandatory
           >
             <v-btn value="bitcoin" class="flex-grow-1">
               <v-icon left title="Bitcoin">$bitcoin</v-icon>
@@ -46,7 +47,7 @@
           @cancel="fullscreen = false"
           @tipping="tipping = true"
         />
-        <invoice-controls v-else @lock="fullscreen = true" />
+        <invoice-controls v-show="!fullscreen" @display="fullscreen = true" />
       </div>
     </v-card>
   </div>

@@ -2,7 +2,7 @@
   <div>
     <v-expansion-panels v-model="selected" accordion class="mb-2">
       <v-expansion-panel v-for="a in accounts" :key="a.id">
-        <v-expansion-panel-header ripple class="d-flex" expand-icon="$down">
+        <v-expansion-panel-header ripple class="d-flex" expand-icon="$down" :color="a.id === user.account.id ? 'secondary' : null">
           <div
             class="asset d-flex flex-grow-1"
             :class="{
@@ -58,7 +58,7 @@
           </div>
         </v-expansion-panel-header>
         <v-expansion-panel-content class="text-left">
-          <v-card color="secondary">
+          <v-card color="secondary" class="mt-4">
             <div v-if="registering[a.asset]">
               <h2 class="text-center white--text">Proof of Domain Ownership</h2>
               <div class="text-center">
@@ -248,8 +248,8 @@
               class="flex-grow-1"
               @click.prevent.stop="select(a)"
             >
-              <v-icon left color="blue">$payments</v-icon>
-              <span>Payments</span>
+              <v-icon left color="green">$send</v-icon>
+              <span>Go</span>
             </v-btn>
             <v-btn
               class="flex-grow-1"

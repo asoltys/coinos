@@ -1445,6 +1445,8 @@ export default new Vuex.Store({
       try {
         let { user } = getters;
         let account = user.accounts.find(a => a.id === id);
+
+        if (!account) return;
         let { asset } = account;
 
         if (user.id) {
@@ -1930,6 +1932,8 @@ export default new Vuex.Store({
       s.user = JSON.parse(JSON.stringify(s.user));
     },
     addPayment(s, v) {
+      if (!s.user.payments) return;
+
       if (v.amount > 0) {
         s.received = v;
         s.invoice.received += parseInt(Math.abs(v.amount));

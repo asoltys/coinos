@@ -16,7 +16,7 @@
           <v-row v-for="p in asks" :key="p.id" class="hover">
             <v-btn icon @click="swap(p)"><v-icon color="primary">$atom</v-icon></v-btn>
             <v-col class="my-auto">
-              {{ (inverse ? 1 / p.rate : p.rate).toFixed(8) }}
+              {{ (inverse ? 1 / p.rate : p.rate).toFixed(2) }}
             </v-col>
             <v-col class="my-auto">{{ format(p.a1, p.v1) }}</v-col>
             <v-col class="my-auto ml-1" style="position: relative">
@@ -33,7 +33,7 @@
           <v-row v-for="p in bids" :key="p.id" class="hover">
             <v-btn icon @click="swap(p)"><v-icon color="primary">$atom</v-icon></v-btn>
             <v-col class="my-auto">
-              {{ (inverse ? p.rate : 1 / p.rate).toFixed(8) }}
+              {{ (inverse ? p.rate : 1 / p.rate).toFixed(2) }}
             </v-col>
             <v-col class="my-auto">{{ format(p.a2, p.v2) }}</v-col>
             <v-col class="my-auto ml-1" style="position: relative">
@@ -55,6 +55,8 @@ export default {
   props: {
     a1: { type: String },
     a2: { type: String },
+    bids: { type: Array },
+    asks: { type: Array },
   },
   components: { Proposal },
   data: () => ({
@@ -65,38 +67,6 @@ export default {
   computed: {
     assets: get('assets'),
     proposals: get('proposals'),
-    bids() {
-      return this.proposals
-        .filter(p => !p.accepted && p.a1 === this.a2 && p.a2 === this.a1)
-        .sort((a, b) =>
-          a.rate === b.rate ? a.id - b.id : a.rate > b.rate ? 1 : -1
-        )
-        .reduce(
-          (a, x, i) => [
-            ...a,
-            { ...x, total: x.v2 + (a[i - 1] ? a[i - 1].total : 0) },
-          ],
-          []
-        );
-    },
-    asks() {
-      let asks = [
-        ...this.proposals
-          .filter(p => !p.accepted && p.a1 === this.a1 && p.a2 === this.a2)
-          .sort((a, b) =>
-            a.rate === b.rate ? a.id - b.id : a.rate > b.rate ? 1 : -1
-          )
-          .reduce(
-            (a, x, i) => [
-              ...a,
-              { ...x, total: x.v1 + (a[i - 1] ? a[i - 1].total : 0) },
-            ],
-            []
-          ),
-      ].reverse();
-
-      return asks;
-    },
   },
   methods: {
     swap(p) {

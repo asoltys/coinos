@@ -13,13 +13,14 @@
         </v-row>
         <v-row v-for="p in proposals" :key="p.id">
           <v-col class="my-auto mr-1">
-            <span>{{ dateFormat(p.updatedAt) }}</span>
+            <span>{{ dateFormat(p.updatedAt) }} {{ p.type }}</span>
           </v-col>
           <v-col class="my-auto mr-1">
-            <span>{{ format(p.a1, p.v1) }}</span>
+            <span v-if="p.type === 'sell'">{{ format(p.a1, p.v1) }}</span>
+            <span v-else>{{ format(p.a2, p.v2) }}</span>
           </v-col>
           <v-col class="my-auto">
-            {{ parseFloat(p.rate.toFixed(8)) }}
+            {{ parseFloat(p.rate.toFixed(2)) }}
             </v-col>
           <v-btn
             v-if="p.user_id === user.id"

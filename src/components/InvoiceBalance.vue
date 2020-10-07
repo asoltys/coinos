@@ -35,6 +35,9 @@ import { call, get, sync } from 'vuex-pathify';
 
 export default {
   computed: {
+    isBtc() {
+      return this.user.account.ticker === 'BTC';
+    },
     loading: get('loading'),
     networks() {
       return this.nodes.map(n => ({
@@ -57,9 +60,6 @@ export default {
   },
 
   methods: {
-    isBtc() {
-      return this.user.account.ticker === 'BTC';
-    },
     color(c) {
       return ['BTC', 'SAT'].includes(c)
         ? 'white'

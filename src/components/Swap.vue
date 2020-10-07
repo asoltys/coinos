@@ -4,7 +4,13 @@
       <v-card class="flex-grow-1 mb-sm-2" color="secondary">
         <v-card-text>
           <div class="text-center">
-            <v-btn-toggle v-model="type" tile color="primary accent-3" group>
+            <v-btn-toggle
+              v-model="type"
+              tile
+              color="primary accent-3"
+              group
+              mandatory
+            >
               <v-btn value="buy">
                 Buy
               </v-btn>
@@ -15,21 +21,53 @@
             </v-btn-toggle>
           </div>
           <v-autocomplete
+            v-if="type === 'sell'"
             label="Asset"
             v-model="a1"
             :items="accounts"
             @input="$emit('a1', a1)"
-            @change="showAsset = true"
           >
             <template v-slot:item="{ item }">
-              <img
-                v-if="icons[item.value]"
-                class="ma-2"
-                :src="
-                  `data:image/png;base64, ${icons['6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d']}`
-                "
-                width="22px"
-              />
+              <div>
+                <div class="d-flex">
+                  <div class="flex-grow-1 title">{{ item.text }}</div>
+                  <v-spacer />
+                  <div class="yellow--text mt-auto">{{ item.balance }}</div>
+                </div>
+                <div class="caption">{{ item.value }}</div>
+              </div>
+              <v-list-item-action>
+                <v-avatar>
+                  <img
+                    v-if="icons[item.value]"
+                    class="ma-2"
+                    :src="`data:image/png;base64, ${icons[item.value]}`"
+                  />
+                </v-avatar>
+              </v-list-item-action>
+            </template>
+          </v-autocomplete>
+          <v-autocomplete
+            v-else
+            label="Asset"
+            v-model="a2"
+            :items="showAll ? all : active"
+            @input="$emit('a2', a2)"
+          >
+            <template v-slot:append-item>
+              <div class="d-flex">
+                <v-btn
+                  @click="showAll = !showAll"
+                  class="mx-auto text-center flex-grow-1"
+                  text
+                >
+                  <v-icon v-if="showAll" color="primary">$collapse</v-icon>
+                  <v-icon v-else color="primary">$expand</v-icon>
+                  Load More
+                </v-btn>
+              </div>
+            </template>
+            <template v-slot:item="{ item }">
               <v-list-item-content>
                 <v-list-item-title v-text="item.text"></v-list-item-title>
                 <v-list-item-subtitle
@@ -37,24 +75,41 @@
                 ></v-list-item-subtitle>
               </v-list-item-content>
               <v-list-item-action>
-                <v-icon>$settings</v-icon>
+                <v-avatar>
+                  <img
+                    v-if="icons[item.value]"
+                    class="ma-2"
+                    :src="`data:image/png;base64, ${icons[item.value]}`"
+                  />
+                </v-avatar>
               </v-list-item-action>
             </template>
           </v-autocomplete>
 
-          <v-textarea
-            label="Asset ID"
-            v-if="showAsset"
-            v-model="a1"
-            auto-grow
-            rows="1"
-          />
           <amount
-            v-if="a1"
+            v-if="a1 && type === 'sell'"
             v-model.number="v1"
             class="mb-2"
             :currency="ticker(a1)"
             :key="a1"
+            :precision="precision(a1)"
+            @input="v1Update"
+          />
+          <amount
+            v-if="a2 !== null && type === 'buy'"
+            v-model.number="v2"
+            class="mb-2"
+            :currency="ticker(a2)"
+            :key="a2"
+            :precision="precision(a2)"
+            @input="v2Update"
+          />
+          <v-text-field
+            v-if="type === 'buy'"
+            label="Price"
+            v-model="price"
+            @input="priceUpdate"
+            ref="buyprice"
           />
         </v-card-text>
       </v-card>
@@ -67,7 +122,13 @@
       <v-card class="flex-grow-1 mb-0 mb-sm-2" color="secondary">
         <v-card-text>
           <div class="text-center">
-            <v-btn-toggle v-model="type" tile color="primary accent-3" group>
+            <v-btn-toggle
+              v-model="type"
+              tile
+              color="primary accent-3"
+              group
+              mandatory
+            >
               <v-btn value="buy">
                 With
               </v-btn>
@@ -79,32 +140,93 @@
           </div>
 
           <v-autocomplete
+            v-if="type === 'buy'"
+            label="Asset"
+            v-model="a1"
+            :items="accounts"
+            @input="$emit('a1', a1)"
+          >
+            <template v-slot:item="{ item }">
+              <v-list-item-content>
+                <v-list-item-title v-text="item.text"></v-list-item-title>
+                <v-list-item-subtitle
+                  v-text="item.value"
+                ></v-list-item-subtitle>
+              </v-list-item-content>
+              <v-list-item-action>
+                <v-avatar>
+                  <img
+                    v-if="icons[item.value]"
+                    class="ma-2"
+                    :src="`data:image/png;base64, ${icons[item.value]}`"
+                  />
+                </v-avatar>
+              </v-list-item-action>
+            </template>
+          </v-autocomplete>
+          <v-autocomplete
+            v-else
             label="Asset"
             v-model="a2"
             :items="showAll ? all : active"
             @input="$emit('a2', a2)"
           >
-            <template v-slot:append>
-              <v-btn @click="showAll = !showAll" class="ml-1" icon>
-                <v-icon v-if="showAll">$collapse</v-icon>
-                <v-icon v-else>$expand</v-icon>
-              </v-btn>
+            <template v-slot:append-item>
+              <div class="d-flex">
+                <v-btn
+                  @click="showAll = !showAll"
+                  class="mx-auto text-center flex-grow-1"
+                  text
+                >
+                  <v-icon v-if="showAll" color="primary">$collapse</v-icon>
+                  <v-icon v-else color="primary">$expand</v-icon>
+                  Show All
+                </v-btn>
+              </div>
+            </template>
+
+            <template v-slot:item="{ item }">
+              <v-list-item-content>
+                <v-list-item-title v-text="item.text"></v-list-item-title>
+                <v-list-item-subtitle
+                  v-text="item.value"
+                ></v-list-item-subtitle>
+              </v-list-item-content>
+              <v-list-item-action>
+                <v-avatar>
+                  <img
+                    v-if="icons[item.value]"
+                    class="ma-2"
+                    :src="`data:image/png;base64, ${icons[item.value]}`"
+                  />
+                </v-avatar>
+              </v-list-item-action>
             </template>
           </v-autocomplete>
-          <v-textarea
-            label="Asset ID"
-            v-if="showAsset"
-            v-model="a2"
-            auto-grow
-            rows="1"
-          />
           <amount
-            v-if="a2"
+            v-if="a2 && type === 'sell'"
             v-model.number="v2"
             class="mb-2"
             :currency="ticker(a2)"
             :key="a2"
             :precision="precision(a2)"
+            @input="v2Update"
+          />
+          <amount
+            v-if="a1 && type === 'buy'"
+            v-model.number="v1"
+            class="mb-2"
+            :currency="ticker(a1)"
+            :key="a1"
+            :precision="precision(a1)"
+            @input="v1Update"
+          />
+          <v-text-field
+            v-if="type === 'sell'"
+            label="Price"
+            v-model="price"
+            ref="sellprice"
+            @input="priceUpdate"
           />
         </v-card-text>
       </v-card>
@@ -131,19 +253,25 @@ import Copy from '../mixins/Copy';
 const SATS = 100000000;
 
 export default {
+  props: {
+    bid: { type: Object },
+    ask: { type: Object },
+  },
   components: { Amount },
   mixins: [Copy],
 
   data: () => ({
+    custom: false,
+    focused: false,
+    price: null,
     icons,
-    showAsset: false,
-    type: 'buy',
+    type: 'sell',
     showAll: false,
     loading: false,
     a1: process.env.VUE_APP_LBTC,
     a2: process.env.VUE_APP_LCAD,
-    v1: 10000,
-    v2: 100000000,
+    v1: null,
+    v2: null,
   }),
 
   computed: {
@@ -154,10 +282,12 @@ export default {
           ...this.proposals.map(p => p.a1),
           ...this.proposals.map(p => p.a2),
         ]),
-      ].map(asset => ({
-        text: `${this.assets[asset].ticker} - ${this.assets[asset].name}`,
-        value: asset,
-      }));
+      ]
+        .map(asset => ({
+          text: `${this.assets[asset].ticker} - ${this.assets[asset].name}`,
+          value: asset,
+        }))
+        .filter(a => a.value !== this.a1);
     },
     all() {
       return Object.keys(this.assets)
@@ -165,12 +295,18 @@ export default {
           text: `${this.assets[asset].ticker} - ${this.assets[asset].name}`,
           value: asset,
         }))
-        .filter(a => this.assets[a.value].ticker && this.assets[a.value].name)
+        .filter(
+          a =>
+            this.assets[a.value].ticker &&
+            this.assets[a.value].name &&
+            a.value !== this.a1
+        )
         .sort((a, b) => ('' + a.text).localeCompare(b.text));
     },
     accounts() {
       return this.user.accounts
-        .map(a => ({ text: a.name, value: a.asset }))
+        .filter(a => a.asset !== this.a2)
+        .map(a => ({ text: a.name, value: a.asset, balance: a.balance }))
         .sort((a, b) => ('' + a.text).localeCompare(b.text));
     },
 
@@ -180,6 +316,24 @@ export default {
   },
 
   methods: {
+    priceUpdate() {
+      if (!this.price) return;
+      this.v2 = Math.round(this.v1 * this.price);
+    },
+    v1Update() {
+      const { v1 } = this;
+      if (this.type === 'sell') {
+        this.$nextTick(() => this.$refs.sellprice && this.$refs.sellprice.focus());
+        this.price = (v2 / this.v1).toFixed(2);
+      }
+    },
+    v2Update() {
+      const { v2 } = this;
+      if (this.type === 'sell') {
+        this.$nextTick(() => this.$refs.sellprice && this.$refs.sellprice.focus());
+        this.price = (v2 / this.v1).toFixed(2);
+      }
+    },
     precision(asset) {
       return this.assets[asset] ? this.assets[asset].precision : 0;
     },
@@ -206,11 +360,45 @@ export default {
     async submit() {
       const { a1, a2, v1, v2 } = this;
       this.loading = true;
-      await this.createOrder({ a1, a2, v1, v2 });
+      if (this.type === 'sell') await this.createOrder({ a1, a2, v1, v2 });
+      else await this.createOrder({ a1: a2, a2: a1, v1: v2, v2: v1 });
+      this.v1 = 0;
+      this.v2 = 0;
+      this.price = 0;
       this.loading = false;
     },
 
     withdraw: call('withdraw'),
+  },
+
+  watch: {
+    bid(bid) {
+      if (bid && this.type === "sell" && !this.v1) {
+        this.v1 = Math.round(bid.v1 * bid.rate);
+        this.v2 = Math.round(bid.v2 / bid.rate);
+        this.price = (this.v2/this.v1).toFixed(2);
+      }
+    },
+    ask(ask) {
+      if (ask && this.type === "buy" && !this.v2) {
+        this.v1 = Math.round(ask.v1 * ask.rate);
+        this.v2 = Math.round(ask.v2 / ask.rate);
+        this.price = (this.v1/this.v2).toFixed(2);
+      }
+    },
+    type(v) {
+      this.focused = false;
+
+      if (v === 'buy') {
+        this.v1 = this.ask.v1;
+        this.v2 = this.ask.v2;
+        this.price = this.ask.rate.toFixed(2);
+      } else {
+        this.v1 = this.bid.v2;
+        this.v2 = this.bid.v1;
+        this.price = (this.v2/this.v1).toFixed(2);
+      } 
+    },
   },
 
   async mounted() {

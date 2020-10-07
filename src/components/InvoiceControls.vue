@@ -7,6 +7,7 @@
       @input="updateAmount"
       @done="submit"
       :triggerEditing="showAmount"
+      @cancel="showAmount = false"
     />
     <amount
       v-if="invoice.tip || invoice.tip === 0"
@@ -70,18 +71,18 @@
         class="flex-grow-1"
       >
         <v-icon left color="primary">$edit</v-icon>
-        Set Amount
+        Amount
       </v-btn>
       <v-btn v-if="!showMemo" @click.native="toggleMemo" class="flex-grow-1">
         <v-icon left color="green">$note</v-icon>
-        Add Memo
+        Memo
       </v-btn>
       <v-btn @click="copy(invoice.text)" class="flex-grow-1">
         <v-icon left>$copy</v-icon>
         Copy
       </v-btn>
-      <v-btn @click="$emit('lock')" class="flex-grow-1">
-        <v-icon left color="blue">$eye</v-icon>
+      <v-btn @click="$emit('display')" class="flex-grow-1">
+        <v-icon left color="blue">$send</v-icon>
         Display
       </v-btn>
       <v-btn @click="settings = !settings" class="flex-grow-1">
@@ -107,7 +108,7 @@ export default {
   data: () => ({
     dirtyPath: false,
     dirtyMemo: false,
-    showAmount: false,
+    showAmount: true,
     showMemo: false,
     settings: false,
     grow: false,
