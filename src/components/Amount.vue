@@ -12,9 +12,9 @@
     >
       <v-card>
         <v-toolbar color="black">
-            <v-btn text @click="cancel">
-              <v-icon left color="red">$cancel</v-icon><span>cancel</span>
-            </v-btn>
+          <v-btn text @click="cancel">
+            <v-icon left color="red">$cancel</v-icon><span>Clear</span>
+          </v-btn>
           <v-spacer></v-spacer>
           <v-toolbar-items>
             <v-btn text @click="done">
@@ -24,7 +24,7 @@
         </v-toolbar>
         <v-card-text>
           <numpad
-            @done="editing = false"
+            @done="done"
             :currencies="currencies"
             :initialAmount="value"
             :initialRate="rate"
@@ -42,7 +42,7 @@
       </v-card>
     </v-dialog>
     <v-text-field
-      v-else
+      v-if="show"
       class="amount"
       :label="label"
       v-model="displayAmount"
@@ -87,6 +87,7 @@ export default {
   components: { Numpad },
   mixins: [Copy],
   props: {
+    show: { type: Boolean, default: true },
     fiatAmountOverride: { type: String, default: null },
     button: { type: Boolean, default: true },
     currency: { type: String, default: null },
@@ -105,7 +106,7 @@ export default {
   computed: {
     displayCurrency() {
       if (this.user.unit === 'SAT') return 'SAT';
-      if (!this.user.fiat && this.currency) return this.currency;
+      if (this.currency) return this.currency;
 
       if (this.user.account.ticker !== 'BTC') {
         return this.user.account.ticker;

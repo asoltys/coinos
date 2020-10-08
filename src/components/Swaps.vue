@@ -27,7 +27,7 @@ export default {
   computed: {
     loading: get('loading'),
     bids() {
-let bids = this.proposals
+      return this.proposals
         .filter(p => !p.accepted && p.a1 === this.a2 && p.a2 === this.a1)
         .sort((a, b) =>
           a.rate === b.rate ? a.id - b.id : a.rate > b.rate ? 1 : -1
@@ -39,7 +39,6 @@ let bids = this.proposals
           ],
           []
         );
-      return bids;
     },
     asks() {
       let asks = [

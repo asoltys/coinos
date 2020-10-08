@@ -74,31 +74,41 @@ export default {
   },
 
   async mounted() {
-    if (window.innerWidth > 600 && this.$refs.amount) {
-      this.$refs.amount.focus();
-    }
     const waitForRates = resolve => {
       if (!this.globalRates)
-        return this.timeout = setTimeout(() => waitForRates(resolve), 1000);
+        return (this.timeout = setTimeout(() => waitForRates(resolve), 1000));
       resolve();
     };
     await new Promise(waitForRates);
     this.rates = this.globalRates;
-    this.currency = this.user.fiat && this.currencies.includes(this.user.currency)
-      ? this.user.currency
-      : this.user.unit === 'SAT'
-      ? 'SAT'
-      : !this.currencies.includes(this.user.currency)
-      ? this.currencies[0]
-      : this.user.account.ticker || this.user.account.asset.substr(0,3).toUpperCase();
+    this.currency =
+      this.user.fiat && this.currencies.includes(this.user.currency)
+        ? this.user.currency
+        : this.user.unit === 'SAT'
+        ? 'SAT'
+        : !this.currencies.includes(this.user.currency)
+        ? this.currencies[0]
+        : this.user.account.ticker ||
+          this.user.account.asset.substr(0, 3).toUpperCase();
     this.inputAmount =
       this.currency === 'SAT'
         ? this.initialAmount
-        : this.user.fiat && this.fiatAmount && this.currencies.includes(this.user.currency)
+        : this.user.fiat &&
+          this.fiatAmount &&
+          this.currencies.includes(this.user.currency)
         ? this.fiatAmount
         : parseFloat(this.$format(this.initialAmount, this.decimals)).toFixed(
             this.decimals
           ) || '';
+
+    if (
+      this.$refs.amount &&
+      (this.user.fiat || !['BTC', 'SAT'].includes(this.currency))
+    ) {
+      setTimeout(() => {
+        this.$refs.amount.$refs.input.select();
+      }, 50);
+    }
   },
 
   computed: {
@@ -144,15 +154,23 @@ export default {
       this.convert(v);
       this.$nextTick(() => {
         if (
-          !this.amount && this.$refs.amount &&
+          !this.amount &&
+          this.$refs.amount &&
           this.$refs.amount.$refs.input !== document.activeElement
-        )
+        ) {
           this.inputAmount = '';
+        }
       });
 
       if (!this.amount) this.amount = 0;
       if (!this.fiatAmount) this.fiatAmount = 0;
-      this.$emit('input', this.amount, this.fiatAmount, this.currency, this.rate);
+      this.$emit(
+        'input',
+        this.amount,
+        this.fiatAmount,
+        this.currency,
+        this.rate
+      );
     },
   },
 

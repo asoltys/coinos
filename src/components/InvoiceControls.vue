@@ -8,6 +8,7 @@
       @done="submit"
       :triggerEditing="showAmount"
       @cancel="showAmount = false"
+      :show="false"
     />
     <amount
       v-if="invoice.tip || invoice.tip === 0"
@@ -74,7 +75,7 @@
         Amount
       </v-btn>
       <v-btn v-if="!showMemo" @click.native="toggleMemo" class="flex-grow-1">
-        <v-icon left color="green">$note</v-icon>
+        <v-icon left color="blue">$note</v-icon>
         Memo
       </v-btn>
       <v-btn @click="copy(invoice.text)" class="flex-grow-1">
@@ -82,8 +83,8 @@
         Copy
       </v-btn>
       <v-btn @click="$emit('display')" class="flex-grow-1">
-        <v-icon left color="blue">$send</v-icon>
-        Display
+        <v-icon left color="green">$send</v-icon>
+        Checkout
       </v-btn>
       <v-btn @click="settings = !settings" class="flex-grow-1">
         <v-icon left color="pink">$settings</v-icon>

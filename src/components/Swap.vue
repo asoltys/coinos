@@ -91,7 +91,6 @@
             v-model.number="v1"
             class="mb-2"
             :currency="ticker(a1)"
-            :key="a1"
             :precision="precision(a1)"
             @input="v1Update"
           />
@@ -100,7 +99,6 @@
             v-model.number="v2"
             class="mb-2"
             :currency="ticker(a2)"
-            :key="a2"
             :precision="precision(a2)"
             @input="v2Update"
           />
@@ -320,19 +318,11 @@ export default {
       if (!this.price) return;
       this.v2 = Math.round(this.v1 * this.price);
     },
-    v1Update() {
-      const { v1 } = this;
-      if (this.type === 'sell') {
-        this.$nextTick(() => this.$refs.sellprice && this.$refs.sellprice.focus());
-        this.price = (v2 / this.v1).toFixed(2);
-      }
+    v1Update(v1) {
+      if (!isNaN(this.v2/v1)) this.price = (this.v2 / v1).toFixed(2);
     },
-    v2Update() {
-      const { v2 } = this;
-      if (this.type === 'sell') {
-        this.$nextTick(() => this.$refs.sellprice && this.$refs.sellprice.focus());
-        this.price = (v2 / this.v1).toFixed(2);
-      }
+    v2Update(v2) {
+      if (!isNaN(v2/this.v1)) this.price = (v2 / this.v1).toFixed(2);
     },
     precision(asset) {
       return this.assets[asset] ? this.assets[asset].precision : 0;
@@ -373,17 +363,17 @@ export default {
 
   watch: {
     bid(bid) {
-      if (bid && this.type === "sell" && !this.v1) {
+      if (bid && this.type === 'sell' && !this.v1) {
         this.v1 = Math.round(bid.v1 * bid.rate);
         this.v2 = Math.round(bid.v2 / bid.rate);
-        this.price = (this.v2/this.v1).toFixed(2);
+        this.price = (this.v2 / this.v1).toFixed(2);
       }
     },
     ask(ask) {
-      if (ask && this.type === "buy" && !this.v2) {
+      if (ask && this.type === 'buy' && !this.v2) {
         this.v1 = Math.round(ask.v1 * ask.rate);
         this.v2 = Math.round(ask.v2 / ask.rate);
-        this.price = (this.v1/this.v2).toFixed(2);
+        this.price = (this.v1 / this.v2).toFixed(2);
       }
     },
     type(v) {
@@ -396,8 +386,8 @@ export default {
       } else {
         this.v1 = this.bid.v2;
         this.v2 = this.bid.v1;
-        this.price = (this.v2/this.v1).toFixed(2);
-      } 
+        this.price = (this.v2 / this.v1).toFixed(2);
+      }
     },
   },
 

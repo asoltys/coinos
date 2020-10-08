@@ -69,14 +69,6 @@ export default {
     },
     clearInvoice: call('clearInvoice'),
     setCurrency: call('setCurrency'),
-
-    updateAmount(amount, fiatAmount, currency) {
-      this.setCurrency(currency);
-      this.$nextTick(() => {
-        this.invoice.amount = amount;
-        this.invoice.fiatAmount = fiatAmount;
-      });
-    },
     shiftCurrency: call('shiftCurrency'),
     toggleUnit: call('toggleUnit'),
   },

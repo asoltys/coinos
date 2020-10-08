@@ -5,16 +5,11 @@
       <v-card-text class="white--text flex-grow-1 text-right py-0">
         <v-container class="pa-0">
           <v-row class="font-weight-bold">
-            <span style="position: absolute">Swap</span>
-            <v-btn icon style="visibility: hidden; height: 0;">
-              <v-icon color="primary">$atom</v-icon></v-btn
-            >
             <v-col @click="priceToggle" style="cursor: pointer">Price</v-col>
             <v-col>Amount</v-col>
             <v-col>Total</v-col>
           </v-row>
           <v-row v-for="p in asks" :key="p.id" class="hover">
-            <v-btn icon @click="swap(p)"><v-icon color="primary">$atom</v-icon></v-btn>
             <v-col class="my-auto">
               {{ (inverse ? 1 / p.rate : p.rate).toFixed(2) }}
             </v-col>
@@ -31,7 +26,6 @@
       <v-card-text class="white--text flex-grow-1 text-right py-0">
         <v-container class="pa-0">
           <v-row v-for="p in bids" :key="p.id" class="hover">
-            <v-btn icon @click="swap(p)"><v-icon color="primary">$atom</v-icon></v-btn>
             <v-col class="my-auto">
               {{ (inverse ? p.rate : 1 / p.rate).toFixed(2) }}
             </v-col>
@@ -98,8 +92,8 @@ export default {
 .bg
   position absolute
   right -4px
-  top -4px
-  height 30px
+  top 2px
+  height 18px
   opacity 0.4
 
 .ask

@@ -1,7 +1,7 @@
 <template>
   <div>
     <tippad v-if="tipping" :tipping="tipping" @input="setTip" />
-    <v-card v-else class="text-center mb-2 py-2 px-0 mx-0">
+    <v-card v-show="!tipping" class="text-center mb-2 py-2 px-0 mx-0">
       <div v-if="lnurl && lnurl.encoded">
         <lnurl :lnurl="lnurl" />
         <v-btn @click="lnurl = null" class="mb-1 mb-sm-0 wide">
