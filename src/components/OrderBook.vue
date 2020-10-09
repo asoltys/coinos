@@ -10,7 +10,7 @@
           </v-row>
           <v-row v-for="p in asks" :key="p.id" class="hover">
             <v-col class="my-auto">
-              {{ (inverse ? 1 / p.rate : p.rate).toFixed(2) }}
+              {{ (inverse ? 1 / p.rate : p.rate).toFixed(8) }}
             </v-col>
             <v-col class="my-auto">{{ format(p.a1, p.v1) }}</v-col>
             <v-col class="my-auto ml-1" style="position: relative">
@@ -26,7 +26,7 @@
         <v-container class="pa-0">
           <v-row v-for="p in bids" :key="p.id" class="hover">
             <v-col class="my-auto">
-              {{ (inverse ? p.rate : 1 / p.rate).toFixed(2) }}
+              {{ (inverse ? p.rate : 1 / p.rate).toFixed(8) }}
             </v-col>
             <v-col class="my-auto">{{ format(p.a2, p.v2) }}</v-col>
             <v-col class="my-auto ml-1" style="position: relative">

@@ -58,7 +58,7 @@ export default {
     price(p) {
       let price = p.v2 / p.v1;
       if (p.a2 === this.a1) price = p.v1 / p.v2;
-      return parseFloat(price.toFixed(8));
+      return price.toFixed(8);
     },
     getAssets: call('getAssets'),
     accept: call('accept'),
