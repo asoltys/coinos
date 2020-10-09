@@ -262,10 +262,11 @@
               class="flex-grow-1"
                 @click.prevent="hide(a)"
               >
-                <v-icon left>$eye</v-icon>
+                <v-icon left color="pink">$eye</v-icon>
                 <span>{{ a.hide ? 'Show' : 'Hide' }}</span>
               </v-btn>
               <v-btn
+              v-if="a.hide"
               class="flex-grow-1"
                 @click.prevent="deleteAccount(a)"
               >
