@@ -18,7 +18,7 @@
     </template>
     <v-list v-if="currencies.length">
       <v-list-item v-for="c in currencies" :key="c" @click="select(c)">
-        <v-list-item-title :style="{ color: color(c) }">{{
+        <v-list-item-title :class="`${color(c)}--text`">{{
           c
         }}</v-list-item-title>
       </v-list-item>
@@ -52,8 +52,8 @@ export default {
       return ['BTC', 'SAT'].includes(c)
         ? 'white'
         : this.user.currencies.includes(c)
-        ? '#ffeb3b'
-        : '#0ae';
+        ? 'primary'
+        : 'liquid';
     },
     shiftAccount: call('shiftAccount'),
     setCurrency: call('setCurrency'),

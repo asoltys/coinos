@@ -180,8 +180,8 @@ export default {
       return ['BTC', 'SAT'].includes(c)
         ? 'white'
         : this.user.currencies.includes(c)
-        ? '#ffeb3b'
-        : '#0ae';
+        ? 'primary'
+        : 'liquid';
     },
     toggleFiat: call('toggleFiat'),
     clearPayment: call('clearPayment'),

@@ -5,30 +5,7 @@
       <h1 class="text-center">
         Send to <span class="yellow--text">{{ username }}</span>
       </h1>
-      <receive v-if="invoice.text" />
-      <div v-else>
-        <numpad
-          @done="addInvoice"
-          :currencies="['SAT', 'BTC', ...user.currencies]"
-          :initialAmount="0"
-          :initialRate="rate"
-          @input="updateAmount"
-        />
-        <div class="d-flex flex-wrap buttons">
-          <v-btn class="flex-grow-1 mb-1" @click="addInvoice">
-            <v-icon left color="primary">$send</v-icon>
-            Go
-          </v-btn>
-        </div>
-      </div>
-      <v-btn
-        v-if="received || invoice.address || invoice.text"
-        @click="back"
-        class="mr-1"
-      >
-        <v-icon left>$left</v-icon>
-        Back
-      </v-btn>
+      <receive />
     </div>
     <h1 v-else class="text-center">
       User account <span class="yellow--text">{{ username }}</span> doesn't
@@ -38,12 +15,11 @@
 </template>
 
 <script>
-import Numpad from './NumPad';
 import Receive from './Receive';
 import { get, call, sync } from 'vuex-pathify';
 
 export default {
-  components: { Numpad, Receive },
+  components: { Receive },
   data: () => ({
     exists: false,
     loading: true,

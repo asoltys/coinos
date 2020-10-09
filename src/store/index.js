@@ -179,8 +179,8 @@ const state = {
   password: null,
   payment: JSON.parse(blankPayment),
   payments: [],
-  proposal: null,
-  proposals: [],
+  order: null,
+  orders: [],
   psbt: null,
   pin: '',
   poll: null,
@@ -355,21 +355,30 @@ export default new Vuex.Store({
       }
     },
 
-    async deleteProposal({ commit, state, dispatch }, id) {
-      const { proposals } = state;
+    async deleteOrder({ commit, state, dispatch }, id) {
+      const { orders } = state;
       try {
-        await Vue.axios.delete(`/proposal/${id}`);
+        await Vue.axios.delete(`/order/${id}`);
       } catch (e) {
         commit('error', e.response ? e.response.data : e.message);
       }
     },
 
-    async getProposals({ commit, getters, dispatch }) {
+    async propose({ commit, getters, dispatch }, params) {
+      try {
+        let { data: order } = await Vue.axios.post('/propose', params);
+        return order;
+      } catch (e) {
+        commit('error', e.response ? e.response.data : e.message);
+      }
+    },
+
+    async getOrders({ commit, getters, dispatch }) {
       commit('error', null);
       commit('loading', true);
       try {
-        const { data: proposals } = await Vue.axios.get('/proposals');
-        commit('proposals', proposals);
+        const { data: orders } = await Vue.axios.get('/orders');
+        commit('orders', orders);
       } catch (e) {
         commit('error', e.response ? e.response.data : e.message);
       }
@@ -377,10 +386,10 @@ export default new Vuex.Store({
     },
 
     async publish({ commit, getters, dispatch }) {
-      const { proposal } = getters;
+      const { order } = getters;
 
       try {
-        await Vue.axios.post('/publish', { id: proposal.id });
+        await Vue.axios.post('/publish', { id: order.id });
         go('/swaps');
       } catch (e) {
         commit('error', e.response ? e.response.data : e.message);
@@ -462,12 +471,12 @@ export default new Vuex.Store({
 
     async createAccount(
       { commit, dispatch, getters },
-      { name, ticker, precision, seed, path, pubkey, privkey, network }
+      { type, name, ticker, precision, seed, path, pubkey, privkey, network }
     ) {
       if (!getters.password) await dispatch('passwordPrompt');
       const { password, user } = getters;
-      seed = aes.encrypt(seed, password).toString();
-      privkey = aes.encrypt(privkey, password).toString();
+      if (seed) seed = aes.encrypt(seed, password).toString();
+      if (privkey) privkey = aes.encrypt(privkey, password).toString();
 
       try {
         await Vue.axios.post('/accounts', {
@@ -879,12 +888,12 @@ export default new Vuex.Store({
               commit('selected', 0);
             },
 
-            proposal() {
-              commit('addProposal', data);
+            order() {
+              commit('addOrder', data);
             },
 
-            removeProposal() {
-              commit('removeProposal', data);
+            removeOrder() {
+              commit('removeOrder', data);
             },
 
             rate() {
@@ -1898,16 +1907,16 @@ export default new Vuex.Store({
   },
   mutations: {
     ...make.mutations(state),
-    addProposal(s, v) {
-      let index = s.proposals.findIndex(p => p.id === v.id);
-      if (index > -1) s.proposals[index] = v;
-      else s.proposals.unshift(v);
-      s.proposals = JSON.parse(JSON.stringify(s.proposals));
+    addOrder(s, v) {
+      let index = s.orders.findIndex(p => p.id === v.id);
+      if (index > -1) s.orders[index] = v;
+      else s.orders.unshift(v);
+      s.orders = JSON.parse(JSON.stringify(s.orders));
     },
-    removeProposal(s, v) {
-      let index = s.proposals.findIndex(p => p.id === parseInt(v));
+    removeOrder(s, v) {
+      let index = s.orders.findIndex(p => p.id === parseInt(v));
       if (index > -1) {
-        s.proposals.splice(index, 1);
+        s.orders.splice(index, 1);
       }
     },
     addAccount(s, v) {

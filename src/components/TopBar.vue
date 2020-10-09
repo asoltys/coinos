@@ -24,7 +24,7 @@
       <v-card tile class="mx-auto menu" max-width="400">
         <v-list-item @click="$go('/about')">
           <v-list-item-action>
-            <v-icon color="blue" title="About">$help</v-icon>
+            <v-icon color="blue lighten-2" title="About">$help</v-icon>
           </v-list-item-action>
           <v-list-item-content>About</v-list-item-content>
         </v-list-item>

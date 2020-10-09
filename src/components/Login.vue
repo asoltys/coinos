@@ -1,6 +1,5 @@
 <template>
   <div>
-    {{ jwt }}
     <v-progress-linear v-if="loading" indeterminate />
     <div v-else>
       <div class="text-center">

@@ -17,10 +17,10 @@
         </p>
         <div class="d-flex flex-wrap mb-2">
           <div class="d-flex flex-grow-1 mb-2">
-            <v-btn @click="download(proposal.text)" class="flex-grow-1 mr-1">
+            <v-btn @click="download(proposal)" class="flex-grow-1 mr-1">
               <v-icon left>$download</v-icon><span>Download</span>
             </v-btn>
-            <v-btn @click="copy(proposal.text)" class="flex-grow-1">
+            <v-btn @click="copy(proposal)" class="flex-grow-1">
               <v-icon left>$copy</v-icon><span>Copy</span>
             </v-btn>
           </div>
@@ -34,6 +34,7 @@
       </v-card-text>
       <v-card-actions>
         <v-btn text @click="close">
+          <v-icon left color="red">$cancel</v-icon>
           Cancel
         </v-btn>
         <v-spacer></v-spacer>
@@ -51,25 +52,26 @@ import Copy from '../mixins/Copy';
 
 export default {
   props: {
-    proposal: { type: Object },
+    params: { type: Object },
     swapping: { type: Boolean },
   },
 
   mixins: [Copy],
 
-  data() {
-    return {
-      acceptance: '',
-      loading: false,
-      error: null,
-    };
-  },
+  data: () => ({
+    acceptance: '',
+    loading: false,
+    error: null,
+    proposal: null,
+  }),
 
   methods: {
+    propose: call('propose'),
     async submit() {
       this.loading = true;
       try {
-        await this.accept({ id: this.proposal.id, text: this.acceptance });
+        await this.accept({ text: this.acceptance });
+        this.$emit('close');
       } catch (e) {
         this.error = e.message;
       }
@@ -102,7 +104,10 @@ export default {
     },
   },
 
-  mounted() {
+  async mounted() {
+    this.loading = true;
+    this.proposal = await this.propose(this.params);
+    this.loading = false;
     setTimeout(() => this.$refs.acceptance.focus(), 50);
   },
 };

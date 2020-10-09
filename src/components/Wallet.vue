@@ -265,6 +265,7 @@ export default {
   },
   watch: {
     accountPrivkey(v) {
+      if (!v) return;
       this.account.pubkey = fromBase58(v, this.$network)
         .neutered()
         .toBase58();
@@ -279,7 +280,7 @@ export default {
     },
 
     accountPath(v) {
-      if (!this.root) return;
+      if (!(v && this.root)) return;
       try {
         this.account.privkey = this.root.derivePath(v).toBase58();
       } catch (e) {}
@@ -298,8 +299,10 @@ export default {
     },
     type(v) {
       if (v === 'Hosted') {
-        this.account.seed = '';
-        this.account.path = `m/84'/0'/0'`;
+        this.account.pubkey = null;
+        this.account.privkey = null;
+        this.account.seed = null;
+        this.account.path = null;
       } else this.setupKeys();
     },
 

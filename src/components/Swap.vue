@@ -1,5 +1,6 @@
 <template>
   <div>
+    <proposal v-if="swapping" :swapping="swapping" :params="{ a1: a2, a2: a1, v1: v2, v2: v1 }" @close="swapping = false" />
     <div class="d-sm-flex flex-wrap flex-sm-nowrap">
       <v-card class="flex-grow-1 mb-sm-2" color="secondary">
         <v-card-text>
@@ -229,10 +230,18 @@
         </v-card-text>
       </v-card>
     </div>
-    <div class="d-flex">
+    <div class="d-flex flex-justify-center my-4">
+      <v-btn
+        @click="swap"
+        class="flex-grow-1 mr-1"
+        :loading="loading"
+        :disabled="loading"
+      >
+        <v-icon left color="primary">$atom</v-icon><span>Atomic Swap</span>
+      </v-btn>
       <v-btn
         @click="submit"
-        class="my-4 mx-auto"
+        class="flex-grow-1"
         :loading="loading"
         :disabled="loading"
       >
@@ -247,6 +256,7 @@ import icons from '../icons.json';
 import Amount from './Amount';
 import { get, call, sync } from 'vuex-pathify';
 import Copy from '../mixins/Copy';
+import Proposal from './Proposal';
 
 const SATS = 100000000;
 
@@ -255,7 +265,7 @@ export default {
     bid: { type: Object },
     ask: { type: Object },
   },
-  components: { Amount },
+  components: { Amount, Proposal },
   mixins: [Copy],
 
   data: () => ({
@@ -265,6 +275,7 @@ export default {
     icons,
     type: 'sell',
     showAll: false,
+    swapping: false,
     loading: false,
     a1: process.env.VUE_APP_LBTC,
     a2: process.env.VUE_APP_LCAD,
@@ -273,12 +284,13 @@ export default {
   }),
 
   computed: {
+    error: sync('error'),
     assets: get('assets'),
     active() {
       return [
         ...new Set([
-          ...this.proposals.map(p => p.a1),
-          ...this.proposals.map(p => p.a2),
+          ...this.orders.map(p => p.a1),
+          ...this.orders.map(p => p.a2),
         ]),
       ]
         .map(asset => ({
@@ -308,12 +320,15 @@ export default {
         .sort((a, b) => ('' + a.text).localeCompare(b.text));
     },
 
-    proposals: get('proposals'),
-    proposal: sync('proposal'),
+    orders: get('orders'),
+    order: sync('order'),
     user: get('user'),
   },
 
   methods: {
+    swap() {
+      this.swapping = true;
+    },
     priceUpdate() {
       if (!this.price) return;
       this.v2 = Math.round(this.v1 * this.price);
@@ -350,32 +365,40 @@ export default {
     async submit() {
       const { a1, a2, v1, v2 } = this;
       this.loading = true;
+      if (!v1 || !v2) this.error = 'Amounts must be greater than zero';
       if (this.type === 'sell') await this.createOrder({ a1, a2, v1, v2 });
       else await this.createOrder({ a1: a2, a2: a1, v1: v2, v2: v1 });
-      this.v1 = 0;
-      this.v2 = 0;
-      this.price = 0;
+      this.prefill();
       this.loading = false;
     },
 
     withdraw: call('withdraw'),
-  },
-
-  watch: {
-    bid(bid) {
-      if (bid && this.type === 'sell' && !this.v1) {
+    prefill() {
+      let { bid, ask, type, v1, v2 } = this;
+      if (bid && type === 'sell' && !v1) {
         this.v1 = Math.round(bid.v1 * bid.rate);
         this.v2 = Math.round(bid.v2 / bid.rate);
         this.price = (this.v2 / this.v1).toFixed(2);
       }
-    },
-    ask(ask) {
-      if (ask && this.type === 'buy' && !this.v2) {
+      if (ask && type === 'buy' && !v2) {
         this.v1 = Math.round(ask.v1 * ask.rate);
         this.v2 = Math.round(ask.v2 / ask.rate);
         this.price = (this.v1 / this.v2).toFixed(2);
       }
+    } 
+  },
+
+  watch: {
+    a1() { 
+      this.v1 = this.v2 = 0;
+      this.prefill();
     },
+    a2() { 
+      this.v1 = this.v2 = 0;
+      this.prefill() 
+    },
+    bid(bid) { this.prefill() },
+    ask(ask) { this.prefill() },
     type(v) {
       this.focused = false;
 
@@ -392,7 +415,7 @@ export default {
   },
 
   async mounted() {
-    this.proposal = null;
+    this.order = null;
   },
 };
 </script>

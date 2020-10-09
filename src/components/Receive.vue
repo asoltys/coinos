@@ -9,7 +9,7 @@
           Back
         </v-btn>
       </div>
-      <div v-else>
+      <div v-show="!(lnurl && lnurl.encoded)">
         <div class="d-flex" v-if="!fullscreen">
           <v-btn-toggle
             v-model="invoice.network"

@@ -4,8 +4,8 @@
 
     <v-progress-linear v-if="loading" indeterminate />
     <order-book :a1="a1" :a2="a2" :bids="bids" :asks="asks" />
-    <orders :proposals="own" class="mb-1" />
-    <last-trades :proposals="completed" :a1="a1" class="mb-1" />
+    <orders :orders="own" class="mb-1" />
+    <last-trades :orders="completed" :a1="a1" class="mb-1" />
   </div>
 </template>
 
@@ -27,7 +27,7 @@ export default {
   computed: {
     loading: get('loading'),
     bids() {
-      return this.proposals
+      return this.orders
         .filter(p => !p.accepted && p.a1 === this.a2 && p.a2 === this.a1)
         .sort((a, b) =>
           a.rate === b.rate ? a.id - b.id : a.rate > b.rate ? 1 : -1
@@ -42,7 +42,7 @@ export default {
     },
     asks() {
       let asks = [
-        ...this.proposals
+        ...this.orders
           .filter(p => !p.accepted && p.a1 === this.a1 && p.a2 === this.a2)
           .sort((a, b) =>
             a.rate === b.rate ? a.id - b.id : a.rate > b.rate ? 1 : -1
@@ -61,7 +61,7 @@ export default {
     own() {
       if (!this.user.id) return [];
       return [
-        ...this.proposals
+        ...this.orders
           .filter(
             p =>
               !p.accepted &&
@@ -70,7 +70,7 @@ export default {
               p.a2 === this.a2
           )
           .map(p => ({ ...p, type: 'sell' })),
-        ...this.proposals
+        ...this.orders
           .filter(
             p =>
               !p.accepted &&
@@ -90,7 +90,7 @@ export default {
       };
 
       return [
-        ...this.proposals
+        ...this.orders
           .filter(
             p =>
               p.accepted &&
@@ -102,7 +102,7 @@ export default {
           .reverse(),
       ].splice(0, 5);
     },
-    proposals: sync('proposals'),
+    orders: sync('orders'),
     user: get('user'),
   },
   methods: {
@@ -112,10 +112,10 @@ export default {
     setA2(a) {
       this.a2 = a;
     },
-    getProposals: call('getProposals'),
+    getOrders: call('getOrders'),
   },
   async mounted() {
-    await this.getProposals();
+    await this.getOrders();
   },
 };
 </script>

@@ -7,22 +7,16 @@
     />
     <v-icon v-else-if="network === 'COINOS'" color="#ccc">$forward</v-icon>
     <v-icon v-else-if="network === 'GIFT'" color="yellow">$gift</v-icon>
-    <img
+    <v-icon
       v-else-if="network === 'bitcoin'"
-      src="../assets/bitcoin.png"
-      width="24px"
       title="Bitcoin Payment"
-    />
-    <water v-else fillColor="#00aaee" title="Liquid Payment" />
+      >$bitcoin</v-icon>
+    <v-icon v-else color="liquid" title="Liquid Payment">$liquid</v-icon>
   </div>
 </template>
 
 <script>
-import Water from 'vue-material-design-icons/Water';
-import Flash from 'vue-material-design-icons/Flash';
-
 export default {
-  components: { Flash, Water },
   props: {
     network: { type: String, default: 'BTC' },
   },

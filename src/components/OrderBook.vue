@@ -1,7 +1,6 @@
 <template>
-  <div v-if="asks.length || bids.length">
-    <proposal v-if="proposal && swapping" :swapping="swapping" :proposal="proposal" @close="swapping = false" />
-    <v-card class="mb-1 pa-2 pb-0">
+  <div>
+    <v-card class="mb-1" v-if="asks.length">
       <v-card-text class="white--text flex-grow-1 text-right py-0">
         <v-container class="pa-0">
           <v-row class="font-weight-bold">
@@ -22,7 +21,7 @@
         </v-container>
       </v-card-text>
     </v-card>
-    <v-card class="mb-1 pa-2 pt-0">
+    <v-card class="mb-1" v-if="bids.length">
       <v-card-text class="white--text flex-grow-1 text-right py-0">
         <v-container class="pa-0">
           <v-row v-for="p in bids" :key="p.id" class="hover">
@@ -43,7 +42,6 @@
 
 <script>
 import { get } from 'vuex-pathify';
-import Proposal from './Proposal';
 
 export default {
   props: {
@@ -52,10 +50,7 @@ export default {
     bids: { type: Array },
     asks: { type: Array },
   },
-  components: { Proposal },
   data: () => ({
-    proposal: null,
-    swapping: false,
     inverse: false,
   }),
   computed: {
@@ -63,10 +58,6 @@ export default {
     proposals: get('proposals'),
   },
   methods: {
-    swap(p) {
-      this.proposal = p;
-      this.swapping = true;
-    },
     priceToggle() {
       this.inverse = !this.inverse;
     },
@@ -97,10 +88,10 @@ export default {
   opacity 0.4
 
 .ask
-  background #b71c1c
+  background #e71c1c
 
 .bid
-  background #4CAF50
+  background #4CeF60
 
 .col
   padding 0

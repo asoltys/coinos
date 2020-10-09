@@ -163,8 +163,8 @@ export default {
       return ['BTC', 'SAT'].includes(c)
         ? 'white'
         : this.user.currencies.includes(c)
-        ? '#ffeb3b'
-        : '#0ae';
+        ? 'primary'
+        : 'liquid';
     },
     input(amount, fiatAmount, currency, rate) {
       this.fixedRate = rate;

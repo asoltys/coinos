@@ -31,7 +31,7 @@
               {{ a.name }}
               <v-btn
                 class="toggle ml-1"
-                :color="a.ticker === 'BTC' ? 'white' : '#0ae'"
+                :color="a.ticker === 'BTC' ? 'white' : 'liquid'"
                 >{{ ticker(a) }}</v-btn
               >
             </div>
