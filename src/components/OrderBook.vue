@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-card class="mb-1" v-if="asks.length">
+    <v-card class="mb-1">
       <v-card-text class="white--text flex-grow-1 text-right py-0">
         <v-container class="pa-0">
           <v-row class="font-weight-bold">
@@ -45,8 +45,6 @@ import { get } from 'vuex-pathify';
 
 export default {
   props: {
-    a1: { type: String },
-    a2: { type: String },
     bids: { type: Array },
     asks: { type: Array },
   },
@@ -54,6 +52,8 @@ export default {
     inverse: false,
   }),
   computed: {
+    a1: get('a1'),
+    a2: get('a2'),
     assets: get('assets'),
     proposals: get('proposals'),
   },

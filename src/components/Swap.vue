@@ -248,13 +248,13 @@ export default {
     type: 'sell',
     swapping: false,
     loading: false,
-    a1: btc,
-    a2: lcad,
     v1: null,
     v2: null,
   }),
 
   computed: {
+    a1: sync('a1'),
+    a2: sync('a2'),
     error: sync('error'),
     assets: get('assets'),
     all() {
@@ -354,12 +354,10 @@ export default {
     a1(a1) {
       this.v1 = this.v2 = 0;
       this.prefill();
-      this.$emit('a1', a1);
     },
     a2(a2) {
       this.v1 = this.v2 = 0;
       this.prefill();
-      this.$emit('a2', a2);
     },
     bid(bid) {
       this.prefill();
@@ -383,8 +381,9 @@ export default {
   },
 
   async mounted() {
-    this.a1 = this.user.account.asset;
-    if (this.a1 === lcad) this.a2 = btc;
+    if (!this.a1) this.a1 = this.user.account.asset;
+    if (!this.a2) this.a2 = lcad;
+    if (this.a1 === this.a2) this.a2 = btc;
     this.order = null;
   },
 };

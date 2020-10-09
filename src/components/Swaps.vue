@@ -1,11 +1,11 @@
 <template>
   <div>
-    <swap @a1="setA1" @a2="setA2" :bid="bids[0]" :ask="asks[asks.length - 1]" />
+    <swap :bid="bids[0]" :ask="asks[asks.length - 1]" />
 
     <v-progress-linear v-if="loading" indeterminate />
-    <order-book :a1="a1" :a2="a2" :bids="bids" :asks="asks" />
+    <order-book :bids="bids" :asks="asks" />
     <orders :orders="own" class="mb-1" />
-    <last-trades :orders="completed" :a1="a1" class="mb-1" />
+    <last-trades :orders="completed" class="mb-1" />
   </div>
 </template>
 
@@ -20,11 +20,9 @@ const SATS = 100000000;
 
 export default {
   components: { OrderBook, Orders, LastTrades, Swap },
-  data: () => ({
-    a1: process.env.VUE_APP_LBTC,
-    a2: process.env.VUE_APP_LCAD,
-  }),
   computed: {
+    a1: get('a1'),
+    a2: get('a2'),
     loading: get('loading'),
     bids() {
       return this.orders

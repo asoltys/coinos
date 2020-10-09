@@ -147,6 +147,8 @@ const blankPayment = JSON.stringify({
 });
 
 const state = {
+  a1: null,
+  a2: null,
   addressType: 'bech32',
   asset: BTC,
   assets: {},
