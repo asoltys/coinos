@@ -1,5 +1,5 @@
 <template>
-  <v-card v-if="proposals.length">
+  <v-card v-if="orders.length">
     <v-card-text class="white--text">
       <h2>Last Trades</h2>
       <v-container class="pb-0 text-right">
@@ -8,7 +8,7 @@
           <v-col>Amount</v-col>
           <v-col>Price</v-col>
         </v-row>
-        <v-row v-for="p in proposals" :key="p.id">
+        <v-row v-for="p in orders" :key="p.id">
           <v-col class="mr-1">
             <v-icon v-if="(p.a1 === a1 && p.direction === 'up') || (p.a2 === a1 && p.direction === 'down')" color="green">$up</v-icon> 
             <v-icon v-if="(p.a1 === a1 && p.direction === 'down') || (p.a2 === a1 && p.direction === 'up')" color="red">$down</v-icon> 
@@ -29,7 +29,7 @@ import { format } from 'date-fns';
 
 export default {
   props: {
-    proposals: {
+    orders: {
       type: Array,
       default: () => [],
     },
@@ -62,27 +62,7 @@ export default {
     },
     getAssets: call('getAssets'),
     accept: call('accept'),
-    deleteProposal: call('deleteProposal'),
-    download(text) {
-      const filename = 'proposal.txt';
-      const blob = new Blob([text], {
-        type: 'text/plain;charset=utf-8;',
-      });
-      if (navigator.msSaveBlob) {
-        navigator.msSaveBlob(blob, filename);
-      } else {
-        const link = document.createElement('a');
-        if (link.download !== undefined) {
-          const url = URL.createObjectURL(blob);
-          link.setAttribute('href', url);
-          link.setAttribute('download', filename);
-          link.style.visibility = 'hidden';
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-        }
-      }
-    },
+    deleteOrder: call('deleteOrder'),
     format(asset, value) {
       let precision = 0,
         ticker;
