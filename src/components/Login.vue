@@ -18,7 +18,7 @@
         </p>
       </div>
       <div class="text-center d-flex flex-wrap justify-center"></div>
-      <v-divider class="mb-2" />
+      <v-divider class="my-2" />
       <v-card>
         <v-card-text>
           <lnurl v-if="lnurl" :lnurl="lnurl" />

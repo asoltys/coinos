@@ -1,6 +1,11 @@
 <template>
   <div>
-    <proposal v-if="swapping" :swapping="swapping" :params="{ a1: a2, a2: a1, v1: v2, v2: v1 }" @close="swapping = false" />
+    <proposal
+      v-if="swapping"
+      :swapping="swapping"
+      :params="{ a1: a2, a2: a1, v1: v2, v2: v1 }"
+      @close="swapping = false"
+    />
     <div class="d-sm-flex flex-wrap flex-sm-nowrap">
       <v-card class="flex-grow-1 mb-sm-2" color="secondary">
         <v-card-text>
@@ -26,7 +31,6 @@
             label="Asset"
             v-model="a1"
             :items="accounts"
-            @input="$emit('a1', a1)"
           >
             <template v-slot:item="{ item }">
               <div>
@@ -48,33 +52,16 @@
               </v-list-item-action>
             </template>
           </v-autocomplete>
-          <v-autocomplete
-            v-else
-            label="Asset"
-            v-model="a2"
-            :items="showAll ? all : active"
-            @input="$emit('a2', a2)"
-          >
-            <template v-slot:append-item>
-              <div class="d-flex">
-                <v-btn
-                  @click="showAll = !showAll"
-                  class="mx-auto text-center flex-grow-1"
-                  text
-                >
-                  <v-icon v-if="showAll" color="primary">$collapse</v-icon>
-                  <v-icon v-else color="primary">$expand</v-icon>
-                  Load More
-                </v-btn>
-              </div>
-            </template>
+          <v-autocomplete v-else label="Asset" v-model="a2" :items="all">
             <template v-slot:item="{ item }">
-              <v-list-item-content>
-                <v-list-item-title v-text="item.text"></v-list-item-title>
-                <v-list-item-subtitle
-                  v-text="item.value"
-                ></v-list-item-subtitle>
-              </v-list-item-content>
+              <div>
+                <div class="d-flex">
+                  <div class="flex-grow-1 title">{{ item.text }}</div>
+                  <v-spacer />
+                  <div class="yellow--text mt-auto">{{ item.balance }}</div>
+                </div>
+                <div class="caption">{{ item.value }}</div>
+              </div>
               <v-list-item-action>
                 <v-avatar>
                   <img
@@ -143,15 +130,16 @@
             label="Asset"
             v-model="a1"
             :items="accounts"
-            @input="$emit('a1', a1)"
           >
             <template v-slot:item="{ item }">
-              <v-list-item-content>
-                <v-list-item-title v-text="item.text"></v-list-item-title>
-                <v-list-item-subtitle
-                  v-text="item.value"
-                ></v-list-item-subtitle>
-              </v-list-item-content>
+              <div>
+                <div class="d-flex">
+                  <div class="flex-grow-1 title">{{ item.text }}</div>
+                  <v-spacer />
+                  <div class="yellow--text mt-auto">{{ item.balance }}</div>
+                </div>
+                <div class="caption">{{ item.value }}</div>
+              </div>
               <v-list-item-action>
                 <v-avatar>
                   <img
@@ -163,34 +151,16 @@
               </v-list-item-action>
             </template>
           </v-autocomplete>
-          <v-autocomplete
-            v-else
-            label="Asset"
-            v-model="a2"
-            :items="showAll ? all : active"
-            @input="$emit('a2', a2)"
-          >
-            <template v-slot:append-item>
-              <div class="d-flex">
-                <v-btn
-                  @click="showAll = !showAll"
-                  class="mx-auto text-center flex-grow-1"
-                  text
-                >
-                  <v-icon v-if="showAll" color="primary">$collapse</v-icon>
-                  <v-icon v-else color="primary">$expand</v-icon>
-                  Show All
-                </v-btn>
-              </div>
-            </template>
-
+          <v-autocomplete v-else label="Asset" v-model="a2" :items="all">
             <template v-slot:item="{ item }">
-              <v-list-item-content>
-                <v-list-item-title v-text="item.text"></v-list-item-title>
-                <v-list-item-subtitle
-                  v-text="item.value"
-                ></v-list-item-subtitle>
-              </v-list-item-content>
+              <div>
+                <div class="d-flex">
+                  <div class="flex-grow-1 title">{{ item.text }}</div>
+                  <v-spacer />
+                  <div class="yellow--text mt-auto">{{ item.balance }}</div>
+                </div>
+                <div class="caption">{{ item.value }}</div>
+              </div>
               <v-list-item-action>
                 <v-avatar>
                   <img
@@ -259,6 +229,8 @@ import Copy from '../mixins/Copy';
 import Proposal from './Proposal';
 
 const SATS = 100000000;
+const btc = process.env.VUE_APP_LBTC;
+const lcad = process.env.VUE_APP_LCAD;
 
 export default {
   props: {
@@ -274,11 +246,10 @@ export default {
     price: null,
     icons,
     type: 'sell',
-    showAll: false,
     swapping: false,
     loading: false,
-    a1: process.env.VUE_APP_LBTC,
-    a2: process.env.VUE_APP_LCAD,
+    a1: btc,
+    a2: lcad,
     v1: null,
     v2: null,
   }),
@@ -286,25 +257,18 @@ export default {
   computed: {
     error: sync('error'),
     assets: get('assets'),
-    active() {
-      return [
-        ...new Set([
-          ...this.orders.map(p => p.a1),
-          ...this.orders.map(p => p.a2),
-        ]),
-      ]
-        .map(asset => ({
-          text: `${this.assets[asset].ticker} - ${this.assets[asset].name}`,
-          value: asset,
-        }))
-        .filter(a => a.value !== this.a1);
-    },
     all() {
       return Object.keys(this.assets)
-        .map(asset => ({
-          text: `${this.assets[asset].ticker} - ${this.assets[asset].name}`,
-          value: asset,
-        }))
+        .map(asset => {
+          const account = this.user.accounts.find(a => a.asset === asset);
+          let balance = null;
+          if (account) ({ balance } = account);
+          return {
+            text: `${this.assets[asset].ticker} - ${this.assets[asset].name}`,
+            value: asset,
+            balance,
+          };
+        })
         .filter(
           a =>
             this.assets[a.value].ticker &&
@@ -315,7 +279,7 @@ export default {
     },
     accounts() {
       return this.user.accounts
-        .filter(a => a.asset !== this.a2)
+        .filter(a => a.asset !== this.a2 && !a.hide)
         .map(a => ({ text: a.name, value: a.asset, balance: a.balance }))
         .sort((a, b) => ('' + a.text).localeCompare(b.text));
     },
@@ -334,10 +298,10 @@ export default {
       this.v2 = Math.round(this.v1 * this.price);
     },
     v1Update(v1) {
-      if (!isNaN(this.v2/v1)) this.price = (this.v2 / v1).toFixed(2);
+      if (v1 && this.v2) this.price = (this.v2 / v1).toFixed(2);
     },
     v2Update(v2) {
-      if (!isNaN(v2/this.v1)) this.price = (v2 / this.v1).toFixed(2);
+      if (v2 && this.v1) this.price = (v2 / this.v1).toFixed(2);
     },
     precision(asset) {
       return this.assets[asset] ? this.assets[asset].precision : 0;
@@ -358,8 +322,6 @@ export default {
       temp = this.v1;
       this.v1 = this.v2;
       this.v2 = temp;
-      this.$emit('a1', this.a1);
-      this.$emit('a2', this.a2);
     },
 
     async submit() {
@@ -385,20 +347,26 @@ export default {
         this.v2 = Math.round(ask.v2 / ask.rate);
         this.price = (this.v1 / this.v2).toFixed(2);
       }
-    } 
+    },
   },
 
   watch: {
-    a1() { 
+    a1(a1) {
       this.v1 = this.v2 = 0;
       this.prefill();
+      this.$emit('a1', a1);
     },
-    a2() { 
+    a2(a2) {
       this.v1 = this.v2 = 0;
-      this.prefill() 
+      this.prefill();
+      this.$emit('a2', a2);
     },
-    bid(bid) { this.prefill() },
-    ask(ask) { this.prefill() },
+    bid(bid) {
+      this.prefill();
+    },
+    ask(ask) {
+      this.prefill();
+    },
     type(v) {
       this.focused = false;
 
@@ -415,6 +383,8 @@ export default {
   },
 
   async mounted() {
+    this.a1 = this.user.account.asset;
+    if (this.a1 === lcad) this.a2 = btc;
     this.order = null;
   },
 };
