@@ -33,9 +33,6 @@ export default {
       type: Array,
       default: () => [],
     },
-    a1: {
-      type: String
-    },
   },
   mixins: [Copy],
   data() {
@@ -44,6 +41,7 @@ export default {
     };
   },
   computed: {
+    a1: get('a1'),
     assets: get('assets'),
     user: get('user'),
   },
