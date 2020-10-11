@@ -207,7 +207,7 @@
         :loading="loading"
         :disabled="loading"
       >
-        <v-icon left color="primary">$atom</v-icon><span>Atomic Swap</span>
+        <v-icon left color="pink">$atom</v-icon><span>Atomic Swap</span>
       </v-btn>
       <v-btn
         @click="submit"

@@ -16,20 +16,19 @@
             tile
             color="primary accent-3"
             group
-            @change="addInvoice"
+            @change="changey"
             class="mx-auto flex-wrap mb-4"
-            mandatory
           >
-            <v-btn value="bitcoin" class="flex-grow-1">
+            <v-btn value="bitcoin" class="flex-grow-1" v-if="!user.account.pubkey || user.account.network === 'bitcoin'">
               <v-icon left title="Bitcoin">$bitcoin</v-icon>
               Bitcoin
             </v-btn>
             <v-btn value="liquid" class="flex-grow-1">
-              <v-icon left color="liquid" title="Liquid">$liquid</v-icon>
+              <v-icon left color="liquid" title="Liquid" v-if="!user.account.pubkey || user.account.network === 'liquid'">$liquid</v-icon>
               Liquid
             </v-btn>
 
-            <v-btn value="lightning" class="flex-grow-1">
+            <v-btn value="lightning" class="flex-grow-1" v-if="!user.account.pubkey">
               <v-icon left color="primary" title="Lightning">$flash</v-icon>
               Lightning
             </v-btn>
@@ -86,12 +85,6 @@ export default {
   computed: {
     fullscreen: sync('fullscreen'),
     loading: get('loading'),
-    networks() {
-      return this.nodes.map(n => ({
-        text: n[0].toUpperCase() + n.slice(1),
-        value: n,
-      }));
-    },
     nodes: get('nodes'),
     text() {
       return this.invoice.address || this.invoice.text;
@@ -111,6 +104,10 @@ export default {
   },
 
   methods: {
+    changey(v) {
+      console.log("changey", v);
+      this.addInvoice();
+    },
     addInvoice: call('addInvoice'),
     clearInvoice: call('clearInvoice'),
 

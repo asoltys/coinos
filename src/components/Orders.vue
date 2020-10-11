@@ -1,9 +1,9 @@
 <template>
-  <v-card v-if="proposals.length">
-    <v-card-text class="white--text">
-      <h2>Open Orders</h2>
+  <v-card>
+    <v-card-text class="white--text" v-if="orders.length">
+      <h2 class="mb-2 text-center">Your Open Orders</h2>
       <v-container class="pb-0 text-right">
-        <v-row>
+        <v-row class="hover">
           <v-col>Time</v-col>
           <v-col>Amount</v-col>
           <v-col>Price</v-col>
@@ -11,9 +11,9 @@
             <v-icon color="error">$cancel</v-icon>
           </v-btn>
         </v-row>
-        <v-row v-for="p in proposals" :key="p.id">
+        <v-row v-for="p in orders" :key="p.id" class="hover">
           <v-col class="my-auto mr-1">
-            <span>{{ dateFormat(p.updatedAt) }} {{ p.type }}</span>
+            <span>{{ dateFormat(p.updatedAt) }}</span>
           </v-col>
           <v-col class="my-auto mr-1">
             <span v-if="p.type === 'sell'">{{ format(p.a1, p.v1) }}</span>
@@ -24,7 +24,7 @@
             </v-col>
           <v-btn
             v-if="p.user_id === user.id"
-            @click.stop="deleteProposal(p.id)"
+            @click.stop="deleteOrder(p.id)"
             class="my-auto toggle"
             icon
           >
@@ -33,6 +33,9 @@
         </v-row>
       </v-container>
     </v-card-text>
+    <v-card-text class="white--text" v-else>
+      <h2 class="mb-2 text-center">No Open Orders</h2>
+      </v-card-text>
   </v-card>
 </template>
 
@@ -43,17 +46,12 @@ import { format } from 'date-fns';
 
 export default {
   props: {
-    proposals: {
+    orders: {
       type: Array,
       default: () => [],
     },
   },
   mixins: [Copy],
-  data() {
-    return {
-      accepting: false,
-    };
-  },
   computed: {
     assets: get('assets'),
     user: get('user'),
@@ -63,28 +61,7 @@ export default {
       return format(d, 'HH:mm:ss');
     },
     getAssets: call('getAssets'),
-    accept: call('accept'),
-    deleteProposal: call('deleteProposal'),
-    download(text) {
-      const filename = 'proposal.txt';
-      const blob = new Blob([text], {
-        type: 'text/plain;charset=utf-8;',
-      });
-      if (navigator.msSaveBlob) {
-        navigator.msSaveBlob(blob, filename);
-      } else {
-        const link = document.createElement('a');
-        if (link.download !== undefined) {
-          const url = URL.createObjectURL(blob);
-          link.setAttribute('href', url);
-          link.setAttribute('download', filename);
-          link.style.visibility = 'hidden';
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-        }
-      }
-    },
+    deleteOrder: call('deleteOrder'),
     format(asset, value) {
       let precision = 0,
         ticker;
@@ -104,19 +81,6 @@ export default {
 </script>
 
 <style lang="stylus">
-.bg
-  position absolute
-  right -4px
-  top -4px
-  height 30px
-  opacity 0.4
-
-.ask
-  background #b71c1c
-
-.bid
-  background #4CAF50
-
 .col
   padding 0
 

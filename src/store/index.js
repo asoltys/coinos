@@ -83,6 +83,7 @@ const isLiquid = text =>
   text.startsWith('VJL') ||
   text.startsWith('VT') ||
   text.startsWith('XR') ||
+  text.startsWith('XC') ||
   ((text.startsWith('H') || text.startsWith('G') || text.startsWith('Q')) &&
     text.length === 34) ||
   (text.startsWith('ert1q') && text.length === 43) ||
@@ -540,24 +541,31 @@ export default new Vuex.Store({
       return { seed, password };
     },
 
-    async getNewAddress({ commit, dispatch, state }) {
+    async getNewAddress({ commit, dispatch, state }, type) {
       let { invoice, password, recipient } = state;
       let { addressType, network, user } = invoice;
 
       if (!['bitcoin', 'liquid'].includes(network))
         commit('error', 'Invalid network');
-      let address;
+      let address, confidentialAddress;
 
       let { index, pubkey, privkey, id, seed, path } = user.account;
 
       if (pubkey) {
         if (!password) ({ password } = await dispatch('passwordPrompt'));
 
-        const root = getRoot(privkey, seed, dispatch, user, password, this._vm.$network);
+        const root = getRoot(
+          privkey,
+          seed,
+          dispatch,
+          user,
+          password,
+          this._vm.$network
+        );
         const parts = invoice.path.split('/');
         const hd = root.derive(parseInt(parts[parts.length - 1]));
 
-        const type = {
+        let type = {
           bech32: 'p2wpkh',
           'p2sh-segwit': 'p2sh',
           legacy: 'p2pkh',
@@ -570,35 +578,50 @@ export default new Vuex.Store({
         } else {
           p = lqpayments;
           n = this._vm.$lqnetwork;
+          type = 'p2sh';
         }
 
-        if (addressType !== 'p2sh-segwit') {
+        if (type !== 'p2sh') {
           ({ address } = p[type]({
             pubkey: hd.publicKey,
             network: n,
           }));
         } else {
-          ({ address } = p[type]({
-            redeem: p.p2wpkh({
-              pubkey: hd.publicKey,
+          if (network === 'liquid') {
+            ({ address, confidentialAddress } = p[type]({
+              redeem: p.p2wpkh({
+                pubkey: hd.publicKey,
+                network: n,
+              }),
+              // blindkey: hd.publicKey,
               network: n,
-            }),
-            network: n,
-          }));
+            }));
+
+            if (confidentialAddress) {
+              state.invoice.unconfidential = address;
+              state.invoice.blindkey = hd.publicKey.toString('hex');
+              address = confidentialAddress;
+            }
+          } else {
+            ({ address } = p[type]({
+              redeem: p.p2wpkh({
+                pubkey: hd.publicKey,
+                network: n,
+              }),
+              network: n,
+            }));
+          }
         }
 
         index++;
         await Vue.axios.post('/account', { id, address, index });
-
-        invoice.address = address;
-        return address;
       } else {
         ({ data: address } = await Vue.axios.get(
           `/address?network=${network}&type=${addressType}`
         ));
       }
 
-      invoice.address = address;
+      state.invoice.address = address;
       return address;
     },
 
@@ -1043,7 +1066,14 @@ export default new Vuex.Store({
               network = this._vm.$network;
             }
 
-            const root = getRoot(privkey, seed, dispatch, user, password, this._vm.$network);
+            const root = getRoot(
+              privkey,
+              seed,
+              dispatch,
+              user,
+              password,
+              this._vm.$network
+            );
 
             psbt.data.inputs.map((input, inputIndex) => {
               for (let i = user.account.index; i >= 0; i--) {
@@ -1391,7 +1421,8 @@ export default new Vuex.Store({
           invoice.text = url(invoice.address);
           break;
         case 'liquid':
-          invoice.address = await dispatch('getNewAddress', 'p2sh-segwit');
+          invoice.address = await dispatch('getNewAddress');
+          console.log(invoice.address);
           let text = url(invoice.address);
           text = text.replace('liquid', 'liquidnetwork');
           if (amount) text += `&asset=${user.account.asset}`;

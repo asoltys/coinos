@@ -1,8 +1,9 @@
 <template>
   <div>
     <v-card class="mb-1">
-      <v-card-text class="white--text flex-grow-1 text-right py-0">
-        <v-container class="pa-0">
+      <v-card-text class="white--text flex-grow-1 py-0" v-if="asks.length || bids.length">
+        <h2 class="text-center mb-2">Order Book</h2>
+        <v-container class="pa-0 text-right">
           <v-row class="font-weight-bold">
             <v-col @click="priceToggle" style="cursor: pointer">Price</v-col>
             <v-col>Amount</v-col>
@@ -19,6 +20,9 @@
             </v-col>
           </v-row>
         </v-container>
+      </v-card-text>
+      <v-card-text class="white--text" v-else>
+        <h2 class="mb-2 text-center">No Orders Yet</h2>
       </v-card-text>
     </v-card>
     <v-card class="mb-1" v-if="bids.length">

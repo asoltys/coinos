@@ -8,12 +8,12 @@
       <v-progress-linear v-if="loading" indeterminate />
       <v-card-text v-else>
         <p>
-          Advanced users can accept this trade with the
+          To execute the proposed trade using the
           <a href="https://docs.blockstream.com/liquid/swap_tool.html"
             >liquid swap tool</a
-          >
-          by pasting the resulting partially signed transaction below to be
-          finalized
+          >, 
+          download the proposal, accept it, and paste the resulting partially signed transaction below to be
+          finalized.
         </p>
         <div class="d-flex flex-wrap mb-2">
           <div class="d-flex flex-grow-1 mb-2">

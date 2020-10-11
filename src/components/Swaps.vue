@@ -3,9 +3,23 @@
     <swap :bid="bids[0]" :ask="asks[asks.length - 1]" />
 
     <v-progress-linear v-if="loading" indeterminate />
-    <order-book :bids="bids" :asks="asks" />
-    <orders :orders="own" class="mb-1" />
-    <last-trades :orders="completed" class="mb-1" />
+    <v-tabs v-model="tab" hide-slider prev-icon="">
+      <v-tabs-slider color="yellow"></v-tabs-slider>
+      <v-tab v-for="t in tabs" :key="t">
+        {{ t }}
+      </v-tab>
+    </v-tabs>
+    <v-tabs-items v-model="tab">
+      <v-tab-item key="Order Book">
+        <order-book :bids="bids" :asks="asks" />
+      </v-tab-item>
+      <v-tab-item key="Your">
+        <orders :orders="own" class="mb-1" />
+      </v-tab-item>
+      <v-tab-item key="Last">
+        <last-trades :orders="completed" class="mb-1" />
+      </v-tab-item>
+    </v-tabs-items>
   </div>
 </template>
 
@@ -20,6 +34,10 @@ const SATS = 100000000;
 
 export default {
   components: { OrderBook, Orders, LastTrades, Swap },
+  data: () => ({
+    tab: null,
+    tabs: ['Order Book', 'Your Orders', 'Last'],
+  }),
   computed: {
     a1: get('a1'),
     a2: get('a2'),
@@ -117,3 +135,10 @@ export default {
   },
 };
 </script>
+
+<style>
+.v-slide-group__prev {
+display: none !important;
+}
+</style>
+

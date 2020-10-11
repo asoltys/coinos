@@ -1,7 +1,7 @@
 <template>
-  <v-card v-if="orders.length">
-    <v-card-text class="white--text">
-      <h2>Last Trades</h2>
+  <v-card>
+    <v-card-text class="white--text" v-if="orders.length">
+      <h2 class="mb-2 text-center">Last Trades</h2>
       <v-container class="pb-0 text-right">
         <v-row>
           <v-col>Time</v-col>
@@ -18,6 +18,9 @@
           <v-col>{{ price(p) }}</v-col>
         </v-row>
       </v-container>
+    </v-card-text>
+    <v-card-text class="white--text" v-else>
+      <h2 class="mb-2 text-center">No Trades Yet</h2>
     </v-card-text>
   </v-card>
 </template>
