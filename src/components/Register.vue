@@ -28,7 +28,7 @@
         Create New Account
       </v-btn>
       <v-btn @click="$go('/')" class="mb-1 mb-sm-0 wide">
-        <v-icon left>$arrow_back</v-icon>
+        <v-icon left>$left</v-icon>
         Back
       </v-btn>
     </v-form>
