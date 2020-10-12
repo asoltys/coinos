@@ -22,6 +22,7 @@ import cryptojs from 'crypto-js';
 import sha256, { HMAC } from 'fast-sha256';
 import secp256k1 from 'secp256k1';
 import { validate as isUuid, v4 } from 'uuid';
+import { fromSeed as slip77FromSeed } from 'slip77';
 
 const {
   AES: aes,
@@ -588,18 +589,21 @@ export default new Vuex.Store({
           }));
         } else {
           if (network === 'liquid') {
-            ({ address, confidentialAddress } = p[type]({
-              redeem: p.p2wpkh({
-                pubkey: hd.publicKey,
-                network: n,
-              }),
-              // blindkey: hd.publicKey,
+            const p2wpkh = p.p2wpkh({
+              pubkey: hd.publicKey,
               network: n,
+            });
+            const nodeBlinding = slip77FromSeed(seed);
+            const blindingKeyPair = nodeBlinding.derive(p2wpkh.output);
+            ({ address, confidentialAddress } = p[type]({
+              redeem: p2wpkh,
+              network: n,
+              blindkey: blindingKeyPair.publicKey,
             }));
 
             if (confidentialAddress) {
               state.invoice.unconfidential = address;
-              state.invoice.blindkey = hd.publicKey.toString('hex');
+              state.invoice.blindkey = blindingKeyPair.privateKey.toString('hex');
               address = confidentialAddress;
             }
           } else {
@@ -1422,7 +1426,6 @@ export default new Vuex.Store({
           break;
         case 'liquid':
           invoice.address = await dispatch('getNewAddress');
-          console.log(invoice.address);
           let text = url(invoice.address);
           text = text.replace('liquid', 'liquidnetwork');
           if (amount) text += `&asset=${user.account.asset}`;
