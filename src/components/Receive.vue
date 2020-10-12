@@ -16,7 +16,7 @@
             tile
             color="primary accent-3"
             group
-            @change="changey"
+            @change="addInvoice"
             class="mx-auto flex-wrap mb-4"
           >
             <v-btn value="bitcoin" class="flex-grow-1" v-if="!user.account.pubkey || user.account.network === 'bitcoin'">
@@ -104,10 +104,6 @@ export default {
   },
 
   methods: {
-    changey(v) {
-      console.log("changey", v);
-      this.addInvoice();
-    },
     addInvoice: call('addInvoice'),
     clearInvoice: call('clearInvoice'),
 

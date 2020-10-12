@@ -603,7 +603,9 @@ export default new Vuex.Store({
 
             if (confidentialAddress) {
               state.invoice.unconfidential = address;
-              state.invoice.blindkey = blindingKeyPair.privateKey.toString('hex');
+              state.invoice.blindkey = blindingKeyPair.privateKey.toString(
+                'hex'
+              );
               address = confidentialAddress;
             }
           } else {
@@ -620,6 +622,16 @@ export default new Vuex.Store({
         index++;
         await Vue.axios.post('/account', { id, address, index });
       } else {
+        let p, n;
+        if (network === 'bitcoin') {
+          p = payments;
+          n = this._vm.$network;
+        } else {
+          p = lqpayments;
+          n = this._vm.$lqnetwork;
+          type = 'p2sh';
+        }
+
         ({ data: address } = await Vue.axios.get(
           `/address?network=${network}&type=${addressType}`
         ));
@@ -1383,7 +1395,7 @@ export default new Vuex.Store({
 
     async addInvoice({ commit, dispatch, state }, params) {
       commit('loading', true);
-      const { controller, invoice, rate, recipient, socket } = state;
+      const { controller, invoice, rate, recipient, network, socket } = state;
       if (recipient.username) invoice.user = recipient;
       else if (!(invoice.user && invoice.user.id)) invoice.user = state.user;
       const { user } = invoice;
@@ -1394,8 +1406,11 @@ export default new Vuex.Store({
       if (!invoice.network) {
         if (user.account.pubkey) invoice.network = user.account.network;
         else
-          invoice.network = user.account.asset === BTC ? 'lightning' : 'liquid';
+          invoice.network =
+            network || (user.account.asset === BTC ? 'lightning' : 'liquid');
       }
+
+      commit('network', invoice.network);
 
       if (controller) controller.abort();
 

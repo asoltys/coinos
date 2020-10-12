@@ -151,7 +151,7 @@ export default {
       return this.user.fiat
         ? this.fiatFee
         : this.user.unit === 'SAT'
-        ? this.fee
+        ? this.payment.fee
         : this.$format(this.fee, 8);
     },
     fee() {

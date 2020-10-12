@@ -109,7 +109,7 @@ export default {
   data: () => ({
     dirtyPath: false,
     dirtyMemo: false,
-    showAmount: true,
+    showAmount: false,
     showMemo: false,
     settings: false,
     grow: false,
