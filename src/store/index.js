@@ -622,23 +622,16 @@ export default new Vuex.Store({
         index++;
         await Vue.axios.post('/account', { id, address, index });
       } else {
-        let p, n;
-        if (network === 'bitcoin') {
-          p = payments;
-          n = this._vm.$network;
-        } else {
-          p = lqpayments;
-          n = this._vm.$lqnetwork;
-          type = 'p2sh';
-        }
-
-        ({ data: address } = await Vue.axios.get(
+        ({
+          data: { address, confidentialAddress },
+        } = await Vue.axios.get(
           `/address?network=${network}&type=${addressType}`
         ));
       }
 
-      state.invoice.address = address;
-      return address;
+      state.invoice.unconfidential = address;
+      state.invoice.address = confidentialAddress || address;
+      return state.invoice.address;
     },
 
     async enable2fa(_, token) {
