@@ -64,6 +64,7 @@ export default {
       resolve();
     };
     await new Promise(waitForRates);
+    this.addInvoice();
     this.loading = false;
   },
 
