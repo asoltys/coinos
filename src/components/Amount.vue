@@ -105,7 +105,7 @@ export default {
   },
   computed: {
     displayCurrency() {
-      if (this.user.unit === 'SAT') return 'SAT';
+      if (!this.user.fiat && this.user.unit === 'SAT') return 'SAT';
       if (this.currency) return this.currency;
 
       if (this.user.account.ticker !== 'BTC') {
