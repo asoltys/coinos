@@ -134,6 +134,7 @@ export default {
     showActions: false,
   }),
   computed: {
+    fee: sync('payment@fee'),
     psbt: get('psbt'),
     recipient() {
       let { address, payobj } = this.payment;
@@ -151,12 +152,8 @@ export default {
       return this.user.fiat
         ? this.fiatFee
         : this.user.unit === 'SAT'
-        ? this.payment.fee
+        ? this.fee
         : this.$format(this.fee, 8);
-    },
-    fee() {
-      if (this.payment.tx) return parseInt(this.payment.tx.fee * SATS);
-      else return null;
     },
     fiatFee() {
       if (!this.fee) return null;

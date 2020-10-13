@@ -602,11 +602,9 @@ export default new Vuex.Store({
             }));
 
             if (confidentialAddress) {
-              state.invoice.unconfidential = address;
               state.invoice.blindkey = blindingKeyPair.privateKey.toString(
                 'hex'
               );
-              address = confidentialAddress;
             }
           } else {
             ({ address } = p[type]({
@@ -1110,6 +1108,11 @@ export default new Vuex.Store({
             payment.feeRate = feeRate;
             payment.signed = true;
           }
+          else {
+            payment.fee = Math.round(tx.fee * SATS);
+          } 
+
+          commit('payment', JSON.parse(JSON.stringify(payment)));
         } catch (e) {
           commit('error', e.response ? e.response.data : e.message);
         }
