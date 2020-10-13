@@ -67,6 +67,7 @@ import Water from 'vue-material-design-icons/Water';
 import WaterPump from 'vue-material-design-icons/WaterPump';
 
 import Bitcoin from '../icons/Bitcoin';
+import Canada from '../icons/Canada';
 import Liquid from '../icons/Liquid';
 
 Vue.use(Vuetify);
@@ -123,6 +124,7 @@ export default new Vuetify({
       'link': { component: Link },
       'liquid': { component: Liquid },
       'bitcoin': { component: Bitcoin },
+      'canada': { component: Canada },
       'lock': { component: Lock },
       'login': { component: Login },
       'nfc': { component: Nfc },

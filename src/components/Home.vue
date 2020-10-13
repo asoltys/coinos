@@ -16,6 +16,12 @@
         <v-icon left color="pink">$power</v-icon><span>Sign Out</span>
       </v-btn>
     </div>
+    <div class="d-flex">
+    <v-btn class="flex-grow-1" @click="$go('/funding')">
+      <v-icon left>$canada</v-icon>
+      Fund with CAD
+    </v-btn>
+    </div>
   </div>
 </template>
 

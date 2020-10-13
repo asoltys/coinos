@@ -2,7 +2,7 @@
   <div>
     <tippad v-if="tipping" :tipping="tipping" @input="setTip" />
     <v-card v-show="!tipping" class="text-center mb-2 py-2 px-0 mx-0">
-      <div v-if="lnurl && lnurl.encoded">
+     <div v-if="lnurl && lnurl.encoded">
         <lnurl :lnurl="lnurl" />
         <v-btn @click="lnurl = null" class="mb-1 mb-sm-0 wide">
           <v-icon left>$left</v-icon>
@@ -49,6 +49,12 @@
         <invoice-controls v-show="!fullscreen" @display="fullscreen = true" />
       </div>
     </v-card>
+    <div class="d-flex flex-grow-1">
+    <v-btn class="mx-auto" @click="$go('/funding')">
+      <v-icon left>$canada</v-icon>
+      Fund with CAD
+    </v-btn>
+    </div>
   </div>
 </template>
 

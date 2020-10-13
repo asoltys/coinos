@@ -17,6 +17,11 @@ const Asset = () =>
     /* webpackChunkName: "asset" */
     '../components/Asset'
   );
+const Funding = () =>
+  import(
+    /* webpackChunkName: "funding" */
+    '../components/Funding'
+  );
 const Decrypt = () =>
   import(
     /* webpackChunkName: "decrypt" */
@@ -121,6 +126,7 @@ const Withdraw = () =>
 const routes = [
   { path: '/', component: Home, props: { logout: false } },
   { path: '/about', component: About },
+  { path: '/funding', component: Funding },
   { name: 'accept', path: '/accept', component: Accept, props: true },
   { path: '/asset', component: Asset },
   { path: '/decrypt', component: Decrypt },
