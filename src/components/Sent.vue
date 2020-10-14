@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-card class="mb-2">
-      <v-alert class="headline black--text text-center" color="yellow"
+      <v-alert class="headline black--text text-center" color="primary"
         >Sent!</v-alert
       >
       <div class="pa-4">
@@ -14,7 +14,7 @@
             <div>
               <span
                 v-if="payment.account.ticker === 'BTC'"
-                class="yellow--text"
+                class="primary--text"
               >
                 <span class="display-1">{{ fiat(total) }}</span>
                 {{ payment.currency }}
@@ -33,7 +33,7 @@
             <div>
               <span
                 v-if="payment.account.ticker === 'BTC'"
-                class="yellow--text"
+                class="primary--text"
               >
                 <span class="display-1">{{ fiat(payment.fee) }}</span>
                 {{ payment.currency }}

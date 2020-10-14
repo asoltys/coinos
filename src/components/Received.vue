@@ -4,7 +4,7 @@
       <v-alert
         v-if="payment.confirmed"
         class="headline text-center black--text"
-        :color="invoice.received < invoice.amount ? 'orange' : 'yellow'"
+        :color="invoice.received < invoice.amount ? 'orange' : 'primary'"
       >
       <span v-if="invoice.received < invoice.amount">Partial</span> Payment Received!
       </v-alert>
@@ -26,7 +26,7 @@
           </div>
         </div>
         <div v-if="payment.account.ticker === 'BTC'" class="d-flex">
-          <div class="yellow--text mr-1 my-auto">
+          <div class="primary--text mr-1 my-auto">
             <span v-if="invoice.amount === payment.amount">{{
               fiatTotal
             }}</span>

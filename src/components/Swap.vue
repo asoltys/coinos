@@ -37,7 +37,7 @@
                 <div class="d-flex">
                   <div class="flex-grow-1 title">{{ item.text }}</div>
                   <v-spacer />
-                  <div class="yellow--text mt-auto">{{ item.balance }}</div>
+                  <div class="primary--text mt-auto">{{ item.balance }}</div>
                 </div>
                 <div class="caption">{{ item.value }}</div>
               </div>
@@ -58,7 +58,7 @@
                 <div class="d-flex">
                   <div class="flex-grow-1 title">{{ item.text }}</div>
                   <v-spacer />
-                  <div class="yellow--text mt-auto">{{ item.balance }}</div>
+                  <div class="primary--text mt-auto">{{ item.balance }}</div>
                 </div>
                 <div class="caption">{{ item.value }}</div>
               </div>
@@ -136,7 +136,7 @@
                 <div class="d-flex">
                   <div class="flex-grow-1 title">{{ item.text }}</div>
                   <v-spacer />
-                  <div class="yellow--text mt-auto">{{ item.balance }}</div>
+                  <div class="primary--text mt-auto">{{ item.balance }}</div>
                 </div>
                 <div class="caption">{{ item.value }}</div>
               </div>
@@ -157,7 +157,7 @@
                 <div class="d-flex">
                   <div class="flex-grow-1 title">{{ item.text }}</div>
                   <v-spacer />
-                  <div class="yellow--text mt-auto">{{ item.balance }}</div>
+                  <div class="primary--text mt-auto">{{ item.balance }}</div>
                 </div>
                 <div class="caption">{{ item.value }}</div>
               </div>

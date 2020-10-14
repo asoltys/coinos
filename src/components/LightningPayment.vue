@@ -6,7 +6,7 @@
         <span class="display-1">{{ payment.amount }}</span> SAT
       </div>
       <div>
-        <span class="yellow--text">
+        <span class="primary--text">
           <span class="display-1">{{ payment.fiatAmount }}</span>
           {{ user.currency }}
         </span>

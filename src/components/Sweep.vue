@@ -8,7 +8,7 @@
           <div class="display-2 font-weight-black white--text">
             {{ $format(balance, 0) }}
             <span>SAT</span>
-            <div class="fiat yellow--text display-1 my-auto">
+            <div class="fiat primary--text display-1 my-auto">
               {{ fiat }}
               {{ user.currency }}
             </div>

@@ -12,14 +12,14 @@
       v-if="!isNaN(animatedRate) && isBtc"
       class="d-flex flex-wrap justify-center"
     >
-      <div class="fiat yellow--text display-1 my-auto">{{ fiat | format }}</div>
+      <div class="fiat primary--text display-1 my-auto">{{ fiat | format }}</div>
       <div class="mx-1">
         <currency-list :currency="user.currency" :currencies="fiats" />
       </div>
       <div class="mt-auto mb-1">
         <span>
           @
-          <span class="font-weight-black yellow--text">{{
+          <span class="font-weight-black primary--text">{{
             animatedRate | format
           }}</span>
           / BTC

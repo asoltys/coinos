@@ -1,7 +1,7 @@
 <template>
   <v-card class="mb-2">
     <v-card-title
-      ><flash fillColor="yellow" class="mr-1 pt-3" />Lightning
+      ><flash fillColor="primary" class="mr-1 pt-3" />Lightning
       Node</v-card-title
     >
     <v-card-text>

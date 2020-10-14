@@ -5,7 +5,7 @@
       @click="goHome"
       class="display-2 unselectable"
       style="cursor: pointer"
-      >coin<span class="yellow--text">os</span></v-toolbar-title
+      >coin<span class="primary--text">os</span></v-toolbar-title
     >
     <v-spacer></v-spacer>
     <v-menu class="ml-2" v-if="user && user.id" offset-y nudge-bottom="1">
@@ -30,7 +30,7 @@
         </v-list-item>
         <v-list-item @click="$go('/settings')">
           <v-list-item-action>
-            <v-icon color="yellow" title="Settings">$settings</v-icon>
+            <v-icon color="primary" title="Settings">$settings</v-icon>
           </v-list-item-action>
           <v-list-item-content>Settings</v-list-item-content>
         </v-list-item>

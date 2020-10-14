@@ -3,12 +3,12 @@
     <v-progress-linear v-if="loading" indeterminate />
     <div v-else-if="exists">
       <h1 class="text-center">
-        Send to <span class="yellow--text">{{ username }}</span>
+        Send to <span class="primary--text">{{ username }}</span>
       </h1>
       <receive />
     </div>
     <h1 v-else class="text-center">
-      User account <span class="yellow--text">{{ username }}</span> doesn't
+      User account <span class="primary--text">{{ username }}</span> doesn't
       exist
     </h1>
   </div>

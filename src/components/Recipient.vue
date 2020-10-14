@@ -3,7 +3,7 @@
     <v-card-text class="white--text text-center">
       <div class="headline mb-2" v-if="payment.recipient.username">
         Sending to
-        <span class="yellow--text">{{ payment.recipient.username }}</span>
+        <span class="primary--text">{{ payment.recipient.username }}</span>
       </div>
       <amount
         v-model.number="payment.amount"

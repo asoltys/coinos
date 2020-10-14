@@ -35,7 +35,7 @@
           />
           <div class="d-flex" v-if="button">
             <v-btn class="flex-grow-1 wide" @click="done">
-              <v-icon left color="yellow">$check</v-icon><span>Done</span>
+              <v-icon left color="primary">$check</v-icon><span>Done</span>
             </v-btn>
           </div>
         </v-card-text>

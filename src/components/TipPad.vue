@@ -14,7 +14,7 @@
         <v-spacer></v-spacer>
         <v-toolbar-items>
           <v-btn text @click="done">
-            <v-icon left color="yellow">$check</v-icon><span>Done</span>
+            <v-icon left color="primary">$check</v-icon><span>Done</span>
           </v-btn>
         </v-toolbar-items>
       </v-toolbar>
@@ -30,7 +30,7 @@
              class="flex-grow-1"
              @click="done"
              >
-             <v-icon left color="yellow">$check</v-icon><span>Done</span>
+             <v-icon left color="primary">$check</v-icon><span>Done</span>
           </v-btn>
         </div>
       </div>
@@ -42,7 +42,7 @@
           <div class="flex-grow-1">{{ percent }}%</div>
           <div
                v-if="user.account.ticker === 'BTC'"
-               class="flex-grow-1 yellow--text"
+               class="flex-grow-1 primary--text"
                >
                {{ fiatTip }} <span class="body-1">{{ invoice.currency }}</span>
           </div>

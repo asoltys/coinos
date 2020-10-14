@@ -4,7 +4,7 @@
         <v-card-title class="subheading">2FA Code Required</v-card-title>
         <v-card-text>
           <pincode-input
-            class="mx-auto yellow--text"
+            class="mx-auto primary--text"
             v-model="twofa"
             placeholder="0"
             :length="6"

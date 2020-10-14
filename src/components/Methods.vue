@@ -13,7 +13,7 @@
       @click="payment.method = 'coinos'"
       :style="buttonStyle"
     >
-      <v-icon color="yellow">$account</v-icon>
+      <v-icon color="primary">$account</v-icon>
       <span>Coinos User</span>
     </v-btn>
     <v-btn

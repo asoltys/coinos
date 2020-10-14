@@ -7,7 +7,7 @@
         <v-card-text class="white--text text-center">
           <div class="headline mb-2">
             Faucet for
-            <span class="yellow--text">{{ ticker }}</span>
+            <span class="primary--text">{{ ticker }}</span>
           </div>
           <div class="d-flex">
             <div

@@ -3,7 +3,7 @@
       <qr :text="lnurl.encoded" />
       <div class="d-flex justify-center">
         <v-btn @click="window.location = `lightning:${lnurl.encoded}`">
-          <v-icon left color="yellow">$open</v-icon>
+          <v-icon left color="primary">$open</v-icon>
           Open
         </v-btn>
       </div>

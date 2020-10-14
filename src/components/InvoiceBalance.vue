@@ -14,13 +14,13 @@
         >
         <span class="print body-1">{{ ticker }}</span>
       </div>
-      <div v-if="isBtc" class="yellow--text display-1">
+      <div v-if="isBtc" class="primary--text display-1">
         <span>{{ invoice.fiatAmount }}</span>
         <span v-if="invoice.tip"><span class="headline">+{{ invoice.fiatTip }}</span></span
         >
         <v-btn
           class="black--text toggle"
-          color="yellow"
+          color="primary"
           @click="shiftCurrency"
           >{{ invoice.currency }}</v-btn
         >

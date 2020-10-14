@@ -4,7 +4,7 @@
 
     <v-progress-linear v-if="loading" indeterminate />
     <v-tabs v-model="tab" hide-slider prev-icon="">
-      <v-tabs-slider color="yellow"></v-tabs-slider>
+      <v-tabs-slider color="primary"></v-tabs-slider>
       <v-tab v-for="t in tabs" :key="t">
         {{ t }}
       </v-tab>

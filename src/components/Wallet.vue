@@ -152,7 +152,7 @@
           <span>Advanced Settings</span>
         </v-btn>
         <v-btn type="submit" class="wide">
-          <v-icon left class="yellow--text">$send</v-icon>
+          <v-icon left class="primary--text">$send</v-icon>
           <span>Go</span>
         </v-btn>
       </div>

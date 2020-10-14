@@ -6,7 +6,7 @@
         <div class="mb-2">
           Redeem code
           <span
-             class="yellow--text"
+             class="primary--text"
              >{{ payment.redeemcode }}</span
            >
         </div>
@@ -37,10 +37,10 @@
                     <span class="print">{{ ticker }}</span>
                   </div>
                 </div>
-                <div v-if="ticker === 'BTC'" class="d-flex yellow--text">
+                <div v-if="ticker === 'BTC'" class="d-flex primary--text">
                   <div class="mr-1 my-auto">{{ fiat }}</div>
                   <div class="my-auto">
-                    <v-btn color="yellow" class="black--text">{{
+                    <v-btn color="primary" class="black--text">{{
                       payment.currency
                     }}</v-btn>
                   </div>
@@ -60,7 +60,7 @@
           Claim
         </v-btn>
         <v-btn @click="share = true" class="mt-2 wide">
-          <v-icon color="yellow" left>$qrcode</v-icon>
+          <v-icon color="primary" left>$qrcode</v-icon>
           Share 
         </v-btn>
       </v-card-text>

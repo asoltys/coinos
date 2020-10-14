@@ -1,14 +1,14 @@
 <template>
   <div v-if="user.keys && user.keys.length" class="mb-2 d-flex">
     <v-btn v-if="!show" @click="show = !show" class="wide flex-grow-1">
-      <v-icon left color="yellow">$key</v-icon>
+      <v-icon left color="primary">$key</v-icon>
       Auth Keys
     </v-btn>
     <v-card v-else class="flex-grow-1">
       <v-card-text>
         <v-textarea label="JWT Auth Token" v-model="token" rows="1" auto-grow readonly>
           <template v-slot:prepend>
-            <v-icon color="yellow" left>$key</v-icon>
+            <v-icon color="primary" left>$key</v-icon>
           </template>
           <template v-slot:append>
             <v-btn @click="copy(token)" icon class="ml-1" title="Copy">
@@ -29,7 +29,7 @@
           readonly
         >
           <template v-slot:prepend>
-            <v-icon color="yellow" left>$key</v-icon>
+            <v-icon color="primary" left>$key</v-icon>
           </template>
           <template v-slot:append>
             <v-btn @click="copy(hex)" icon class="ml-1" title="Copy">
@@ -39,7 +39,7 @@
         </v-textarea>
         <lnurl v-if="lnurl" :lnurl="lnurl" />
         <v-btn v-else @click="getLoginUrl">
-          <v-icon left class="yellow--text">$add</v-icon>
+          <v-icon left class="primary--text">$add</v-icon>
           <span>Add New</span>
         </v-btn>
       </v-card-text>

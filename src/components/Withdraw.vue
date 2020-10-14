@@ -7,11 +7,11 @@
         <div class="d-flex justify-center">
           <div class="mr-2 text-center">
             <div>
-              <span class="yellow--text">Min: </span>
+              <span class="primary--text">Min: </span>
               <span class="headline">{{ min }}</span> SAT
             </div>
             <div>
-              <span class="yellow--text">Max: </span>
+              <span class="primary--text">Max: </span>
               <span class="headline">{{ max }}</span>
               SAT
             </div>

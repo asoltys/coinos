@@ -1,7 +1,7 @@
 <template>
   <div class="mb-2 d-flex">
     <v-btn v-if="!show" @click="show = !show" class="flex-grow-1 wide">
-      <v-icon left color="yellow">$fire</v-icon>
+      <v-icon left color="primary">$fire</v-icon>
       View Seed / Backup Account
     </v-btn>
     <v-card v-else class="flex-grow-1">

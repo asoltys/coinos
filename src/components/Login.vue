@@ -5,7 +5,7 @@
       <div class="text-center">
         <h2>
           Send and receive
-          <a href="https://bitcoin.org/" class="yellow--text">bitcoin</a>
+          <a href="https://bitcoin.org/" class="primary--text">bitcoin</a>
         </h2>
         <p style="display: inline-flex" class="mb-0">
           with <v-icon color="liquid" class="mx-1">$liquid</v-icon>

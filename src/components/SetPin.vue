@@ -17,7 +17,7 @@
         <div v-else>
           <pincode-input
             v-if="pinRequired"
-            class="mx-auto yellow--text"
+            class="mx-auto primary--text"
             v-model="oldPin"
             placeholder="0"
             :length="6"
@@ -27,7 +27,7 @@
           <div v-show="!pinRequired">
             <pincode-input
               v-if="confirming"
-              class="mx-auto yellow--text"
+              class="mx-auto primary--text"
               v-model="verifyPin"
               placeholder="0"
               :length="6"
@@ -36,7 +36,7 @@
             />
             <pincode-input
               v-else
-              class="mx-auto yellow--text"
+              class="mx-auto primary--text"
               v-model="newPin"
               placeholder="0"
               :length="6"

@@ -49,7 +49,7 @@
 
                 <span>{{ ticker(account) }}</span>
                 <div v-if="account.ticker === 'BTC'">
-                  <span class="yellow--text">
+                  <span class="primary--text">
                     {{ fiat | abs | twodec }}
                     <span v-if="tip">(+{{ tip }})</span>
                     {{ currency }}

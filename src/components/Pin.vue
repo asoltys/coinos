@@ -16,7 +16,7 @@
           Try again
         </v-alert>
           <pincode-input
-            class="mx-auto yellow--text"
+            class="mx-auto primary--text"
             v-model="pin"
             placeholder="0"
             :length="6"

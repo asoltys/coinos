@@ -6,19 +6,19 @@
       <v-card-text>
         <div class="d-flex flex-wrap justify-center">
           <v-btn @click="changePassword" class="mr-sm-2 mb-2">
-            <v-icon left class="yellow--text">$lock</v-icon>
+            <v-icon left class="primary--text">$lock</v-icon>
             <span>{{ user.password ? 'Change' : 'Set' }} Password</span>
           </v-btn>
           <v-btn
             @click.stop="showPinDialog = !showPinDialog"
             class="mr-sm-2 mb-2"
           >
-            <v-icon left class="yellow--text">$dialpad</v-icon>
+            <v-icon left class="primary--text">$dialpad</v-icon>
             {{ user.pin ? 'Change' : 'Set' }} PIN
           </v-btn>
           <set-pin @pin="pin" :showPinDialog="showPinDialog" />
           <v-btn @click="twofa" class="mr-sm-2 mb-2">
-            <v-icon left class="yellow--text">$cellphone</v-icon>
+            <v-icon left class="primary--text">$cellphone</v-icon>
             {{ user.twofa ? 'Disable' : 'Setup' }} 2FA
           </v-btn>
         </div>
@@ -38,7 +38,7 @@
               <label class="font-weight-bold">Enter Code to Disable</label>
 
               <pincode-input
-                class="mx-auto yellow--text mb-2 d-block"
+                class="mx-auto primary--text mb-2 d-block"
                 v-model="token"
                 :key="tokenKey"
                 placeholder="0"
@@ -69,7 +69,7 @@
               <label class="font-weight-bold">Enter Code to Enable</label>
 
               <pincode-input
-                class="mx-auto yellow--text mb-2 d-block"
+                class="mx-auto primary--text mb-2 d-block"
                 v-model="token"
                 :key="tokenKey"
                 placeholder="0"
@@ -95,7 +95,7 @@
             />
             <div class="text-right">
               <v-btn @click="submit">
-                <v-icon left class="yellow--text">$check</v-icon>
+                <v-icon left class="primary--text">$check</v-icon>
                 <span>save</span>
               </v-btn>
             </div>
@@ -142,7 +142,7 @@
 
           <div class="text-right">
             <v-btn @click="submit">
-              <v-icon left class="yellow--text">$check</v-icon>
+              <v-icon left class="primary--text">$check</v-icon>
               <span>Save</span>
             </v-btn>
           </div>
@@ -168,7 +168,7 @@
     </div>
     <div class="d-flex my-2" v-if="promptNotifications">
       <v-btn class="flex-grow-1" @click="setupNotifications">
-        <v-icon color="yellow" left>$bell</v-icon>
+        <v-icon color="primary" left>$bell</v-icon>
         Enable Notifications
       </v-btn>
     </div>

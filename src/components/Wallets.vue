@@ -13,17 +13,17 @@
             <v-icon
               v-if="a.pubkey"
               class="mr-2 my-auto"
-              color="yellow"
+              color="primary"
               title="Non-Custodial"
               >$key</v-icon
             >
-            <v-icon v-else class="mr-2 my-auto" color="yellow" title="Hosted"
+            <v-icon v-else class="mr-2 my-auto" color="primary" title="Hosted"
               >$cloud</v-icon
             >
             <v-icon
               v-if="assets[a.asset] && assets[a.asset].registered"
               class="mr-2 my-auto"
-              color="yellow"
+              color="primary"
               title="Registered"
               >$assignment</v-icon
             >
@@ -112,8 +112,8 @@
                 class="readonly"
               >
                 <template v-slot:append>
-                  <v-icon v-if="a.pubkey" color="yellow">$key</v-icon>
-                  <v-icon v-else color="yellow">$cloud</v-icon>
+                  <v-icon v-if="a.pubkey" color="primary">$key</v-icon>
+                  <v-icon v-else color="primary">$cloud</v-icon>
                 </template>
               </v-text-field>
               <v-select

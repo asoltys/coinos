@@ -28,7 +28,7 @@
         </v-list-item>
         <v-list-item v-if="nodes.includes('lightning')">
           <v-list-item-avatar>
-            <flash class="ml-2" fillColor="yellow" />
+            <flash class="ml-2" fillColor="primary" />
           </v-list-item-avatar>
           <v-list-item-content>
             <v-list-item-title>Lightning</v-list-item-title>
