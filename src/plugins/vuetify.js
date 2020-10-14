@@ -10,6 +10,7 @@ import ArrowRight from 'vue-material-design-icons/ArrowRight';
 import ArrowCollapseVertical from 'vue-material-design-icons/ArrowCollapseVertical';
 import ArrowExpandVertical from 'vue-material-design-icons/ArrowExpandVertical';
 import Atom from 'vue-material-design-icons/Atom';
+import Bank from 'vue-material-design-icons/Bank';
 import BellRing from 'vue-material-design-icons/BellRing';
 import Camera from 'vue-material-design-icons/Camera';
 import Cancel from 'vue-material-design-icons/Close';
@@ -45,6 +46,7 @@ import Nfc from 'vue-material-design-icons/Nfc';
 import Note from 'vue-material-design-icons/Note';
 import OpenInNew from 'vue-material-design-icons/OpenInNew';
 import PackageDown from 'vue-material-design-icons/PackageDown';
+import Paperclip from 'vue-material-design-icons/Paperclip';
 import Pencil from 'vue-material-design-icons/Pencil';
 import Power from 'vue-material-design-icons/Power';
 import Qrcode from 'vue-material-design-icons/Qrcode';
@@ -68,6 +70,7 @@ import WaterPump from 'vue-material-design-icons/WaterPump';
 
 import Bitcoin from '../icons/Bitcoin';
 import Canada from '../icons/Canada';
+import Interac from '../icons/Interac';
 import Liquid from '../icons/Liquid';
 
 Vue.use(Vuetify);
@@ -77,7 +80,7 @@ export default new Vuetify({
     dark: true,
     themes: {
       dark: {
-        primary: colors.yellow,
+        primary: '#faf601',
         secondary: '#333',
         accent: colors.yellow,
         error: '#b71c1c',
@@ -125,12 +128,15 @@ export default new Vuetify({
       'liquid': { component: Liquid },
       'bitcoin': { component: Bitcoin },
       'canada': { component: Canada },
+      'bank': { component: Bank },
+      'interac': { component: Interac },
       'lock': { component: Lock },
       'login': { component: Login },
       'nfc': { component: Nfc },
       'note': { component: Note },
       'open': { component: OpenInNew },
       'archive': { component: PackageDown },
+      'paperclip': { component: Paperclip },
       'payments': { component: FormatLineWeight },
       'pencil': { component: Pencil },
       'power': { component: Power },
