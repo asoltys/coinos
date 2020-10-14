@@ -17,7 +17,7 @@
         </v-list-item>
         <v-list-item v-if="nodes.includes('liquid')">
           <v-list-item-avatar>
-            <water class="ml-2"  fillColor="#00aaee" />
+            <v-icon color="liquid">$liquid</v-icon>
           </v-list-item-avatar>
           <v-list-item-content>
             <v-list-item-title>Liquid</v-list-item-title>
@@ -28,7 +28,7 @@
         </v-list-item>
         <v-list-item v-if="nodes.includes('lightning')">
           <v-list-item-avatar>
-            <flash class="ml-2" fillColor="primary" />
+            <v-icon color="primary">$flash</v-icon>
           </v-list-item-avatar>
           <v-list-item-content>
             <v-list-item-title>Lightning</v-list-item-title>
@@ -55,12 +55,8 @@
 
 <script>
 import { get, call } from 'vuex-pathify';
-import Flash from 'vue-material-design-icons/Flash';
-import Water from 'vue-material-design-icons/Water';
 
 export default {
-  components: { Flash, Water },
-
   data() {
     return {
       expanded: false,

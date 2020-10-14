@@ -31,6 +31,7 @@ import Edit from 'vue-material-design-icons/FileDocumentEdit';
 import Eye from 'vue-material-design-icons/Eye';
 import Fire from 'vue-material-design-icons/Fire';
 import Snowflake from 'vue-material-design-icons/Snowflake';
+import FileOutline from 'vue-material-design-icons/FileOutline';
 import Flash from 'vue-material-design-icons/Flash';
 import FormatLineWeight from 'vue-material-design-icons/FormatLineWeight';
 import Forward from 'vue-material-design-icons/Forward';
@@ -117,6 +118,7 @@ export default new Vuetify({
       'eye': { component: Eye },
       'fire': { component: Fire },
       'snowflake': { component: Snowflake },
+      'file': { component: FileOutline },
       'flash': { component: Flash },
       'forward': { component: Forward },
       'gift': { component: Gift },

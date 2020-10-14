@@ -1,10 +1,6 @@
 <template>
   <div>
-    <flash
-      v-if="network === 'lightning'"
-      fillColor="primary"
-      title="Lightning Payment"
-    />
+    <v-icon v-if="network === 'lightning'" color="primary">$flash</v-icon>
     <v-icon v-else-if="network === 'COINOS'" color="#ccc">$forward</v-icon>
     <v-icon v-else-if="network === 'GIFT'" color="primary">$gift</v-icon>
     <v-icon

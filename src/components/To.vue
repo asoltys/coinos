@@ -8,35 +8,51 @@
     >
       <v-textarea
         class="my-4"
-        :label="label"
+        label="Address, Key, Invoice, Username or URL"
         v-model="to"
         auto-grow
         rows="1"
         @input="handleScan(to)"
+        @keyup.native.enter="getRecipient(to)"
         ref="to"
         :error="!!to && to.length > 0"
       >
         <template v-slot:append>
-          <div v-if="to.length">
-            <v-btn icon @click="showText(to)" class="ml-1" text>
-              <qrcode />
+          <div class="d-flex flex-wrap">
+            <v-btn
+              v-if="to.length"
+              class="mr-2 mb-2 flex-grow-1"
+              @click="showText(to)"
+            >
+              <v-icon left>$qrcode</v-icon>
+              <span>QR</span>
+            </v-btn>
+
+            <v-btn v-if="canPaste" class="mr-2 mb-2 flex-grow-1" @click="paste">
+              <v-icon left>$assignment</v-icon>
+              <span>Paste</span>
             </v-btn>
           </div>
-
-          <v-btn v-if="canPaste" class="mr-2 mb-2 flex-grow-1" @click="paste">
-            <v-icon left>$assignment</v-icon>
-            <span>Paste</span>
-          </v-btn>
         </template>
       </v-textarea>
     </v-form>
 
-    <methods v-if="!payment.method"/>
-    <send-to-user v-if="payment.method === 'coinos'" />
+    <div class="d-flex buttons">
+      <v-btn v-if="canPaste" class="mr-2 mb-2 flex-grow-1 wide" @click="getRecipient(to)">
+        <v-icon left color="primary">$search</v-icon>
+        <span>Find User</span>
+      </v-btn>
+    </div>
+
+    <methods v-if="!payment.method" />
     <paper v-if="payment.method === 'paper'" />
     <voucher v-if="payment.method === 'url'" />
     <swap v-if="payment.method === 'swap'" />
-    <v-btn v-if="payment.method" @click="payment.method = null" class="my-2 wide">
+    <v-btn
+      v-if="payment.method"
+      @click="payment.method = null"
+      class="my-2 wide"
+    >
       <v-icon>$left</v-icon>
       Back</v-btn
     >
@@ -46,18 +62,16 @@
 <script>
 import { get, call, sync } from 'vuex-pathify';
 import Copy from '../mixins/Copy';
-import Qrcode from 'vue-material-design-icons/Qrcode';
-import SendToUser from './SendToUser';
 import Paper from './Paper';
 import Swap from './Swap';
 import Voucher from './Voucher';
 import Methods from './Methods';
 
 export default {
-  components: { Voucher, Paper, Qrcode, Methods, SendToUser, Swap },
+  components: { Voucher, Paper, Methods, Swap },
   mixins: [Copy],
   props: {
-    text: { type: String, default: '' }
+    text: { type: String, default: '' },
   },
   data() {
     return {
@@ -65,13 +79,11 @@ export default {
     };
   },
   computed: {
-    label() {
-      return 'Address, Key, Invoice or URL';
-    },
     canPaste: () => navigator.clipboard,
     payment: sync('payment'),
   },
   methods: {
+    getRecipient: call('getRecipient'),
     generate() {
       this.seed = generateMnemonic();
     },
@@ -93,3 +105,15 @@ export default {
   },
 };
 </script>
+
+<style lang="stylus" scoped>
+@media (max-width: 600px)
+  .buttons .v-btn
+    max-width none
+    width 100%
+    height 62px !important
+
+.buttons .v-btn
+  height 8vh !important
+  min-height 60px
+</style>

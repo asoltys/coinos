@@ -9,19 +9,11 @@
       Voucher
     </v-btn>
     <v-btn
-      class="flex-grow-1 mb-2 mr-1 wide"
-      @click="payment.method = 'coinos'"
-      :style="buttonStyle"
-    >
-      <v-icon color="primary">$account</v-icon>
-      <span>Coinos User</span>
-    </v-btn>
-    <v-btn
       @click="payment.method = 'paper'"
       class="flex-grow-1 mb-2 mr-1 wide"
       :style="buttonStyle"
     >
-      <file-outline fillColor="#4CAF50" class="mr-1" />
+    <v-icon left color="green">$file</v-icon>
       Paper Wallet
     </v-btn>
   </div>
@@ -29,10 +21,8 @@
 
 <script>
 import { get, call, sync } from 'vuex-pathify';
-import FileOutline from 'vue-material-design-icons/FileOutline';
 
 export default {
-  components: { FileOutline },
   data() {
     return {
       show: false,

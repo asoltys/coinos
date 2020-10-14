@@ -11,10 +11,15 @@
         @done="$emit('feeRate')"
         :currency="currency"
       />
-      <div>
+      <div class="d-flex">
         <v-btn
-          class="order-first order-sm-last mb-2 flex-grow-1"
-          dark
+          class="mr-1 flex-grow-1"
+          @click="$go('/send?refresh')"
+        >
+          <v-icon left>$left</v-icon><span>Back</span>
+        </v-btn>
+        <v-btn
+          class="flex-grow-1"
           @click="send"
         >
           <v-icon color="success" left>$send</v-icon><span>Send</span>

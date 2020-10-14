@@ -1,7 +1,7 @@
 <template>
   <v-card class="mb-2">
     <v-card-title
-      ><flash fillColor="primary" class="mr-1 pt-3" />Lightning
+          ><v-icon color="primary">$flash</v-icon> Lightning
       Node</v-card-title
     >
     <v-card-text>
@@ -17,7 +17,7 @@
         >
           <template v-slot:append>
             <v-btn icon @click="toggle(clearnet)" class="ml-1" text>
-              <qrcode />
+              <v-icon>$qrcode</v-icon>
             </v-btn>
             <v-btn icon @click="copy(clearnet)" class="ml-1" text>
               <v-icon>$copy</v-icon>
@@ -66,13 +66,11 @@
 <script>
 import { call, sync } from 'vuex-pathify';
 import Copy from '../mixins/Copy';
-import Qrcode from 'vue-material-design-icons/Qrcode';
-import Flash from 'vue-material-design-icons/Flash';
 import Qr from './Qr';
 import Lnurl from './Lnurl';
 
 export default {
-  components: { Flash, Qrcode, Qr, Lnurl },
+  components: { Qr, Lnurl },
   mixins: [Copy],
   data() {
     return {
