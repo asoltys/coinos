@@ -148,6 +148,7 @@ const routes = [
   { path: '/pay', component: Pay },
   { path: '/propose', component: Swap },
   { path: '/swaps', component: Swaps },
+  { name: 'markets', path: '/markets/:t1-:t2', component: Swaps, props: true },
   { path: '/wallet', component: Wallet },
   { path: '/wallets', component: Wallets },
   { path: '/withdraw', component: Withdraw },

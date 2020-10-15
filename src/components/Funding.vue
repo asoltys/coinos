@@ -1,5 +1,8 @@
 <template>
   <div>
+    <p>
+    coinos now supports Canadian dollar funding and withdrawals for verified users. When you send us CAD via Interac or Bank Wire, we'll credit your account with CAD, a stablecoin issued on the Liquid network that is fully backed by CAD in our corporate bank account at CIBC. You'll then be able to exchange CAD to BTC or vice versa, and
+    </p>
     <v-stepper v-model="e1">
       <v-stepper-header>
         <v-stepper-step
@@ -110,7 +113,7 @@
 
         <v-stepper-content step="3">
           <v-card>
-            <v-card-text class="body-1 white--text">
+            <v-card-text class="body-1">
               <div class="d-flex">
                 <v-btn-toggle
                   v-model="method"
@@ -134,12 +137,12 @@
                 <ol class="mb-2">
                   <li>
                       Send an Interac e-Transfer to:
-                      <span class="primary--text title">funding@coinos.io</span>
+                      <span class="title white--text">funding@coinos.io</span>
                   </li>
-                        <li>Use your username as the security question: <span class="primary--text title">{{ user.username }}</span></li>
+                        <li>Use your username as the security question: <span class="white--text title">{{ user.username }}</span></li>
                   <li>
                     Use this code as the security answer:
-                    <span class="primary--text title">12345</span>
+                    <span class="white--text title">12345</span>
                   </li>
                   <li>
                     Let us know the amount you're sending
@@ -154,14 +157,14 @@
                       Send a wire transfer to our account at CIBC:
                   </li>
                 <p>
-                CIBC Swift Code: <span class="primary--text title">CIBCCATT</span><br />
-                CIBC Institution Number: <span class="primary--text title">010</span><br />
-                Transit Number: <span class="primary--text title">07500</span><br />
-                Account Number: <span class="primary--text title">1029002</span>
+                CIBC Swift Code: <span class="white--text title">CIBCCATT</span><br />
+                CIBC Institution Number: <span class="white--text title">010</span><br />
+                Transit Number: <span class="white--text title">07500</span><br />
+                Account Number: <span class="white--text title">1029002</span>
                     </p>
                   <li>
-                    Put your username and this reference code in the message/reference field:
-                    <span class="primary--text title">12345</span>
+                    Put this as the reference code: 
+                    <span class="white--text title">coinos-12345</span>
                   </li>
                   <li>
                     Let us know the amount you're sending

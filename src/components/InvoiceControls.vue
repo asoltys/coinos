@@ -86,7 +86,7 @@
         <v-icon left color="green">$send</v-icon>
         Checkout
       </v-btn>
-      <v-btn @click="settings = !settings" class="flex-grow-1">
+      <v-btn @click="settings = !settings" class="flex-grow-1" v-if="network !== 'liquid'">
         <v-icon left color="pink">$settings</v-icon>
         Advanced
       </v-btn>

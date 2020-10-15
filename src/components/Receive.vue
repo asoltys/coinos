@@ -49,12 +49,6 @@
         <invoice-controls v-show="!fullscreen" @display="fullscreen = true" />
       </div>
     </v-card>
-    <div class="d-flex flex-grow-1">
-    <v-btn class="mx-auto" @click="$go('/funding')">
-      <v-icon left>$canada</v-icon>
-      Fund with CAD
-    </v-btn>
-    </div>
   </div>
 </template>
 

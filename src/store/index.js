@@ -1807,12 +1807,12 @@ export default new Vuex.Store({
       dispatch('updateUser', getters.user);
     },
 
-    async pay({ commit, getters }, amount) {
+    async pay({ commit, getters }, amount, comment) {
       commit('loading', true);
       const { lnurl: params } = getters;
 
       try {
-        await Vue.axios.post('/pay', { amount, params });
+        await Vue.axios.post('/pay', { amount, comment, params });
         go('/');
       } catch (e) {
         commit('error', e.response ? e.response.data : e.message);

@@ -1,7 +1,7 @@
 <template>
   <div>
+    <exchange />
     <swap :bid="bids[0]" :ask="asks[asks.length - 1]" />
-
     <v-progress-linear v-if="loading" indeterminate />
     <v-tabs v-model="tab" hide-slider prev-icon="">
       <v-tabs-slider color="primary"></v-tabs-slider>
@@ -20,11 +20,18 @@
         <last-trades :orders="completed" class="mb-1" />
       </v-tab-item>
     </v-tabs-items>
+    <div class="d-flex">
+      <v-btn class="flex-grow-1 mr-1 mb-1 mb-md-0 wide" @click="$go('/funding')">
+        <v-icon left>$canada</v-icon>
+        NEW! CAD Funding and Withdrawals
+      </v-btn>
+      </div>
   </div>
 </template>
 
 <script>
 import { get, sync, call } from 'vuex-pathify';
+import Exchange from './Exchange';
 import Swap from './Swap';
 import Orders from './Orders';
 import LastTrades from './LastTrades';
@@ -33,14 +40,19 @@ import OrderBook from './OrderBook';
 const SATS = 100000000;
 
 export default {
-  components: { OrderBook, Orders, LastTrades, Swap },
+  props: {
+    t1: { type: String },
+    t2: { type: String },
+  },
+  components: { Exchange, OrderBook, Orders, LastTrades, Swap },
   data: () => ({
     tab: null,
     tabs: ['Order Book', 'Your Orders', 'Last'],
   }),
   computed: {
-    a1: get('a1'),
-    a2: get('a2'),
+    assets: get('assets'),
+    a1: sync('a1'),
+    a2: sync('a2'),
     loading: get('loading'),
     bids() {
       return this.orders
@@ -131,6 +143,22 @@ export default {
     getOrders: call('getOrders'),
   },
   async mounted() {
+    if (this.t1) { 
+      let a = Object.values(this.assets).find(a => a.ticker === this.t1);
+      if (a) this.a1 = a.asset_id;
+    }
+
+    console.log(this.a1);
+    console.log(this.t2, Object.values(this.assets).map(a => a.ticker).filter(t => t.startsWith("USD")));
+
+    if (this.t2) {
+      let a = Object.values(this.assets).find(a => a.ticker === this.t2);
+      console.log("a", a);
+      if (a) this.a2 = a.asset_id;
+    } 
+
+    console.log(this.a2);
+
     await this.getOrders();
   },
 };

@@ -165,8 +165,8 @@
           </v-btn>
         </div>
       </div>
-      <v-alert v-else color="primary" class="black--text"
-        >No payments found</v-alert
+      <v-alert v-else class="title"
+        >No payments yet</v-alert
       >
     </template>
   </div>
