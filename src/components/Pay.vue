@@ -59,7 +59,7 @@ export default {
   }),
   methods: {
     submit() {
-      this.pay(this.amount);
+      this.pay({ amount: this.amount, comment: this.comment });
     },
     pay: call('pay'),
   },
