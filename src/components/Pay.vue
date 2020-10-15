@@ -6,9 +6,7 @@
         <div class="text-center headline">{{ lnurl.defaultDescription }}</div>
         <div class="d-flex justify-center">
           <div class="mr-2 text-center">
-            <div class="headline">
-            Payment to {{ domain }}
-            </div>
+            <div class="headline">Payment to {{ domain }}</div>
             <div>
               <span class="primary--text">Min: </span>
               <span class="headline">{{ min }}</span> SAT
@@ -20,23 +18,26 @@
             </div>
             <div v-for="m in JSON.parse(lnurl.metadata)" :key="m[1]">
               <span v-if="m[0] === 'text/plain'">
-              {{ m[1] }}
+                {{ m[1] }}
               </span>
-              <img v-if="m[0].includes('image')" :src="`data:image/png;base64,${m[1]}`" />
+              <img
+                v-if="m[0].includes('image')"
+                :src="`data:image/png;base64,${m[1]}`"
+              />
             </div>
           </div>
         </div>
       </v-card>
       <amount v-model.number="amount" :max="max" class="mb-2" />
+      <v-text-field label="Comment" v-model="comment" />
       <div class="d-flex">
         <v-btn
-          class="black--text flex-grow-1 wide"
-          color="primary"
+          class="flex-grow-1 wide"
           dark
           @click="submit"
           :disabled="amount < min || amount > max"
         >
-          <v-icon left>$send</v-icon><span>Pay</span>
+          <v-icon left color="green">$send</v-icon><span>Pay</span>
         </v-btn>
       </div>
     </div>
@@ -51,12 +52,11 @@ const SATS = 100000000;
 
 export default {
   components: { Amount },
-  data() {
-    return {
-      amount: null,
-      result: null,
-    };
-  },
+  data: () => ({
+    amount: null,
+    comment: null,
+    result: null,
+  }),
   methods: {
     submit() {
       this.pay(this.amount);
@@ -65,7 +65,12 @@ export default {
   },
   computed: {
     domain() {
-        return this.lnurl.callback.split("://")[1].split("/")[0].split("@").slice(-1)[0].split(":")[0];
+      return this.lnurl.callback
+        .split('://')[1]
+        .split('/')[0]
+        .split('@')
+        .slice(-1)[0]
+        .split(':')[0];
     },
     min() {
       return Math.round(this.lnurl.minSendable / 1000);
