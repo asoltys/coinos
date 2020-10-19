@@ -67,11 +67,11 @@ export default {
       let currency = this.user.currencies.find(cr => cr === c);
       let btc = this.user.accounts.find(a => a.ticker === c && a.asset === BTC && a.pubkey === this.user.account.pubkey);
 
-      if (account) {
+      if (account && this.user.account.id !== account.id) {
         await this.shiftAccount(account.id);
       } else if (currency) {
         return await this.setCurrency(c);
-      } else if (btc) {
+      } else if (btc && this.user.account.id !== btc.id) {
         await this.shiftAccount(btc.id);
       } 
 

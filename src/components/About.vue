@@ -29,8 +29,12 @@
         </p>
 
         <p class="mb-4">
-        Coinos is developed by
+        Coinos is free software developed by
         <a href="https://adamsoltys.com/">Adam Soltys</a>.
+        </p>
+        
+        <p>
+        coinos.io is a property of Coinos Financial Corporation, a B.C. Limited Company and FINTRAC-registered Money Services Business.
         </p>
         <social />
       </v-card-text>

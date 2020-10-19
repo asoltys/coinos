@@ -22,7 +22,7 @@
         <span>Send</span>
         <v-icon>$send</v-icon>
       </v-btn>
-      <v-btn class="flex-grow-1" text @click="$go('/swaps')">
+      <v-btn class="flex-grow-1" text @click="$go('/exchange')">
         <span>Exchange</span>
         <v-icon>$swap</v-icon>
       </v-btn>

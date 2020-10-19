@@ -1807,7 +1807,7 @@ export default new Vuex.Store({
       dispatch('updateUser', getters.user);
     },
 
-    async pay({ commit, getters }, amount, comment) {
+    async pay({ commit, getters }, { amount, comment }) {
       commit('loading', true);
       const { lnurl: params } = getters;
 

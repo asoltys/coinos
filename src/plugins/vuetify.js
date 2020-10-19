@@ -3,6 +3,7 @@ import Vuetify from 'vuetify/lib';
 import colors from 'vuetify/lib/util/colors';
 
 import Account from 'vue-material-design-icons/Account';
+import AccountCheck from 'vue-material-design-icons/AccountCheck';
 import Add from 'vue-material-design-icons/Plus';
 import Alert from 'vue-material-design-icons/Alert';
 import ArrowLeft from 'vue-material-design-icons/ArrowLeft';
@@ -92,6 +93,7 @@ export default new Vuetify({
   icons: {
     values: {
       'account': { component: Account },
+      'accountcheck': { component: AccountCheck },
       'add': { component: Add },
       'alert': { component: Alert },
       'left': { component: ArrowLeft },

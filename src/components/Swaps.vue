@@ -145,19 +145,16 @@ export default {
   async mounted() {
     if (this.t1) { 
       let a = Object.values(this.assets).find(a => a.ticker === this.t1);
-      if (a) this.a1 = a.asset_id;
+      console.log(a);
+      if (a) this.a1 = a.asset;
     }
-
-    console.log(this.a1);
-    console.log(this.t2, Object.values(this.assets).map(a => a.ticker).filter(t => t.startsWith("USD")));
 
     if (this.t2) {
       let a = Object.values(this.assets).find(a => a.ticker === this.t2);
-      console.log("a", a);
-      if (a) this.a2 = a.asset_id;
+      if (a) this.a2 = a.asset;
     } 
 
-    console.log(this.a2);
+    console.log(this.a1, this.a2);
 
     await this.getOrders();
   },
