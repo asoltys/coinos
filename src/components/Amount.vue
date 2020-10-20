@@ -32,6 +32,7 @@
             :key="editing"
             :precision="precision"
             class="mt-4"
+            :type="type"
           />
           <div class="d-flex" v-if="button">
             <v-btn class="flex-grow-1 wide" @click="done">
@@ -81,6 +82,7 @@ import { call, get, sync } from 'vuex-pathify';
 import Numpad from './NumPad';
 import Copy from '../mixins/Copy';
 
+const btc = process.env.VUE_APP_LBTC;
 const SATS = 100000000;
 
 export default {
@@ -104,6 +106,9 @@ export default {
     };
   },
   computed: {
+    type() {
+      return this.user.account.asset === btc ? 'currencies' : 'accounts';
+    },
     displayCurrency() {
       if (!this.user.fiat && this.user.unit === 'SAT') return 'SAT';
       if (this.currency) return this.currency;

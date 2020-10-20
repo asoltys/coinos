@@ -88,7 +88,6 @@
                     <span class="white--text title">12345</span>
                   </li>
                 </ol>
-                <v-text-field label="Amount" suffix="CAD" prefix="$" />
               </div>
               <div v-if="method === 'wire'">
                 <ol class="mb-2">

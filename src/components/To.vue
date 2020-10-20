@@ -24,25 +24,23 @@
               class="mr-2 mb-2 flex-grow-1"
               @click="showText(to)"
             >
-              <v-icon left>$qrcode</v-icon>
-              <span>QR</span>
+              <v-icon>$qrcode</v-icon>
             </v-btn>
 
+    <v-btn v-if="to.length" class="mr-2 mb-2 flex-grow-1" @click="getRecipient(to)">
+      <v-icon color="primary">$search</v-icon>
+    </v-btn>
+
             <v-btn v-if="canPaste" class="mr-2 mb-2 flex-grow-1" @click="paste">
-              <v-icon left>$assignment</v-icon>
-              <span>Paste</span>
+              <v-icon :left="!to.length">$assignment</v-icon>
+              <span v-if="!to.length">Paste</span>
             </v-btn>
+
           </div>
         </template>
       </v-textarea>
     </v-form>
 
-    <div class="d-flex buttons">
-      <v-btn v-if="canPaste" class="mr-2 mb-2 flex-grow-1 wide" @click="getRecipient(to)">
-        <v-icon left color="primary">$search</v-icon>
-        <span>Find User</span>
-      </v-btn>
-    </div>
 
     <methods v-if="!payment.method" />
     <paper v-if="payment.method === 'paper'" />

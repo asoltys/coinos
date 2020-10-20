@@ -11,9 +11,8 @@
   <v-menu v-else offset-y nudge-bottom="1">
     <template v-slot:activator="{ on }">
       <v-btn v-on="on" class="black--text" :color="color(display)">
-        {{
-        display
-        }}</v-btn>
+        {{ display }}</v-btn
+      >
       <span class="print black--text">{{ display }}</span>
     </template>
     <v-list v-if="currencies.length">
@@ -34,6 +33,7 @@ export default {
   props: {
     currency: { type: String },
     currencies: { type: Array },
+    type: { type: String },
   },
 
   data() {
@@ -51,9 +51,9 @@ export default {
       if (!this.user.currencies) return 'white';
       return ['BTC', 'SAT'].includes(c)
         ? 'white'
-        : this.user.currencies.includes(c)
-        ? 'primary'
-        : 'liquid';
+        : this.type === "accounts"
+        ? 'liquid'
+        : 'primary';
     },
     shiftAccount: call('shiftAccount'),
     setCurrency: call('setCurrency'),
@@ -63,17 +63,24 @@ export default {
       this.$emit('currency', c);
       this.display = c;
 
-      let account = this.user.accounts.find(a => a.ticker === c && a.pubkey === this.user.account.pubkey);
+      let account = this.user.accounts.find(
+        a => a.ticker === c && a.pubkey === this.user.account.pubkey
+      );
       let currency = this.user.currencies.find(cr => cr === c);
-      let btc = this.user.accounts.find(a => a.ticker === c && a.asset === BTC && a.pubkey === this.user.account.pubkey);
+      let btc = this.user.accounts.find(
+        a =>
+          a.ticker === c &&
+          a.asset === BTC &&
+          a.pubkey === this.user.account.pubkey
+      );
 
-      if (account && this.user.account.id !== account.id) {
+      if (this.type === "accounts" && account && this.user.account.id !== account.id) {
         await this.shiftAccount(account.id);
       } else if (currency) {
         return await this.setCurrency(c);
       } else if (btc && this.user.account.id !== btc.id) {
         await this.shiftAccount(btc.id);
-      } 
+      }
 
       if (!currency && this.user.fiat) await this.toggleFiat();
       if (c === 'SAT' && this.user.unit !== 'SAT') return this.toggleUnit();

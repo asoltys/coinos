@@ -3,6 +3,7 @@
     <balance />
     <payments class="mb-2" />
     <div class="mb-4 d-flex flex-wrap">
+    <v-btn-toggle tile color="primary accent-3" group class="flex-wrap mx-auto">
       <v-btn class="flex-grow-1 mr-1 mb-1 mb-md-0 wide" @click="$go('/receive')">
         <v-icon left color="green">$download</v-icon><span>Receive a Payment</span>
       </v-btn>
@@ -15,6 +16,7 @@
       <v-btn class="flex-grow-1 mr-1 wide" @click="$go('/logout')">
         <v-icon left color="pink">$power</v-icon><span>Sign Out</span>
       </v-btn>
+      </v-btn-toggle>
     </div>
   </div>
 </template>

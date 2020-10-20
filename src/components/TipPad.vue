@@ -24,6 +24,7 @@
            :initialAmount="tip"
            :initialRate="invoice.rate"
            :currencies="[invoice.currency, 'SAT', 'BTC']"
+           @done="done"
            />
         <div class="d-flex my-2">
           <v-btn
@@ -113,7 +114,7 @@ export default {
       let percent = Math.round(tip / (this.amount * 0.01));
       if (percent > this.max) this.max = percent;
       this.tip = tip;
-      this.fiatTip = tip * invoice.rate;
+      this.fiatTip = ((tip * this.invoice.rate) / SATS).toFixed(2);
     },
     select(i) {
       this.percent = i;

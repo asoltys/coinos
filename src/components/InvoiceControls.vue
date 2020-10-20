@@ -11,7 +11,7 @@
       :show="false"
     />
     <amount
-      v-if="invoice.tip || invoice.tip === 0"
+      v-if="invoice.tip"
       v-model.number="invoice.tip"
       label="Tip"
       class="mb-2"

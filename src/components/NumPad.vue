@@ -16,6 +16,7 @@
             :currency="currency"
             :currencies="currencies"
             @currency="setCurrency"
+        :type="type"
           />
         </template>
       </v-text-field>
@@ -47,6 +48,7 @@ const SATS = 100000000;
 export default {
   components: { CurrencyList },
   props: {
+    type: { type: String },
     initialAmount: { type: Number },
     initialRate: { type: Number },
     currencies: { type: Array },

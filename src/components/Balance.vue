@@ -1,11 +1,11 @@
 <template>
   <div v-if="user.id && user.account" class="mb-2 text-center no-print">
     <div class="d-flex">
-      <div class="display-2 font-weight-black flex-grow-1 text-right mr-2">
+      <div class="display-2 font-weight-black flex-grow-1 text-right mr-2" style="word-break: break-all">
         {{ $format(user.account.balance, precision) }}
       </div>
       <div class="text-left flex-grow-1 my-auto">
-        <currency-list :currency="ticker" :currencies="cryptos" />
+        <currency-list :currency="ticker" :currencies="cryptos" type="accounts" />
       </div>
     </div>
     <h3
