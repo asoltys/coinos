@@ -59,7 +59,6 @@ export default {
     dateFormat(d) {
       return format(d, 'HH:mm:ss');
     },
-    getAssets: call('getAssets'),
     deleteOrder: call('deleteOrder'),
     format(asset, value) {
       let precision = 0,
@@ -71,10 +70,6 @@ export default {
       if (ticker) return ticker;
       return asset.substr(0, 3);
     },
-  },
-
-  async mounted() {
-    await this.getAssets();
   },
 };
 </script>

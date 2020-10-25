@@ -60,7 +60,6 @@ export default {
       if (p.a2 === this.a1) price = p.v1 / p.v2;
       return price.toFixed(8);
     },
-    getAssets: call('getAssets'),
     accept: call('accept'),
     deleteOrder: call('deleteOrder'),
     format(asset, value) {
@@ -73,10 +72,6 @@ export default {
       if (ticker) return ticker;
       return asset.substr(0, 3);
     },
-  },
-
-  async mounted() {
-    await this.getAssets();
   },
 };
 </script>

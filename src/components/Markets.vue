@@ -1,5 +1,7 @@
 <template>
   <div>
+    <v-progress-linear v-if="loading" indeterminate />
+  <div v-else>
     <div class="d-flex mb-4">
       <v-btn
         class="flex-grow-1 mr-1 mb-1 mb-md-0 wide"
@@ -31,6 +33,7 @@
       </v-tabs-items>
     </div>
   </div>
+  </div>
 </template>
 
 <script>
@@ -53,6 +56,7 @@ export default {
   },
   components: { MarketList, OrderBook, Orders, LastTrades, Swap },
   data: () => ({
+    loading: false,
     conflict: false,
     markets: [
       {
@@ -161,6 +165,16 @@ export default {
   async mounted() {
     let { t1, t2 } = this;
     if (!(t1 && t2)) return;
+
+    this.loading = true;
+
+    const waitForAssets = resolve => {
+      if (!(this.assets && Object.values(this.assets).length))
+        return (this.timeout = setTimeout(() => waitForAssets(resolve), 1000));
+      resolve();
+    };
+    await new Promise(waitForAssets);
+
     let assets = Object.values(this.assets);
     let a1Candidates = assets.filter(a => a.ticker === t1);
     let a2Candidates = assets.filter(a => a.ticker === t2);
@@ -191,6 +205,8 @@ export default {
     } else {
       this.invalid = true;
     }
+
+    this.loading = false;
   },
 };
 </script>
