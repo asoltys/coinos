@@ -134,12 +134,6 @@ export default {
     user: get('user'),
   },
   methods: {
-    setA1(a) {
-      this.a1 = a;
-    },
-    setA2(a) {
-      this.a2 = a;
-    },
     getOrders: call('getOrders'),
   },
   async mounted() {

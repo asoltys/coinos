@@ -165,11 +165,12 @@ export default {
       this.$emit('cancel');
     },
     color(c) {
+      if (!this.user.currencies) return 'white';
       return ['BTC', 'SAT'].includes(c)
         ? 'white'
-        : this.user.currencies.includes(c)
-        ? 'primary'
-        : 'liquid';
+        : this.type === "accounts"
+        ? 'liquid'
+        : 'primary';
     },
     input(amount, fiatAmount, currency, rate) {
       this.fixedRate = rate;

@@ -542,6 +542,44 @@ export default new Vuex.Store({
       return { seed, password };
     },
 
+    async uploadId({ commit, dispatch, state }, id) {
+      const formData = new FormData();
+      formData.append("id", id);
+      try {
+        await Vue.axios.post('/id', formData);
+        return true;
+      } catch(e) {
+        return false;
+      } 
+    },
+
+    async createFunding({ commit, dispatch, state }, funding) {
+      try {
+        await Vue.axios.post('/funding', funding);
+      } catch (e) {
+        commit('error', e.response ? e.response.data : e.message);
+      }
+    },
+
+    async createWithdrawal({ commit, dispatch, state }, withdrawal) {
+      try {
+        await Vue.axios.post('/withdrawal', withdrawal);
+      } catch (e) {
+        commit('error', e.response ? e.response.data : e.message);
+      }
+    },
+
+    async uploadProof({ commit, dispatch, state }, proof) {
+      const formData = new FormData();
+      formData.append("proof", proof);
+      try {
+        await Vue.axios.post('/proof', formData);
+        return true;
+      } catch(e) {
+        return false;
+      } 
+    },
+
     async getNewAddress({ commit, dispatch, state }, type) {
       let { invoice, password, recipient } = state;
       let { addressType, network, user } = invoice;

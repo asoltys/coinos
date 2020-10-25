@@ -3,7 +3,7 @@
     <v-bottom-navigation
       class="d-flex justify-space-around text-center"
       height="60"
-      background-color="#212121"
+      background-color="#111"
       dark
     >
       <v-btn class="flex-grow-1" text @click="$go('/wallets')">
@@ -22,7 +22,7 @@
         <span>Send</span>
         <v-icon>$send</v-icon>
       </v-btn>
-      <v-btn class="flex-grow-1" text @click="$go('/exchange')">
+      <v-btn class="flex-grow-1" text @click="$go('/markets')">
         <span>Exchange</span>
         <v-icon>$swap</v-icon>
       </v-btn>

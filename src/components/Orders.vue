@@ -1,7 +1,6 @@
 <template>
   <v-card>
     <v-card-text class="white--text" v-if="orders.length">
-      <h2 class="mb-2 text-center">Your Open Orders</h2>
       <v-container class="pb-0 text-right">
         <v-row class="hover">
           <v-col>Time</v-col>

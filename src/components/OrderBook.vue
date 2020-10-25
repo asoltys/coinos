@@ -2,7 +2,6 @@
   <div>
     <v-card class="mb-1">
       <v-card-text class="white--text flex-grow-1 py-0" v-if="asks.length || bids.length">
-        <h2 class="text-center mb-2">Order Book</h2>
         <v-container class="pa-0 text-right">
           <v-row class="font-weight-bold">
             <v-col @click="priceToggle" style="cursor: pointer">Price</v-col>

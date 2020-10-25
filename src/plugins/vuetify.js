@@ -28,6 +28,7 @@ import Delete from 'vue-material-design-icons/Delete';
 import Dialpad from 'vue-material-design-icons/Dialpad';
 import DotsVertical from 'vue-material-design-icons/DotsVertical';
 import Download from 'vue-material-design-icons/Download';
+import Upload from 'vue-material-design-icons/Upload';
 import Edit from 'vue-material-design-icons/FileDocumentEdit';
 import Eye from 'vue-material-design-icons/Eye';
 import Fire from 'vue-material-design-icons/Fire';
@@ -116,6 +117,7 @@ export default new Vuetify({
       'dotsv': { component: DotsVertical },
       'down': { component: ChevronDown },
       'download': { component: Download },
+      'upload': { component: Upload },
       'edit': { component: Edit },
       'eye': { component: Eye },
       'fire': { component: Fire },

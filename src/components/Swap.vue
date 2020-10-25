@@ -379,12 +379,5 @@ export default {
       }
     },
   },
-
-  async mounted() {
-    if (!this.a1) this.a1 = this.user.account.asset;
-    if (!this.a2) this.a2 = lcad;
-    if (this.a1 === this.a2) this.a2 = btc;
-    this.order = null;
-  },
 };
 </script>

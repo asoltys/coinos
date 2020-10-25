@@ -102,10 +102,10 @@ const Swap = () =>
     /* webpackChunkName: "swap" */
     '../components/Swap'
   );
-const Exchange = () =>
+const Markets = () =>
   import(
-    /* webpackChunkName: "exchange" */
-    '../components/Exchange'
+    /* webpackChunkName: "markets" */
+    '../components/Markets'
   );
 const Wallet = () =>
   import(
@@ -130,13 +130,14 @@ const routes = [
   { name: 'accept', path: '/accept', component: Accept, props: true },
   { path: '/asset', component: Asset },
   { path: '/decrypt', component: Decrypt },
-  { path: '/exchange', component: Exchange },
   { name: 'faucet', path: '/faucet', component: Faucet, props: true },
   { path: '/faucet/:asset', component: Faucet, props: true },
   { path: '/home', component: Home },
   { name: 'login', path: '/login/:jwt', component: Login, props: true },
   { path: '/login', component: Login, props: { logout: false } },
   { path: '/logout', component: Login, props: { logout: true } },
+  { path: '/markets', component: Markets },
+  { name: 'markets', path: '/markets/:t1-:t2', component: Markets, props: true },
   { path: '/payments', component: Payments },
   { path: '/receive', component: Receive },
   { path: '/redeem/:redeemcode', component: Redeem, props: true },
@@ -148,7 +149,6 @@ const routes = [
   { path: '/text', component: Text },
   { path: '/pay', component: Pay },
   { path: '/propose', component: Swap },
-  { name: 'markets', path: '/markets/:t1-:t2', component: Exchange, props: true },
   { path: '/wallet', component: Wallet },
   { path: '/wallets', component: Wallets },
   { path: '/withdraw', component: Withdraw },
