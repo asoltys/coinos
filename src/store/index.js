@@ -1495,7 +1495,8 @@ export default new Vuex.Store({
       }
 
       try {
-        let { data } = await Vue.axios.post(`/invoice`, { invoice, user });
+        let { id, account_id, username } = user;
+        let { data } = await Vue.axios.post(`/invoice`, { invoice, user: { id, account_id, username } });
         socket.send(JSON.stringify({ type: 'subscribe', data }));
         commit('invoice', invoice);
       } catch (e) {
