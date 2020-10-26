@@ -1,38 +1,38 @@
 <template>
   <div>
     <v-progress-linear v-if="loading" indeterminate />
-  <div v-else>
-    <div class="d-flex mb-4">
-      <v-btn
-        class="flex-grow-1 mr-1 mb-1 mb-md-0 wide"
-        @click="$go('/funding')"
-      >
-        <v-icon left>$canada</v-icon>
-        New! CAD Funding and Withdrawals
-      </v-btn>
+    <div v-else>
+      <div class="d-flex mb-4">
+        <v-btn
+          class="flex-grow-1 mr-1 mb-1 mb-md-0 wide"
+          @click="$go('/funding')"
+        >
+          <v-icon left>$canada</v-icon>
+          New! CAD Funding and Withdrawals
+        </v-btn>
+      </div>
+      <div v-if="invalid">Market Not Found</div>
+      <market-list v-if="orders.length && (!t1 || conflict)" :markets="markets" />
+      <div v-else-if="a1 && a2">
+        <swap :bid="bids[0]" :ask="asks[asks.length - 1]" />
+        <v-tabs v-model="tab" hide-slider prev-icon="">
+          <v-tab v-for="t in tabs" :key="t">
+            {{ t }}
+          </v-tab>
+        </v-tabs>
+        <v-tabs-items v-model="tab">
+          <v-tab-item key="Order Book">
+            <order-book :bids="bids" :asks="asks" />
+          </v-tab-item>
+          <v-tab-item key="Your">
+            <orders :orders="own" class="mb-1" />
+          </v-tab-item>
+          <v-tab-item key="Last">
+            <last-trades :orders="completed" class="mb-1" />
+          </v-tab-item>
+        </v-tabs-items>
+      </div>
     </div>
-    <div v-if="invalid">Market Not Found</div>
-    <market-list v-if="!t1 || conflict" :markets="markets" />
-    <div v-else-if="a1 && a2">
-      <swap :bid="bids[0]" :ask="asks[asks.length - 1]" />
-      <v-tabs v-model="tab" hide-slider prev-icon="">
-        <v-tab v-for="t in tabs" :key="t">
-          {{ t }}
-        </v-tab>
-      </v-tabs>
-      <v-tabs-items v-model="tab">
-        <v-tab-item key="Order Book">
-          <order-book :bids="bids" :asks="asks" />
-        </v-tab-item>
-        <v-tab-item key="Your">
-          <orders :orders="own" class="mb-1" />
-        </v-tab-item>
-        <v-tab-item key="Last">
-          <last-trades :orders="completed" class="mb-1" />
-        </v-tab-item>
-      </v-tabs-items>
-    </div>
-  </div>
   </div>
 </template>
 
@@ -163,11 +163,12 @@ export default {
     getOrders: call('getOrders'),
   },
   async mounted() {
+    await this.getOrders();
+
     let { t1, t2 } = this;
     if (!(t1 && t2)) return;
 
     this.loading = true;
-
     const waitForAssets = resolve => {
       if (!(this.assets && Object.values(this.assets).length))
         return (this.timeout = setTimeout(() => waitForAssets(resolve), 1000));
@@ -179,13 +180,14 @@ export default {
     let a1Candidates = assets.filter(a => a.ticker === t1);
     let a2Candidates = assets.filter(a => a.ticker === t2);
 
-    if (!a1Candidates.length) a1Candidates = assets.filter(a => a.asset && a.asset.startsWith(t1));
-    if (!a2Candidates.length) a2Candidates = assets.filter(a => a.asset && a.asset.startsWith(t2));
+    if (!a1Candidates.length)
+      a1Candidates = assets.filter(a => a.asset && a.asset.startsWith(t1));
+    if (!a2Candidates.length)
+      a2Candidates = assets.filter(a => a.asset && a.asset.startsWith(t2));
 
     if (a1Candidates.length === 1 && a2Candidates.length === 1) {
       this.a1 = a1Candidates[0].asset;
       this.a2 = a2Candidates[0].asset;
-      await this.getOrders();
     } else if (a1Candidates.length >= 1 && a2Candidates.length >= 1) {
       this.conflict = true;
       this.markets = [];

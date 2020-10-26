@@ -34,12 +34,12 @@
             </div>
             <div class="ml-auto my-auto">
               <div class="d-flex">
-                <div class="green--text my-auto mr-1">Buy:</div>
-                <div class="title">{{ ask(m) }}</div>
+                <div class="green--text my-auto mr-1">Bid:</div>
+                <div class="title">{{ bid(m) }}</div>
               </div>
               <div class="d-flex">
-                <div class="red--text my-auto mr-1">Sell:</div>
-                <div class="title">{{ bid(m) }}</div>
+                <div class="red--text my-auto mr-1">Ask:</div>
+                <div class="title">{{ ask(m) }}</div>
               </div>
             </div>
           </div>
@@ -66,7 +66,7 @@ export default {
     btc,
   }),
   methods: {
-    ask(m) {
+    bid(m) {
       let orders = this.orders
         .filter(p => p.a1 === m.a2 && p.a2 === m.a1)
         .sort((a, b) =>
@@ -78,7 +78,7 @@ export default {
       }
       return 0;
     },
-    bid(m) {
+    ask(m) {
       let orders = this.orders
         .filter(p => p.a1 === m.a1 && p.a2 === m.a2)
         .sort((a, b) =>

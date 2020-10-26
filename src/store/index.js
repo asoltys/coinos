@@ -379,14 +379,12 @@ export default new Vuex.Store({
 
     async getOrders({ commit, getters, dispatch }) {
       commit('error', null);
-      commit('loading', true);
       try {
         const { data: orders } = await Vue.axios.get('/orders');
         commit('orders', orders);
       } catch (e) {
         commit('error', e.response ? e.response.data : e.message);
       }
-      commit('loading', false);
     },
 
     async publish({ commit, getters, dispatch }) {
