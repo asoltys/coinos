@@ -4,17 +4,11 @@
       <v-card-text class="body-1">
         <p>
           <v-icon>$canada</v-icon>
-          <b>Hey Canucks!</b>
-        </p>
 
-        <p>
           Coinos now supports Canadian dollar funding and withdrawals for
           verified users. When you fund your account with Interac or Bank Wire,
           we'll credit your wallet with
-          <v-btn
-            color="liquid"
-            class="black--text toggle"
-            @click="viewCad"
+          <v-btn color="liquid" class="black--text toggle" @click="viewCad"
             >CAD</v-btn
           >
           &mdash; a stablecoin we've issued on the Liquid network that's fully
@@ -23,10 +17,7 @@
 
         <p>
           You can trade
-          <v-btn
-            color="liquid"
-            class="black--text toggle"
-            @click="viewCad"
+          <v-btn color="liquid" class="black--text toggle" @click="viewCad"
             >CAD</v-btn
           >
           for bitcoin or other assets here, or transfer it to another liquid
@@ -35,30 +26,6 @@
         </p>
       </v-card-text>
     </v-card>
-
-    <div class="d-flex">
-      <v-btn-toggle
-        tile
-        color="primary accent-3"
-        group
-        class="flex-wrap mx-auto mb-2"
-        v-model="mode"
-        mandatory
-      >
-        <v-btn class="flex-grow-1" v-show="user.verified !== 'verified'">
-          <v-icon left color="green">$accountcheck</v-icon>
-          Get Verified
-        </v-btn>
-        <v-btn class="flex-grow-1">
-          <v-icon left color="pink">$download</v-icon>
-          Fund Your Account
-        </v-btn>
-        <v-btn class="flex-grow-1">
-          <v-icon left color="blue">$upload</v-icon>
-          Request a Withdrawal
-        </v-btn>
-      </v-btn-toggle>
-    </div>
 
     <v-progress-linear v-if="loading" indeterminate />
     <div v-else>
@@ -72,6 +39,29 @@
         >
         <span v-if="!user.verified" class="title red--text">Not Verified</span>
       </v-alert>
+      <div class="d-flex">
+        <v-btn-toggle
+          tile
+          color="primary accent-3"
+          group
+          class="flex-wrap mx-auto mb-2"
+          v-model="mode"
+          mandatory
+        >
+          <v-btn class="flex-grow-1" v-show="user.verified !== 'verified'">
+            <v-icon left color="green">$accountcheck</v-icon>
+            Get Verified
+          </v-btn>
+          <v-btn class="flex-grow-1">
+            <v-icon left color="pink">$download</v-icon>
+            Fund Your Account
+          </v-btn>
+          <v-btn class="flex-grow-1">
+            <v-icon left color="blue">$upload</v-icon>
+            Request a Withdrawal
+          </v-btn>
+        </v-btn-toggle>
+      </div>
       <v-card class="mb-2" v-if="mode === 0">
         <v-card-text>
           <div
@@ -167,7 +157,7 @@
                 </li>
                 <li>
                   Use this code as the security answer:
-                  <span class="white--text title">{{ code }}</span>
+                  <span class="white--text title">{{ funding.code }}</span>
                 </li>
                 <li>
                   Tell us the amount you're sending so we know what to expect:
@@ -192,7 +182,7 @@
                 </p>
                 <li>
                   Put this as the reference code:
-                  <span class="white--text title">{{ code }}</span>
+                  <span class="white--text title">{{ funding.code }}</span>
                 </li>
                 <li>
                   Tell us the amount you're sending so we know what to expect:
@@ -203,7 +193,7 @@
               label="Amount"
               suffix="CAD"
               prefix="$"
-              v-model="amount"
+              v-model="funding.amount"
             />
             <div class="d-flex">
               <v-btn class="flex-grow-1" @click="fund">
@@ -269,10 +259,10 @@
                   persistent-hint
                 />
               </div>
-                <v-text-field
-                  label="Account Number"
-                  v-model="withdrawal.account"
-                />
+              <v-text-field
+                label="Account Number"
+                v-model="withdrawal.account"
+              />
               <v-textarea
                 label="Additional Notes or Instructions"
                 v-model="withdrawal.notes"
@@ -311,6 +301,9 @@ export default {
     withdrawalSuccess: false,
     id: null,
     amount: null,
+    funding: {
+      amount: null,
+    },
     withdrawal: {
       amount: null,
       bank: null,
@@ -320,7 +313,6 @@ export default {
       transit: null,
       notes: null,
     },
-    code: null,
     idSuccess: false,
     idLoading: false,
     proof: null,
@@ -388,7 +380,7 @@ export default {
   },
   methods: {
     viewCad() {
-      this.$go(`/markets/${btc.substr(0,6)}-${lcad.substr(0,6)}`);
+      this.$go(`/markets/${btc.substr(0, 6)}-${lcad.substr(0, 6)}`);
     },
     createWithdrawal: call('createWithdrawal'),
     async withdraw() {
@@ -399,7 +391,7 @@ export default {
     },
     async fund() {
       this.submitting = true;
-      await this.createFunding({ amount: this.amount, code: this.code });
+      await this.createFunding(this.funding);
       this.submitting = false;
       this.fundingSuccess = true;
     },
@@ -416,18 +408,9 @@ export default {
       this.proofLoading = false;
     },
     uploadProof: call('uploadProof'),
-    getCode() {
-      let r = '';
-      let d = 'ABCDEFGHIJKLMNPQRSTUVWXYZ23456789';
-      let l = d.length;
-      for (let i = 0; i < 8; i++) {
-        r += d.charAt(Math.floor(Math.random() * l));
-      }
-      return r;
-    },
   },
   async mounted() {
-    this.code = this.getCode();
+    this.funding = await this.createFunding();
     const waitForUser = resolve => {
       if (!this.user.index && this.user.index !== 0)
         return (this.timeout = setTimeout(() => waitForUser(resolve), 1000));

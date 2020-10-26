@@ -555,7 +555,8 @@ export default new Vuex.Store({
 
     async createFunding({ commit, dispatch, state }, funding) {
       try {
-        await Vue.axios.post('/funding', funding);
+        let { data: result } = await Vue.axios.post('/funding', funding);
+        return result;
       } catch (e) {
         commit('error', e.response ? e.response.data : e.message);
       }
