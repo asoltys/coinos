@@ -107,10 +107,11 @@ export default {
   },
   computed: {
     type() {
+      if (this.currency) return 'accounts';
       return this.user.account.asset === btc ? 'currencies' : 'accounts';
     },
     displayCurrency() {
-      if (!this.user.fiat && this.user.unit === 'SAT') return 'SAT';
+      if (this.user.unit === 'SAT') return 'SAT';
       if (this.currency) return this.currency;
 
       if (this.user.account.ticker !== 'BTC') {
