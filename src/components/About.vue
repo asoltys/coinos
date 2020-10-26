@@ -21,23 +21,16 @@
         same server are completely free and off-chain.
         </p>
 
-        <p>Non-custodial wallets are generated with client-side JavaScript. You can import and export your keys and seed. A copy of the master seed is kept on the coinos server after being encrypted with your account password in your browser so we don't have access to it. We could get access to it if we decided to intercept and store your password one day when you're logging in, but we won't do that, I promise. Still, don't put too much money even into a non-custodial wallet here. Coinos is designed to be an everyday spending wallet with more focus on convenience and ease of use than security.</p>
-
         <p>
         The bitcoin to US dollar exchange rate is streamed every second from
         <a href="https://binance.com/">Binance</a> and converted to other
         currencies using rates from <a href="https://fixer.io/">Fixer</a>.
         </p>
 
-        <p>Users can issue new liquid assets and trade arbitrary assets on our exchange. You can place limit orders to buy or sell any asset for any other asset on the liquid network. Anyone can request coinos to generate an atomic swap transaction and sign off on it to take orders off the order book directly to their external wallet without having to first deposit funds for their side of the transaction into coinos. We provide market liquidity for CAD and USDT pairs with a 1% spread above/below the current Binance price.</p>
-
         <p class="mb-4">
         Coinos is free software developed by
         <a href="https://adamsoltys.com/">Adam Soltys</a>.
-        </p>
-        
-        <p>
-        This publicly hosted exemplary instance of coinos at <a href="coinos.io">coinos.io</a> and <a href="https://bitcoinapp.ca">bitcoinapp.ca</a> is a property of Coinos Financial Corporation, a B.C. Limited Company and FINTRAC-registered Money Services Business.
+          This website is a property of Coinos Financial Corporation, a B.C. Limited Company and FINTRAC-registered Money Services Business.
         </p>
         <social />
       </v-card-text>

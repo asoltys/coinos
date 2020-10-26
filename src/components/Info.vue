@@ -6,7 +6,7 @@
       <v-list>
         <v-list-item v-if="nodes.includes('bitcoin')">
           <v-list-item-avatar>
-            <img class="ml-2" src="../assets/bitcoin.png" style="width: 25px; height: 25px" />
+            <v-icon>$bitcoin</v-icon>
           </v-list-item-avatar>
           <v-list-item-content>
             <v-list-item-title>Bitcoin</v-list-item-title>
