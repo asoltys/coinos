@@ -111,6 +111,7 @@ export default {
       return this.user.account.asset === btc ? 'currencies' : 'accounts';
     },
     displayCurrency() {
+      if (this.user.fiat && this.user.account.ticker === 'BTC') return this.user.currency;
       if (this.user.unit === 'SAT') return 'SAT';
       if (this.currency) return this.currency;
 
@@ -128,7 +129,10 @@ export default {
     },
     decimals() {
       if (this.currency) {
-        let account = this.user.accounts.find(a => a.ticker === this.currency);
+        if (this.currency === this.user.account.ticker) {
+          return this.user.account.precision;
+        } 
+        let account = this.user.accounts.filter(a => a.ticker === this.currency);
         if (account) return account.precision;
       }
       return 8;
@@ -141,7 +145,7 @@ export default {
       if (!value) value = 0;
       if (!decimals && decimals !== 0) decimals = 8;
 
-      return this.user.fiat && !this.currency
+      return this.isBtc && this.user.fiat && !this.currency
         ? this.fiatAmount
         : this.user.unit === 'SAT'
         ? value
@@ -158,6 +162,8 @@ export default {
     payment: get('payment'),
     rate: get('rate'),
     user: get('user'),
+    fiat: get('user@fiat'),
+    userCurrency: get('user@currency'),
   },
   methods: {
     cancel() {
@@ -189,6 +195,12 @@ export default {
   },
 
   watch: {
+    userCurrency() {
+      this.fixedRate = this.rate;
+    },
+    fiat() {
+      this.fixedRate = this.rate;
+    },
     triggerEditing(v) {
       this.editing = v;
     },

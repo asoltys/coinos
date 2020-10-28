@@ -74,8 +74,9 @@ export default {
           a.pubkey === this.user.account.pubkey
       );
 
-      if (this.type === "accounts" && account && this.user.account.id !== account.id) {
-        await this.shiftAccount(account.id);
+      if (this.type === "accounts") {
+        if (account && this.user.account.id !== account.id) 
+          await this.shiftAccount(account.id);
       } else if (currency) {
         return await this.setCurrency(c);
       } else if (btc && this.user.account.id !== btc.id) {
@@ -83,6 +84,7 @@ export default {
       }
 
       if (!currency && this.user.fiat) await this.toggleFiat();
+
       if (c === 'SAT' && this.user.unit !== 'SAT') return this.toggleUnit();
       if (c !== 'SAT' && this.user.unit !== 'BTC') return this.toggleUnit();
     },

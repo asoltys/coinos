@@ -84,7 +84,7 @@ export default {
     await new Promise(waitForRates);
     this.rates = this.globalRates;
     this.currency =
-      this.user.fiat && this.currencies.includes(this.user.currency)
+      this.user.fiat && this.currencies.includes(this.user.currency) && this.type === 'currencies'
         ? this.user.currency
         : this.user.unit === 'SAT'
         ? 'SAT'
@@ -97,7 +97,7 @@ export default {
         ? this.initialAmount
         : this.user.fiat &&
           this.fiatAmount &&
-          this.currencies.includes(this.user.currency)
+          this.currencies.includes(this.user.currency) && this.type === 'currencies'
         ? this.fiatAmount
         : parseFloat(this.$format(this.initialAmount, this.decimals)).toFixed(
             this.decimals
@@ -117,7 +117,7 @@ export default {
     decimals() {
       if (this.currency === 'SAT') return 0;
       if (this.precision || this.precision === 0) return this.precision;
-      if (this.user.currencies.includes(this.currency)) return 2;
+      if (this.type === "currencies" && this.user.currencies.includes(this.currency)) return 2;
       let account = this.user.accounts.find(a => a.ticker === this.currency);
       if (account) return account.precision;
       if (this.user.account.ticker !== 'BTC')
@@ -129,7 +129,7 @@ export default {
       return 10 ** this.decimals;
     },
     fiat() {
-      return this.user.currencies.includes(this.currency);
+      return this.user.currencies.includes(this.currency) && this.type === 'currencies';
     },
     globalRate: get('rate'),
     rate() {
