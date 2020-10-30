@@ -57,7 +57,7 @@ export default {
   },
   methods: {
     dateFormat(d) {
-      return format(d, 'HH:mm:ss');
+      return format(d, 'M/D HH:mm:ss');
     },
     deleteOrder: call('deleteOrder'),
     format(asset, value) {

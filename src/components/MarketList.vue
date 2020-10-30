@@ -68,7 +68,7 @@ export default {
   methods: {
     bid(m) {
       let orders = this.orders
-        .filter(p => p.a1 === m.a2 && p.a2 === m.a1)
+        .filter(p => !p.accepted && p.a1 === m.a2 && p.a2 === m.a1)
         .sort((a, b) =>
           a.rate === b.rate ? a.id - b.id : a.rate > b.rate ? 1 : -1
         );
@@ -80,7 +80,7 @@ export default {
     },
     ask(m) {
       let orders = this.orders
-        .filter(p => p.a1 === m.a1 && p.a2 === m.a2)
+        .filter(p => !p.accepted && p.a1 === m.a1 && p.a2 === m.a2)
         .sort((a, b) =>
           a.rate === b.rate ? a.id - b.id : a.rate > b.rate ? 1 : -1
         );

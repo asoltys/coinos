@@ -53,7 +53,7 @@ export default {
       return 'red';
     },
     dateFormat(d) {
-      return format(d, 'HH:mm:ss');
+      return format(d, 'M/D HH:mm:ss');
     },
     price(p) {
       let price = p.v2 / p.v1;
