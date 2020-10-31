@@ -4,7 +4,7 @@
       <v-card-text class="white--text flex-grow-1 py-0" v-if="asks.length || bids.length">
         <v-container class="pa-0 text-right">
           <v-row class="font-weight-bold">
-            <v-col @click="priceToggle" style="cursor: pointer">Price</v-col>
+            <v-col @click="priceToggle" style="cursor: pointer">Price <v-icon color="primary">$swap</v-icon></v-col>
             <v-col>Amount</v-col>
             <v-col>Total</v-col>
           </v-row>
@@ -44,17 +44,16 @@
 </template>
 
 <script>
-import { get } from 'vuex-pathify';
+import { get, sync } from 'vuex-pathify';
 
 export default {
   props: {
     bids: { type: Array },
     asks: { type: Array },
   },
-  data: () => ({
-    inverse: false,
-  }),
   computed: {
+    inverse: sync('inverse'),
+    type: get('type'),
     a1: get('a1'),
     a2: get('a2'),
     assets: get('assets'),

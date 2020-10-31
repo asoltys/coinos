@@ -8,7 +8,7 @@
               <div class="d-flex mr-2">
                 <div class="my-auto">
                   <div class="title">{{ m.t1 }}</div>
-                  <div class="caption primary--text text-center" style="margin-top: -10px">{{ m.a1.substr(0, 6) }}</div>
+                  <div class="caption primary--text text-center" style="margin-top: -10px">{{ m.a1.substr(0, 8) }}</div>
                 </div>
                 <img v-if="icons[m.a1]"
                   class="my-auto ml-1 py-1"
@@ -21,7 +21,7 @@
               <div class="d-flex mr-2">
                 <div class="my-auto">
                   <div class="title">{{ m.t2 }}</div>
-                  <div class="caption primary--text text-center" style="margin-top: -10px">{{ m.a2.substr(0, 6) }}</div>
+                  <div class="caption primary--text text-center" style="margin-top: -10px">{{ m.a2.substr(0, 8) }}</div>
                 </div>
                 <img v-if="icons[m.a2]"
                   class="my-auto py-1 ml-1"
@@ -74,7 +74,7 @@ export default {
         );
       if (orders.length) {
         let { v1, v2 } = orders[0];
-        return v1 / v2;
+        return (v1 / v2).toFixed(8);
       }
       return 0;
     },
@@ -86,7 +86,7 @@ export default {
         );
       if (orders.length) {
         let { v1, v2 } = orders[0];
-        return v2 / v1;
+        return (v2 / v1).toFixed(8);
       }
       return 0;
     },

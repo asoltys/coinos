@@ -380,7 +380,7 @@ export default {
   },
   methods: {
     viewCad() {
-      this.$go(`/markets/${btc.substr(0, 6)}-${lcad.substr(0, 6)}`);
+      this.$go(`/markets/${btc.substr(0, 8)}-${lcad.substr(0, 8)}`);
     },
     createWithdrawal: call('createWithdrawal'),
     async withdraw() {

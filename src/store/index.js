@@ -149,6 +149,8 @@ const blankPayment = JSON.stringify({
 });
 
 const state = {
+  inverse: false,
+  type: 'sell',
   a1: null,
   a2: null,
   addressType: 'bech32',
