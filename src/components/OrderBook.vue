@@ -4,8 +4,8 @@
       <v-card-text class="white--text flex-grow-1 py-0" v-if="asks.length || bids.length">
         <v-container class="pa-0 text-right">
           <v-row class="font-weight-bold">
-            <v-col @click="priceToggle" style="cursor: pointer">Price <v-icon color="primary">$swap</v-icon></v-col>
-            <v-col>Amount</v-col>
+            <v-col @click="priceToggle" style="cursor: pointer">Price {{tickers}}<v-icon color="primary">$swap</v-icon></v-col>
+            <v-col>Amount {{ticker(a1)}}</v-col>
             <v-col>Total</v-col>
           </v-row>
           <v-row v-for="p in asks" :key="p.id" class="hover">
@@ -58,8 +58,18 @@ export default {
     a2: get('a2'),
     assets: get('assets'),
     proposals: get('proposals'),
+    tickers() {
+      if (this.inverse) return this.ticker(this.a2) + '/' + this.ticker(this.a1)
+      return this.ticker(this.a1) + '/' + this.ticker(this.a2)
+    }, 
   },
   methods: {
+    ticker(asset) {
+      if (asset === process.env.VUE_APP_LBTC) return 'BTC';
+      return this.assets[asset]
+        ? this.assets[asset].ticker || asset.substr(0, 3).toUpperCase()
+        : '';
+    },
     priceToggle() {
       this.inverse = !this.inverse;
     },

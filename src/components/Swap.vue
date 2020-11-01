@@ -34,7 +34,13 @@
           >
             <template v-slot:append>
               <div>
-                <div v-if="a1Acc" class="font-weight-bold">{{ user.unit === 'SAT' ? a1Acc.balance : $format(a1Acc.balance, a1Acc.precision) }}</div>
+                <div v-if="a1Acc" class="font-weight-bold">
+                  {{
+                    user.unit === 'SAT'
+                      ? a1Acc.balance
+                      : $format(a1Acc.balance, a1Acc.precision)
+                  }}
+                </div>
                 <div class="caption primary--text">{{ a1.substr(0, 8) }}</div>
               </div>
             </template>
@@ -102,12 +108,15 @@
             @input="v2Update"
           />
           <v-text-field
-            v-if="type === 'buy'"
             label="Price"
-            v-model="price"
-            @input="priceUpdate"
+            v-model="inversePrice"
+            @input="inversePriceUpdate"
             ref="buyprice"
-          />
+          >
+            <template v-slot:append>
+              {{ `${ticker(a1)}/${ticker(a2)}` }}
+            </template>
+          </v-text-field>
         </v-card-text>
       </v-card>
       <div class="flex-shrink-1 text-center mx-auto my-auto">
@@ -144,7 +153,13 @@
           >
             <template v-slot:append>
               <div>
-                <div v-if="a1Acc" class="font-weight-bold">{{ user.unit === 'SAT' ? a1Acc.balance : $format(a1Acc.balance, a1Acc.precision) }}</div>
+                <div v-if="a1Acc" class="font-weight-bold">
+                  {{
+                    user.unit === 'SAT'
+                      ? a1Acc.balance
+                      : $format(a1Acc.balance, a1Acc.precision)
+                  }}
+                </div>
                 <div class="caption primary--text">{{ a1.substr(0, 8) }}</div>
               </div>
             </template>
@@ -213,12 +228,15 @@
             @input="v1Update"
           />
           <v-text-field
-            v-if="type === 'sell'"
             label="Price"
             v-model="price"
             ref="sellprice"
             @input="priceUpdate"
-          />
+          >
+            <template v-slot:append>
+              {{ `${ticker(a2)}/${ticker(a1)}` }}
+            </template>
+          </v-text-field>
         </v-card-text>
       </v-card>
     </div>
@@ -265,6 +283,7 @@ export default {
   data: () => ({
     custom: false,
     focused: false,
+    inversePrice: null,
     price: null,
     icons,
     swapping: false,
@@ -274,9 +293,10 @@ export default {
   }),
 
   computed: {
+    inverse: sync('inverse'),
     type: sync('type'),
     a1Acc() {
-      return this.user.accounts.find(a => a.asset === this.a1)
+      return this.user.accounts.find(a => a.asset === this.a1);
     },
     a1: sync('a1'),
     a2: sync('a2'),
@@ -305,7 +325,11 @@ export default {
     accounts() {
       let accounts = this.user.accounts
         .filter(a => a.asset !== this.a2 && !a.hide)
-        .map(a => ({ text: `${a.ticker} - ${a.name}`, value: a.asset, balance: a.balance }));
+        .map(a => ({
+          text: `${a.ticker} - ${a.name}`,
+          value: a.asset,
+          balance: a.balance,
+        }));
 
       let { name: text, asset: value } = this.assets[this.a1];
       if (!accounts.find(a => a.value === this.a1))
@@ -323,15 +347,36 @@ export default {
     swap() {
       this.swapping = true;
     },
-    priceUpdate() {
-      if (!this.price) return;
-      this.v2 = Math.round(this.v1 * this.price);
+    inversePriceUpdate(v) {
+      if (!v) return;
+
+      if (this.type === 'sell') {
+        this.v1 = Math.round(this.v2 * v);
+      } else {
+        this.v2 = Math.round(this.v1 / v);
+      }
+      this.price = (1 / v).toFixed(8);
+    },
+    priceUpdate(v) {
+      if (!v) return;
+      if (this.type === 'sell') {
+        this.v2 = Math.round(this.v1 * v);
+      } else {
+        this.v1 = Math.round(this.v2 / v);
+      }
+      this.inversePrice = (1 / v).toFixed(8);
     },
     v1Update(v1) {
-      if (v1 && this.v2) this.price = (this.v2 / v1).toFixed(8);
+      if (v1 && this.v2) {
+        this.price = (this.v2 / v1).toFixed(8);
+        this.inversePrice = (v1 / this.v2).toFixed(8);
+      }
     },
     v2Update(v2) {
-      if (v2 && this.v1) this.price = (v2 / this.v1).toFixed(8);
+      if (v2 && this.v1) {
+        this.price = (v2 / this.v1).toFixed(8);
+        this.inversePrice = (this.v1 / v2).toFixed(8);
+      }
     },
     precision(asset) {
       return this.assets[asset] ? this.assets[asset].precision : 0;
@@ -349,7 +394,7 @@ export default {
       let { t1, t2 } = this.$router.currentRoute.params;
       this.$go(`/markets/${t2}-${t1}`);
     },
-    
+
     switcheroo() {
       let temp = this.a1;
       this.a1 = this.a2;
@@ -363,8 +408,7 @@ export default {
       const { a1, a2, v1, v2 } = this;
       this.loading = true;
       if (!v1 || !v2) this.error = 'Amounts must be greater than zero';
-      if (this.type === 'sell') await this.createOrder({ a1, a2, v1, v2 });
-      else await this.createOrder({ a1: a2, a2: a1, v1: v2, v2: v1 });
+      await this.createOrder({ a1, a2, v1, v2 });
       this.prefill();
       this.loading = false;
     },
@@ -376,11 +420,13 @@ export default {
         this.v1 = Math.round(bid.v1 * bid.rate);
         this.v2 = Math.round(bid.v2 / bid.rate);
         this.price = (this.v2 / this.v1).toFixed(8);
+        this.inversePrice = (this.v1 / this.v2).toFixed(8);
       }
       if (ask && type === 'buy' && !v2) {
-        this.v1 = ask.v1
-        this.v2 = ask.v2
+        this.v1 = ask.v1;
+        this.v2 = ask.v2;
         this.price = (this.v2 / this.v1).toFixed(8);
+        this.inversePrice = (this.v1 / this.v2).toFixed(8);
       }
     },
   },
@@ -401,23 +447,28 @@ export default {
       this.prefill();
     },
     type(v) {
+      this.inverse = !this.inverse;
       this.switcheroo();
       this.focused = false;
 
-      if (v === 'buy') {
-        this.v1 = this.ask.v1;
-        this.v2 = this.ask.v2;
-        this.price = this.ask.rate.toFixed(8);
-      } else {
-        this.v1 = this.bid.v2;
-        this.v2 = this.bid.v1;
-        this.price = (this.v2 / this.v1).toFixed(8);
-      }
+      this.$nextTick(() => {
+        if (v === 'buy') {
+          this.v1 = this.bid.v2;
+          this.v2 = this.bid.v1;
+          this.price = (1 / this.bid.rate).toFixed(8);
+          this.inversePrice = this.bid.rate.toFixed(8);
+        } else {
+          this.v1 = this.ask.v1;
+          this.v2 = this.v1 / this.bid.rate;
+          this.price = (1 / this.bid.rate).toFixed(8);
+          this.inversePrice = this.bid.rate.toFixed(8);
+        }
+      });
     },
   },
 
   mounted() {
     this.prefill();
-  } 
+  },
 };
 </script>
