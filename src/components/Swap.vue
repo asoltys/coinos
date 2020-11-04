@@ -351,9 +351,9 @@ export default {
       if (!v) return;
 
       if (this.type === 'sell') {
-        this.v1 = Math.round(this.v2 * v);
-      } else {
         this.v2 = Math.round(this.v1 / v);
+      } else {
+        this.v1 = Math.round(this.v2 * v);
       }
       this.price = (1 / v).toFixed(8);
     },
@@ -368,14 +368,22 @@ export default {
     },
     v1Update(v1) {
       if (v1 && this.v2) {
-        this.price = (this.v2 / v1).toFixed(8);
-        this.inversePrice = (v1 / this.v2).toFixed(8);
+        if (this.type === 'sell') {
+          this.v2 = (this.price * v1).toFixed(8);
+        } else {
+          this.price = (this.v2 / v1).toFixed(8);
+          this.inversePrice = (v1 / this.v2).toFixed(8);
+        } 
       }
     },
     v2Update(v2) {
       if (v2 && this.v1) {
-        this.price = (v2 / this.v1).toFixed(8);
-        this.inversePrice = (this.v1 / v2).toFixed(8);
+        if (this.type === 'sell') {
+          this.price = (v2 / this.v1).toFixed(8);
+          this.inversePrice = (this.v1 / v2).toFixed(8);
+        } else {
+          this.v1 = (v2 / this.price).toFixed(8);
+        } 
       }
     },
     precision(asset) {
