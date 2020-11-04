@@ -369,7 +369,7 @@ export default {
     v1Update(v1) {
       if (v1 && this.v2) {
         if (this.type === 'sell') {
-          this.v2 = (this.price * v1).toFixed(8);
+          this.v2 = Math.round(this.price * v1)
         } else {
           this.price = (this.v2 / v1).toFixed(8);
           this.inversePrice = (v1 / this.v2).toFixed(8);
@@ -400,7 +400,8 @@ export default {
 
     flip() {
       let { t1, t2 } = this.$router.currentRoute.params;
-      this.$go(`/markets/${t2}-${t1}`);
+      if (this.a2.startsWith(t1)) this.switcheroo();
+      else this.$go(`/markets/${t2}-${t1}`);
     },
 
     switcheroo() {
@@ -431,10 +432,10 @@ export default {
         this.inversePrice = (this.v1 / this.v2).toFixed(8);
       }
       if (ask && type === 'buy' && !v2) {
-        this.v1 = ask.v1;
-        this.v2 = ask.v2;
-        this.price = (this.v2 / this.v1).toFixed(8);
-        this.inversePrice = (this.v1 / this.v2).toFixed(8);
+        this.v1 = bid.v1;
+        this.v2 = bid.v2;
+        this.price = (this.v1 / this.v2).toFixed(8);
+        this.inversePrice = (this.v2 / this.v1).toFixed(8);
       }
     },
   },
