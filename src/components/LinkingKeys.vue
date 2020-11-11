@@ -38,7 +38,7 @@
           </template>
         </v-textarea>
         <lnurl v-if="lnurl" :lnurl="lnurl" />
-        <v-btn v-else @click="getLoginUrl">
+        <v-btn v-else @click="lnurlAuth">
           <v-icon left class="primary--text">$add</v-icon>
           <span>Add New</span>
         </v-btn>
@@ -75,7 +75,7 @@ export default {
       this.deleteLinkingKey(hex);
     },
     deleteLinkingKey: call('deleteLinkingKey'),
-    getLoginUrl: call('getLoginUrl'),
+    lnurlAuth: call('lnurlAuth'),
   },
 };
 </script>

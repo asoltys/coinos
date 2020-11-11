@@ -44,7 +44,7 @@ export default {
       this.deleteLinkingKey(hex);
     },
     deleteLinkingKey: call('deleteLinkingKey'),
-    getLoginUrl: call('getLoginUrl'),
+    lnurlAuth: call('lnurlAuth'),
     passwordPrompt: call('passwordPrompt'),
   },
   watch: {
