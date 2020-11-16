@@ -1729,12 +1729,12 @@ export default new Vuex.Store({
         }
       }
 
-      if (text.toLowerCase().startsWith('lnurl')) {
+      if (text.toLowerCase().includes('lnurl')) {
         commit('loading', true);
-        text = text.toLowerCase();
+        let txt = text.toLowerCase().match(/lnurl[a-z0-9]+/)
 
         try {
-          const { data: params } = await Vue.axios.get(`/decode?text=${text}`);
+          const { data: params } = await Vue.axios.get(`/decode?text=${txt}`);
           if (params.status === 'ERROR') {
             let { reason } = params;
             try {
