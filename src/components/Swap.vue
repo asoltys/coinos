@@ -442,11 +442,11 @@ export default {
 
   watch: {
     a1(a1) {
-      this.v1 = this.v2 = 0;
+      this.v1 = this.v2 = this.price = this.inversePrice = 0;
       this.prefill();
     },
     a2(a2) {
-      this.v1 = this.v2 = 0;
+      this.v1 = this.v2 = this.price = this.inversePrice = 0;
       this.prefill();
     },
     bid(bid) {
