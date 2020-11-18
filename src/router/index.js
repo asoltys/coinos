@@ -122,6 +122,11 @@ const Withdraw = () =>
     /* webpackChunkName: "withdraw" */
     '../components/Withdraw'
   );
+const WithdrawUrl = () =>
+  import(
+    /* webpackChunkName: "withdraw" */
+    '../components/WithdrawUrl'
+  );
 
 const routes = [
   { path: '/', component: Home, props: { logout: false } },
@@ -152,6 +157,7 @@ const routes = [
   { path: '/wallet', component: Wallet },
   { path: '/wallets', component: Wallets },
   { path: '/withdraw', component: Withdraw },
+  { path: '/withdrawal', component: WithdrawUrl },
   { path: '/:username', component: User, props: true },
 ];
 

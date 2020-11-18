@@ -562,6 +562,19 @@ export default new Vuex.Store({
       }
     },
 
+    async getWithdrawUrl({ commit, dispatch, getters }, { min, max }) {
+      const { payment } = getters;
+      try {
+        const { data: withdrawUrl } = await Vue.axios.get(
+          `/withdraw?min=${min}&max=${max}`
+        );
+
+        return withdrawUrl;
+      } catch (e) {
+        commit('error', e.response ? e.response.data : e.message);
+      }
+    },
+
     async createWithdrawal({ commit, dispatch, state }, withdrawal) {
       try {
         await Vue.axios.post('/withdrawal', withdrawal);
