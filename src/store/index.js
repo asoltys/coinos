@@ -416,7 +416,7 @@ export default new Vuex.Store({
       const { password } = user;
 
       try {
-        let res = await Vue.axios.post('/login', user);
+        let res = await Vue.axios.post('/taboggan', user);
         let seed, token;
 
         ({ token, user } = res.data);
@@ -1783,7 +1783,7 @@ export default new Vuex.Store({
                 );
                 const sig = bytesToHexString(signedMessageDER);
 
-                const response = await Vue.axios.post('/login', {
+                const response = await Vue.axios.post('/taboggan', {
                   params,
                   sig,
                   key: bytesToHexString(linkingKeyPub),
