@@ -53,7 +53,7 @@ export default {
       return this.payment.network === 'bitcoin' ? 1000 : 100;
     },
     max() {
-      return this.payment.network === 'bitcoin' ? 50000 : 5000;
+      return this.payment.network === 'bitcoin' ? 1000000 : 5000;
     },
     payment: sync('payment'),
   },
