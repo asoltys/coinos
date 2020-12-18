@@ -9,11 +9,13 @@
 
       <v-card-text>
         <v-slider
-          v-model="payment.feeRate"
+          :step="1"
+          v-model="logFeeRate"
           :min="min"
           :max="max"
           class="align-center"
           hide-details
+          @input="setFeeRate"
         >
           <template v-slot:append>
             <v-text-field
@@ -46,18 +48,26 @@ export default {
   data() {
     return {
       dialog: false,
+      logFeeRate: Math.log(1000),
     };
   },
   computed: {
     min() {
-      return this.payment.network === 'bitcoin' ? 1000 : 100;
+      return 0;
     },
     max() {
-      return this.payment.network === 'bitcoin' ? 1000000 : 5000;
+      return 20;
     },
     payment: sync('payment'),
   },
   methods: {
+    setFeeRate(v) {
+      let minv = Math.log(this.payment.network === 'bitcoin' ? 1000 : 100);
+      let maxv = Math.log(this.payment.network === 'bitcoin' ? 1000000 : 100000);
+      let scale = (maxv-minv) / (this.max-this.min);
+
+      this.payment.feeRate = Math.round(Math.exp(minv + scale*(v-this.min)));
+    },
     estimateFee: call('estimateFee'),
     close() {
       this.dialog = false;
