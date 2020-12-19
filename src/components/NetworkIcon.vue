@@ -4,7 +4,7 @@
     <v-icon v-else-if="network === 'COINOS'" color="#ccc">$forward</v-icon>
     <v-icon v-else-if="network === 'GIFT'" color="primary">$gift</v-icon>
     <v-icon
-      v-else-if="network === 'bitcoin'"
+      v-else-if="network === 'BTC'"
       title="Bitcoin Payment"
       >$bitcoin</v-icon>
     <v-icon v-else color="liquid" title="Liquid Payment">$liquid</v-icon>
