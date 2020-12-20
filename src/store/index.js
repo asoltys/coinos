@@ -1279,7 +1279,7 @@ export default new Vuex.Store({
         payment.txid = payment.tx.txid;
         payment.feeRate = res.data.feeRate;
 
-        commit('payment', payment);
+        commit('payment', JSON.parse(JSON.stringify(payment)));
       } catch (e) {
         commit('error', e.response ? e.response.data : e.message);
       }

@@ -56,7 +56,6 @@
           </template>
         </v-textarea>
       </v-card>
-
       <transaction
         v-if="payment.address && !editing"
         @edit="editing = true"
@@ -116,11 +115,17 @@ export default {
     async self() {
       this.invoice.network = 'bitcoin';
       this.invoice.user = this.user;
+
       await this.addInvoice();
       this.$nextTick(() => {
         this.to = this.invoice.address;
+        this.payment.amount = this.balance;
+        this.payment.address = this.to;
+        this.buildSweepTx(this.address);
       });
+
     },
+    estimateFee: call('estimateFee'),
     addInvoice: call('addInvoice'),
     getNewAddress: call('getNewAddress'),
     buildSweepTx: call('buildSweepTx'),
