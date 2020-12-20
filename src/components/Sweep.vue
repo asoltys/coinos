@@ -147,7 +147,15 @@ export default {
     init() {
       this.to = '';
       let { publicKey: pubkey } = this.ecpair;
-      let { address } = payments.p2wpkh({ pubkey, network: this.$network });
+      let address;
+
+      try {
+        ({ address } = payments.p2wpkh({ pubkey, network: this.$network }));
+      }
+      catch {
+        ({ address } = payments.p2pkh({ pubkey, network: this.$network }));
+      } 
+
       this.address = address;
 
       this.getBalance();
