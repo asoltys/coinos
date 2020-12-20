@@ -1276,6 +1276,7 @@ export default new Vuex.Store({
         payment.fee = psbt.getFee();
         payment.tx = psbt.extractTransaction();
         payment.tx.fee = payment.fee / SATS;
+        payment.hex = payment.tx.toHex();
         payment.txid = payment.tx.txid;
         payment.feeRate = res.data.feeRate;
 
@@ -1287,9 +1288,8 @@ export default new Vuex.Store({
 
     async sweep({ commit, getters }) {
       let { payment, rate, user } = getters;
-      let tx = payment.tx.toHex();
       try {
-        await Vue.axios.post('/electrs/tx', tx);
+        await Vue.axios.post('/electrs/tx', payment.hex);
         payment.account = user.accounts.find(a => a.asset === BTC);
         payment.sent = true;
         payment.rate = rate;
