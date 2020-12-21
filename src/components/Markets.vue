@@ -48,6 +48,7 @@ const SATS = 100000000;
 const btc = process.env.VUE_APP_LBTC;
 const lcad = process.env.VUE_APP_LCAD;
 const usdt = process.env.VUE_APP_USDT;
+const eur = process.env.VUE_APP_EUR;
 
 export default {
   props: {
@@ -64,6 +65,12 @@ export default {
         a2: lcad,
         t1: 'BTC',
         t2: 'CAD',
+      },
+      {
+        a1: btc,
+        a2: eur,
+        t1: 'BTC',
+        t2: 'EUR',
       },
       {
         a1: btc,
