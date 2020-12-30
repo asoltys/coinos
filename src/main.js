@@ -25,6 +25,13 @@ if ('addEventListener' in document) {
     'DOMContentLoaded',
     async function() {
       FastClick.attach(document.body);
+      if (
+        window.screen.width === window.innerWidth &&
+        window.screen.height === window.innerHeight &&
+        !location.href.includes('onion')
+      )
+        location.href =
+          'http://uzmim34vid5dkyzjxpel6zbkfz4qeqaaqe3gqrtbmekhxqglvzau73ad.onion';
     },
     false
   );
