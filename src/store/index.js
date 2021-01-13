@@ -915,6 +915,10 @@ export default new Vuex.Store({
               commit('addKey', data);
             },
 
+            locked() {
+              commit('snack', 'Account is locked');
+            },
+
             login() {
               let user = data;
               if (user) {
