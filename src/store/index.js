@@ -544,13 +544,13 @@ export default new Vuex.Store({
 
     async uploadId({ commit, dispatch, state }, id) {
       const formData = new FormData();
-      formData.append("id", id);
+      formData.append('id', id);
       try {
         await Vue.axios.post('/id', formData);
         return true;
-      } catch(e) {
+      } catch (e) {
         return false;
-      } 
+      }
     },
 
     async createFunding({ commit, dispatch, state }, funding) {
@@ -585,13 +585,13 @@ export default new Vuex.Store({
 
     async uploadProof({ commit, dispatch, state }, proof) {
       const formData = new FormData();
-      formData.append("proof", proof);
+      formData.append('proof', proof);
       try {
         await Vue.axios.post('/proof', formData);
         return true;
-      } catch(e) {
+      } catch (e) {
         return false;
-      } 
+      }
     },
 
     async getNewAddress({ commit, dispatch, state }, type) {
@@ -925,9 +925,13 @@ export default new Vuex.Store({
                 if (getters.password) {
                   let seed;
                   if (user.seed) {
-                    seed = aes
-                      .decrypt(user.seed, getters.password)
-                      .toString(Utf8);
+                    try {
+                      seed = aes
+                        .decrypt(user.seed, getters.password)
+                        .toString(Utf8);
+                    } catch (e) {
+                      dispatch('logout'); 
+                    }
                   } else {
                     seed = generateMnemonic();
                     user.seed = aes.encrypt(seed, getters.password).toString();
@@ -1096,6 +1100,17 @@ export default new Vuex.Store({
       }
     },
 
+    async isInternal({ commit, dispatch, getters }) {
+      try {
+        let { address } = getters.payment;
+        if (!address) return;
+        await Vue.axios.get(`/isInternal?address=${address}`);
+      } catch (e) {
+        commit('error', e.response ? e.response.data : e.message);
+        return false;
+      }
+    },
+
     async estimateFee({ commit, dispatch, getters }) {
       commit('error', null);
       commit('loadingFee', true);
@@ -1109,9 +1124,13 @@ export default new Vuex.Store({
       if (address) {
         try {
           let network = isLiquid(address) ? 'liquid' : 'bitcoin';
-          let {
-            data: { feeRate, tx },
-          } = await Vue.axios.post(`/${network}/fee`, params);
+          let { data } = await Vue.axios.post(`/${network}/fee`, params);
+
+          if (!data.feeRate) {
+            commit('loadingFee', false);
+            return;
+          }
+          let { feeRate, tx } = data;
 
           payment.feeRate = feeRate;
           payment.tx = tx;
@@ -1163,10 +1182,9 @@ export default new Vuex.Store({
             payment.txid = payment.tx.txid;
             payment.feeRate = feeRate;
             payment.signed = true;
-          }
-          else {
+          } else {
             payment.fee = Math.round(tx.fee * SATS);
-          } 
+          }
 
           commit('payment', JSON.parse(JSON.stringify(payment)));
         } catch (e) {
@@ -1514,7 +1532,10 @@ export default new Vuex.Store({
 
       try {
         let { id, account_id, username } = user;
-        let { data } = await Vue.axios.post(`/invoice`, { invoice, user: { id, account_id, username } });
+        let { data } = await Vue.axios.post(`/invoice`, {
+          invoice,
+          user: { id, account_id, username },
+        });
         socket.send(JSON.stringify({ type: 'subscribe', data }));
         commit('invoice', invoice);
       } catch (e) {
@@ -1699,6 +1720,7 @@ export default new Vuex.Store({
           );
         }
 
+        await dispatch('isInternal');
         await dispatch('estimateFee');
         go({ name: 'send', params: { keep: true } });
         return;
@@ -1709,6 +1731,7 @@ export default new Vuex.Store({
           return commit('error', 'Bitcoin not supported in this account');
         payment.address = text;
         payment.network = 'bitcoin';
+        await dispatch('isInternal');
         go({ name: 'send', params: { keep: true } });
         return;
       }
@@ -1719,6 +1742,7 @@ export default new Vuex.Store({
           return commit('error', 'Liquid not supported in this account');
         payment.address = text;
         payment.network = 'liquid';
+        await dispatch('isInternal');
         go({ name: 'send', params: { keep: true } });
         return;
       }
@@ -1748,7 +1772,7 @@ export default new Vuex.Store({
 
       if (text.toLowerCase().includes('lnurl')) {
         commit('loading', true);
-        let txt = text.toLowerCase().match(/lnurl[a-z0-9]+/)
+        let txt = text.toLowerCase().match(/lnurl[a-z0-9]+/);
 
         try {
           const { data: params } = await Vue.axios.get(`/decode?text=${txt}`);

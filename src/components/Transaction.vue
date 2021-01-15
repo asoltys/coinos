@@ -149,11 +149,14 @@ export default {
       else return this.user.account.ticker;
     },
     displayFee() {
-      return this.user.fiat
+      let fee = this.user.fiat
         ? this.fiatFee
         : this.user.unit === 'SAT'
         ? this.fee
         : this.$format(this.fee, 8);
+
+      if (isNaN(fee)) return 0;
+      return fee;
     },
     fiatFee() {
       if (!this.fee) return null;

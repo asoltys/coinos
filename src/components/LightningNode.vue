@@ -34,7 +34,7 @@
         >
           <template v-slot:append>
             <v-btn icon @click="toggle(darknet)" class="ml-1" text>
-              <qrcode />
+              <v-icon>$qrcode</v-icon>
             </v-btn>
             <v-btn icon @click="copy(darknet)" class="ml-1" text>
               <v-icon>$copy</v-icon>
