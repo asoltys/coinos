@@ -42,7 +42,7 @@
         </div>
         <div class="ma-4 font-weight-bold">{{ invoice.memo }}</div>
         <customer-controls
-          v-if="fullscreen"
+          v-if="fullscreen && !hideControls"
           @cancel="fullscreen = false"
           @tipping="tipping = true"
         />
@@ -83,6 +83,7 @@ export default {
   }),
 
   computed: {
+    hideControls: get('hideControls'),
     fullscreen: sync('fullscreen'),
     loading: get('loading'),
     nodes: get('nodes'),

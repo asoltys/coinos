@@ -13,8 +13,8 @@
       </template>
     </v-btn>
     <v-btn @click="$emit('cancel')" class="flex-grow-1">
-      <v-icon left color="pink">$cancel</v-icon>
-      Cancel
+      <v-icon left color="pink">$left</v-icon>
+      Back 
     </v-btn>
   </div>
 </template>

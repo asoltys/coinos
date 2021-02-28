@@ -160,7 +160,9 @@ const state = {
   challenge: '',
   channels: [],
   channelRequest: null,
+  deposit: false,
   fullscreen: false,
+  hideControls: false,
   readController: null,
   writeController: null,
   ecpair: null,
@@ -957,6 +959,14 @@ export default new Vuex.Store({
 
             async payment() {
               const { path } = router.currentRoute;
+
+              if  (path.includes('asset') && getters.fullscreen) {
+                commit('snack', 'Payment received!');
+                commit('deposit', false);
+                commit('fullscreen', false);
+                return;
+              }
+
               if (
                 (data.amount > 0 && path.includes('receive')) ||
                 path.includes('faucet') ||
@@ -1021,11 +1031,22 @@ export default new Vuex.Store({
       });
     },
 
-    async issueAsset({ commit, dispatch }, asset) {
+    async issueAsset({ commit, dispatch, state }, asset) {
       try {
         await Vue.axios.post('/assets', asset);
         go('/wallets');
       } catch (e) {
+        console.log(e.response, e.message);
+        if (e.response && e.response.data.includes("Insufficient")) {
+          dispatch('snack', 'Deposit funds to cover the issuance fee');
+          let amount = parseFloat(e.response.data.split(" ")[6] * 100000000);
+          state.invoice.amount = amount;
+          state.invoice.fiatAmount = ((amount * state.rate) / SATS).toFixed(2);
+          commit('hideControls', true);
+          commit('deposit', true);
+          commit('fullscreen', true);
+         return;
+        } 
         commit('error', e.response ? e.response.data : e.message);
       }
     },

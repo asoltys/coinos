@@ -36,6 +36,7 @@
         <two-fa />
         <password />
         <pin />
+        <deposit />
         <router-view v-if="!initializing" :key="$route.path" />
         <v-progress-linear v-else indeterminate />
       </v-container>
@@ -47,6 +48,7 @@
 <script>
 import { get, call, sync } from 'vuex-pathify';
 import BottomNav from './components/BottomNav';
+import Deposit from './components/Deposit';
 import SnackBar from './components/SnackBar';
 import TopBar from './components/TopBar';
 import Password from './components/Password';
@@ -54,7 +56,7 @@ import Pin from './components/Pin';
 import TwoFa from './components/TwoFa';
 
 export default {
-  components: { BottomNav, SnackBar, TopBar, Password, TwoFa, Pin },
+  components: { BottomNav, Deposit, SnackBar, TopBar, Password, TwoFa, Pin },
 
   data() {
     return {
