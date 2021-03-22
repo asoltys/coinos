@@ -16,13 +16,6 @@
         type="password"
         ref="password"
       />
-      <v-text-field
-        label="Confirm Password"
-        v-model="form.confirm"
-        type="password"
-        :error="form.confirm !== '' && form.confirm !== form.password"
-        ref="confirm"
-      />
       <v-btn type="submit" color="green" class="wide mr-2">
         <v-icon left>$wallet</v-icon>
         Create New Account
@@ -50,7 +43,6 @@ export default {
       form: {
         username: this.username,
         password: this.password,
-        confirm: '',
         response: '',
       },
     };
@@ -65,18 +57,15 @@ export default {
     createUser: call('createUser'),
     login: call('login'),
     async submit() {
-      if (this.form.confirm === this.form.password) {
-        let user = await this.createUser(this.form);
-        user.password = this.form.password;
-        await this.login(user);
-      }
+      let user = await this.createUser(this.form);
+      user.password = this.form.password;
+      await this.login(user);
     },
   },
 
   mounted() {
     if (!this.username) this.$refs.username.focus();
     else if (!this.password) this.$refs.password.focus();
-    else this.$refs.confirm.focus();
   },
 };
 </script>
