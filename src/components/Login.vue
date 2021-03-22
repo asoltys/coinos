@@ -35,18 +35,26 @@
               v-model="form.password"
               type="password"
             />
-            <v-btn class="mr-2 mb-2 mb-sm-0 wide" type="submit">
+
+
+    <v-btn-toggle tile color="primary accent-3" group class="d-flex flex-wrap mx-auto">
+            <v-btn class="mr-2 mb-2 mb-sm-0 wide flex-grow-1" type="submit">
               <v-icon left color="primary">$login</v-icon>
               Sign in
             </v-btn>
-            <v-btn @click="register" class="mr-2 mb-2 mb-sm-0 wide">
+            <v-btn @click="anon" class="mr-2 mb-2 mb-sm-0 wide flex-grow-1">
+              <v-icon left color="blue">$account</v-icon>
+              Use Anonymously
+            </v-btn>
+            <v-btn @click="register" class="mr-2 mb-2 mb-sm-0 wide flex-grow-1">
               <v-icon left color="green">$wallet</v-icon>
-              New Account
+              Register An Account
             </v-btn>
-            <v-btn @click="lnurlAuth" class="mr-2 mb-2 mb-sm-0 wide">
+            <v-btn @click="lnurlAuth" class="mr-2 mb-2 mb-sm-0 wide flex-grow-1">
               <v-icon left>$qrcode</v-icon>
-              LNURL Auth
+              Sign in with LNURL
             </v-btn>
+            </v-btn-toggle>
           </v-form>
         </v-card-text>
       </v-card>
@@ -60,6 +68,7 @@
 
 <script>
 import Lnurl from './Lnurl';
+import { v4 } from 'uuid';
 import { get, call, sync } from 'vuex-pathify';
 import Copy from '../mixins/Copy';
 
@@ -99,6 +108,19 @@ export default {
   },
 
   methods: {
+    snack: call('snack'),
+    createUser: call('createUser'),
+    async anon() {
+      let user = {
+        username: `satoshi-${v4().substr(0, 8)}`,
+        password: 'password',
+        confirm: 'password',
+      };
+      user = await this.createUser(user);
+      user.password = 'password';
+      this.login(user);
+      this.snack(`Welcome ${user.username}! Your password is 'password'`);
+    },
     register() {
       const { username, password } = this.form;
       this.$go({ name: 'register', params: { username, password } });
