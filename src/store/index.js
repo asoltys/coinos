@@ -240,26 +240,6 @@ export default new Vuex.Store({
 
       const { path } = router.currentRoute;
 
-      let redirect = false;
-      if (
-        !(
-          router.currentRoute.params.username ||
-          publicPaths.includes(path) ||
-          token ||
-          path.includes('login')
-        )
-      ) {
-        let user = {
-          username: `satoshi-${v4().substr(0, 8)}`,
-          password: 'password',
-          confirm: 'password',
-        };
-        user = await dispatch('createUser', user);
-        user.password = 'password';
-        await dispatch('login', user);
-        redirect = true;
-      }
-
       if (
         !(
           publicPaths.includes(path) ||
@@ -283,7 +263,6 @@ export default new Vuex.Store({
       commit('initializing', false);
       commit('loading', false);
 
-      if (redirect) return go(path);
       if (!(path === '/login' || path === '/register')) dispatch('getInfo');
       if (token) {
         if (['/', '/register'].includes(path)) return go('/home');

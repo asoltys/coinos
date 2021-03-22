@@ -22,10 +22,6 @@
         <span>Send</span>
         <v-icon>$send</v-icon>
       </v-btn>
-      <v-btn class="flex-grow-1" text @click="$go('/markets')">
-        <span>Exchange</span>
-        <v-icon>$swap</v-icon>
-      </v-btn>
     </v-bottom-navigation>
   </div>
 </template>
