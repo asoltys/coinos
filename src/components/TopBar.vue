@@ -40,24 +40,11 @@
           </v-list-item-action>
           <v-list-item-content>Sign Out</v-list-item-content>
         </v-list-item>
-        <!--
-        <v-list-item v-if="!$prod" @click="generateBlock('bitcoin')">
-          <v-list-item-action>
-            <v-icon>$sync</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>Generate Bitcoin</v-list-item-content>
-        </v-list-item>
-        <v-list-item v-if="!$prod" @click="generateBlock('liquid')">
-          <v-list-item-action>
-            <v-icon>$sync</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>Generate Liquid</v-list-item-content>
-        </v-list-item>
-        -->
       </v-card>
     </v-menu>
-    <v-btn icon v-else @click="$go('/about')">
-      <v-icon>$help</v-icon>
+    <v-btn v-else @click="$go('/about')" class="ml-auto">
+      <v-icon left>$help</v-icon>
+      Info
     </v-btn>
   </v-app-bar>
 </template>

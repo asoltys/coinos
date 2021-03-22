@@ -3,34 +3,46 @@
     <v-card class="mb-2">
       <v-card-text class="white--text body-1">
         <p>
-          Coinos is a bitcoin web wallet and digital asset exchange platform. Anyone can
-          <a href="https://github.com/asoltys/coinos">download the code</a> and
-          host it on their own server to become an exchange or act as a custodian, giving others access to their
-          nodes and an easy web interface that lets them use bitcoin without having to install an app or configure
-          any software.
+          Coinos is an open source bitcoin web wallet. Anyone can
+          <a href="https://github.com/asoltys/coinos"
+            >download the code that runs it</a
+          >
+          and host it on their own server to let people access their
+          <a href="https://bitcoin.org/en/download">bitcoind</a>,
+          <a href="https://docs.blockstream.com/liquid/node_setup.html"
+            >liquid</a
+          >,
+          <a href="https://lightning.readthedocs.io/INSTALL.html"
+            >c-lightning</a
+          >
+          or
+          <a
+            href="https://github.com/lightningnetwork/lnd/blob/master/docs/INSTALL.md"
+            >lnd</a
+          >
+          node(s) on the web.
         </p>
 
         <p>
-        Coinos offers both custodial and non-custodial wallet accounts.
-        Funds can be deposited into the custodial server account via any of the
-        <a href="https://bitcoin.org">bitcoin</a>,
-        <a href="https://blockstream.com/liquid/">liquid</a> or
-        <a href="http://lightning.network/">lightning</a> networks and sent
-        over any network regardless of how they were deposited.
-        There are no fees charged in addition to the network transaction fees. Transfers between users on the
-        same server are completely free and off-chain.
+          Coinos lets you create both custodial and non-custodial wallets within
+          your account. The advantage of using a custodial wallet is that funds
+          can be deposited via any of the
+          <a href="https://bitcoin.org">bitcoin</a>,
+          <a href="https://blockstream.com/liquid/">liquid</a> or
+          <a href="http://lightning.network/">lightning</a> networks and
+          seamlessly converted and sent over any of the other two networks
+          regardless of how they were deposited.
         </p>
 
         <p>
-        The bitcoin to US dollar exchange rate is streamed every second from
-        <a href="https://binance.com/">Binance</a> and converted to other
-        currencies using rates from <a href="https://fixer.io/">Fixer</a>.
+          We don't charge any fees. Transfers between users on the same server are
+          automatically done off-chain and are completely free and unlimited.
         </p>
 
-        <p class="mb-4">
-        Coinos is free software developed by
-        <a href="https://adamsoltys.com/">Adam Soltys</a>.
-          This website is a property of Coinos Financial Corporation, a B.C. Limited Company and FINTRAC-registered Money Services Business.
+        <p>
+          The bitcoin to US dollar exchange rate is streamed every second from
+          <a href="https://binance.com/">Binance</a> and converted to other
+          currencies using rates from <a href="https://fixer.io/">Fixer</a>.
         </p>
         <social />
       </v-card-text>

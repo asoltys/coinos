@@ -1,6 +1,16 @@
 <template>
   <div>
     <v-progress-linear v-if="saving" indeterminate />
+
+    <v-card class="mb-2">
+      <v-card-title>Your public page</v-card-title>
+      <v-card-text>
+        <div class="mx-auto text-center w-full title">
+          <a :href="publicPage" style="text-decoration: none">{{ publicPage }}</a>
+        </div>
+      </v-card-text>
+    </v-card>
+
     <v-card class="mb-2">
       <v-card-title>Security</v-card-title>
       <v-card-text>
@@ -219,6 +229,9 @@ export default {
   },
 
   computed: {
+    publicPage() {
+      return `${window.location.protocol}//${window.location.host}/${this.user.username}`
+    },
     uri() {
       let { username, otpsecret } = this.user;
       return `otpauth://totp/CoinOS:${username}?secret=${otpsecret}&period=30&digits=6&algorithm=SHA1&issuer=CoinOS`;
