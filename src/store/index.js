@@ -1079,7 +1079,8 @@ export default new Vuex.Store({
       });
 
       let { seed } = state;
-      if (user.password) {
+
+      if (user.password && user.password === user.confirm) {
         if (!seed) ({ seed } = await dispatch('passwordPrompt'));
         params.seed = aes.encrypt(seed, user.password).toString();
         dispatch('reencryptAccountSeeds', user.password);

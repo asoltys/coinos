@@ -1,70 +1,5 @@
-<template>
-  <div>
-    <proposal
-      v-if="swapping"
-      :swapping="swapping"
-      :params="{ a1: a2, a2: a1, v1: v2, v2: v1 }"
-      @close="swapping = false"
-    />
-    <div class="d-sm-flex flex-wrap flex-sm-nowrap">
-      <v-card class="flex-grow-1 mb-sm-2" color="secondary">
-        <v-card-text>
-          <div class="text-center">
-            <v-btn-toggle
-              v-model="type"
-              tile
-              color="primary accent-3"
-              group
-              mandatory
-            >
-              <v-btn value="buy">
-                Buy
-              </v-btn>
-
-              <v-btn value="sell">
-                Sell
-              </v-btn>
-            </v-btn-toggle>
-          </div>
-          <v-autocomplete
-            v-if="type === 'sell'"
-            label="Asset"
-            v-model="a1"
-            :items="accounts"
-          >
-            <template v-slot:append>
-              <div>
-                <div v-if="a1Acc" class="font-weight-bold">
-                  {{
-                    user.unit === 'SAT'
-                      ? a1Acc.balance
-                      : $format(a1Acc.balance, a1Acc.precision)
-                  }}
-                </div>
-                <div class="caption primary--text">{{ a1 && a1.substr(0, 8) }}</div>
-              </div>
-            </template>
-            <template v-slot:item="{ item }">
-              <div>
-                <div class="d-flex">
-                  <div class="flex-grow-1 title">{{ item.text }}</div>
-                  <v-spacer />
-                  <div class="mt-auto font-weight-bold">{{ item.balance }}</div>
-                </div>
-                <div class="caption primary--text">{{ item.value }}</div>
-              </div>
-              <v-list-item-action>
-                <v-avatar>
-                  <img
-                    v-if="icons[item.value]"
-                    class="ma-2"
-                    :src="`data:image/png;base64, ${icons[item.value]}`"
-                  />
-                </v-avatar>
-              </v-list-item-action>
-            </template>
-          </v-autocomplete>
-          <v-autocomplete v-else label="Asset" v-model="a2" :items="all">
+<div>
+<v-autocomplete v-else label="Asset" v-model="a1" :items="all">
             <template v-slot:append>
               <div class="caption primary--text text-center mt-1">
                 {{ a2.substr(0, 8) }}
@@ -90,100 +25,7 @@
               </v-list-item-action>
             </template>
           </v-autocomplete>
-
-          <amount
-            v-if="a1 && type === 'sell'"
-            v-model.number="v1"
-            class="mb-2"
-            :currency="ticker(a1)"
-            :precision="precision(a1)"
-            @input="v1Update"
-          />
-          <amount
-            v-if="a2 !== null && type === 'buy'"
-            v-model.number="v2"
-            class="mb-2"
-            :currency="ticker(a2)"
-            :precision="precision(a2)"
-            @input="v2Update"
-          />
-          <v-text-field
-            label="Price"
-            v-model="inversePrice"
-            @input="inversePriceUpdate"
-            ref="buyprice"
-          >
-            <template v-slot:append>
-              {{ `${ticker(a1)}/${ticker(a2)}` }}
-            </template>
-          </v-text-field>
-        </v-card-text>
-      </v-card>
-      <div class="flex-shrink-1 text-center mx-auto my-auto">
-        <v-btn @click="flip" icon class="my-1">
-          <v-icon color="primary" class="d-none d-sm-inline">$swap</v-icon>
-          <v-icon color="primary" class="d-sm-none">$swapv</v-icon>
-        </v-btn>
-      </div>
-      <v-card class="flex-grow-1 mb-0 mb-sm-2" color="secondary">
-        <v-card-text>
-          <div class="text-center">
-            <v-btn-toggle
-              v-model="type"
-              tile
-              color="primary accent-3"
-              group
-              mandatory
-            >
-              <v-btn value="buy">
-                With
-              </v-btn>
-
-              <v-btn value="sell">
-                For
-              </v-btn>
-            </v-btn-toggle>
-          </div>
-
-          <v-autocomplete
-            v-if="type === 'buy'"
-            label="Asset"
-            v-model="a1"
-            :items="accounts"
-          >
-            <template v-slot:append>
-              <div>
-                <div v-if="a1Acc" class="font-weight-bold">
-                  {{
-                    user.unit === 'SAT'
-                      ? a1Acc.balance
-                      : $format(a1Acc.balance, a1Acc.precision)
-                  }}
-                </div>
-                <div class="caption primary--text">{{ a1.substr(0, 8) }}</div>
-              </div>
-            </template>
-            <template v-slot:item="{ item }">
-              <div>
-                <div class="d-flex">
-                  <div class="flex-grow-1 title">{{ item.text }}</div>
-                  <v-spacer />
-                  <div class="mt-auto font-weight-bold">{{ item.balance }}</div>
-                </div>
-                <div class="caption primary--text">{{ item.value }}</div>
-              </div>
-              <v-list-item-action>
-                <v-avatar>
-                  <img
-                    v-if="icons[item.value]"
-                    class="ma-2"
-                    :src="`data:image/png;base64, ${icons[item.value]}`"
-                  />
-                </v-avatar>
-              </v-list-item-action>
-            </template>
-          </v-autocomplete>
-          <v-autocomplete v-else label="Asset" v-model="a2" :items="all">
+<v-autocomplete v-else label="Asset" v-model="a2" :items="all">
             <template v-slot:append>
               <div class="caption primary--text text-center mt-1">
                 {{ a2.substr(0, 8) }}
@@ -209,57 +51,7 @@
               </v-list-item-action>
             </template>
           </v-autocomplete>
-          <amount
-            v-if="a2 && type === 'sell'"
-            v-model.number="v2"
-            class="mb-2"
-            :currency="ticker(a2)"
-            :key="a2"
-            :precision="precision(a2)"
-            @input="v2Update"
-          />
-          <amount
-            v-if="a1 && type === 'buy'"
-            v-model.number="v1"
-            class="mb-2"
-            :currency="ticker(a1)"
-            :key="a1"
-            :precision="precision(a1)"
-            @input="v1Update"
-          />
-          <v-text-field
-            label="Price"
-            v-model="price"
-            ref="sellprice"
-            @input="priceUpdate"
-          >
-            <template v-slot:append>
-              {{ `${ticker(a2)}/${ticker(a1)}` }}
-            </template>
-          </v-text-field>
-        </v-card-text>
-      </v-card>
-    </div>
-    <div class="d-flex flex-justify-center my-4">
-      <v-btn
-        @click="swap"
-        class="flex-grow-1 mr-1"
-        :loading="loading"
-        :disabled="loading"
-      >
-        <v-icon left color="pink">$atom</v-icon><span>Atomic Swap</span>
-      </v-btn>
-      <v-btn
-        @click="submit"
-        class="flex-grow-1"
-        :loading="loading"
-        :disabled="loading"
-      >
-        <v-icon left color="primary">$send</v-icon><span>Place Order</span>
-      </v-btn>
-    </div>
-  </div>
-</template>
+          </div>
 
 <script>
 import icons from '../icons.json';
@@ -332,9 +124,9 @@ export default {
         }));
 
       if (this.a1) {
-      let { name: text, asset: value } = this.assets[this.a1];
-      if (!accounts.find(a => a.value === this.a1))
-        accounts.push({ text, value, balance: 0 });
+        let { name: text, asset: value } = this.assets[this.a1];
+        if (!accounts.find(a => a.value === this.a1))
+          accounts.push({ text, value, balance: 0 });
       }
 
       return accounts.sort((a, b) => ('' + a.text).localeCompare(b.text));
@@ -371,11 +163,11 @@ export default {
     v1Update(v1) {
       if (v1 && this.v2) {
         if (this.type === 'sell') {
-          this.v2 = Math.round(this.price * v1)
+          this.v2 = Math.round(this.price * v1);
         } else {
           this.price = (this.v2 / v1).toFixed(8);
           this.inversePrice = (v1 / this.v2).toFixed(8);
-        } 
+        }
       }
     },
     v2Update(v2) {
@@ -385,7 +177,7 @@ export default {
           this.inversePrice = (this.v1 / v2).toFixed(8);
         } else {
           this.v1 = (v2 / this.price).toFixed(8);
-        } 
+        }
       }
     },
     precision(asset) {

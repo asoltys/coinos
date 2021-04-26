@@ -12,7 +12,12 @@
         </v-btn>
       </div>
       <div v-if="invalid">Market Not Found</div>
-      <market-list v-if="orders.length && (!t1 || conflict)" :markets="markets" />
+      <div v-if="orders.length && (!t1 || conflict)">
+        <h1 class="title my-4 text-center">Choose a market</h1>
+        <market-list :markets="markets" />
+        <h1 class="title my-4 text-center">Or, trade any asset pair</h1>
+        <swap :bid="bids[0]" :ask="asks[asks.length - 1]" />
+      </div>
       <div v-else-if="a1 && a2">
         <swap :bid="bids[0]" :ask="asks[asks.length - 1]" />
         <v-tabs v-model="tab" hide-slider prev-icon="">
