@@ -1,7 +1,8 @@
 <template>
   <v-card class="pa-4">
     <h1>Issue Asset</h1>
-    <v-form @submit.prevent="submit">
+    <v-progress-linear v-if="loading" indeterminate />
+    <v-form v-else @submit.prevent="submit">
       <v-text-field
         label="Total Supply / Number of Tokens"
         v-model="asset.asset_amount"
@@ -41,7 +42,8 @@
 </template>
 
 <script>
-import { call } from 'vuex-pathify';
+import { call, sync } from 'vuex-pathify';
+
 import Copy from '../mixins/Copy';
 
 export default {
@@ -58,6 +60,10 @@ export default {
         domain: '',
       },
     };
+  },
+
+  computed: {
+    loading: sync('loading'),
   },
 
   methods: {

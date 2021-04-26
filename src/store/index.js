@@ -1011,10 +1011,12 @@ export default new Vuex.Store({
     },
 
     async issueAsset({ commit, dispatch, state }, asset) {
+      commit('loading', true);
       try {
         await Vue.axios.post('/assets', asset);
         go('/wallets');
       } catch (e) {
+        commit('loading', false);
         console.log(e.response, e.message);
         if (e.response && e.response.data.includes("Insufficient")) {
           dispatch('snack', 'Deposit funds to cover the issuance fee');
@@ -1028,6 +1030,7 @@ export default new Vuex.Store({
         } 
         commit('error', e.response ? e.response.data : e.message);
       }
+        commit('loading', false);
     },
 
     async registerAsset({ commit, dispatch }, asset) {
