@@ -15,8 +15,8 @@
       <div v-if="orders.length && (!t1 || conflict)">
         <h1 class="title my-4 text-center">Choose a market</h1>
         <market-list :markets="markets" />
-        <h1 class="title my-4 text-center">Or, trade any asset pair</h1>
-        <swap :bid="bids[0]" :ask="asks[asks.length - 1]" />
+        <h1 class="title my-4 text-center">Or, trade any liquid asset pair</h1>
+        <swap :bid="bids[0]" :ask="asks[asks.length - 1]" :selectOnly="true" />
       </div>
       <div v-else-if="a1 && a2">
         <swap :bid="bids[0]" :ask="asks[asks.length - 1]" />

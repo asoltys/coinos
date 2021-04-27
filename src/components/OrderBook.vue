@@ -83,7 +83,7 @@ export default {
       let obj = this.assets[asset];
       if (obj) ({ precision, ticker } = obj);
       if (value)
-        return parseFloat(this.$format(value, precision)).toFixed(precision);
+        return this.$format(value, precision)
       if (ticker) return ticker;
       return asset.substr(0, 3);
     },

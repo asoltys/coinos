@@ -100,6 +100,7 @@ const go = path => {
 };
 
 const BTC = process.env.VUE_APP_LBTC;
+const LCAD = process.env.VUE_APP_LCAD;
 
 const blankUser = {
   username: null,
@@ -151,8 +152,8 @@ const blankPayment = JSON.stringify({
 const state = {
   inverse: false,
   type: 'sell',
-  a1: null,
-  a2: null,
+  a1: BTC,
+  a2: LCAD,
   addressType: 'bech32',
   asset: BTC,
   assets: {},
@@ -911,7 +912,7 @@ export default new Vuex.Store({
                         .decrypt(user.seed, getters.password)
                         .toString(Utf8);
                     } catch (e) {
-                      dispatch('logout'); 
+                      dispatch('logout');
                     }
                   } else {
                     seed = generateMnemonic();
@@ -939,7 +940,7 @@ export default new Vuex.Store({
             async payment() {
               const { path } = router.currentRoute;
 
-              if  (path.includes('asset') && getters.fullscreen) {
+              if (path.includes('asset') && getters.fullscreen) {
                 commit('snack', 'Payment received!');
                 commit('deposit', false);
                 commit('fullscreen', false);
@@ -1017,20 +1018,20 @@ export default new Vuex.Store({
         go('/wallets');
       } catch (e) {
         commit('loading', false);
-        console.log(e.response, e.message);
-        if (e.response && e.response.data.includes("Insufficient")) {
+        
+        if (e.response && e.response.data.includes('Insufficient')) {
           dispatch('snack', 'Deposit funds to cover the issuance fee');
-          let amount = parseFloat(e.response.data.split(" ")[6] * 100000000);
+          let amount = parseFloat(e.response.data.split(' ')[6] * 100000000);
           state.invoice.amount = amount;
           state.invoice.fiatAmount = ((amount * state.rate) / SATS).toFixed(2);
           commit('hideControls', true);
           commit('deposit', true);
           commit('fullscreen', true);
-         return;
-        } 
+          return;
+        }
         commit('error', e.response ? e.response.data : e.message);
       }
-        commit('loading', false);
+      commit('loading', false);
     },
 
     async registerAsset({ commit, dispatch }, asset) {

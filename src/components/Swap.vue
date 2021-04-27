@@ -6,11 +6,12 @@
       :params="{ a1: a2, a2: a1, v1: v2, v2: v1 }"
       @close="swapping = false"
     />
-    <div class="d-sm-flex flex-wrap flex-sm-nowrap">
+    <div class="d-sm-flex flex-wrap flex-sm-nowrap" style="flex-basis: fill">
       <v-card class="flex-grow-1 mb-sm-2" color="secondary">
         <v-card-text>
           <div class="text-center">
             <v-btn-toggle
+              v-if="!selectOnly"
               v-model="type"
               tile
               color="primary accent-3"
@@ -30,7 +31,7 @@
             v-if="type === 'sell'"
             label="Asset"
             v-model="a1"
-            :items="accounts"
+            :items="selectOnly ? all : accounts"
           >
             <template v-slot:append>
               <div>
@@ -41,7 +42,9 @@
                       : $format(a1Acc.balance, a1Acc.precision)
                   }}
                 </div>
-                <div class="caption primary--text">{{ a1 && a1.substr(0, 8) }}</div>
+                <div class="caption primary--text">
+                  {{ a1 && a1.substr(0, 8) }}
+                </div>
               </div>
             </template>
             <template v-slot:item="{ item }">
@@ -67,7 +70,7 @@
           <v-autocomplete v-else label="Asset" v-model="a2" :items="all">
             <template v-slot:append>
               <div class="caption primary--text text-center mt-1">
-                {{ a2.substr(0, 8) }}
+                {{ a2 && a2.substr(0, 8) }}
               </div>
             </template>
             <template v-slot:item="{ item }">
@@ -92,7 +95,7 @@
           </v-autocomplete>
 
           <amount
-            v-if="a1 && type === 'sell'"
+            v-if="a1 && type === 'sell' && !selectOnly"
             v-model.number="v1"
             class="mb-2"
             :currency="ticker(a1)"
@@ -100,7 +103,7 @@
             @input="v1Update"
           />
           <amount
-            v-if="a2 !== null && type === 'buy'"
+            v-if="a2 !== null && type === 'buy' && !selectOnly"
             v-model.number="v2"
             class="mb-2"
             :currency="ticker(a2)"
@@ -108,6 +111,7 @@
             @input="v2Update"
           />
           <v-text-field
+            v-if="!selectOnly"
             label="Price"
             v-model="inversePrice"
             @input="inversePriceUpdate"
@@ -129,6 +133,7 @@
         <v-card-text>
           <div class="text-center">
             <v-btn-toggle
+              v-if="!selectOnly"
               v-model="type"
               tile
               color="primary accent-3"
@@ -149,7 +154,7 @@
             v-if="type === 'buy'"
             label="Asset"
             v-model="a1"
-            :items="accounts"
+            :items="selectOnly ? all : accounts"
           >
             <template v-slot:append>
               <div>
@@ -160,7 +165,9 @@
                       : $format(a1Acc.balance, a1Acc.precision)
                   }}
                 </div>
-                <div class="caption primary--text">{{ a1.substr(0, 8) }}</div>
+                <div class="caption primary--text">
+                  {{ a1 && a1.substr(0, 8) }}
+                </div>
               </div>
             </template>
             <template v-slot:item="{ item }">
@@ -186,7 +193,7 @@
           <v-autocomplete v-else label="Asset" v-model="a2" :items="all">
             <template v-slot:append>
               <div class="caption primary--text text-center mt-1">
-                {{ a2.substr(0, 8) }}
+                {{ a2 && a2.substr(0, 8) }}
               </div>
             </template>
             <template v-slot:item="{ item }">
@@ -210,7 +217,7 @@
             </template>
           </v-autocomplete>
           <amount
-            v-if="a2 && type === 'sell'"
+            v-if="a2 && type === 'sell' && !selectOnly"
             v-model.number="v2"
             class="mb-2"
             :currency="ticker(a2)"
@@ -219,7 +226,7 @@
             @input="v2Update"
           />
           <amount
-            v-if="a1 && type === 'buy'"
+            v-if="a1 && type === 'buy' && !selectOnly"
             v-model.number="v1"
             class="mb-2"
             :currency="ticker(a1)"
@@ -228,6 +235,7 @@
             @input="v1Update"
           />
           <v-text-field
+            v-if="!selectOnly"
             label="Price"
             v-model="price"
             ref="sellprice"
@@ -242,14 +250,16 @@
     </div>
     <div class="d-flex flex-justify-center my-4">
       <v-btn
-        @click="swap"
-        class="flex-grow-1 mr-1"
+         v-if="selectOnly"
+        @click="$go(`/markets/${a1.substr(0, 6)}-${a2.substr(0,6)}`)"
+        class="flex-grow-1"
         :loading="loading"
         :disabled="loading"
       >
-        <v-icon left color="pink">$atom</v-icon><span>Atomic Swap</span>
+        <v-icon left color="primary">$send</v-icon><span>Go</span>
       </v-btn>
       <v-btn
+        v-else
         @click="submit"
         class="flex-grow-1"
         :loading="loading"
@@ -276,6 +286,7 @@ export default {
   props: {
     bid: { type: Object },
     ask: { type: Object },
+    selectOnly: { type: Boolean, default: false },
   },
   components: { Amount, Proposal },
   mixins: [Copy],
@@ -318,7 +329,7 @@ export default {
           a =>
             this.assets[a.value].ticker &&
             this.assets[a.value].name &&
-            a.value !== this.a1
+            (this.selectOnly || a.value !== this.a1)
         )
         .sort((a, b) => ('' + a.text).localeCompare(b.text));
     },
@@ -332,9 +343,9 @@ export default {
         }));
 
       if (this.a1) {
-      let { name: text, asset: value } = this.assets[this.a1];
-      if (!accounts.find(a => a.value === this.a1))
-        accounts.push({ text, value, balance: 0 });
+        let { name: text, asset: value } = this.assets[this.a1];
+        if (!accounts.find(a => a.value === this.a1))
+          accounts.push({ text, value, balance: 0 });
       }
 
       return accounts.sort((a, b) => ('' + a.text).localeCompare(b.text));
@@ -371,11 +382,11 @@ export default {
     v1Update(v1) {
       if (v1 && this.v2) {
         if (this.type === 'sell') {
-          this.v2 = Math.round(this.price * v1)
+          this.v2 = Math.round(this.price * v1);
         } else {
           this.price = (this.v2 / v1).toFixed(8);
           this.inversePrice = (v1 / this.v2).toFixed(8);
-        } 
+        }
       }
     },
     v2Update(v2) {
@@ -385,7 +396,7 @@ export default {
           this.inversePrice = (this.v1 / v2).toFixed(8);
         } else {
           this.v1 = (v2 / this.price).toFixed(8);
-        } 
+        }
       }
     },
     precision(asset) {
@@ -401,7 +412,13 @@ export default {
     createOrder: call('createOrder'),
 
     flip() {
-      let { t1, t2 } = this.$router.currentRoute.params;
+      let segments = window.location.pathname.split('/');
+      let last = segments[segments.length - 1];
+      let t1 = last.split('-')[0];
+      let t2 = last.split('-')[1];
+
+      if (!(t1 && t2)) return this.switcheroo();
+
       if (this.a2.startsWith(t1)) this.switcheroo();
       else this.$go(`/markets/${t2}-${t1}`);
     },
@@ -430,14 +447,14 @@ export default {
       if (bid && type === 'sell' && !v1) {
         this.v1 = Math.round(bid.v1 * bid.rate);
         this.v2 = Math.round(bid.v2 / bid.rate);
-        this.price = (this.v2 / this.v1).toFixed(8);
-        this.inversePrice = (this.v1 / this.v2).toFixed(8);
+        this.price = this.$format(this.v2 / this.v1, 8);
+        this.inversePrice = this.$format(this.v1 / this.v2, 8);
       }
       if (ask && type === 'buy' && !v2) {
         this.v1 = bid.v1;
         this.v2 = bid.v2;
-        this.price = (this.v1 / this.v2).toFixed(8);
-        this.inversePrice = (this.v2 / this.v1).toFixed(8);
+        this.price = this.$format(this.v1 / this.v2, 8);
+        this.inversePrice = this.$format(this.v2 / this.v1, 8)
       }
     },
   },
@@ -446,10 +463,13 @@ export default {
     a1(a1) {
       this.v1 = this.v2 = this.price = this.inversePrice = 0;
       this.prefill();
+      console.log( window.location.pathname);
+      window.history.pushState(undefined, undefined, window.location.pathname.replace(/.*-/, `${a1.substr(0,6)}-`));
     },
     a2(a2) {
       this.v1 = this.v2 = this.price = this.inversePrice = 0;
       this.prefill();
+      window.history.pushState(undefined, undefined, window.location.pathname.replace(/-.*$/, `-${a2.substr(0,6)}`));
     },
     bid(bid) {
       this.prefill();
@@ -466,13 +486,13 @@ export default {
         if (v === 'buy') {
           this.v1 = this.bid.v2;
           this.v2 = this.bid.v1;
-          this.price = (1 / this.bid.rate).toFixed(8);
-          this.inversePrice = this.bid.rate.toFixed(8);
+          this.price = this.$format(1 / this.bid.rate, 8);
+          this.inversePrice = this.$format(this.bid.rate, 8);
         } else {
           this.v1 = this.ask.v1;
           this.v2 = this.v1 / this.bid.rate;
-          this.price = (1 / this.bid.rate).toFixed(8);
-          this.inversePrice = this.bid.rate.toFixed(8);
+          this.price = this.$format(1 / this.bid.rate, 8)
+          this.inversePrice = this.$format(this.bid.rate, 8);
         }
       });
     },
