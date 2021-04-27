@@ -368,7 +368,7 @@ export default {
       } else {
         this.v1 = Math.round(this.v2 * v);
       }
-      this.price = (1 / v).toFixed(8);
+      this.price = this.$format(1 / v, 8);
     },
     priceUpdate(v) {
       if (!v) return;
@@ -377,23 +377,23 @@ export default {
       } else {
         this.v1 = Math.round(this.v2 / v);
       }
-      this.inversePrice = (1 / v).toFixed(8);
+      this.inversePrice = this.$format(1 / v, 8);
     },
     v1Update(v1) {
       if (v1 && this.v2) {
         if (this.type === 'sell') {
           this.v2 = Math.round(this.price * v1);
         } else {
-          this.price = (this.v2 / v1).toFixed(8);
-          this.inversePrice = (v1 / this.v2).toFixed(8);
+          this.price = this.$format(this.v2 / v1, 8);
+          this.inversePrice = this.$format(v1 / this.v2, 8);
         }
       }
     },
     v2Update(v2) {
       if (v2 && this.v1) {
         if (this.type === 'sell') {
-          this.price = (v2 / this.v1).toFixed(8);
-          this.inversePrice = (this.v1 / v2).toFixed(8);
+          this.price = this.$format(v2 / this.v1, 8)
+          this.inversePrice = this.$format(this.v1 / v2, 8);
         } else {
           this.v1 = (v2 / this.price).toFixed(8);
         }
