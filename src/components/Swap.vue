@@ -250,8 +250,8 @@
     </div>
     <div class="d-flex flex-justify-center my-4">
       <v-btn
-         v-if="selectOnly"
-        @click="$go(`/markets/${a1.substr(0, 6)}-${a2.substr(0,6)}`)"
+        v-if="selectOnly"
+        @click="$go(`/markets/${a1.substr(0, 6)}-${a2.substr(0, 6)}`)"
         class="flex-grow-1"
         :loading="loading"
         :disabled="loading"
@@ -368,7 +368,7 @@ export default {
       } else {
         this.v1 = Math.round(this.v2 * v);
       }
-      this.price = this.$format(1 / v, 8);
+      this.price = (1 / v).toFixed(8);
     },
     priceUpdate(v) {
       if (!v) return;
@@ -377,23 +377,23 @@ export default {
       } else {
         this.v1 = Math.round(this.v2 / v);
       }
-      this.inversePrice = this.$format(1 / v, 8);
+      this.inversePrice = (1 / v).toFixed(8);
     },
     v1Update(v1) {
       if (v1 && this.v2) {
         if (this.type === 'sell') {
           this.v2 = Math.round(this.price * v1);
         } else {
-          this.price = this.$format(this.v2 / v1, 8);
-          this.inversePrice = this.$format(v1 / this.v2, 8);
+          this.price = (this.v2 / v1).toFixed(8);
+          this.inversePrice = (v1 / this.v2).toFixed(8);
         }
       }
     },
     v2Update(v2) {
       if (v2 && this.v1) {
         if (this.type === 'sell') {
-          this.price = this.$format(v2 / this.v1, 8)
-          this.inversePrice = this.$format(this.v1 / v2, 8);
+          this.price = (v2 / this.v1).toFixed(8);
+          this.inversePrice = (this.v1 / v2).toFixed(8);
         } else {
           this.v1 = (v2 / this.price).toFixed(8);
         }
@@ -447,14 +447,14 @@ export default {
       if (bid && type === 'sell' && !v1) {
         this.v1 = Math.round(bid.v1 * bid.rate);
         this.v2 = Math.round(bid.v2 / bid.rate);
-        this.price = this.$format(this.v2 / this.v1, 8);
-        this.inversePrice = this.$format(this.v1 / this.v2, 8);
+        this.price = (this.v2 / this.v1).toFixed(8);
+        this.inversePrice = (this.v1 / this.v2).toFixed(8);
       }
       if (ask && type === 'buy' && !v2) {
         this.v1 = bid.v1;
         this.v2 = bid.v2;
-        this.price = this.$format(this.v1 / this.v2, 8);
-        this.inversePrice = this.$format(this.v2 / this.v1, 8)
+        this.price = (this.v1 / this.v2).toFixed(8);
+        this.inversePrice = (this.v2 / this.v1).toFixed(8);
       }
     },
   },
@@ -463,13 +463,21 @@ export default {
     a1(a1) {
       this.v1 = this.v2 = this.price = this.inversePrice = 0;
       this.prefill();
-      console.log( window.location.pathname);
-      window.history.pushState(undefined, undefined, window.location.pathname.replace(/.*-/, `${a1.substr(0,6)}-`));
+      console.log(window.location.pathname);
+      window.history.pushState(
+        undefined,
+        undefined,
+        window.location.pathname.replace(/.*-/, `${a1.substr(0, 6)}-`)
+      );
     },
     a2(a2) {
       this.v1 = this.v2 = this.price = this.inversePrice = 0;
       this.prefill();
-      window.history.pushState(undefined, undefined, window.location.pathname.replace(/-.*$/, `-${a2.substr(0,6)}`));
+      window.history.pushState(
+        undefined,
+        undefined,
+        window.location.pathname.replace(/-.*$/, `-${a2.substr(0, 6)}`)
+      );
     },
     bid(bid) {
       this.prefill();
@@ -486,13 +494,13 @@ export default {
         if (v === 'buy') {
           this.v1 = this.bid.v2;
           this.v2 = this.bid.v1;
-          this.price = this.$format(1 / this.bid.rate, 8);
-          this.inversePrice = this.$format(this.bid.rate, 8);
+          this.price = (1 / this.bid.rate).toFixed(8);
+          this.inversePrice = this.bid.rate.toFixed(8);
         } else {
           this.v1 = this.ask.v1;
           this.v2 = this.v1 / this.bid.rate;
-          this.price = this.$format(1 / this.bid.rate, 8)
-          this.inversePrice = this.$format(this.bid.rate, 8);
+          this.price = (this.v1 / this.v2).toFixed(8);
+          this.inversePrice = (this.v2 / this.v1).toFixed(8);
         }
       });
     },
