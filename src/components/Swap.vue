@@ -101,6 +101,7 @@
             :currency="ticker(a1)"
             :precision="precision(a1)"
             @input="v1Update"
+            :key="ticker(a1)"
           />
           <amount
             v-if="a2 !== null && type === 'buy' && !selectOnly"
@@ -109,6 +110,7 @@
             :currency="ticker(a2)"
             :precision="precision(a2)"
             @input="v2Update"
+            :key="ticker(a2)"
           />
           <v-text-field
             v-if="!selectOnly"
@@ -342,11 +344,12 @@ export default {
           balance: a.balance,
         }));
 
-      if (this.a1 && this.assets[this.a1]) {
-        let { name: text, asset: value } = this.assets[this.a1];
-        if (!accounts.find(a => a.value === this.a1))
-          accounts.push({ text, value, balance: 0 });
-      }
+      let text, value;
+      if (this.a1 && this.assets[this.a1]) 
+        ({ name: text, asset: value } = this.assets[this.a1]);
+
+      if (!accounts.find(a => a.value === this.a1))
+        accounts.push({ text, value, balance: 0 });
 
       return accounts.sort((a, b) => ('' + a.text).localeCompare(b.text));
     },
