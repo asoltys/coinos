@@ -875,7 +875,7 @@ export default new Vuex.Store({
         const open = () => {
           clearTimeout(timeout);
           const { socket: ws, recipient, user, token } = getters;
-          if (ws) {
+          if (ws && ws.readyState === 1) {
             ws.send(JSON.stringify({ type: 'heartbeat' }));
 
             if (token && (!user || (!user.payments && !recipient.username))) {
@@ -884,8 +884,9 @@ export default new Vuex.Store({
               resolve();
               return true;
             }
-          }
+          } 
 
+          setTimeout(open, 50);
           return false;
         };
 
