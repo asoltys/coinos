@@ -123,7 +123,7 @@ export default {
           balance: a.balance,
         }));
 
-      if (this.a1) {
+      if (this.a1 && this.assets[this.a1]) {
         let { name: text, asset: value } = this.assets[this.a1];
         if (!accounts.find(a => a.value === this.a1))
           accounts.push({ text, value, balance: 0 });

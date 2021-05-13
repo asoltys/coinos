@@ -101,6 +101,7 @@
             :currency="ticker(a1)"
             :precision="precision(a1)"
             @input="v1Update"
+            :key="ticker(a1)"
           />
           <amount
             v-if="a2 !== null && type === 'buy' && !selectOnly"
@@ -109,6 +110,7 @@
             :currency="ticker(a2)"
             :precision="precision(a2)"
             @input="v2Update"
+            :key="ticker(a2)"
           />
           <v-text-field
             v-if="!selectOnly"
@@ -250,8 +252,8 @@
     </div>
     <div class="d-flex flex-justify-center my-4">
       <v-btn
-         v-if="selectOnly"
-        @click="$go(`/markets/${a1.substr(0, 6)}-${a2.substr(0,6)}`)"
+        v-if="selectOnly"
+        @click="$go(`/markets/${a1.substr(0, 6)}-${a2.substr(0, 6)}`)"
         class="flex-grow-1"
         :loading="loading"
         :disabled="loading"
@@ -342,11 +344,12 @@ export default {
           balance: a.balance,
         }));
 
-      if (this.a1) {
-        let { name: text, asset: value } = this.assets[this.a1];
-        if (!accounts.find(a => a.value === this.a1))
-          accounts.push({ text, value, balance: 0 });
-      }
+      let text, value;
+      if (this.a1 && this.assets[this.a1]) 
+        ({ name: text, asset: value } = this.assets[this.a1]);
+
+      if (!accounts.find(a => a.value === this.a1))
+        accounts.push({ text, value, balance: 0 });
 
       return accounts.sort((a, b) => ('' + a.text).localeCompare(b.text));
     },
@@ -447,14 +450,14 @@ export default {
       if (bid && type === 'sell' && !v1) {
         this.v1 = Math.round(bid.v1 * bid.rate);
         this.v2 = Math.round(bid.v2 / bid.rate);
-        this.price = this.$format(this.v2 / this.v1, 8);
-        this.inversePrice = this.$format(this.v1 / this.v2, 8);
+        this.price = (this.v2 / this.v1).toFixed(8);
+        this.inversePrice = (this.v1 / this.v2).toFixed(8);
       }
       if (ask && type === 'buy' && !v2) {
         this.v1 = bid.v1;
         this.v2 = bid.v2;
-        this.price = this.$format(this.v1 / this.v2, 8);
-        this.inversePrice = this.$format(this.v2 / this.v1, 8)
+        this.price = (this.v1 / this.v2).toFixed(8);
+        this.inversePrice = (this.v2 / this.v1).toFixed(8);
       }
     },
   },
@@ -463,13 +466,21 @@ export default {
     a1(a1) {
       this.v1 = this.v2 = this.price = this.inversePrice = 0;
       this.prefill();
-      console.log( window.location.pathname);
-      window.history.pushState(undefined, undefined, window.location.pathname.replace(/.*-/, `${a1.substr(0,6)}-`));
+      console.log(window.location.pathname);
+      window.history.pushState(
+        undefined,
+        undefined,
+        window.location.pathname.replace(/.*-/, `${a1.substr(0, 6)}-`)
+      );
     },
     a2(a2) {
       this.v1 = this.v2 = this.price = this.inversePrice = 0;
       this.prefill();
-      window.history.pushState(undefined, undefined, window.location.pathname.replace(/-.*$/, `-${a2.substr(0,6)}`));
+      window.history.pushState(
+        undefined,
+        undefined,
+        window.location.pathname.replace(/-.*$/, `-${a2.substr(0, 6)}`)
+      );
     },
     bid(bid) {
       this.prefill();
@@ -486,13 +497,13 @@ export default {
         if (v === 'buy') {
           this.v1 = this.bid.v2;
           this.v2 = this.bid.v1;
-          this.price = this.$format(1 / this.bid.rate, 8);
-          this.inversePrice = this.$format(this.bid.rate, 8);
+          this.price = (1 / this.bid.rate).toFixed(8);
+          this.inversePrice = this.bid.rate.toFixed(8);
         } else {
           this.v1 = this.ask.v1;
           this.v2 = this.v1 / this.bid.rate;
-          this.price = this.$format(1 / this.bid.rate, 8)
-          this.inversePrice = this.$format(this.bid.rate, 8);
+          this.price = (this.v1 / this.v2).toFixed(8);
+          this.inversePrice = (this.v2 / this.v1).toFixed(8);
         }
       });
     },

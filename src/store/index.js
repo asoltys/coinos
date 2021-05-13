@@ -253,7 +253,9 @@ export default new Vuex.Store({
           const socketPoll = async () => {
             try {
               await dispatch('setupSocket');
-            } catch (e) {}
+            } catch (e) {
+              // console.log("rejected setup", e);
+            }
 
             commit('poll', setTimeout(socketPoll, 5000));
           };
@@ -867,15 +869,16 @@ export default new Vuex.Store({
 
     async setupSocket({ commit, getters, dispatch }) {
       return new Promise((resolve, reject) => {
-        setTimeout(() => reject(new Error('Socket timeout')), 5000);
+        let timeout = setTimeout(() => reject(new Error('Socket timeout')), 5000);
         const proto = location.protocol === 'https:' ? 'wss://' : 'ws://';
 
         const open = () => {
+          clearTimeout(timeout);
           const { socket: ws, recipient, user, token } = getters;
-          if (ws && ws.readyState === 1) {
+          if (ws) {
             ws.send(JSON.stringify({ type: 'heartbeat' }));
 
-            if (!user || (!user.payments && !recipient.username)) {
+            if (token && (!user || (!user.payments && !recipient.username))) {
               ws.send(JSON.stringify({ type: 'login', data: token }));
             } else {
               resolve();
