@@ -1,40 +1,21 @@
-<template>
-  <v-card>
-    <v-card-text>
-      <v-progress-linear v-if="loading" indeterminate />
-      <v-form v-else @submit.prevent="submit" class="mt-4">
-        <h2 class="mb-4 white--text">Register an Account</h2>
-        <v-text-field
-          label="Username"
-          v-model="form.username"
-          dark
-          autocapitalize="none"
-          ref="username"
-        />
-        <v-text-field
-          label="Password"
-          v-model="form.password"
-          type="password"
-          ref="password"
-        />
-        <v-btn-toggle
-          tile
-          color="primary accent-3"
-          group
-          class="d-flex flex-wrap mx-auto"
-        >
-          <v-btn type="submit" class="wide mr-2 flex-grow-1">
-            <v-icon left color="green">$forward</v-icon>
-            Register
-          </v-btn>
-          <v-btn @click="$go('/')" class="mb-1 mb-sm-0 wide flex-grow-1">
-            <v-icon left color="red">$cancel</v-icon>
-            Nevermind
-          </v-btn>
-        </v-btn-toggle>
-      </v-form>
-    </v-card-text>
-  </v-card>
+<template lang='pug'>
+  v-card
+    v-card-text
+      v-progress-linear(v-if='loading' indeterminate='')
+      v-form.mt-4(v-else='')
+        h2.mb-4.white--text Register an Account
+        v-text-field(label='Username' v-model='form.username' dark='' autocapitalize='none' ref='username')
+        v-text-field(label='Email' v-model='form.email' dark='' autocapitalize='none' ref='email')
+        v-text-field(label='SMS' v-model='form.sms' dark='' autocapitalize='none' ref='sms')
+        v-text-field(label='Password' v-model='form.password' type='password' ref='password')
+        v-btn-toggle.d-flex.flex-wrap.mx-auto(tile='' color='primary accent-3' group='')
+          v-btn.wide.mr-2.flex-grow-1(type='submit')
+            v-icon(left='' color='green') $forward
+            span Register
+          v-btn.mb-1.mb-sm-0.wide.flex-grow-1(@click="$go('/')")
+            v-icon(left='' color='red') $cancel
+            span Nevermind
+
 </template>
 
 <script>
@@ -51,9 +32,12 @@ export default {
       submitted: false,
       form: {
         username: this.username,
+        email: this.email,
+        sms: this.sms,
         password: this.password,
         response: '',
-      },
+        message: ''
+      }
     };
   },
 
@@ -69,7 +53,7 @@ export default {
       let user = await this.createUser(this.form);
       user.password = this.form.password;
       await this.login(user);
-    },
+    }
   },
 
   mounted() {

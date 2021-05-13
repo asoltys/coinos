@@ -128,10 +128,18 @@ const WithdrawUrl = () =>
     '../components/WithdrawUrl'
   );
 
+const Referral = () =>
+  import(
+    /* webpackChunkName: "referral" */
+    '../components/Referral'
+);
+
+
 const routes = [
   { path: '/', component: Home, props: { logout: false } },
   { path: '/about', component: About },
   { path: '/funding', component: Funding },
+  { path: '/referral', component: Referral },
   { name: 'accept', path: '/accept', component: Accept, props: true },
   { path: '/asset', component: Asset },
   { path: '/decrypt', component: Decrypt },

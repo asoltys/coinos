@@ -28,8 +28,22 @@
     </v-card>
 
     <v-progress-linear v-if="loading" indeterminate />
+    <div v-else-if="true">
+      <Referral />
+    </div>
+    <div v-else-if='!isReferred'>
+      <v-alert class="text-center">
+        <p>Not currently referred</p>
+        <p>Funding access is limited to referred users</p>
+        <v-btn @click='openReferral=true' color="#59316B"> Enter Referral Code </v-btn>
+        <v-btn @click='openQueue=true' color="#59316B"> Join Waiting List </v-btn>
+      </v-alert>
+    </div>
     <div v-else>
       <v-alert class="text-center">
+        Referral Status:
+        <span class="title green--text"> Verified </span>
+        <p />
         Your Verification Status:
         <span v-if="user.verified === 'verified'" class="title green--text"
           >Verified</span
@@ -284,6 +298,41 @@
         </v-card-text>
       </v-card>
     </div>
+    <v-dialog v-model='openReferral' dark max-width='500'>
+      <v-card style='background-color: darkred'>
+        <v-card-title>
+          <b class='text-center'>Verify Referral Code</b>
+        </v-card-title>
+        <v-card-text>
+          <p v-if='referralWarning'> {{referralWarning}} </p>
+<!--           <v-alert class="ma-4 text-center font-weight-bold"> -->
+          <v-text-field v-model='referral' label='Referral Code'/>
+<!--           </v-alert> -->
+        </v-card-text>
+        <v-card-actions>
+          <v-btn @click='verifyReferral' color="green"> Submit Referral Code </v-btn>
+          <v-btn @click='openReferral=false'> Cancel </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <v-dialog v-model='openQueue' dark max-width='500'>
+      <v-card style='background-color: darkred'>
+        <v-card-title>
+          <b class='text-center'> Add Me to Waiting List</b>
+        </v-card-title>
+        <v-card-text>
+          <p v-if='queueMessage'> {{queueMessage}} </p>
+          <v-form class="mt-4">
+            <v-text-field label='Email' v-model='queue.email' dark='' autocapitalize='none' ref='email' />
+            <v-text-field label='SMS' v-model='queue.sms' dark='' autocapitalize='none' ref='sms' />
+          </v-form>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn @click='joinQueue()' :disabled='!queue.email && !queue.sms' color="green"> Join Waiting List </v-btn>
+          <v-btn @click='openQueue=false'> Cancel </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -292,9 +341,26 @@ import { call, get } from 'vuex-pathify';
 const btc = process.env.VUE_APP_LBTC;
 const lcad = process.env.VUE_APP_LCAD;
 
+import Referral from '@/components/Referral'
+
 export default {
+  components: {
+    Referral
+  },
   data: () => ({
-    loading: true,
+    loading: false,
+    openReferral: false,
+    referral: '',
+    isReferred: false, // object attributes not dynamically updated during store update
+    referralWarning: '',
+
+    openQueue: false,
+    queueMessage: '',
+    queue: {
+      email: '',
+      sms: ''
+    },
+
     mode: 0,
     submitting: false,
     fundingSuccess: false,
@@ -379,6 +445,35 @@ export default {
     user: get('user'),
   },
   methods: {
+    checkReferral: call('checkReferral'),
+    joinWaitingList: call('joinWaitingList'),
+
+    async verifyReferral () {
+      this.referralWarning = ''
+      var check = await this.checkReferral(this.referral)
+      if (check.verified) {
+        this.isReferred = true
+        this.openReferral = false
+      } else {
+        this.referralWarning = check.message || check.error || 'Could not verify referral code at this time.'
+      }
+      this.referral = '' // clear form element
+    },
+    async joinQueue () {
+      var check = await this.joinWaitingList(this.queue)
+      if (check.verified) {
+        this.queueMessage = 'Thanks for submitting this. We will contact you if we open this to the public.'
+        setTimeout(() => {
+          this.openQueue = false
+        }, 4000)  
+      } else {
+        this.queueMessage= check.message || check.error || 'Could not verify referral code at this time.'
+        setTimeout(() => {
+          this.openQueue = false
+        }, 4000)  
+      }
+    },
+
     viewCad() {
       this.$go(`/markets/${btc.substr(0, 8)}-${lcad.substr(0, 8)}`);
     },
@@ -419,6 +514,8 @@ export default {
     await new Promise(waitForUser);
     if (this.user.verified === 'verified') this.mode = 1;
     this.loading = false;
+
+    this.isReferred = user.isReferred
   },
 };
 </script>

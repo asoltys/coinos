@@ -31,6 +31,8 @@ const {
 
 const expectedType = process.env.VUE_APP_COINTYPE;
 
+const axiosError = 'Error accessing Server';  // error message returned when axios call caught in exception
+
 const getRoot = (privkey, seed, dispatch, user, password, network) => {
   let root;
   if (privkey) {
@@ -283,6 +285,34 @@ export default new Vuex.Store({
         return false;
       } catch (e) {
         commit('error', e.response ? e.response.data : e.message);
+      }
+    },
+
+    async checkReferral({ commit, state, dispatch }, token) {
+      try {
+        var url = '/verity/' + state.user.id + '/' + token
+        const { data: response } = await Vue.axios.get(url);
+        if (response) {
+          if (response.verified) { state.user.isReferred = true }
+          return response;
+        }
+        return {};
+      } catch (e) {
+        commit('error', e.response ? e.response.data : e.message);
+        return {error: axiosError};
+      }
+    },
+    async joinWaitingList({ commit, state, dispatch }, form) {
+      try {
+        var url = '/joinQueue?'
+        console.log('post: ' + JSON.stringify(form))
+        const { data: response } = await Vue.axios.post('/joinQueue', form);
+        if (response) {
+          return response;
+        }
+      } catch (e) {
+        commit('error', e.response ? e.response.data : e.message);
+        return {error: axiosError};
       }
     },
 
@@ -562,6 +592,7 @@ export default new Vuex.Store({
         await Vue.axios.post('/withdrawal', withdrawal);
       } catch (e) {
         commit('error', e.response ? e.response.data : e.message);
+        return false
       }
     },
 
