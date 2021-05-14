@@ -61,6 +61,8 @@ export default {
 
       this.message = ''
       this.warning = ''
+      console.log('grant referral via: ' + url)
+      console.log(JSON.stringify(this.options))
       axios.post(url, options)
         .then( response => {
           if (response.token) {
