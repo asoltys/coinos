@@ -35,9 +35,6 @@
 <script>
 import { call, get } from 'vuex-pathify';
 import axios from 'axios';
-import config from '@/config'
-
-const baseUrl = config.baseUrl
 
 export default {
   props: {
@@ -59,7 +56,7 @@ export default {
   },
   methods: {
     generateReferral () {
-      var url = baseUrl + '/grant'
+      var url = '/grant'
       const options = {
         sponsor_id: this.user.id,
         expiry: null
@@ -84,7 +81,7 @@ export default {
         })
     },
     checkTokens () {
-      var url = baseUrl + '/checkTokens/' + this.user.id
+      var url = '/checkTokens/' + this.user.id
       this.showTokens
       this.tokens = []
       this.message = ''
