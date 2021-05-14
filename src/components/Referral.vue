@@ -49,10 +49,7 @@ export default {
     };
   },
   computed: {
-    // user: get('user'),
-    user () {
-      return {}
-    }
+    user: get('user')
   },
   methods: {
     generateReferral () {
@@ -60,7 +57,7 @@ export default {
       const options = {
         sponsor_id: this.user.id,
         expiry: null
-      } 
+      }
 
       this.message = ''
       this.warning = ''

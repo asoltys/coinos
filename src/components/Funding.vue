@@ -28,9 +28,6 @@
     </v-card>
 
     <v-progress-linear v-if="loading" indeterminate />
-    <div v-else-if="true">
-      <Referral />
-    </div>
     <div v-else-if='!isReferred'>
       <v-alert class="text-center">
         <p>Not currently referred</p>
@@ -341,14 +338,11 @@ import { call, get } from 'vuex-pathify';
 const btc = process.env.VUE_APP_LBTC;
 const lcad = process.env.VUE_APP_LCAD;
 
-import Referral from '@/components/Referral'
-
 export default {
   components: {
-    Referral
   },
   data: () => ({
-    loading: false,
+    loading: true,
     openReferral: false,
     referral: '',
     isReferred: false, // object attributes not dynamically updated during store update
