@@ -292,7 +292,7 @@ export default new Vuex.Store({
 
     async checkReferral({ commit, state, dispatch }, token) {
       try {
-        var url = '/referrals/verity/' + state.user.id + '/' + token
+        var url = '/referrals/verify/' + state.user.id + '/' + token
         const { data: response } = await Vue.axios.get(url);
         if (response) {
           if (response.verified) { state.user.isReferred = true }
