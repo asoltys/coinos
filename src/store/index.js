@@ -292,7 +292,7 @@ export default new Vuex.Store({
 
     async checkReferral({ commit, state, dispatch }, token) {
       try {
-        var url = '/verity/' + state.user.id + '/' + token
+        var url = '/referrals/verity/' + state.user.id + '/' + token
         const { data: response } = await Vue.axios.get(url);
         if (response) {
           if (response.verified) { state.user.isReferred = true }
@@ -306,9 +306,8 @@ export default new Vuex.Store({
     },
     async joinWaitingList({ commit, state, dispatch }, form) {
       try {
-        var url = '/joinQueue?'
         console.log('post: ' + JSON.stringify(form))
-        const { data: response } = await Vue.axios.post('/joinQueue', form);
+        const { data: response } = await Vue.axios.post('/referrals/joinQueue', form);
         if (response) {
           return response;
         }

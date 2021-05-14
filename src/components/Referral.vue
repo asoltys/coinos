@@ -53,7 +53,6 @@ export default {
   },
   methods: {
     generateReferral () {
-      var url = '/grant'
       const options = {
         sponsor_id: this.user.id,
         expiry: null
@@ -61,9 +60,7 @@ export default {
 
       this.message = ''
       this.warning = ''
-      console.log('grant referral via: ' + url)
-      console.log(JSON.stringify(this.options))
-      axios.post(url, options)
+      axios.post('/referrals/grant', options)
         .then( response => {
           if (response.token) {
             const token = response.token
@@ -80,12 +77,11 @@ export default {
         })
     },
     checkTokens () {
-      var url = '/checkTokens/' + this.user.id
       this.showTokens
       this.tokens = []
       this.message = ''
       this.warning = ''
-      axios.get(url)
+      axios.get('/referrals/checkTokens/' + this.user.id)
         .then( response => {
           if (response.tokens) {
             this.tokens = tokens
