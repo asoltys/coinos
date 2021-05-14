@@ -33,7 +33,7 @@
     "js-lnurl": "^0.2.2",
     "jsqr": "^1.3.1",
     "liquidjs-lib": "vulpemventures/liquidjs-lib",
-    "prettier": "^1.18.2",
+    "prettier": "^2.3.0",
     "qrcode": "^1.3.4",
     "secp256k1": "^4.0.1",
     "setimmediate": "^1.0.5",
@@ -51,6 +51,7 @@
   },
   "devDependencies": {
     "@mdi/font": "^4.4.95",
+    "@prettier/plugin-pug": "^1.15.2",
     "@vue/cli-plugin-babel": "^3.9.0",
     "@vue/cli-plugin-e2e-cypress": "^3.9.0",
     "@vue/cli-plugin-eslint": "^3.9.1",
