@@ -18,6 +18,7 @@
           v-data-table(v-if='referrals && referrals.length' :headers='uHeaders' :items='referrals')
         v-tab-item(key="Stats")
           h3 Stats
+      v-alert.text-center.green--text(v-if='message') {{message}}
       v-alert.text-center.red--text(v-if='error') {{error}}
 </template>
 
@@ -29,6 +30,7 @@ export default {
     return {
       sections: ['Users', 'Referrals', 'Stats'],
       tab: '',
+      message: '',
       error: '',
       users: null,
       uHeaders: [
@@ -64,23 +66,27 @@ export default {
       //   {username: 'bob', email: 'bob@gmail.com'}
       // ]
       this.error = ''
+      this.message = ''
       console.log('get list of users via admin api ...')
-      axios
-        .get('/admin/users')
-        .then( response => {
+
+      try {
+        const { data: response } = await Vue.axios.get('/admin/users');
+        if (response) {
           this.users = response.users || []
-        })
-        .catch( err => {
-          this.error = 'Error retrieving users'
-        })
+        }
+      } catch (e) {
+        this.error = 'Error retrieving users'
+      }
     },
     getReferrals () {
       console.log('get referrals via admin api ...')
       this.error = ''
+      this.message = ''
       axios
         .get('/admin/referrals')
         .then( response => {
-          this.referrals = response.referrals || []
+          this.referrals = response.data.referrals || []
+          this.message = 'retrieved referrals'
         })
         .catch( err => {
           this.error = 'Error retrieving referrals'
