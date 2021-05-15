@@ -11,8 +11,6 @@ div
   v-card
     v-card-title Referral Token(s)
     v-card-text
-      b.message(v-if='message') {{ message }}
-      b.warning(v-if='warning') {{ warning }}
       div(v-if='tokens && tokens.length')
         ol
           li(v-for='token in tokens', v-if='(token.status = "pending")')
@@ -29,6 +27,12 @@ div
               b {{ token.token }} [{{ token.status }}]
               span(v-if='token.expiry') (expiration: {{ token.expiry }})
         v-btn(@click='showUsed = true')
+      p(v-if='message') &nbsp;
+        b.message() {{ message }}
+      p(v-if='warning')
+        b.warning {{ warning }}
+
+
 </template>
 
 <script>
