@@ -34,6 +34,12 @@
           </v-list-item-action>
           <v-list-item-content>Settings</v-list-item-content>
         </v-list-item>
+        <v-list-item @click="$go('/referral')">
+          <v-list-item-action>
+            <v-icon color="primary" title="Refer Friend">$addAccount</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>Refer Friends</v-list-item-content>
+        </v-list-item>
         <v-list-item @click="$go('/settings')">
           <v-list-item-action>
             <v-icon color="primary" title="Settings">$settings</v-icon>
