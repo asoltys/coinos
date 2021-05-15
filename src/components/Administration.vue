@@ -63,7 +63,8 @@ export default {
       //   {username: 'ran', email: 'ran.guin@gmail.com', sms: '604 731-1124'},
       //   {username: 'bob', email: 'bob@gmail.com'}
       // ]
-
+      this.error = ''
+      console.log('get list of users via admin api ...')
       axios
         .get('/admin/users')
         .then( response => {
@@ -74,6 +75,8 @@ export default {
         })
     },
     getReferrals () {
+      console.log('get referrals via admin api ...')
+      this.error = ''
       axios
         .get('/admin/referrals')
         .then( response => {
