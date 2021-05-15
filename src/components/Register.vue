@@ -4,10 +4,10 @@
       v-progress-linear(v-if='loading' indeterminate='')
       v-form.mt-4(v-model='validForm' v-else='')
         h2.mb-4.white--text Register an Account
-        v-text-field(label='Username' v-model='form.username' dark='' autocapitalize='none' ref='username' autocomplete='username' :rules='nameRules')
-        v-text-field.validate(label='Email' type='email' v-model='form.email' dark='' autocapitalize='none' ref='email' autocomplete='email'  append-icon='$home' :rules='emailRules')
-        v-text-field(label='SMS' @change='validatePhone()' v-model='form.sms' dark='' autocapitalize='none' ref='sms' append-icon='$cellphone' autocomplete='phone' :class='phoneValidated ? "validated" : "unvalidated"')
-        v-text-field.validate(label='Password' v-model='form.password' type='password' ref='password' autocomplete='current-password' :rules='passwordRules' append-icon='$home')
+        v-text-field.validate(label='Username' v-model='form.username' dark='' autocapitalize='none' ref='username' autocomplete='username' :rules='nameRules' append-icon='$account')
+        v-text-field.validate(label='Email' type='email' v-model='form.email' dark='' autocapitalize='none' ref='email' autocomplete='email'  append-icon='$mail' :rules='emailRules')
+        v-text-field(label='SMS' @change='validatePhone()' v-model='form.sms' dark='' autocapitalize='none' ref='sms' append-icon='$cellphone' autocomplete='phone' :rules='phoneRules' :class='phoneValidated ? "validated" : "unvalidated"')
+        v-text-field.validate(label='Password' v-model='form.password' type='password' ref='password' autocomplete='current-password' :rules='passwordRules' append-icon='$lock')
         v-btn-toggle.d-flex.flex-wrap.mx-auto(tile='' color='primary accent-3' group='')
           v-btn.wide.mr-2.flex-grow-1(type='submit' :disabled='!validForm || !phoneValidated')
             v-icon(left='' color='green') $forward
@@ -44,7 +44,7 @@ export default {
 
       // Validation Rules - may move to config file to reuse for similar forms (eg waiting list; reset password) (?)
       // Move validation styling below to css file
-      
+
       nameRules: [
         v => !!v || 'Name is required',
         v => v && v.length >= 3 || 'Name must be at least 3 characters'
@@ -56,7 +56,7 @@ export default {
 
       // phone is auto-formatted and validated manually in validatePhone method below
       phoneRules: [
-        v => !v || /^\+\d+ (\d\d\d) \d\d\d-\d\d\d\d$/.test(v) || 'Phone must be valid'
+        v => !v || /^\+1 \(\d\d\d\) \d\d\d\-\d\d\d\d$/.test(v) || 'Phone must be valid and include area code'
       ],
 
       passwordRules: [
@@ -88,7 +88,7 @@ export default {
       if (digits.length === 11 && digits.substring(0,1) === '1') {
         formatted = '+1 (' + digits.substring(1,4) + ') ' + digits.substring(4, 7) + '-' + digits.substring(7,11)
       } else if (digits.length === 10) {
-        formatted = '+1 (' +  digits.substring(0,3) + ' ' + digits.substring(3, 3) + '-' + digits.substring(6,4)
+        formatted = '+1 (' +  digits.substring(0,3) + ') ' + digits.substring(3, 6) + '-' + digits.substring(6,10)
         this.$set(this.form, 'sms', formatted)
         this.phoneValidated = true
         this.phoneIcon = 'mdi-check'
