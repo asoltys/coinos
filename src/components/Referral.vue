@@ -38,6 +38,7 @@ div
 <script>
 import { call, get } from 'vuex-pathify';
 import axios from 'axios';
+import Vue from 'vue';
 
 export default {
   props: {},
@@ -60,9 +61,10 @@ export default {
         expiry: null,
       };
 
-      axios
+      Vue.axios
         .post('/referrals/grant', options)
         .then((response) => {
+          console.log("Response: " + JSON.stringify(response))
           if (response.token) {
             const token = response.token;
             this.tokens.push(token);
@@ -73,7 +75,6 @@ export default {
         })
         .catch((err) => {
           var now = new Date().toISOString();
-          this.tokens.push({ token: 'abcde', expiry: now });
           this.warning = 'Error requesting referral token';
         });
     },
@@ -83,11 +84,12 @@ export default {
       this.tokens = [];
       this.message = '';
       this.warning = '';
-      axios
+      Vue.axios
         .get('/referrals/checkTokens/' + this.user.id)
         .then((response) => {
-          if (response.tokens) {
-            this.tokens = tokens;
+          if (response) {
+            console.log("Response: " + JSON.stringify(response))
+            this.tokens = response.tokens || [];
           } else {
             this.warning = 'No active referral tokens';
           }
