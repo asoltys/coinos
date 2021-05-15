@@ -9,7 +9,7 @@
         v-text-field(label='SMS' @change='validatePhone()' v-model='form.sms' dark='' autocapitalize='none' ref='sms' append-icon='$cellphone' autocomplete='phone' :rules='phoneRules' :class='phoneValidated ? "validated" : "unvalidated"')
         v-text-field.validate(label='Password' v-model='form.password' type='password' ref='password' autocomplete='current-password' :rules='passwordRules' append-icon='$lock')
         v-btn-toggle.d-flex.flex-wrap.mx-auto(tile='' color='primary accent-3' group='')
-          v-btn.wide.mr-2.flex-grow-1(type='submit' :disabled='!validForm || !phoneValidated')
+          v-btn.wide.mr-2.flex-grow-1(type='submit' :disabled='!validForm')
             v-icon(left='' color='green') $forward
             span Register
           v-btn.mb-1.mb-sm-0.wide.flex-grow-1(@click="$go('/')")
