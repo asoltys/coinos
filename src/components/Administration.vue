@@ -78,7 +78,7 @@ export default {
       // this.formatData(test.users, ['username', 'email', 'sms', 'verified', 'createdAt', 'access'])
 
       Vue.axios
-        .get('/admin/user_accounts')
+        .get('/admin/users')
         .then( response => {
           console.log("Response: " + JSON.stringify(response))
           if (response && response.data) {
