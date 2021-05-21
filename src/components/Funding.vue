@@ -296,7 +296,7 @@
       </v-card>
     </div>
     <v-dialog v-model='openReferral' dark max-width='500'>
-      <v-card style='background-color: darkred'>
+      <v-card style='background-color: grey'>
         <v-card-title>
           <b class='text-center'>Verify Referral Code</b>
         </v-card-title>
@@ -313,15 +313,15 @@
       </v-card>
     </v-dialog>
     <v-dialog v-model='openQueue' dark max-width='500'>
-      <v-card style='background-color: darkred'>
+      <v-card style='background-color: grey'>
         <v-card-title>
           <b class='text-center'> Add Me to Waiting List</b>
         </v-card-title>
         <v-card-text>
           <p v-if='queueMessage'> {{queueMessage}} </p>
           <v-form class="mt-4">
-            <v-text-field label='Email' v-model='queue.email' dark='' autocapitalize='none' ref='email' />
-            <v-text-field label='SMS' v-model='queue.sms' dark='' autocapitalize='none' ref='sms' />
+            <v-text-field class='validate' label='Email' v-model='queue.email' autocapitalize='none' ref='email' append-icon='$mail' :rules='rules.email'/>
+            <v-text-field class='validate' label='SMS' v-model='queue.sms' dark='' autocapitalize='none' ref='sms' :rules='rules.phone'/>
           </v-form>
         </v-card-text>
         <v-card-actions>
@@ -337,6 +337,7 @@
 import { call, get } from 'vuex-pathify';
 const btc = process.env.VUE_APP_LBTC;
 const lcad = process.env.VUE_APP_LCAD;
+import config from '@/config'
 
 export default {
   components: {
@@ -354,6 +355,7 @@ export default {
       email: '',
       sms: ''
     },
+    rules: {},
 
     mode: 0,
     submitting: false,
@@ -379,61 +381,7 @@ export default {
     proofSuccess: false,
     proofLoading: false,
     method: 'interac',
-    step: 1,
-    provinces: [
-      {
-        text: 'Alberta',
-        value: 'AB',
-      },
-      {
-        text: 'British Columbia',
-        value: 'BC',
-      },
-      {
-        text: 'Manitoba',
-        value: 'MB',
-      },
-      {
-        text: 'New Brunswick',
-        value: 'NB',
-      },
-      {
-        text: 'Newfoundland and Labrador',
-        value: 'NL',
-      },
-      {
-        text: 'Northwest Territories',
-        value: 'NT',
-      },
-      {
-        text: 'Nova Scotia',
-        value: 'NS',
-      },
-      {
-        text: 'Nunavut',
-        value: 'NU',
-      },
-      {
-        text: 'Ontario',
-        value: 'ON',
-      },
-      {
-        text: 'Prince Edward Island',
-        value: 'PE',
-      },
-      {
-        text: 'Quebec',
-        value: 'QC',
-      },
-      {
-        text: 'Saskatchewan',
-        value: 'SK',
-      },
-      {
-        text: 'Yukon Territory',
-        value: 'YT',
-      },
-    ],
+    step: 1
   }),
   computed: {
     user: get('user'),
@@ -499,6 +447,8 @@ export default {
     uploadProof: call('uploadProof'),
   },
   async mounted() {
+    this.rules = config.rules || {}
+    
     this.funding = await this.createFunding();
     const waitForUser = resolve => {
       if (!this.user.index && this.user.index !== 0)
@@ -506,6 +456,7 @@ export default {
       resolve();
     };
     await new Promise(waitForUser);
+    
     if (this.user.verified === 'verified') this.mode = 1;
     this.loading = false;
 
