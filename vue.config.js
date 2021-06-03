@@ -43,21 +43,21 @@ module.exports = IS_PRODUCTION
         disableHostCheck: true,
         proxy: {
           '/api/electrs': {
-            target: 'http://localhost:3003',
+            target: 'http://app:3003',
             pathRewrite: { '^/api/electrs': '' },
             secure: false,
           },
           '/lnurl': {
-            target: 'http://localhost:3118',
+            target: 'http://app:3118',
             secure: false,
           },
           '/api': {
-            target: 'http://localhost:3119',
+            target: 'http://app:3119',
             pathRewrite: { '^/api': '' },
             secure: false,
           },
           '/ws': {
-            target: 'http://localhost:3119',
+            target: 'http://app:3119',
             pathRewrite: { '^/ws': '' },
             ws: true,
           },
