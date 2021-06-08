@@ -5,17 +5,16 @@
       v-form.mt-4(v-model='validForm' v-else='')
         h2.mb-4.white--text Register an Account
         v-text-field.validate(label='Username' v-model='form.username' dark='' autocapitalize='none' ref='username' autocomplete='username' :rules='nameRules' append-icon='$account')
-        v-text-field.validate(label='Email' type='email' v-model='form.email' dark='' autocapitalize='none' ref='email' autocomplete='email'  append-icon='$mail' :rules='rules.email')
+        v-text-field.validate(label='Email' type='email' v-model='form.email' dark='' autocapitalize='none' ref='email' autocomplete='email'  append-icon='$email' :rules='rules.email')
         v-text-field(label='SMS (optional)' @change='validatePhone()' v-model='form.sms' dark='' autocapitalize='none' ref='sms' append-icon='$cellphone' autocomplete='phone' :rules='rules.phone' :class='phoneValidated ? "validated" : "unvalidated"')
         v-text-field.validate(label='Password' v-model='form.password' type='password' ref='password' autocomplete='current-password' :rules='passwordRules' append-icon='$lock')
         v-btn-toggle.d-flex.flex-wrap.mx-auto(tile='' color='primary accent-3' group='')
-          v-btn.wide.mr-2.flex-grow-1(type='submit' :disabled='!validForm')
+          v-btn.wide.mr-2.flex-grow-1(@click='createUser()' :disabled='!validForm')
             v-icon(left='' color='green') $forward
             span Register
           v-btn.mb-1.mb-sm-0.wide.flex-grow-1(@click="$go('/')")
             v-icon(left='' color='red') $cancel
             span Nevermind
-
 </template>
 
 <script>
@@ -58,9 +57,9 @@ export default {
       // ],
 
       // phone is auto-formatted and validated manually in validatePhone method below
-      phoneRules: [
-        v => !v || /^\+1 \(\d\d\d\) \d\d\d\-\d\d\d\d$/.test(v) || 'Phone must be valid and include area code'
-      ],
+      // phoneRules: [
+      //   v => !v || /^\+1 \(\d\d\d\) \d\d\d\-\d\d\d\d$/.test(v) || 'Phone must be valid and include area code'
+      // ],
 
       passwordRules: [
         v => !!v || 'Password is required',

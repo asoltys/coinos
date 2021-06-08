@@ -31,6 +31,7 @@ import DotsVertical from 'vue-material-design-icons/DotsVertical';
 import Download from 'vue-material-design-icons/Download';
 import Upload from 'vue-material-design-icons/Upload';
 import Edit from 'vue-material-design-icons/FileDocumentEdit';
+import Email from 'vue-material-design-icons/Email';
 import Eye from 'vue-material-design-icons/Eye';
 import Fire from 'vue-material-design-icons/Fire';
 import Snowflake from 'vue-material-design-icons/Snowflake';
@@ -122,6 +123,7 @@ export default new Vuetify({
       'download': { component: Download },
       'upload': { component: Upload },
       'edit': { component: Edit },
+      'email': { component: Email },
       'eye': { component: Eye },
       'fire': { component: Fire },
       'snowflake': { component: Snowflake },
