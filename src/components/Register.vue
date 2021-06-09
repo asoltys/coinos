@@ -6,7 +6,7 @@
         h2.mb-4.white--text Register an Account
         v-text-field.validate(label='Username' v-model='form.username' dark='' autocapitalize='none' ref='username' autocomplete='username' :rules='nameRules' append-icon='$account')
         v-text-field.validate(label='Email' type='email' v-model='form.email' dark='' autocapitalize='none' ref='email' autocomplete='email'  append-icon='$email' :rules='rules.email')
-        v-text-field(label='SMS (optional)' @change='validatePhone()' v-model='form.sms' dark='' autocapitalize='none' ref='sms' append-icon='$cellphone' autocomplete='phone' :rules='rules.phone' :class='phoneValidated ? "validated" : "unvalidated"')
+        v-text-field(label='SMS (optional)' @change='validatePhone()' v-model='form.sms' dark='' autocapitalize='none' ref='sms' append-icon='$cellphone' autocomplete='phone' :rules='rules.NAPhone' :class='phoneValidated ? "validated" : "unvalidated"')
         v-text-field.validate(label='Password' v-model='form.password' type='password' ref='password' autocomplete='current-password' :rules='passwordRules' append-icon='$lock')
         v-btn-toggle.d-flex.flex-wrap.mx-auto(tile='' color='primary accent-3' group='')
           v-btn.wide.mr-2.flex-grow-1(@click='createUser()' :disabled='!validForm')
@@ -76,16 +76,18 @@ export default {
   methods: {
     createUser: call('createUser'),
     login: call('login'),
-    async submit() {
+    async register() {
       let user = await this.createUser(this.form);
       user.password = this.form.password;
+      console.log("User created...")
       await this.login(user);
+      console.log("User logged in...")
     },
     validatePhone () {
       this.phoneValidated = false
       this.phoneIcon = 'mdi-close'
       var digits = this.form.sms.replace(/\D/g, '')
-      console.log(digits.length + ' validating phone ' + this.form.sms + ' -> ' + digits)
+      console.log(digits.length + 'digits entered: ' + this.form.sms + ' -> ' + digits)
       var formatted
       if (digits.length === 11 && digits.substring(0,1) === '1') {
         formatted = '+1 (' + digits.substring(1,4) + ') ' + digits.substring(4, 7) + '-' + digits.substring(7,11)
@@ -94,10 +96,11 @@ export default {
         this.$set(this.form, 'sms', formatted)
         this.phoneValidated = true
         this.phoneIcon = 'mdi-check'
-        console.log('f: ' + formatted)
+        console.log('international format: ' + formatted)
       } else if (digits.substring(0,1) === '+') {
         // International number
         formatted = this.form.sms
+        console.log('international format entered: ' + formatted)
       }
 
       if (formatted) {

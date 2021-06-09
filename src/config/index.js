@@ -60,8 +60,11 @@ module.exports = {
       v => !!v || 'Email is required',
       v => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'E-mail must be valid'
     ],
-    formattedPhone: [
+    NAPhone: [
       v => !v || /^\+1 \(\d\d\d\) \d\d\d\-\d\d\d\d$/.test(v) || 'Phone must be valid and include area code'
+    ],
+    internationalPhone: [
+      v => !v || /^\+\d+ [\d\s\-\(\)]{7,14}$/.test(v) || 'Phone must be valid and include area code'
     ],
     phone: [
       v => !v || /^\(\d\d\d\) \d\d\d\-\d\d\d\d$/.test(v) || 'phone must be valid - eg (604) 123-4567'
