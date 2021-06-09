@@ -9,7 +9,7 @@
         v-text-field(label='SMS (optional)' @change='validatePhone()' v-model='form.sms' dark='' autocapitalize='none' ref='sms' append-icon='$cellphone' autocomplete='phone' :rules='rules.NAPhone' :class='phoneValidated ? "validated" : "unvalidated"')
         v-text-field.validate(label='Password' v-model='form.password' type='password' ref='password' autocomplete='current-password' :rules='passwordRules' append-icon='$lock')
         v-btn-toggle.d-flex.flex-wrap.mx-auto(tile='' color='primary accent-3' group='')
-          v-btn.wide.mr-2.flex-grow-1(@click='createUser()' :disabled='!validForm')
+          v-btn.wide.mr-2.flex-grow-1(@click='register()' :disabled='!validForm')
             v-icon(left='' color='green') $forward
             span Register
           v-btn.mb-1.mb-sm-0.wide.flex-grow-1(@click="$go('/')")
@@ -87,34 +87,33 @@ export default {
       this.phoneValidated = false
       this.phoneIcon = 'mdi-close'
       var digits = this.form.sms.replace(/\D/g, '')
-      console.log(digits.length + 'digits entered: ' + this.form.sms + ' -> ' + digits)
-      var formatted
+      console.log(digits.length + ' digits entered: ' + this.form.sms + ' -> ' + digits)
+      var formattedPhone
       if (digits.length === 11 && digits.substring(0,1) === '1') {
-        formatted = '+1 (' + digits.substring(1,4) + ') ' + digits.substring(4, 7) + '-' + digits.substring(7,11)
+        formattedPhone = '+1 (' + digits.substring(1,4) + ') ' + digits.substring(4, 7) + '-' + digits.substring(7,11)
       } else if (digits.length === 10) {
-        formatted = '+1 (' +  digits.substring(0,3) + ') ' + digits.substring(3, 6) + '-' + digits.substring(6,10)
-        this.$set(this.form, 'sms', formatted)
+        formattedPhone = '+1 (' +  digits.substring(0,3) + ') ' + digits.substring(3, 6) + '-' + digits.substring(6,10)
+        this.$set(this.form, 'sms', formattedPhone)
         this.phoneValidated = true
         this.phoneIcon = 'mdi-check'
-        console.log('international format: ' + formatted)
+        console.log('international format: ' + formattedPhone)
       } else if (digits.substring(0,1) === '+') {
         // International number
-        formatted = this.form.sms
-        console.log('international format entered: ' + formatted)
+        formattedPhone = this.form.sms
+        console.log('international format entered: ' + formattedPhone)
       }
 
-      if (formatted) {
-        console.log('f: ' + formatted)
-        this.$set(this.form, 'sms', formatted)
+      if (formattedPhone) {
+        console.log('re-formatted: ' + formattedPhone)
+        this.$set(this.form, 'sms', formattedPhone)
         this.phoneValidated = true
         this.phoneIcon = '$check'
+        this.$set(this.form, 'formattedPhone', formattedPhone)
       } else {
         this.phoneValidated = false
         this.phoneIcon = '$cancel'
       }
-
-
-}
+    }
   },
 
   mounted() {
