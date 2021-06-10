@@ -445,6 +445,16 @@ export default {
       this.proofLoading = false;
     },
     uploadProof: call('uploadProof'),
+    async isReferred (user_id) {
+      axios.get('/isReferred/' + this.user.id)
+        .then( response => {
+          this.referredBy = response.data
+        })
+        .catch( err => {
+          this.referredBy = null
+          console.debug('error checking referral')
+        })
+    }
   },
   async mounted() {
     this.rules = config.rules || {}
@@ -460,7 +470,7 @@ export default {
     if (this.user.verified === 'verified') this.mode = 1;
     this.loading = false;
 
-    this.referredBy = this.user.referred_by || null
+    this.isReferred(this.user.id);
   },
 };
 </script>
