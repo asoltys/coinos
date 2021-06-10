@@ -28,7 +28,7 @@
     </v-card>
 
     <v-progress-linear v-if="loading" indeterminate />
-    <div v-else-if='!isReferred'>
+    <div v-else-if='!referredBy'>
       <v-alert class="text-center">
         <p>Not currently referred</p>
         <p>Funding access is limited to referred users</p>
@@ -346,7 +346,7 @@ export default {
     loading: true,
     openReferral: false,
     referral: '',
-    isReferred: false, // object attributes not dynamically updated during store update
+    referredBy: null, // object attributes not dynamically updated during store update
     referralWarning: '',
 
     openQueue: false,
@@ -393,8 +393,8 @@ export default {
     async verifyReferral () {
       this.referralWarning = ''
       var check = await this.checkReferral(this.referral)
-      if (check.verified) {
-        this.isReferred = true
+      if (check.referred_by) {
+        this.referredBy = check.referred_by
         this.openReferral = false
       } else {
         this.referralWarning = check.message || check.error || 'Could not verify referral code at this time.'
@@ -460,7 +460,7 @@ export default {
     if (this.user.verified === 'verified') this.mode = 1;
     this.loading = false;
 
-    this.isReferred = user.isReferred
+    this.referredBy = this.user.referred_by || null
   },
 };
 </script>
