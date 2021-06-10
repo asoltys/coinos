@@ -447,7 +447,7 @@ export default {
     },
     uploadProof: call('uploadProof'),
     async isReferred (user_id) {
-      Vue.axios.get('/isReferred/' + this.user.id)
+      Vue.axios.get('/referrals/isReferred/' + this.user.id)
         .then( response => {
           this.referredBy = response.data
         })
