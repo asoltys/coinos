@@ -39,7 +39,7 @@
     <div v-else>
       <v-alert class="text-center">
         Referred:
-        <v-icon color='green'> $check </span>
+        <v-icon color='green'> $check </v-icon>
         <p />
         Your Verification Status:
         <span v-if="user.verified === 'verified'" class="title green--text"
