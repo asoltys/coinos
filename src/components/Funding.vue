@@ -338,6 +338,7 @@ import { call, get } from 'vuex-pathify';
 const btc = process.env.VUE_APP_LBTC;
 const lcad = process.env.VUE_APP_LCAD;
 import config from '@/config'
+import Vue from 'vue';
 
 export default {
   components: {
@@ -446,7 +447,7 @@ export default {
     },
     uploadProof: call('uploadProof'),
     async isReferred (user_id) {
-      axios.get('/isReferred/' + this.user.id)
+      Vue.axios.get('/isReferred/' + this.user.id)
         .then( response => {
           this.referredBy = response.data
         })
