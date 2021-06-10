@@ -28,7 +28,7 @@
     </v-card>
 
     <v-progress-linear v-if="loading" indeterminate />
-    <div v-else-if='!referredBy'>
+    <div v-else-if='!isReferred'>
       <v-alert class="text-center">
         <p>Not currently referred</p>
         <p>Funding access is limited to referred users</p>
@@ -38,8 +38,8 @@
     </div>
     <div v-else>
       <v-alert class="text-center">
-        Referral Status:
-        <span class="title green--text"> Verified </span>
+        Referred:
+        <v-icon color='green'> $check </span>
         <p />
         Your Verification Status:
         <span v-if="user.verified === 'verified'" class="title green--text"
@@ -347,7 +347,7 @@ export default {
     loading: true,
     openReferral: false,
     referral: '',
-    referredBy: null, // object attributes not dynamically updated during store update
+    isReferred: null, // object attributes not dynamically updated during store update
     referralWarning: '',
 
     openQueue: false,
@@ -394,8 +394,9 @@ export default {
     async verifyReferral () {
       this.referralWarning = ''
       var check = await this.checkReferral(this.referral)
-      if (check.referred_by) {
-        this.referredBy = check.referred_by
+      console.log('Referral response: ' + JSON.stringify(check))
+      if (check.verified) {
+        this.isReferred = true
         this.openReferral = false
       } else {
         this.referralWarning = check.message || check.error || 'Could not verify referral code at this time.'
@@ -445,14 +446,16 @@ export default {
       this.proofSuccess = await this.uploadProof(proof);
       this.proofLoading = false;
     },
+    
     uploadProof: call('uploadProof'),
-    async isReferred (user_id) {
+
+    async checkIfReferred (user_id) {
       Vue.axios.get('/referrals/isReferred/' + this.user.id)
         .then( response => {
-          this.referredBy = response.data
+          this.isReferred = response.data
         })
         .catch( err => {
-          this.referredBy = null
+          this.isReferred = null
           console.debug('error checking referral')
         })
     }
@@ -471,7 +474,7 @@ export default {
     if (this.user.verified === 'verified') this.mode = 1;
     this.loading = false;
 
-    this.isReferred(this.user.id);
+    this.checkIfReferred(this.user.id);
   },
 };
 </script>
