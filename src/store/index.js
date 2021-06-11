@@ -308,7 +308,8 @@ export default new Vuex.Store({
     async joinWaitingList({ commit, state, dispatch }, form) {
       try {
         console.log('post: ' + JSON.stringify(form))
-        const { data: response } = await Vue.axios.post('/referrals/joinQueue', form);
+        // const { data: response } = await Vue.axios.post('/referrals/joinQueue', form);
+        const { data: response } = await Vue.axios.get('/referrals/joinQueue?email=' + form.email + '&sms=' + form.sms);
         if (response) {
           return response;
         }
