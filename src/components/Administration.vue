@@ -7,6 +7,7 @@
         v-tab-item(key="Users")
           v-row.justify-space-around
             v-btn(@click='getUsers()' color='green') List Users
+            v-btn(@click='getQueue()'  color='green') Waiting List
             v-btn(@click='getAccounts()' color='green') Accounts with Balance
           p
           //-   hr
@@ -14,10 +15,11 @@
           //-   v-data-table(v-if='users && users.length' :headers='uHeaders' :items='users')
           //-   b(v-else-if='users') No Users
         v-tab-item(key="Referrals")
-          v-btn(@click='getReferrals()'  color='green') List Referrals
+          v-row.justify-space-around
+            v-btn(@click='getReferrals()'  color='green') List Referrals
           //- v-data-table(v-if='referrals && referrals.length' :headers='uHeaders' :items='referrals')
         v-tab-item(key="Stats")
-          h3 Stats
+          b Scope of Priority Stats TBD ... 
       p
         hr
       v-container
@@ -33,7 +35,6 @@ import Vue from 'vue';
 
 import CustomSequelize from '@/mixins/CustomSequelize'
 
-// import axios from 'axios'
 export default {
   data() {
     return {
@@ -52,6 +53,7 @@ export default {
       ],
 
       referrals: null,
+      queued: null,
       rHeaders: [
         {text: 'sponsor_id', value: 'sponsor_id'},
         {text: 'token', value: 'token'},
@@ -125,6 +127,23 @@ export default {
         .catch (e => {
           console.log("Error: " + e.message)
           this.error = 'Error retrieving users'
+        })
+    },
+    getQueue () {
+      console.log('get waiting list via admin api ...')
+      this.resetData()
+
+      Vue.axios
+        .get('/admin/waiting_list')
+        .then( response => {
+          console.log('Response: ' + JSON.stringify(response))
+          this.queued = response.data.queue || []
+          this.formatData(this.queued, ['email', 'sms', 'requested', 'current_user_id'])
+          console.log('Queue: ' + JSON.stringify(this.queued))
+          this.message = 'Queued ' + this.queued.length + ' Referrals'
+        })
+        .catch( err => {
+          this.error = 'Error retrieving waiting list'
         })
     },
     getReferrals () {
