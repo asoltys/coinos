@@ -119,7 +119,7 @@ export default {
         .then( response => {
           console.log("Response: " + JSON.stringify(response))
           if (response && response.data) {
-            this.formatData(response.data.accounts, ['username', 'email', 'account_id', 'ticker', 'balance', 'created_at', 'updated_at'])
+            this.formatData(response.data.accounts, ['username', 'email', 'account_id', 'ticker', 'balance', 'created', 'updated'])
           } else {
             console.log("No response data: " + + JSON.stringify(response))
           }
