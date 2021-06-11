@@ -3,7 +3,8 @@ div
   v-card
     v-card-title Generate Referral Token(s) for Friends
     v-card-text
-      p Note: each referral token can only be used by one person
+      p Each referral token can only be used by one person (send them the token string).
+      p They will not need the token to register, but will need it to access funding options. 
     v-card-actions
       v-row.justify-space-around
         v-btn(@click='generateReferral()', color='green') Generate Referral Token
