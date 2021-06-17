@@ -67,7 +67,7 @@ module.exports = {
       v => !v || /^\+\d+ [\d\s\-\(\)]{5,15}$/.test(v) || 'Phone must be valid and include country and area code'
     ],
     phone: [
-      v => !v || /^\(\d\d\d\) \d\d\d\-\d\d\d\d$/.test(v) || 'phone must be valid - eg (604) 123-4567'
+      v => !v || /^(\+\d+ |)\(?\d\d\d(\) | |-)\d\d\d(\-| )\d\d\d\d$/.test(v) || 'phone must include area code eg 604 123-4567'
     ],
 
   }
