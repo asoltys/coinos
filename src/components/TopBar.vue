@@ -28,7 +28,7 @@
           </v-list-item-action>
           <v-list-item-content>About</v-list-item-content>
         </v-list-item>
-        <v-list-item v-if='user.access==="Admin"' @click="$go('/admin')">
+        <v-list-item color="red lighten-2" v-if='user.access==="Admin"' @click="$go('/admin')">
           <v-list-item-action>
             <v-icon color="primary" title="Administration">$settings</v-icon>
           </v-list-item-action>
@@ -36,7 +36,7 @@
         </v-list-item>
         <v-list-item @click="$go('/referral')">
           <v-list-item-action>
-            <v-icon color="primary" title="Refer Friend">$addAccount</v-icon>
+            <v-icon color="green" title="Refer Friend">$addAccount</v-icon>
           </v-list-item-action>
           <v-list-item-content>Refer Friends</v-list-item-content>
         </v-list-item>
