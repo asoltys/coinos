@@ -54,9 +54,9 @@
         </v-list-item>
       </v-card>
     </v-menu>
-    <v-btn v-else @click="$go('/about')" class="ml-auto">
+    <v-btn v-else @click="https://corporate.coinos.io/" class="ml-auto">
       <v-icon left>$help</v-icon>
-      Info
+      About
     </v-btn>
   </v-app-bar>
 </template>
