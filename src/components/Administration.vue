@@ -19,7 +19,16 @@
             v-btn(@click='getReferrals()'  color='green') List Referrals
           //- v-data-table(v-if='referrals && referrals.length' :headers='uHeaders' :items='referrals')
         v-tab-item(key="Stats")
-          b Scope of Priority Stats TBD ... 
+          v-row.justify-space-around
+            v-btn(@click='getTransactions("payments")'  color='green') Payments
+            v-btn(@click='getTransactions("orders")'  color='green') Orders
+            v-btn(@click='getTransactions("deposits")'  color='green') Deposits
+            v-btn(@click='getTransactions("withdrawals")'  color='green') Withdrawals
+            v-btn(@click='getTransactions("invoices")'  color='green') Invoices
+          v-row.justify-left.align-center
+            v-col(cols='4')
+              v-text-field(v-model='days_ago' type='number' size='5' label='In the past:')
+            v-col(cols='8') Days
       p
         hr
       v-container
@@ -43,6 +52,7 @@ export default {
       message: '',
       error: '',
       users: null,
+      days_ago: 7,
 
       showData: [],
       showHeaders: [],
@@ -70,6 +80,8 @@ export default {
     user: get('user'),
   },
   methods: {
+    mounted () {
+    },
     resetData () {
       this.message = ''
       this.error = ''
@@ -94,6 +106,30 @@ export default {
             this.formatData(this.users, ['username', 'email', 'sms', 'verified', 'created_at', 'access'])
           } else {
             console.log("No response data: " + + JSON.response.data)
+          }
+        })
+        .catch (e => {
+          console.log("Error: " + e.message)
+          this.error = 'Error retrieving users'
+        })
+    },
+
+    async getTransactions (type) {
+      this.resetData()
+      console.log('get list of user transactions')
+
+      const since = new Date(new Date() - this.days_ago*24*60*60*1000).toISOString().substring(0,10) // does not account for GMT for now...
+      console.log('since = ' + since)
+
+      Vue.axios
+        .get('/admin/transactions?type=' + type + '&since=' + since)
+        .then( response => {
+          console.log("Response: " + JSON.stringify(response))
+          if (response && response.data) {
+            this.formatData(response.data.transactions, ['username', 'email', type]) // , 'created', 'updated'])
+            this.message = response.data.transactions.length + ' ' + type + ' since ' + since
+          } else {
+            console.log("No response data: " + + JSON.stringify(response))
           }
         })
         .catch (e => {
@@ -146,17 +182,12 @@ export default {
           this.error = 'Error retrieving waiting list'
         })
     },
-    getReferrals () {
+    getReferrals (status) {
       console.log('get referrals via admin api ...')
       this.resetData()
 
-      // Test case 
-      // var test = {"referrals":[{"id":8,"sponsor_id":1,"user_id":null,"expiry":null,"status":"pending","created_at":"2021-05-15T02:34:16.000Z","updated_at":"2021-05-15T02:34:16.000Z"},{"id":9,"sponsor_id":1,"user_id":null,"expiry":null,"status":"pending","created_at":"2021-05-15T18:35:51.000Z","updated_at":"2021-05-15T18:35:51.000Z"}]}
-      // this.formatData(test.referrals, ['sponsor_id', 'created_at', 'status', 'token'])
-      // var refData = {
-      //   user: ['user'],
-      //   sponsor: ['sponsor']
-      // }
+      var url = '/admin/referrals'
+      if (status) { url = status + '?status=pending'}
 
       Vue.axios
         .get('/admin/referrals')
@@ -165,7 +196,7 @@ export default {
           this.referrals = response.data.referrals || []
           this.formatData(this.referrals, ['sponsor', 'token', 'user', 'status', 'created_at'])
           console.log('Referrals: ' + JSON.stringify(this.referrals))
-          this.message = 'Retrieved ' + this.referrals.length + ' Referrals'
+          this.message = 'Retrieved ' + this.referrals.length + ' ' + status + ' Referrals'
         })
         .catch( err => {
           this.error = 'Error retrieving referrals'
