@@ -32,8 +32,8 @@
       <v-alert class="text-center">
         <p>Not currently referred</p>
         <p>Funding access is limited to referred users</p>
-        <v-btn @click='openReferral=true' color="#59316B"> Enter Referral Code </v-btn>
-        <v-btn @click='openQueue=true' color="#59316B"> Join Waiting List </v-btn>
+        <v-btn @click='enterReferral()' color="#59316B"> Enter Referral Code </v-btn>
+        <v-btn @click='enterQueue()' color="#59316B"> Join Waiting List </v-btn>
       </v-alert>
     </div>
     <div v-else>
@@ -303,7 +303,7 @@
         <v-card-text>
           <p v-if='referralWarning'> {{referralWarning}} </p>
 <!--           <v-alert class="ma-4 text-center font-weight-bold"> -->
-          <v-text-field v-model='referral' label='Referral Code'/>
+          <v-text-field id='referral' v-model='referral' label='Referral Code'/>
 <!--           </v-alert> -->
         </v-card-text>
         <v-card-actions>
@@ -319,13 +319,13 @@
         </v-card-title>
         <v-card-text>
           <p v-if='queueMessage'> {{queueMessage}} </p>
-          <v-form class="mt-4">
-            <v-text-field class='validate' label='Email' v-model='queue.email' autocapitalize='none' ref='email' append-icon='$mail' :rules='rules.email'/>
-            <v-text-field class='validate' label='SMS' v-model='queue.sms' dark='' autocapitalize='none' ref='sms' :rules='rules.phone'/>
+          <v-form v-model='validForm' class="mt-4">
+            <v-text-field id='email' class='validate' label='Email' v-model='queue.email' autocapitalize='none' ref='email' append-icon='$email' :rules='rules.email'/>
+            <v-text-field class='validate' label='Phone' v-model='queue.phone' dark='' autocapitalize='none' append-icon='$cellphone' ref='phone' :rules='rules.phone'/>
           </v-form>
         </v-card-text>
         <v-card-actions>
-          <v-btn @click='joinQueue()' :disabled='!queue.email && !queue.sms' color="green"> Join Waiting List </v-btn>
+          <v-btn @click='joinQueue()' :disabled='!validForm' color="green"> Join Waiting List </v-btn>
           <v-btn @click='openQueue=false'> Cancel </v-btn>
         </v-card-actions>
       </v-card>
@@ -349,12 +349,13 @@ export default {
     referral: '',
     isReferred: null, // object attributes not dynamically updated during store update
     referralWarning: '',
+    validForm: false,
 
     openQueue: false,
     queueMessage: '',
     queue: {
       email: '',
-      sms: ''
+      phone: ''
     },
     rules: {},
 
@@ -390,6 +391,25 @@ export default {
   methods: {
     checkReferral: call('checkReferral'),
     joinWaitingList: call('joinWaitingList'),
+
+    enterReferral () {
+      this.openQueue = false
+      this.openReferral = true
+      // document.referral.focus()
+      setTimeout (() => {
+        document.getElementById('referral').focus() 
+      }, 500)
+    },
+
+    enterQueue () {
+      this.openReferral = false
+      this.openQueue = true
+      // document.referral.focus()
+      setTimeout (() => {
+        document.getElementById('email').focus() 
+      }, 500)
+    },
+
 
     async verifyReferral () {
       this.referralWarning = ''
@@ -463,7 +483,6 @@ export default {
   async mounted() {
     this.rules = config.rules || {}
     
-    this.funding = await this.createFunding();
     const waitForUser = resolve => {
       if (!this.user.index && this.user.index !== 0)
         return (this.timeout = setTimeout(() => waitForUser(resolve), 1000));
@@ -475,6 +494,13 @@ export default {
     this.loading = false;
 
     this.checkIfReferred(this.user.id);
+
+
+    if (this.isReferred) {
+      this.funding = await this.createFunding();
+    } else {
+      console.log('funding bypassed for non-referred user')
+    }
   },
 };
 </script>
