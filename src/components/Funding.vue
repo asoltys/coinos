@@ -296,7 +296,7 @@
       </v-card>
     </div>
     <v-dialog v-model='openReferral' dark max-width='500'>
-      <v-card style='background-color: grey'>
+      <v-card style='background-color: #333'>
         <v-card-title>
           <b class='text-center'>Verify Referral Code</b>
         </v-card-title>
@@ -313,7 +313,7 @@
       </v-card>
     </v-dialog>
     <v-dialog v-model='openQueue' dark max-width='500'>
-      <v-card style='background-color: grey'>
+      <v-card style='background-color: #333'>
         <v-card-title>
           <b class='text-center'> Add Me to Waiting List</b>
         </v-card-title>
