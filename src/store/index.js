@@ -270,7 +270,7 @@ export default new Vuex.Store({
 
       if (!(path === '/login' || path === '/register')) dispatch('getInfo');
       if (token) {
-        if (['/', '/register'].includes(path)) return go('/home');
+        if (path === '/') return go('/home');
       } else if (restrictedPaths.includes(path)) return go('/login');
     },
 
