@@ -15,14 +15,11 @@
             <img :src="user.pic" />
           </v-avatar>
           <v-icon v-else>$account</v-icon>
-          <span class="truncate">{{
-            username
-          }}
-          </span>
+          <span class="truncate">{{ username }} </span>
         </v-btn>
       </template>
       <v-card tile class="mx-auto menu" max-width="400">
-        <v-list-item @click="$go('/about')">
+        <v-list-item @click="go('https://corporate.coinos.io/')">
           <v-list-item-action>
             <v-icon color="blue lighten-2" title="About">$help</v-icon>
           </v-list-item-action>
@@ -54,7 +51,7 @@
         </v-list-item>
       </v-card>
     </v-menu>
-    <v-btn v-else @click="https://corporate.coinos.io/" class="ml-auto">
+    <v-btn v-else @click="go('https://corporate.coinos.io/')" class="ml-auto">
       <v-icon left>$help</v-icon>
       About
     </v-btn>
@@ -78,17 +75,20 @@ export default {
     user: get('user'),
   },
   methods: {
-    generateBlock: call('generateBlock'), 
+    generateBlock: call('generateBlock'),
     goHome() {
       if (this.user && this.user.id) this.$go('/home');
       else this.$go('/');
+    },
+    go(url) {
+      window.location.href = url;
     },
   },
 };
 </script>
 
 <style lang="stylus" scoped>
-.unselectable 
+.unselectable
   -webkit-touch-callout none
   -webkit-user-select none
   -khtml-user-select none
