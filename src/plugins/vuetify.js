@@ -91,6 +91,7 @@ export default new Vuetify({
         accent: colors.yellow,
         error: '#b71c1c',
         liquid: '#2cccbf',
+        modal: '#555'
       },
     },
   },
