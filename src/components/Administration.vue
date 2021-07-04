@@ -25,6 +25,7 @@
             v-btn(@click='getTransactions("deposits")'  color='green') Deposits
             v-btn(@click='getTransactions("withdrawals")'  color='green') Withdrawals
             v-btn(@click='getTransactions("invoices")'  color='green') Invoices
+            v-btn(@click='getTransactions()' color='green') All
           v-row.justify-left.align-center
             v-col(cols='4')
               v-text-field(v-model='days_ago' type='number' size='5' label='In the past:')
@@ -116,18 +117,31 @@ export default {
 
     async getTransactions (type) {
       this.resetData()
-      console.log('get list of user transactions')
+
+      if (!type) { type = 'transactions' }
+
+      console.log('get list of user ' + type)
 
       const since = new Date(new Date() - this.days_ago*24*60*60*1000).toISOString().substring(0,10) // does not account for GMT for now...
       console.log('since = ' + since)
 
+      const showFields = {
+        transactions: ['username', 'invoices', 'orders', 'deposits', 'withdrawals', 'payments'],
+        invoices: ['username', 'email', 'currency', 'amount', 'network'],
+        orders: ['seller', 'buyer', 'sell_amount', 'from', 'to', 'buy_amount', 'rate', 'completed'],
+        deposits: ['username', 'email', 'amount', 'credited', 'deposited'],
+        withdrawals: ['username', 'email', 'amount', 'notes', 'withdrawn'],
+        payments: ['username', 'email', 'amount', 'network', 'hash', 'deposited']
+      }
+      var url = '/admin/' + type + '?since=' + since
+      console.log('url: ' + url)
       Vue.axios
-        .get('/admin/transactions?type=' + type + '&since=' + since)
+        .get(url)
         .then( response => {
           console.log("Response: " + JSON.stringify(response))
           if (response && response.data) {
-            this.formatData(response.data.transactions, ['username', 'email', type]) // , 'created', 'updated'])
-            this.message = response.data.transactions.length + ' ' + type + ' since ' + since
+            this.formatData(response.data[type], showFields[type])
+            this.message = response.data[type].length + ' ' + type + ' since ' + since
           } else {
             console.log("No response data: " + + JSON.stringify(response))
           }
@@ -208,7 +222,7 @@ export default {
 
       for (var i = 0; i < show.length; i++) {
         var field = {text: show[i], value: show[i]}
-        console.log('add to headers: ' + JSON.stringify(field))
+        // console.log('add to headers: ' + JSON.stringify(field))
         this.$set(this.showHeaders, this.showHeaders.length, field)
       }
       
@@ -224,13 +238,18 @@ export default {
 
         console.log('Parsed references: ' + JSON.stringify(reference))
       } else {
-        this.showData = data.map((a, index) => {
-          var record = {}
-          for (var i = 0; i < show.length; i++) {
-            record[show[i]] = a[show[i]]
-          }
-          return record
-        })
+        if (data && data.length) {
+          this.showData = data.map((a, index) => {
+            var record = {}
+            for (var i = 0; i < show.length; i++) {
+              record[show[i]] = a[show[i]]
+            }
+            return record
+          })
+        } else {
+          console.log('empty dataset')
+          this.showData = [{}]
+        }
       }
 
       if (reference && Nto1) {
@@ -253,9 +272,6 @@ export default {
           }
         }
       }
-      console.log('DATA: ' + JSON.stringify(this.showData))
-      console.log('HEADER: ' + JSON.stringify(this.showHeaders))
-
     }
   }
 };
