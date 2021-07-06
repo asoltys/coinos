@@ -25,7 +25,7 @@
             v-btn(@click='getTransactions("deposits")'  color='green') Deposits
             v-btn(@click='getTransactions("withdrawals")'  color='green') Withdrawals
             v-btn(@click='getTransactions("invoices")'  color='green') Invoices
-            v-btn(@click='getTransactions()' color='green') All
+            v-btn(@click='getTransactions()' color='green') Summary
           v-row.justify-left.align-center
             v-col(cols='4')
               v-text-field(v-model='days_ago' type='number' size='5' label='In the past:')
