@@ -248,7 +248,7 @@ export default {
           })
         } else {
           console.log('empty dataset')
-          this.showData = [{}]
+          this.showData = []
         }
       }
 
