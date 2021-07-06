@@ -31,12 +31,12 @@
               v-text-field(v-model='days_ago' type='number' size='5' label='In the past:')
             v-col(cols='8') Days
       p
+        v-alert.text-center.green--text(v-if='message') {{message}}
+        v-alert.text-center.red--text(v-if='error') {{error}}
+      p
         hr
       v-container
         v-data-table(v-if='showData && showData.length' :headers='showHeaders' :items='showData')
-      p
-        v-alert.text-center.green--text(v-if='message') {{message}}
-        v-alert.text-center.red--text(v-if='error') {{error}}
 </template>
 
 <script>
