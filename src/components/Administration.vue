@@ -1,42 +1,48 @@
 <template lang='pug'>
   div
-    v-tabs(v-model='tab' dark)
-      v-tab(v-for='section in sections' :key='section' @click="resetData()") {{section}}
-    v-container
-      v-tabs-items(v-model="tab")
-        v-tab-item(key="Users")
-          v-row.justify-space-around
-            v-btn(@click='getUsers()' color='green') List Users
-            v-btn(@click='getQueue()'  color='green') Waiting List
-            v-btn(@click='getAccounts()' color='green') Accounts with Balance
-          p
-          //-   hr
-          //- v-container
-          //-   v-data-table(v-if='users && users.length' :headers='uHeaders' :items='users')
-          //-   b(v-else-if='users') No Users
-        v-tab-item(key="Referrals")
-          v-row.justify-space-around
-            v-btn(@click='getReferrals()'  color='green') List Referrals
-          //- v-data-table(v-if='referrals && referrals.length' :headers='uHeaders' :items='referrals')
-        v-tab-item(key="Stats")
-          v-row.justify-space-around
-            v-btn(@click='getTransactions("payments")'  color='green') Payments
-            v-btn(@click='getTransactions("orders")'  color='green') Orders
-            v-btn(@click='getTransactions("deposits")'  color='green') Deposits
-            v-btn(@click='getTransactions("withdrawals")'  color='green') Withdrawals
-            v-btn(@click='getTransactions("invoices")'  color='green') Invoices
-            v-btn(@click='getTransactions()' color='green') Summary
-          v-row.justify-left.align-center
-            v-col(cols='4')
-              v-text-field(v-model='days_ago' type='number' size='5' label='In the past:')
-            v-col(cols='8') Days
-      p
-        v-alert.text-center.green--text(v-if='message') {{message}}
-        v-alert.text-center.red--text(v-if='error') {{error}}
-      p
-        hr
+    v-progress-linear(v-if='!waitedForUser' indeterminate='')
+    div(v-show='user && user.admin')
+      v-tabs(v-model='tab' dark)
+        v-tab(v-for='section in sections' :key='section' @click="resetData()") {{section}}
       v-container
-        v-data-table(v-if='showData && showData.length' :headers='showHeaders' :items='showData')
+        v-tabs-items(v-model="tab")
+          v-tab-item(key="Users")
+            v-row.justify-space-around
+              v-btn(@click='getUsers()' color='green') List Users
+              v-btn(@click='getQueue()'  color='green') Waiting List
+              v-btn(@click='getAccounts()' color='green') Accounts with Balance
+            p
+            //-   hr
+            //- v-container
+            //-   v-data-table(v-if='users && users.length' :headers='uHeaders' :items='users')
+            //-   b(v-else-if='users') No Users
+          v-tab-item(key="Referrals")
+            v-row.justify-space-around
+              v-btn(@click='getReferrals()'  color='green') List Referrals
+            //- v-data-table(v-if='referrals && referrals.length' :headers='uHeaders' :items='referrals')
+          v-tab-item(key="Stats")
+            v-row.justify-space-around
+              v-btn(@click='getTransactions("payments")'  color='green') Payments
+              v-btn(@click='getTransactions("orders")'  color='green') Orders
+              v-btn(@click='getTransactions("deposits")'  color='green') Deposits
+              v-btn(@click='getTransactions("withdrawals")'  color='green') Withdrawals
+              v-btn(@click='getTransactions("invoices")'  color='green') Invoices
+              v-btn(@click='getTransactions()' color='green') Summary
+            v-row.justify-left.align-center
+              v-col(cols='4')
+                v-text-field(v-model='days_ago' type='number' size='5' label='In the past:')
+              v-col(cols='8') Days
+        p
+          v-alert.text-center.green--text(v-if='message') {{message}}
+          v-alert.text-center.red--text(v-if='error') {{error}}
+        p
+          hr
+        v-container
+          v-alert(v-if='loadingData') loading Data ...
+          v-data-table(v-if='showData && showData.length' :headers='showHeaders' :items='showData')
+    div(v-show='waitedForUser && !user.admin') 
+      v-alert(color='red') Access Denied
+      v-alert() Administrator access only 
 </template>
 
 <script>
@@ -44,6 +50,7 @@ import { get, call, sync } from 'vuex-pathify';
 import Vue from 'vue';
 
 import CustomSequelize from '@/mixins/CustomSequelize'
+import DynamicLoad from '@/mixins/DynamicLoad'
 
 export default {
   data() {
@@ -54,6 +61,8 @@ export default {
       error: '',
       users: null,
       days_ago: 7,
+
+      loadingData: false,
 
       showData: [],
       showHeaders: [],
@@ -75,23 +84,27 @@ export default {
     } 
   },
   mixins: [
-    CustomSequelize
+    CustomSequelize,
+    DynamicLoad
   ],
   computed: {
     user: get('user'),
   },
+  async mounted () {
+    await this.waitForUser(5)
+  },
   methods: {
-    mounted () {
-    },
-    resetData () {
+    resetData (reset) {
       this.message = ''
       this.error = ''
       this.showData = []
       this.showHeaders = []
+      if (reset) { this.loadingData = true }
+
     },
     async getUsers () {
-      this.resetData()
-      console.log('get list of users via admin api ...')
+      this.resetData(1)
+      console.log('Get list of users via admin api ...')
 
       // Test case 
       // var test = {"users":[{"subscriptions":null,"id":10385,"locked":false,"verified":null,"fiat":true,"index":0,"ip":3232235781,"seed":"U2FsdGVkX18Zr7W7NYXfykWSN/Je+NEYzSqj0Rrer9aBR2iAccO1fKsTW7bl/6xw3aK8wEAmAPYLvksheskpik7SNHRsQbmfTPfLplzcD5TR1p1PLBd++qRlS2egC5zR","username":"bob","password":"$2b$04$kr/k0tVH5Aztk5eEOAiGEO.DhyG8NkcqieCQUYOeoUm66.ft4p88K","unit":"BTC","account_id":15174,"otpsecret":"KFVEU7JZCAGU6ZZQ","currency":"USD","currencies":"[\"CAD\",\"USD\"]","createdAt":"2021-05-11T04:03:34.000Z","updatedAt":"2021-05-15T18:24:57.000Z","twofa":null,"pin":null},{"subscriptions":null,"id":10386,"locked":false,"verified":null,"fiat":false,"index":0,"ip":3232235781,"seed":"U2FsdGVkX19rUB71XeC+GfzMhfzzxrhJhGbsXrRED7VqmDPVAPBNIGvgSTb5m9OAhMBlUxL+FObg9zmoqlMtYpRZMk1JUc81pUVMfY5S27jdw72wWBzdnwlNam5Q/Njx","username":"satoshi-7f77e652","password":"$2b$04$hxE.eJk/PqiHYBkFIHWGUu5FYjdxA1RFhbLdZjJdDN3N4/DNt3TFK","unit":"SAT","account_id":15175,"otpsecret":"KBRAAPI6LBWFIXAA","currency":"CAD","currencies":"[\"CAD\",\"USD\"]","createdAt":"2021-05-11T12:56:57.000Z","updatedAt":"2021-05-11T12:56:57.000Z","twofa":null,"pin":null},{"subscriptions":null,"id":10387,"locked":false,"verified":null,"fiat":false,"index":0,"ip":3232235781,"seed":"U2FsdGVkX1+RaoXfP/0Y3PbTvenpoNbJtIoXWJP6kHsNTZkRQNOKSPCQLng/V3ikaZJc220U+aw2JRcvmaQ/svFgHd+Hz849tdLpgBwxq8QFjWA+rHQ+/vZKW7Q73d4Y","username":"satoshi-499dae2b","password":"$2b$04$CT2PESDrBXIqnYKY/yR02uCSJkRf4t5aW3sOB/RzQF3sPeZcvH3TK","unit":"SAT","account_id":15176,"otpsecret":"GVYHMNCYL5AXMNIK","currency":"CAD","currencies":"[\"CAD\",\"USD\"]","createdAt":"2021-05-13T23:55:08.000Z","updatedAt":"2021-05-13T23:55:08.000Z","twofa":null,"pin":null}]}
@@ -116,7 +129,7 @@ export default {
     },
 
     async getTransactions (type) {
-      this.resetData()
+      this.resetData(1)
 
       if (!type) { type = 'transactions' }
 
@@ -153,7 +166,7 @@ export default {
     },
 
     async getAccounts () {
-      this.resetData()
+      this.resetData(1)
       console.log('get list of users with account balances')
 
       // var balanceData = {
@@ -169,7 +182,8 @@ export default {
         .then( response => {
           console.log("Response: " + JSON.stringify(response))
           if (response && response.data) {
-            this.formatData(response.data.accounts, ['username', 'email', 'account_id', 'ticker', 'balance', 'created', 'updated'])
+            var accounts = response.data.accounts || []
+            this.formatData(accounts, ['username', 'email', 'account_id', 'ticker', 'balance', 'created', 'updated'])
           } else {
             console.log("No response data: " + + JSON.stringify(response))
           }
@@ -181,7 +195,7 @@ export default {
     },
     getQueue () {
       console.log('get waiting list via admin api ...')
-      this.resetData()
+      this.resetData(1)
 
       Vue.axios
         .get('/admin/waiting_list')
@@ -198,7 +212,7 @@ export default {
     },
     getReferrals (status) {
       console.log('get referrals via admin api ...')
-      this.resetData()
+      this.resetData(1)
 
       var url = '/admin/referrals'
       if (status) { url = status + '?status=pending'}
@@ -272,6 +286,8 @@ export default {
           }
         }
       }
+
+      this.loadingData = false
     }
   }
 };
