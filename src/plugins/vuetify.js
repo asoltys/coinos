@@ -23,6 +23,8 @@ import Cloud from 'vue-material-design-icons/Cloud';
 import ClipboardText from 'vue-material-design-icons/ClipboardText';
 import ChevronDown from 'vue-material-design-icons/ChevronDown';
 import ChevronUp from 'vue-material-design-icons/ChevronUp';
+import ChevronLeft from 'vue-material-design-icons/ChevronLeft';
+import ChevronRight from 'vue-material-design-icons/ChevronRight';
 import Code from 'vue-material-design-icons/CodeTags';
 import ContentCopy from 'vue-material-design-icons/ContentCopy';
 import Delete from 'vue-material-design-icons/Delete';
@@ -146,6 +148,7 @@ export default new Vuetify({
       'login': { component: Login },
       'mail': { component: Mail },
       'nfc': { component: Nfc },
+      'next': { component: ChevronRight },
       'note': { component: Note },
       'open': { component: OpenInNew },
       'archive': { component: PackageDown },
@@ -153,6 +156,7 @@ export default new Vuetify({
       'payments': { component: FormatLineWeight },
       'pencil': { component: Pencil },
       'power': { component: Power },
+      'previous': { component: ChevronLeft },
       'qrcode': { component: Qrcode },
       'refresh': { component: Refresh },
       'save': { component: Save },
