@@ -25,11 +25,11 @@
           </v-list-item-action>
           <v-list-item-content>About</v-list-item-content>
         </v-list-item>
-        <v-list-item color="red lighten-2" v-if='user.access==="Admin"' @click="$go('/admin')">
+        <v-list-item color="red lighten-2" v-if='user.admin' @click="$go('/admin')">
           <v-list-item-action>
-            <v-icon color="primary" title="Administration">$settings</v-icon>
+            <v-icon color="orange" title="Administration">$settings</v-icon>
           </v-list-item-action>
-          <v-list-item-content>Settings</v-list-item-content>
+          <v-list-item-content>Admin</v-list-item-content>
         </v-list-item>
         <v-list-item @click="$go('/referral')">
           <v-list-item-action>
