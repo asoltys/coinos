@@ -2,14 +2,14 @@
   v-card
     v-card-text
       v-progress-linear(v-if='loading' indeterminate='')
-      v-form.mt-4(v-model='validForm' v-else='')
+      v-form.mt-4(v-model='validForm' v-else='' @submit.prevent="register()")
         h2.mb-4.white--text Register an Account
         v-text-field.validate(label='Username' v-model='form.username' dark='' autocapitalize='none' ref='username' autocomplete='username' :rules='nameRules' append-icon='$account')
         v-text-field.validate(label='Email' type='email' v-model='form.email' dark='' autocapitalize='none' ref='email' autocomplete='email'  append-icon='$email' :rules='rules.email')
         v-text-field(label='Phone (optional)' @change='validatePhone()' v-model='form.phone' dark='' autocapitalize='none' ref='phone' append-icon='$cellphone' autocomplete='phone' :rules='rules.NAPhone' :class='phoneValidated ? "validated" : "unvalidated"')
         v-text-field.validate(label='Password' v-model='form.password' type='password' ref='password' autocomplete='current-password' :rules='passwordRules' append-icon='$lock')
         v-btn-toggle.d-flex.flex-wrap.mx-auto(tile='' color='primary accent-3' group='')
-          v-btn.wide.mr-2.flex-grow-1(@click='register()' :disabled='!validForm')
+          v-btn.wide.mr-2.flex-grow-1(:disabled='!validForm' type='submit')
             v-icon(left='' color='green') $forward
             span Register
           v-btn.mb-1.mb-sm-0.wide.flex-grow-1(@click="$go('/')")
@@ -82,6 +82,7 @@ export default {
       console.log("User created...")
       await this.login(user);
       console.log("User logged in...")
+      this.$go('/home')
     },
     validatePhone () {
       this.phoneValidated = false
