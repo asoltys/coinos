@@ -39,7 +39,8 @@
           hr
         v-container
           v-alert(v-if='loadingData') loading Data ...
-          v-data-table(v-if='showData && showData.length' :headers='showHeaders' :items='showData')
+          v-data-table(v-if='showData && showData.length' :headers='showHeaders' :items='showData' :footer-props="footer")
+          
     div(v-show='waitedForUser && !user.admin') 
       v-alert(color='red') Access Denied
       v-alert() Administrator access only 
@@ -80,7 +81,15 @@ export default {
         {text: 'status', value: 'status'}
       ],
 
-      reference: {}
+      reference: {},
+
+      footer: {
+        showFirstLastPage: true,
+        firstIcon: '$page_first',
+        lastIcon: '$page_last',
+        prevIcon: '$previous',
+        nextIcon: '$next'
+      }
     } 
   },
   mixins: [

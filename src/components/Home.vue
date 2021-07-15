@@ -54,6 +54,6 @@ export default {
 
   methods: {
     snack: call('snack'),
-  },
+  }
 };
 </script>
