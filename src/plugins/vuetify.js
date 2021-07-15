@@ -54,6 +54,8 @@ import Nfc from 'vue-material-design-icons/Nfc';
 import Note from 'vue-material-design-icons/Note';
 import OpenInNew from 'vue-material-design-icons/OpenInNew';
 import PackageDown from 'vue-material-design-icons/PackageDown';
+import PageFirst from 'vue-material-design-icons/PageFirst';
+import PageLast from 'vue-material-design-icons/PageLast';
 import Paperclip from 'vue-material-design-icons/Paperclip';
 import Pencil from 'vue-material-design-icons/Pencil';
 import Power from 'vue-material-design-icons/Power';
@@ -144,6 +146,7 @@ export default new Vuetify({
       'canada': { component: Canada },
       'bank': { component: Bank },
       'interac': { component: Interac },
+      'back': { component: ChevronLeft },
       'lock': { component: Lock },
       'login': { component: Login },
       'mail': { component: Mail },
@@ -152,6 +155,8 @@ export default new Vuetify({
       'note': { component: Note },
       'open': { component: OpenInNew },
       'archive': { component: PackageDown },
+      'page_first': { component: PageFirst },
+      'page_last': { component: PageLast},
       'paperclip': { component: Paperclip },
       'payments': { component: FormatLineWeight },
       'pencil': { component: Pencil },
