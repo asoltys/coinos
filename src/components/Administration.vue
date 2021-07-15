@@ -163,7 +163,7 @@ export default {
           console.log("Response: " + JSON.stringify(response))
           if (response && response.data) {
             this.formatData(response.data[type], showFields[type])
-            this.message = response.data[type].length + ' ' + type + ' since ' + since
+            if (type !== 'transactions') { this.message = response.data[type].length + ' ' + type + ' since ' + since }
           } else {
             console.log("No response data: " + + JSON.stringify(response))
           }
