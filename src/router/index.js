@@ -139,12 +139,19 @@ const Referral = () =>
     '../components/Referral'
 );
 
+const Documents = () =>
+  import(
+    /* webpackChunkName: "documents" */
+    '../components/Documents'
+);
+
 
 const routes = [
   { path: '/', component: Home, props: { logout: false } },
   { path: '/about', component: About },
   { path: '/funding', component: Funding },
   { path: '/referral', component: Referral },
+  { path: '/docs', component: Documents },
   { name: 'accept', path: '/accept', component: Accept, props: true },
   { path: '/asset', component: Asset },
   { path: '/decrypt', component: Decrypt },
