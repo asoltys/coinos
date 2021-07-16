@@ -39,7 +39,7 @@
           hr
         v-container
           v-alert(v-if='loadingData') loading Data ...
-          v-data-table(v-if='showData && showData.length' :headers='showHeaders' :items='showData' :footer-props="footer")
+          v-data-table(v-if='showData && showData.length' :headers='showHeaders' :items='showData' :footer-props="footer" :sort-by='sort')
           
     div(v-show='waitedForUser && !user.admin') 
       v-alert(color='red') Access Denied
@@ -89,8 +89,34 @@ export default {
         lastIcon: '$page_last',
         prevIcon: '$previous',
         nextIcon: '$next'
+      },
+      showFields: {
+        users: ['username', 'email', 'sms', 'verified', 'created_at', 'access'],
+        accounts: ['username', 'email', 'account_id', 'ticker', 'balance', 'created', 'updated'],
+        queue: ['email', 'sms', 'requested', 'current_user_id'],
+        referrals: ['sponsor', 'token', 'user', 'status', 'created_at'],
+
+        transactions: ['username', 'invoices', 'orders', 'deposits', 'withdrawals', 'payments'],
+        invoices: ['username', 'email', 'currency', 'amount', 'network'],
+        orders: ['seller', 'buyer', 'sell_amount', 'from', 'to', 'buy_amount', 'rate', 'completed'],
+        deposits: ['username', 'email', 'amount', 'credited', 'deposited'],
+        withdrawals: ['username', 'email', 'amount', 'notes', 'withdrawn'],
+        payments: ['username', 'email', 'amount', 'network', 'hash', 'deposited']
+      },
+      sortFields: {
+        users: ['username', 'email', 'created_at', 'access'],
+        accounts: ['username', 'email', 'account_id', 'created', 'updated'],
+        queue: ['email', 'requested'],
+        referrals: ['sponsor', 'user', 'created_at'],
+
+        transactions: ['username'],
+        invoices: ['username', 'email'],
+        orders: ['seller', 'buyer', 'completed'],
+        deposits: ['username', 'email', 'deposited'],
+        withdrawals: ['username', 'email', 'withdrawn'],
+        payments: ['username', 'email', 'deposited']
       }
-    } 
+    }
   },
   mixins: [
     CustomSequelize,
@@ -126,7 +152,7 @@ export default {
           if (response && response.data) {
             console.log("got: " + JSON.stringify(response.data))
             this.users = response.data.users || []
-            this.formatData(this.users, ['username', 'email', 'sms', 'verified', 'created_at', 'access'])
+            this.formatData(this.users, 'users')
           } else {
             console.log("No response data: " + + JSON.response.data)
           }
@@ -147,14 +173,6 @@ export default {
       const since = new Date(new Date() - this.days_ago*24*60*60*1000).toISOString().substring(0,10) // does not account for GMT for now...
       console.log('since = ' + since)
 
-      const showFields = {
-        transactions: ['username', 'invoices', 'orders', 'deposits', 'withdrawals', 'payments'],
-        invoices: ['username', 'email', 'currency', 'amount', 'network'],
-        orders: ['seller', 'buyer', 'sell_amount', 'from', 'to', 'buy_amount', 'rate', 'completed'],
-        deposits: ['username', 'email', 'amount', 'credited', 'deposited'],
-        withdrawals: ['username', 'email', 'amount', 'notes', 'withdrawn'],
-        payments: ['username', 'email', 'amount', 'network', 'hash', 'deposited']
-      }
       var url = '/admin/' + type + '?since=' + since
       console.log('url: ' + url)
       Vue.axios
@@ -162,7 +180,7 @@ export default {
         .then( response => {
           console.log("Response: " + JSON.stringify(response))
           if (response && response.data) {
-            this.formatData(response.data[type], showFields[type])
+            this.formatData(response.data[type], type)
             if (type !== 'transactions') { this.message = response.data[type].length + ' ' + type + ' since ' + since }
           } else {
             console.log("No response data: " + + JSON.stringify(response))
@@ -192,7 +210,7 @@ export default {
           console.log("Response: " + JSON.stringify(response))
           if (response && response.data) {
             var accounts = response.data.accounts || []
-            this.formatData(accounts, ['username', 'email', 'account_id', 'ticker', 'balance', 'created', 'updated'])
+            this.formatData(accounts, 'accounts')
           } else {
             console.log("No response data: " + + JSON.stringify(response))
           }
@@ -211,7 +229,7 @@ export default {
         .then( response => {
           console.log('Response: ' + JSON.stringify(response))
           this.queued = response.data.queue || []
-          this.formatData(this.queued, ['email', 'sms', 'requested', 'current_user_id'])
+          this.formatData(this.queued, 'queue')
           console.log('Queue: ' + JSON.stringify(this.queued))
           this.message = 'Queued ' + this.queued.length + ' Referrals'
         })
@@ -231,7 +249,7 @@ export default {
         .then( response => {
           console.log('Response: ' + JSON.stringify(response))
           this.referrals = response.data.referrals || []
-          this.formatData(this.referrals, ['sponsor', 'token', 'user', 'status', 'created_at'])
+          this.formatData(this.referrals, 'referrals')
           console.log('Referrals: ' + JSON.stringify(this.referrals))
           this.message = 'Retrieved ' + this.referrals.length + ' ' + status + ' Referrals'
         })
@@ -240,8 +258,10 @@ export default {
         })
     },
     
-    formatData (data, show, subset) {
+    formatData (data, scope, subset) {
       this.showHeaders = []
+      var show = this.showFields[scope]
+      var sort = this.sortFields[scope]
 
       for (var i = 0; i < show.length; i++) {
         var field = {text: show[i], value: show[i]}
@@ -295,7 +315,7 @@ export default {
           }
         }
       }
-
+      this.sort = sort
       this.loadingData = false
     }
   }
