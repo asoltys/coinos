@@ -27,8 +27,9 @@
       </v-card-text>
     </v-card>
 
-    <v-progress-linear v-if="loading" indeterminate />
-    <div v-else-if='!isReferred'>
+    <v-progress-linear v-if='!waitedForUser' indeterminate='' />
+    <!-- <v-progress-linear v-if="loading" indeterminate /> -->
+    <div v-else-if='user.username && !isReferred'>
       <v-alert class="text-center">
         <p>Not currently referred</p>
         <p>Funding access is limited to referred users</p>
@@ -36,7 +37,7 @@
         <v-btn @click='enterQueue()' color="#59316B"> Join Waiting List </v-btn>
       </v-alert>
     </div>
-    <div v-else>
+    <div v-else-if='user.username && isReferred'>
       <v-alert class="text-center">
         Referred:
         <v-icon color='green'> $check </v-icon>
@@ -295,6 +296,9 @@
         </v-card-text>
       </v-card>
     </div>
+    <div v-else>
+      <v-alert color='red'> You must be logged in as a non-anonymized user to access funding options </v-alert>
+    </div>
     <v-dialog v-model='openReferral' dark max-width='500'>
       <v-card style='background-color: #333'>
         <v-card-title>
@@ -340,9 +344,12 @@ const lcad = process.env.VUE_APP_LCAD;
 import config from '@/config'
 import Vue from 'vue';
 
+import DynamicLoad from '@/mixins/DynamicLoad'
+
 export default {
-  components: {
-  },
+  mixins: [
+    DynamicLoad
+  ],
   data: () => ({
     loading: true,
     openReferral: false,
@@ -483,18 +490,18 @@ export default {
   async mounted() {
     this.rules = config.rules || {}
     
-    const waitForUser = resolve => {
-      if (!this.user.index && this.user.index !== 0)
-        return (this.timeout = setTimeout(() => waitForUser(resolve), 1000));
-      resolve();
-    };
-    await new Promise(waitForUser);
+    // const waitForUser = resolve => {
+    //   if (!this.user.index && this.user.index !== 0)
+    //     return (this.timeout = setTimeout(() => waitForUser(resolve), 1000));
+    //   resolve();
+    // };
+    // await new Promise(waitForUser);
     
-    if (this.user.verified === 'verified') this.mode = 1;
-    this.loading = false;
+    // if (this.user.verified === 'verified') this.mode = 1;
+    // this.loading = false;
+    await this.waitForUser(5)
 
     this.checkIfReferred(this.user.id);
-
 
     if (this.isReferred) {
       this.funding = await this.createFunding();
