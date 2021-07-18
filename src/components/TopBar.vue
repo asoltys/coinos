@@ -85,7 +85,8 @@ export default {
       return window.screen.width === window.innerWidth &&
       window.screen.height === window.innerHeight &&
       (new Date()).getTimezoneOffset() === 0 &&
-      navigator.plugins.length === 0;
+      navigator.plugins.length === 0 &&
+      !location.href.includes(".onion");
     }
   },
   methods: {
