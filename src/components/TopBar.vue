@@ -83,7 +83,9 @@ export default {
     user: get('user'),
     showTorButton() {
       return window.screen.width === window.innerWidth &&
-      window.screen.height === window.innerHeight;
+      window.screen.height === window.innerHeight &&
+      (new Date()).getTimezoneOffset() === 0 &&
+      navigator.plugins.length === 0;
     }
   },
   methods: {
