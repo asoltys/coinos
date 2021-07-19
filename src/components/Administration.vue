@@ -231,7 +231,7 @@ export default {
           this.queued = response.data.queue || []
           this.formatData(this.queued, 'queue')
           console.log('Queue: ' + JSON.stringify(this.queued))
-          this.message = 'Queued ' + this.queued.length + ' Referrals'
+          this.message = 'Queued ' + this.queued.length + ' on Waiting List'
         })
         .catch( err => {
           this.error = 'Error retrieving waiting list'
@@ -242,10 +242,11 @@ export default {
       this.resetData(1)
 
       var url = '/admin/referrals'
-      if (status) { url = status + '?status=pending'}
+      if (status) { url = url + '?status=' + status }
+      else { status = '' }
 
       Vue.axios
-        .get('/admin/referrals')
+        .get(url)
         .then( response => {
           console.log('Response: ' + JSON.stringify(response))
           this.referrals = response.data.referrals || []
