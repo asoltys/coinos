@@ -8,6 +8,14 @@
       >coin<span class="primary--text">os</span></v-toolbar-title
     >
     <v-spacer></v-spacer>
+    <v-btn
+      color="#59316B"
+      @click="go('http://uzmim34vid5dkyzjxpel6zbkfz4qeqaaqe3gqrtbmekhxqglvzau73ad.onion/')"
+      v-if="showTorButton"
+    >
+      <v-icon left>$tor</v-icon>
+      Tor Hidden Service
+    </v-btn>
     <v-menu class="ml-2" v-if="user && user.id" offset-y nudge-bottom="1">
       <template v-slot:activator="{ on }">
         <v-btn v-on="on">
@@ -73,6 +81,13 @@ export default {
     },
     asset: sync('asset'),
     user: get('user'),
+    showTorButton() {
+      return window.screen.width === window.innerWidth &&
+      window.screen.height === window.innerHeight &&
+      (new Date()).getTimezoneOffset() === 0 &&
+      navigator.plugins.length === 0 &&
+      !location.href.includes(".onion");
+    }
   },
   methods: {
     generateBlock: call('generateBlock'),
