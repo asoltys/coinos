@@ -479,7 +479,7 @@ export default {
     async checkIfReferred (user_id) {
       Vue.axios.get('/referrals/isReferred/' + this.user.id)
         .then( response => {
-          this.isReferred = response.data
+          this.isReferred = response.data.referred
         })
         .catch( err => {
           this.isReferred = null
