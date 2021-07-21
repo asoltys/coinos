@@ -309,7 +309,7 @@ export default new Vuex.Store({
       try {
         console.log('post: ' + JSON.stringify(form))
         // const { data: response } = await Vue.axios.post('/referrals/joinQueue', form);
-        const { data: response } = await Vue.axios.get('/referrals/joinQueue?email=' + form.email + '&sms=' + form.sms);
+        const { data: response } = await Vue.axios.get('/referrals/joinQueue?email=' + form.email + '&phone=' + form.phone);
         if (response) {
           return response;
         }
