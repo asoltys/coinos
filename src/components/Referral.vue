@@ -83,17 +83,22 @@ export default {
     await this.waitForUser(5)
 
     console.log('check referral status for ' + this.user.id)
-    Vue.axios.get('/referrals/isReferred/' + this.user.id)
-      .then( response => {
-        this.isReferred = response.data.referred
-        console.log('referred: ' + this.isReferred)
-        this.loading = false
-      })
-      .catch( err => {
-        this.isReferred = null
-        console.debug('error checking referral')
-        this.loading = false
-      })
+    if (this.user.admin) {
+      this.isReferred = true
+      this.loading = false
+    } else {
+      Vue.axios.get('/referrals/isReferred/' + this.user.id)
+        .then( response => {
+          this.isReferred = response.data.referred
+          console.log('referred: ' + this.isReferred)
+          this.loading = false
+        })
+        .catch( err => {
+          this.isReferred = null
+          console.debug('error checking referral')
+          this.loading = false
+        })
+    }
   },
   methods: {
     resetMessages () {
