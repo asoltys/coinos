@@ -18,7 +18,7 @@
             //-   b(v-else-if='users') No Users
           v-tab-item(key="Referrals")
             v-row.justify-space-around
-              v-btn(@click='getReferrals()'  color='green') List Referrals
+              v-btn(@click='getReferrals("")'  color='green') List Referrals
             //- v-data-table(v-if='referrals && referrals.length' :headers='uHeaders' :items='referrals')
           v-tab-item(key="Stats")
             v-row.justify-space-around
