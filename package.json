@@ -7,6 +7,7 @@
     "build": "vue-cli-service build --report",
     "buildtor": "vue-cli-service build --mode tor",
     "stage": "vue-cli-service build --mode staging",
+    "dev": "vue-cli-service build --mode development",
     "lint": "vue-cli-service lint",
     "format": "prettier --write '**/*.{js,mjs,json,vue,gql}'",
     "start": "npm run serve",

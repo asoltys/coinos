@@ -1,7 +1,8 @@
 FROM node:alpine
 
-COPY . /coinos
-ENV SHELL /bin/bash
+RUN apk add git
+RUN git clone https://github.com/coinos/coinos-ui
+WORKDIR /coinos-ui
 
-RUN yarn install
+RUN yarn
 CMD ["yarn", "start"]
