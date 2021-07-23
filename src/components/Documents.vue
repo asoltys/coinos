@@ -14,6 +14,7 @@
       v-container
         v-card()
           v-card-title Public Documents:
+          // This can be used to enable easy access to specific user help on various topics.
           v-card-text
             ul
               li(v-for='doc in docs.public')
