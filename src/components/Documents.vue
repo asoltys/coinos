@@ -1,17 +1,25 @@
 <template lang='pug'>
   div
     div(v-if='user && user.admin')
-      h2 Private Documents:
-      ul
-        li(v-for='doc in docs.private')
-          a(:href='doc.link' target='newWin') {{doc.name}}
+      v-container
+        v-card()
+          v-card-title Private Documents:
+          v-card-text
+            ul
+              li(v-for='doc in docs.private')
+                a(:href='doc.link' :target='target(doc)' @click='open(doc)') {{doc.name}}
       hr
     v-progress-linear(v-else-if='loading' indeterminate='')
     div
-      h2 Public Documents:
-        ul
-          li(v-for='doc in docs.public')
-            a(:href='doc.link' target='newWin') {{doc.name}}
+      v-container
+        v-card()
+          v-card-title Public Documents:
+          v-card-text
+            ul
+              li(v-for='doc in docs.public')
+                a(:href='doc.link' :target='target(doc)' @click='open(doc)') {{doc.name}}
+    hr
+    iframe(v-if='embedded' name='embedded' src='' scrolling='auto' frameborder=1 width='100%' height=1100 style='background-color: white')
 
 </template>
 
@@ -51,15 +59,18 @@ export default {
         public: [
           {
             name: 'About Us',
-            link: 'https://corporate.coinos.io/about'
+            link: 'https://corporate.coinos.io/about',
+            embed: true
           },
           {
             name: 'FAQ',
-            link: 'https://corporate.coinos.io/about'
+            link: 'https://corporate.coinos.io/faq',
+            embed: true
           }
         ]
       },
-      loading: true
+      loading: true,
+      embedded: false
     }
   },
   async mounted () {
@@ -68,6 +79,22 @@ export default {
   },
   computed: {
     user: get('user'),
+  },
+  methods: {
+    target (doc) {
+      if (doc.embed) {
+        return 'embedded'
+      } else {
+        return 'newWin'
+      }
+    },
+    open (doc) {
+      if (doc.embed) {
+        this.embedded = true
+      } else {
+        this.embedded = false
+      }
+    }
   }
 }
 </script>
