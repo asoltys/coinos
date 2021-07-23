@@ -1,0 +1,8 @@
+FROM node:alpine
+
+RUN apk add git
+RUN git clone https://github.com/coinos/coinos-ui
+WORKDIR /coinos-ui
+
+RUN yarn
+CMD ["yarn", "start"]
