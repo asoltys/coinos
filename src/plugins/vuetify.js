@@ -60,6 +60,8 @@ import Paperclip from 'vue-material-design-icons/Paperclip';
 import Pencil from 'vue-material-design-icons/Pencil';
 import Power from 'vue-material-design-icons/Power';
 import Qrcode from 'vue-material-design-icons/Qrcode';
+import RadioboxMarked from 'vue-material-design-icons/RadioboxMarked';
+import RadioboxBlank from 'vue-material-design-icons/RadioboxBlank';
 import Refresh from 'vue-material-design-icons/Refresh';
 import Save from 'vue-material-design-icons/ContentSave';
 import Search from 'vue-material-design-icons/AccountSearch';
@@ -163,6 +165,8 @@ export default new Vuetify({
       'power': { component: Power },
       'previous': { component: ChevronLeft },
       'qrcode': { component: Qrcode },
+      'radiobox_marked': { component: RadioboxMarked },
+      'radiobox_blank': { component: RadioboxBlank },
       'refresh': { component: Refresh },
       'save': { component: Save },
       'search': { component: Search },
