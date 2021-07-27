@@ -12,6 +12,27 @@
               v-btn(@click='getQueue()'  color='green') Waiting List
               v-btn(@click='getAccounts()' color='green') Accounts with Balance
             p
+            v-container()
+              v-row.justify-space-around
+                v-col(cols='4')
+                  b Include names/emails:
+                v-col(cols='4')
+                  // Radios are invisible (?) ... as are checkboxes ...
+                  //- v-radio-group(v-model='sType')
+                  //-   v-radio(key='contains' value='contains' label='Containing')
+                  //-   v-radio(key='starts_with' value='starts_with' label='Starting with')
+                  v-row
+                      input(v-model='sType' type='radio' name='sType' id='contains' value='contains')
+                      label(for='contains') &nbsp; containing
+                  v-row
+                    input(v-model='sType' type='radio' name='sType' id='starts_with' value='starts_with')
+                    label(for='starts_with')  &nbsp; starting with
+                  v-row
+                    input(v-model='sType' type='radio' name='sType' id='matches' value='matches' checked)
+                    label(for='matches')  &nbsp; matching
+
+                v-col(cols='4')
+                  v-text-field(v-model='search' label='Search string')
             //-   hr
             //- v-container
             //-   v-data-table(v-if='users && users.length' :headers='uHeaders' :items='users')
@@ -57,6 +78,11 @@ export default {
   data() {
     return {
       sections: ['Users', 'Referrals', 'Stats'],
+      search: '',
+      sType: 'matches',
+      contains: false,
+      starts_with: false,
+
       tab: '',
       message: '',
       error: '',
@@ -141,12 +167,27 @@ export default {
       this.resetData(1)
       console.log('Get list of users via admin api ...')
 
+      var url = '/admin/users?'
+
+      if (this.search) {
+        url = url + 'search=' + this.search
+        if (this.sType === 'contains') {
+          url = url + '&contains=1'
+          this.message = 'user(s) containing "' + this.search + '"'
+        } else if (this.sType === 'starts_with') {
+          url = url + '&starts_with=1'
+          this.message = 'user(s) starting with "' + this.search + '"'
+        } else {
+          this.message = 'user(s) like: "' + this.search + '"'
+        }
+      }
+
       // Test case 
       // var test = {"users":[{"subscriptions":null,"id":10385,"locked":false,"verified":null,"fiat":true,"index":0,"ip":3232235781,"seed":"U2FsdGVkX18Zr7W7NYXfykWSN/Je+NEYzSqj0Rrer9aBR2iAccO1fKsTW7bl/6xw3aK8wEAmAPYLvksheskpik7SNHRsQbmfTPfLplzcD5TR1p1PLBd++qRlS2egC5zR","username":"bob","password":"$2b$04$kr/k0tVH5Aztk5eEOAiGEO.DhyG8NkcqieCQUYOeoUm66.ft4p88K","unit":"BTC","account_id":15174,"otpsecret":"KFVEU7JZCAGU6ZZQ","currency":"USD","currencies":"[\"CAD\",\"USD\"]","createdAt":"2021-05-11T04:03:34.000Z","updatedAt":"2021-05-15T18:24:57.000Z","twofa":null,"pin":null},{"subscriptions":null,"id":10386,"locked":false,"verified":null,"fiat":false,"index":0,"ip":3232235781,"seed":"U2FsdGVkX19rUB71XeC+GfzMhfzzxrhJhGbsXrRED7VqmDPVAPBNIGvgSTb5m9OAhMBlUxL+FObg9zmoqlMtYpRZMk1JUc81pUVMfY5S27jdw72wWBzdnwlNam5Q/Njx","username":"satoshi-7f77e652","password":"$2b$04$hxE.eJk/PqiHYBkFIHWGUu5FYjdxA1RFhbLdZjJdDN3N4/DNt3TFK","unit":"SAT","account_id":15175,"otpsecret":"KBRAAPI6LBWFIXAA","currency":"CAD","currencies":"[\"CAD\",\"USD\"]","createdAt":"2021-05-11T12:56:57.000Z","updatedAt":"2021-05-11T12:56:57.000Z","twofa":null,"pin":null},{"subscriptions":null,"id":10387,"locked":false,"verified":null,"fiat":false,"index":0,"ip":3232235781,"seed":"U2FsdGVkX1+RaoXfP/0Y3PbTvenpoNbJtIoXWJP6kHsNTZkRQNOKSPCQLng/V3ikaZJc220U+aw2JRcvmaQ/svFgHd+Hz849tdLpgBwxq8QFjWA+rHQ+/vZKW7Q73d4Y","username":"satoshi-499dae2b","password":"$2b$04$CT2PESDrBXIqnYKY/yR02uCSJkRf4t5aW3sOB/RzQF3sPeZcvH3TK","unit":"SAT","account_id":15176,"otpsecret":"GVYHMNCYL5AXMNIK","currency":"CAD","currencies":"[\"CAD\",\"USD\"]","createdAt":"2021-05-13T23:55:08.000Z","updatedAt":"2021-05-13T23:55:08.000Z","twofa":null,"pin":null}]}
       // this.formatData(test.users, ['username', 'email', 'sms', 'verified', 'createdAt', 'access'])
 
       Vue.axios
-        .get('/admin/users')
+        .get(url)
         .then( response => {
           console.log("Response: " + JSON.stringify(response))
           if (response && response.data) {
@@ -196,6 +237,19 @@ export default {
       this.resetData(1)
       console.log('get list of users with account balances')
 
+      var url = '/admin/accounts?nonZero=true&'
+      if (this.search) {
+        url = url + 'search=' + this.search
+        if (this.sType === 'contains') {
+          url = url + '&contains=1'
+          this.message = 'for user(s) containing "' + this.search + '"'
+        } else if (this.sType === 'starts_with') {
+          url = url + '&starts_with=1'
+          this.message = 'for user(s) starting with "' + this.search + '"'
+        } else {
+          this.message = 'for user(s) like: "' + this.search + '"'
+        }
+      }
       // var balanceData = {
       //   accounts: ['account_id', 'ticker', 'balance', 'created_at', 'updated_at']
       // }
@@ -205,12 +259,13 @@ export default {
       // this.formatData(test.users, ['username', 'email'], balanceData)
 
       Vue.axios
-        .get('/admin/accounts?nonZero=true')
+        .get(url)
         .then( response => {
           console.log("Response: " + JSON.stringify(response))
           if (response && response.data) {
             var accounts = response.data.accounts || []
             this.formatData(accounts, 'accounts')
+            this.message = accounts.length + ' Accounts ' + this.message
           } else {
             console.log("No response data: " + + JSON.stringify(response))
           }
@@ -224,14 +279,29 @@ export default {
       console.log('get waiting list via admin api ...')
       this.resetData(1)
 
+      var url = '/admin/waiting_list?'
+
+      if (this.search) {
+        url = url + 'search=' + this.search
+        if (this.sType === 'contains') {
+          url = url + '&contains=1'
+          this.message = 'user(s) containing "' + this.search + '"'
+        } else if (this.sType === 'starts_with') {
+          url = url + '&starts_with=1'
+          this.message = 'user(s) starting with "' + this.search + '"'
+        } else {
+          this.message = 'user(s) like: "' + this.search + '"'
+        }
+      }
+
       Vue.axios
-        .get('/admin/waiting_list')
+        .get(url)
         .then( response => {
           console.log('Response: ' + JSON.stringify(response))
           this.queued = response.data.queue || []
           this.formatData(this.queued, 'queue')
           console.log('Queue: ' + JSON.stringify(this.queued))
-          this.message = 'Queued ' + this.queued.length + ' on Waiting List'
+          this.message = this.queued.length + ' ' + this.message + ' on Waiting List'
         })
         .catch( err => {
           this.error = 'Error retrieving waiting list'
