@@ -69,6 +69,14 @@ module.exports = {
     phone: [
       v => !v || /^(\+\d+ |)\(?\d\d\d(\) | |-)\d\d\d(\-| )\d\d\d\d$/.test(v) || 'phone must include area code eg 604 123-4567'
     ],
-
+    username: [
+      v => !!v || 'Name is required',
+      v => v && v.length >= 3 && v.length <= 16 || 'Name must be between 3 and 16 characters',
+      v => /^[a-zA-Z0-9]+$/.test(v) || 'Name may only contain alphanumeric characters'      
+    ],
+    password: [
+      v => !!v || 'Password is required',
+      v => v && v.length >= 8 || 'Password must be at least 8 characters'
+    ]
   }
 }
