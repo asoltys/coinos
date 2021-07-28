@@ -8,6 +8,9 @@
       >coin<span class="primary--text">os</span></v-toolbar-title
     >
     <v-spacer></v-spacer>
+    <span v-if="user && user.id">Logged In   </span>
+    <span v-else>Not Logged In   </span>
+    <v-spacer></v-spacer>
     <v-btn
       color="#59316B"
       @click="go('http://uzmim34vid5dkyzjxpel6zbkfz4qeqaaqe3gqrtbmekhxqglvzau73ad.onion/')"
