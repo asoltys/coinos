@@ -21,7 +21,6 @@
                 a(:href='doc.link' :target='target(doc)' @click='open(doc)') {{doc.name}}
     hr
     iframe(v-if='embedded' name='embedded' src='' scrolling='auto' frameborder=1 width='100%' height=1100 style='background-color: white')
-
 </template>
 
 <script>

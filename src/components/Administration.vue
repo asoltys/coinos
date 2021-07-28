@@ -12,27 +12,6 @@
               v-btn(@click='getQueue()'  color='green') Waiting List
               v-btn(@click='getAccounts()' color='green') Accounts with Balance
             p
-            v-container()
-              v-row.justify-space-around
-                v-col(cols='4')
-                  b Include names/emails:
-                v-col(cols='4')
-                  // Radios are invisible (?) ... as are checkboxes ...
-                  //- v-radio-group(v-model='sType')
-                  //-   v-radio(key='contains' value='contains' label='Containing')
-                  //-   v-radio(key='starts_with' value='starts_with' label='Starting with')
-                  v-row
-                      input(v-model='sType' type='radio' name='sType' id='contains' value='contains')
-                      label(for='contains') &nbsp; containing
-                  v-row
-                    input(v-model='sType' type='radio' name='sType' id='starts_with' value='starts_with')
-                    label(for='starts_with')  &nbsp; starting with
-                  v-row
-                    input(v-model='sType' type='radio' name='sType' id='matches' value='matches' checked)
-                    label(for='matches')  &nbsp; matching
-
-                v-col(cols='4')
-                  v-text-field(v-model='search' label='Search string')
             //-   hr
             //- v-container
             //-   v-data-table(v-if='users && users.length' :headers='uHeaders' :items='users')
@@ -41,21 +20,46 @@
             v-row.justify-space-around
               v-btn(@click='getReferrals("")'  color='green') List Referrals
             //- v-data-table(v-if='referrals && referrals.length' :headers='uHeaders' :items='referrals')
-          v-tab-item(key="Stats")
+          v-tab-item(key="Transactions")
             v-row.justify-space-around
               v-btn(@click='getTransactions("payments")'  color='green') Payments
               v-btn(@click='getTransactions("orders")'  color='green') Orders
               v-btn(@click='getTransactions("deposits")'  color='green') Deposits
               v-btn(@click='getTransactions("withdrawals")'  color='green') Withdrawals
               v-btn(@click='getTransactions("invoices")'  color='green') Invoices
-              v-btn(@click='getTransactions()' color='green') Summary
-            v-row.justify-left.align-center
-              v-col(cols='4')
-                v-text-field(v-model='days_ago' type='number' size='5' label='In the past:')
-              v-col(cols='8') Days
+          v-tab-item(key="Summaries")
+            v-row.justify-space-around
+              v-btn(@click='getTransactions()'  color='green' :disabled='!search') Transactions
+              v-btn(@click='getKyc()'  color='green' ) KYC Required
+            v-alert (Please filter on users to avoid hanging queries for transactions)
+
+          v-container
+              v-row.justify-space-around
+                v-col(cols='3' v-if='stringSearch')
+                  b Include users:
+                v-col(cols='3' v-if='stringSearch')
+                  // Radios are invisible (?) ... as are checkboxes ...
+                  //- v-radio-group(v-model='sType')
+                  //-   v-radio(key='contains' value='contains' label='Containing')
+                  //-   v-radio(key='starts_with' value='starts_with' label='Starting with')
+                  v-row
+                      input(v-model='sType' type='radio' name='sType' id='contains' value='contains' @input='changed=true')
+                      label(for='contains') &nbsp; containing
+                  v-row
+                    input(v-model='sType' type='radio' name='sType' id='starts_with' value='starts_with' @input='changed=true')
+                    label(for='starts_with')  &nbsp; starting with
+                  v-row
+                    input(v-model='sType' type='radio' name='sType' id='matches' value='matches' checked @input='changed=true')
+                    label(for='matches')  &nbsp; matching
+                v-col(v-if='stringSearch' cols='2')
+                  v-text-field(v-model='search' label='Search' @input='changed=true' placeholder='users')
+                v-col(cols='2' v-if='timeSearch')
+                  v-text-field(v-model='days_ago' type='number' size='5' label='In the past:' @input='changed=true')
+                v-col(cols='2' v-if='timeSearch') Days
         p
           v-alert.text-center.green--text(v-if='message') {{message}}
           v-alert.text-center.red--text(v-if='error') {{error}}
+          v-alert(v-if='changed' color='yellow' light) Click on applicable button above again to regenerate query
         p
           hr
         v-container
@@ -77,11 +81,14 @@ import DynamicLoad from '@/mixins/DynamicLoad'
 export default {
   data() {
     return {
-      sections: ['Users', 'Referrals', 'Stats'],
+      sections: ['Users', 'Referrals', 'Transactions', 'Summaries'],
       search: '',
       sType: 'matches',
       contains: false,
       starts_with: false,
+      since: '',
+      filter: '',
+      changed: false,
 
       tab: '',
       message: '',
@@ -96,7 +103,7 @@ export default {
       uHeaders: [
         {text: 'username', value: 'username'},
         {text: 'email', value: 'email'},
-        {text: 'sms', value: 'sms'}
+        {text: 'phone', value: 'phone'}
       ],
 
       referrals: null,
@@ -117,17 +124,19 @@ export default {
         nextIcon: '$next'
       },
       showFields: {
-        users: ['username', 'email', 'sms', 'verified', 'created_at', 'access'],
+        users: ['username', 'email', 'phone', 'verified', 'created_at', 'access'],
         accounts: ['username', 'email', 'account_id', 'ticker', 'balance', 'created', 'updated'],
-        queue: ['email', 'sms', 'requested', 'current_user_id'],
+        queue: ['email', 'phone', 'requested', 'current_user_id'],
         referrals: ['sponsor', 'token', 'user', 'status', 'created_at'],
-
+  
         transactions: ['username', 'invoices', 'orders', 'deposits', 'withdrawals', 'payments'],
         invoices: ['username', 'email', 'currency', 'amount', 'network'],
         orders: ['seller', 'buyer', 'sell_amount', 'from', 'to', 'buy_amount', 'rate', 'completed'],
         deposits: ['username', 'email', 'amount', 'credited', 'deposited'],
         withdrawals: ['username', 'email', 'amount', 'notes', 'withdrawn'],
-        payments: ['username', 'email', 'amount', 'network', 'hash', 'deposited']
+        payments: ['username', 'email', 'amount', 'network', 'hash', 'deposited'],
+
+        kyc_transactions: ['username', 'email', 'max', 'currency', 'network', 'kyc_verified'],
       },
       sortFields: {
         users: ['username', 'email', 'created_at', 'access'],
@@ -140,7 +149,9 @@ export default {
         orders: ['seller', 'buyer', 'completed'],
         deposits: ['username', 'email', 'deposited'],
         withdrawals: ['username', 'email', 'withdrawn'],
-        payments: ['username', 'email', 'deposited']
+        payments: ['username', 'email', 'deposited'],
+
+        kyc_transactions: ['username', 'email', 'max', 'kyc_verified'], // 'currency', 'network'
       }
     }
   },
@@ -150,6 +161,12 @@ export default {
   ],
   computed: {
     user: get('user'),
+    stringSearch () {
+      return this.tab === 0 || this.tab === 2 || this.tab === 3
+    },
+    timeSearch () {
+      return this.tab === 2 || this.tab === 3
+    }
   },
   async mounted () {
     await this.waitForUser(5)
@@ -160,31 +177,49 @@ export default {
       this.error = ''
       this.showData = []
       this.showHeaders = []
+      this.since = ''
+      this.filter = ''
+      this.when = ''
+      this.changed = false
       if (reset) { this.loadingData = true }
 
+    },
+    addSearch (url, scope) {
+
+      if (this.search && this.stringSearch) {
+        console.log('including search string: ' + this.search)
+        url = url + 'search=' + this.search
+        if (this.sType === 'contains') {
+          url = url + '&contains=1'
+          this.filter = ' containing "' + this.search + '"'
+        } else if (this.sType === 'starts_with') {
+          url = url + '&starts_with=1'
+          this.filter = ' starting with "' + this.search + '"'
+        } else {
+          this.filter = ' like: "' + this.search + '"'
+        }
+      }
+
+      if (this.timeSearch) {
+        const since = new Date(new Date() - this.days_ago*24*60*60*1000).toISOString().substring(0,10) // does not account for GMT for now...
+        console.log('since = ' + since)
+        this.when = ' since ' + since
+        url = url + '&since=' + since
+      }
+
+      if (scope !== 'users' && this.filter) { this.filter = ' for users' + this.filter }
+
+      return url
     },
     async getUsers () {
       this.resetData(1)
       console.log('Get list of users via admin api ...')
 
-      var url = '/admin/users?'
-
-      if (this.search) {
-        url = url + 'search=' + this.search
-        if (this.sType === 'contains') {
-          url = url + '&contains=1'
-          this.message = 'user(s) containing "' + this.search + '"'
-        } else if (this.sType === 'starts_with') {
-          url = url + '&starts_with=1'
-          this.message = 'user(s) starting with "' + this.search + '"'
-        } else {
-          this.message = 'user(s) like: "' + this.search + '"'
-        }
-      }
+      var url = this.addSearch('/admin/users?', 'users')
 
       // Test case 
       // var test = {"users":[{"subscriptions":null,"id":10385,"locked":false,"verified":null,"fiat":true,"index":0,"ip":3232235781,"seed":"U2FsdGVkX18Zr7W7NYXfykWSN/Je+NEYzSqj0Rrer9aBR2iAccO1fKsTW7bl/6xw3aK8wEAmAPYLvksheskpik7SNHRsQbmfTPfLplzcD5TR1p1PLBd++qRlS2egC5zR","username":"bob","password":"$2b$04$kr/k0tVH5Aztk5eEOAiGEO.DhyG8NkcqieCQUYOeoUm66.ft4p88K","unit":"BTC","account_id":15174,"otpsecret":"KFVEU7JZCAGU6ZZQ","currency":"USD","currencies":"[\"CAD\",\"USD\"]","createdAt":"2021-05-11T04:03:34.000Z","updatedAt":"2021-05-15T18:24:57.000Z","twofa":null,"pin":null},{"subscriptions":null,"id":10386,"locked":false,"verified":null,"fiat":false,"index":0,"ip":3232235781,"seed":"U2FsdGVkX19rUB71XeC+GfzMhfzzxrhJhGbsXrRED7VqmDPVAPBNIGvgSTb5m9OAhMBlUxL+FObg9zmoqlMtYpRZMk1JUc81pUVMfY5S27jdw72wWBzdnwlNam5Q/Njx","username":"satoshi-7f77e652","password":"$2b$04$hxE.eJk/PqiHYBkFIHWGUu5FYjdxA1RFhbLdZjJdDN3N4/DNt3TFK","unit":"SAT","account_id":15175,"otpsecret":"KBRAAPI6LBWFIXAA","currency":"CAD","currencies":"[\"CAD\",\"USD\"]","createdAt":"2021-05-11T12:56:57.000Z","updatedAt":"2021-05-11T12:56:57.000Z","twofa":null,"pin":null},{"subscriptions":null,"id":10387,"locked":false,"verified":null,"fiat":false,"index":0,"ip":3232235781,"seed":"U2FsdGVkX1+RaoXfP/0Y3PbTvenpoNbJtIoXWJP6kHsNTZkRQNOKSPCQLng/V3ikaZJc220U+aw2JRcvmaQ/svFgHd+Hz849tdLpgBwxq8QFjWA+rHQ+/vZKW7Q73d4Y","username":"satoshi-499dae2b","password":"$2b$04$CT2PESDrBXIqnYKY/yR02uCSJkRf4t5aW3sOB/RzQF3sPeZcvH3TK","unit":"SAT","account_id":15176,"otpsecret":"GVYHMNCYL5AXMNIK","currency":"CAD","currencies":"[\"CAD\",\"USD\"]","createdAt":"2021-05-13T23:55:08.000Z","updatedAt":"2021-05-13T23:55:08.000Z","twofa":null,"pin":null}]}
-      // this.formatData(test.users, ['username', 'email', 'sms', 'verified', 'createdAt', 'access'])
+      // this.formatData(test.users, ['username', 'email', 'phone', 'verified', 'createdAt', 'access'])
 
       Vue.axios
         .get(url)
@@ -207,14 +242,12 @@ export default {
     async getTransactions (type) {
       this.resetData(1)
 
-      if (!type) { type = 'transactions' }
-
+      if (!type) { 
+        type = 'transactions'
+      }
+      var url = this.addSearch('/admin/' + type + '?')
       console.log('get list of user ' + type)
 
-      const since = new Date(new Date() - this.days_ago*24*60*60*1000).toISOString().substring(0,10) // does not account for GMT for now...
-      console.log('since = ' + since)
-
-      var url = '/admin/' + type + '?since=' + since
       console.log('url: ' + url)
       Vue.axios
         .get(url)
@@ -222,7 +255,6 @@ export default {
           console.log("Response: " + JSON.stringify(response))
           if (response && response.data) {
             this.formatData(response.data[type], type)
-            if (type !== 'transactions') { this.message = response.data[type].length + ' ' + type + ' since ' + since }
           } else {
             console.log("No response data: " + + JSON.stringify(response))
           }
@@ -237,19 +269,8 @@ export default {
       this.resetData(1)
       console.log('get list of users with account balances')
 
-      var url = '/admin/accounts?nonZero=true&'
-      if (this.search) {
-        url = url + 'search=' + this.search
-        if (this.sType === 'contains') {
-          url = url + '&contains=1'
-          this.message = 'for user(s) containing "' + this.search + '"'
-        } else if (this.sType === 'starts_with') {
-          url = url + '&starts_with=1'
-          this.message = 'for user(s) starting with "' + this.search + '"'
-        } else {
-          this.message = 'for user(s) like: "' + this.search + '"'
-        }
-      }
+      var url = this.addSearch('/admin/accounts?nonZero=true&')
+      
       // var balanceData = {
       //   accounts: ['account_id', 'ticker', 'balance', 'created_at', 'updated_at']
       // }
@@ -265,7 +286,6 @@ export default {
           if (response && response.data) {
             var accounts = response.data.accounts || []
             this.formatData(accounts, 'accounts')
-            this.message = accounts.length + ' Accounts ' + this.message
           } else {
             console.log("No response data: " + + JSON.stringify(response))
           }
@@ -279,20 +299,7 @@ export default {
       console.log('get waiting list via admin api ...')
       this.resetData(1)
 
-      var url = '/admin/waiting_list?'
-
-      if (this.search) {
-        url = url + 'search=' + this.search
-        if (this.sType === 'contains') {
-          url = url + '&contains=1'
-          this.message = 'user(s) containing "' + this.search + '"'
-        } else if (this.sType === 'starts_with') {
-          url = url + '&starts_with=1'
-          this.message = 'user(s) starting with "' + this.search + '"'
-        } else {
-          this.message = 'user(s) like: "' + this.search + '"'
-        }
-      }
+      var url = this.addSearch('/admin/waiting_list?')
 
       Vue.axios
         .get(url)
@@ -301,7 +308,6 @@ export default {
           this.queued = response.data.queue || []
           this.formatData(this.queued, 'queue')
           console.log('Queue: ' + JSON.stringify(this.queued))
-          this.message = this.queued.length + ' ' + this.message + ' on Waiting List'
         })
         .catch( err => {
           this.error = 'Error retrieving waiting list'
@@ -322,13 +328,34 @@ export default {
           this.referrals = response.data.referrals || []
           this.formatData(this.referrals, 'referrals')
           console.log('Referrals: ' + JSON.stringify(this.referrals))
-          this.message = 'Retrieved ' + this.referrals.length + ' ' + status + ' Referrals'
+          this.message = this.message + ' (' + status + ')'
         })
         .catch( err => {
           this.error = 'Error retrieving referrals'
         })
     },
     
+    async getKyc () {
+      console.log('get kyc payments via admin api ...')
+      this.resetData(1)
+
+      var url = this.addSearch('/admin/kyc_required?')
+
+      Vue.axios
+        .get(url)
+        .then( response => {
+          console.log('Response: ' + JSON.stringify(response))
+          this.kycTransactions = response.data.kyc_transactions || []
+          this.formatData(this.kycTransactions, 'kyc_transactions')
+          console.log('KYC Transactions: ' + JSON.stringify(this.kycTransactions))
+          this.message = this.message + ' (max > 2.1M SAT)'
+        })
+        .catch( err => {
+          this.error = 'Error retrieving kyc transactions'
+        })
+
+    },
+
     formatData (data, scope, subset) {
       this.showHeaders = []
       var show = this.showFields[scope]
@@ -360,10 +387,14 @@ export default {
             }
             return record
           })
+          console.log('filter: ' + this.filter +  '; scope: ' + scope)
+          this.message = this.filter ? data.length + ' ' + scope + this.filter : data.length + ' ' + scope
+          console.log(this.message)
         } else {
           console.log('empty dataset')
-          this.showData = []
+          this.message = this.filter ? 'No ' + scope + this.filter : 'No ' + scope
         }
+        if (this.when) { this.message = this.message + this.when }
       }
 
       if (reference && Nto1) {
