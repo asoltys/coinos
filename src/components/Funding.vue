@@ -361,6 +361,7 @@ export default {
     openQueue: false,
     queueMessage: '',
     queue: {
+      user_id: '',
       email: '',
       phone: ''
     },
@@ -501,8 +502,10 @@ export default {
     // this.loading = false;
     await this.waitForUser(5)
 
-    this.checkIfReferred(this.user.id);
+    this.checkIfReferred(this.user.id)
 
+    this.queue.user_id = this.user.id
+    
     if (this.isReferred) {
       this.funding = await this.createFunding();
     } else {
