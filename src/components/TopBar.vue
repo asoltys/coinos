@@ -16,7 +16,7 @@
       <v-icon left>$tor</v-icon>
       Tor Hidden Service
     </v-btn>
-    <v-menu class="ml-2" v-if="user && user.id" offset-y nudge-bottom="1">
+    <v-menu class="ml-2" v-if="user && user.id" offset-y nudge-bottom="1" @click='test()'>
       <template v-slot:activator="{ on }">
         <v-btn v-on="on">
           <v-avatar class="mr-2" v-if="user.pic" size="30">
@@ -39,7 +39,7 @@
           </v-list-item-action>
           <v-list-item-content>Admin</v-list-item-content>
         </v-list-item>
-        <v-list-item @click="$go('/referral')">
+        <v-list-item @click="$go('/referral')" v-if='isReferred'>
           <v-list-item-action>
             <v-icon color="green" title="Refer Friend">$addAccount</v-icon>
           </v-list-item-action>
@@ -68,8 +68,39 @@
 
 <script>
 import { call, get, sync } from 'vuex-pathify';
+import axios from 'axios';
+import Vue from 'vue';
+
+import DynamicLoad from '@/mixins/DynamicLoad'
 
 export default {
+  mixins: [
+    DynamicLoad
+  ],
+  data () {
+    return {
+      isReferred: false
+    }
+  },
+  async mounted () {
+    await this.waitForUser(5)
+
+    if (this.user.admin) {
+      this.isReferred = true
+      console.log('admins are auto-referred')
+    } else {
+      Vue.axios.get('/referrals/isReferred/' + this.user.id)
+        .then( response => {
+          this.isReferred = response.data.referred
+          console.log('referred: ' + this.isReferred)
+        })
+        .catch( err => {
+          this.isReferred = null
+          console.debug('error checking referral')
+          this.loading = false
+        })
+    }
+  },
   computed: {
     fullscreen: get('fullscreen'),
     username() {
