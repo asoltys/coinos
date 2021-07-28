@@ -8,9 +8,6 @@
       >coin<span class="primary--text">os</span></v-toolbar-title
     >
     <v-spacer></v-spacer>
-    <span v-if="user && user.id">Logged In   </span>
-    <span v-else>Not Logged In   </span>
-    <v-spacer></v-spacer>
     <v-btn
       color="#59316B"
       @click="go('http://uzmim34vid5dkyzjxpel6zbkfz4qeqaaqe3gqrtbmekhxqglvzau73ad.onion/')"
@@ -62,10 +59,16 @@
         </v-list-item>
       </v-card>
     </v-menu>
-    <v-btn v-else @click="go('https://corporate.coinos.io/')" class="ml-auto">
-      <v-icon left>$help</v-icon>
-      About
-    </v-btn>
+    <span v-else>
+      <v-btn @click="go('https://corporate.coinos.io/')" class="ml-auto">
+        <v-icon left>$help</v-icon>
+        About
+      </v-btn>
+      <v-btn @click="go('/login')" class="ml-auto">
+        <v-icon left>$account</v-icon>
+        Login/Register
+      </v-btn>
+    </span>
   </v-app-bar>
 </template>
 
