@@ -29,9 +29,10 @@
               v-btn(@click='getTransactions("invoices")'  color='green') Invoices
           v-tab-item(key="Summaries")
             v-row.justify-space-around
-              v-btn(@click='getTransactions()'  color='green' :disabled='!search') Transactions
+              //- :disabled='!search'
+              v-btn(@click='getTransactions()'  color='green') Transactions 
               v-btn(@click='getKyc()'  color='green' ) KYC Required
-            v-alert (Please filter on users to avoid hanging queries for transactions)
+            v-alert (Hint: filter on users to avoid slow queries for transactions)
 
           v-container
               v-row.justify-space-around
@@ -136,7 +137,7 @@ export default {
         withdrawals: ['username', 'email', 'amount', 'notes', 'withdrawn'],
         payments: ['username', 'email', 'amount', 'network', 'hash', 'deposited'],
 
-        kyc_transactions: ['username', 'email', 'max', 'currency', 'network', 'kyc_verified'],
+        kyc_transactions: ['username', 'email', 'max', 'kyc_verified'], // , 'currency', 'network'
       },
       sortFields: {
         users: ['username', 'email', 'created_at', 'access'],
