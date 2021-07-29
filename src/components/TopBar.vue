@@ -66,7 +66,10 @@
       </v-btn>
       <v-btn @click="go('/login')" class="ml-auto">
         <v-icon left>$account</v-icon>
-        Login/Register
+        Login
+      </v-btn>
+      <v-btn @click="go('/register')" class="ml-auto">
+        Register
       </v-btn>
     </span>
   </v-app-bar>
