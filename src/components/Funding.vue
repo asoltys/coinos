@@ -322,7 +322,7 @@
           <b class='text-center'> Add Me to Waiting List</b>
         </v-card-title>
         <v-card-text>
-          <p v-if='queueMessage'> {{queueMessage}} </p>
+          <v-alert color='yellow' light v-if='queueMessage'> {{queueMessage}} </v-alert>
           <v-form v-model='validForm' class="mt-4">
             <v-text-field id='email' class='validate' label='Email' v-model='queue.email' autocapitalize='none' ref='email' append-icon='$email' :rules='rules.email'/>
             <v-text-field class='validate' label='Phone' v-model='queue.phone' dark='' autocapitalize='none' append-icon='$cellphone' ref='phone' :rules='rules.phone'/>
@@ -436,13 +436,15 @@ export default {
       if (check.verified) {
         this.queueMessage = 'Thanks for submitting this. We will contact you if we open this to the public.'
         setTimeout(() => {
+          this.queueMessage = ''
           this.openQueue = false
-        }, 4000)  
+        }, 2000)  
       } else {
-        this.queueMessage= check.message || check.error || 'Could not verify referral code at this time.'
+        this.queueMessage= check.message || check.error || 'Could not access waiting list at this time.'
         setTimeout(() => {
+          this.queueMessage = ''
           this.openQueue = false
-        }, 4000)  
+        }, 2000)  
       }
     },
 
