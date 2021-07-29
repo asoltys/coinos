@@ -71,7 +71,7 @@ module.exports = {
     ],
     username: [
       v => !!v || 'Name is required',
-      v => v && v.length >= 3 && v.length <= 16 || 'Name must be between 3 and 16 characters',
+      v => v && v.length >= 3 && v.length <= 32 || 'Name must be between 3 and 32 characters',
       v => /^[a-zA-Z0-9]+$/.test(v) || 'Name may only contain alphanumeric characters'      
     ],
     password: [
