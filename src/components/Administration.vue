@@ -137,7 +137,7 @@ export default {
         withdrawals: ['username', 'email', 'amount', 'notes', 'withdrawn'],
         payments: ['username', 'email', 'amount', 'network', 'hash', 'deposited'],
 
-        kyc_transactions: ['username', 'email', 'max', 'kyc_verified'], // , 'currency', 'network'
+        'kyc flagged users': ['username', 'email', 'max', 'kyc_verified', 'last_changed'], // , 'currency', 'network'
       },
       sortFields: {
         users: ['username', 'email', 'created_at', 'access'],
@@ -152,7 +152,7 @@ export default {
         withdrawals: ['username', 'email', 'withdrawn'],
         payments: ['username', 'email', 'deposited'],
 
-        kyc_transactions: ['username', 'email', 'max', 'kyc_verified'], // 'currency', 'network'
+        'kyc flagged users': ['username', 'email', 'max', 'kyc_verified', 'last_changed'], // 'currency', 'network'
       }
     }
   },
@@ -166,7 +166,7 @@ export default {
       return this.tab === 0 || this.tab === 2 || this.tab === 3
     },
     timeSearch () {
-      return this.tab === 2 || this.tab === 3
+      return this.tab === 0 || this.tab === 1 || this.tab === 2 || this.tab === 3
     }
   },
   async mounted () {
@@ -346,8 +346,8 @@ export default {
         .get(url)
         .then( response => {
           console.log('Response: ' + JSON.stringify(response))
-          this.kycTransactions = response.data.kyc_transactions || []
-          this.formatData(this.kycTransactions, 'kyc_transactions')
+          this.kycTransactions = response.data.found || []
+          this.formatData(this.kycTransactions, 'kyc flagged users')
           console.log('KYC Transactions: ' + JSON.stringify(this.kycTransactions))
           this.message = this.message + ' (max > 2.1M SAT)'
         })
