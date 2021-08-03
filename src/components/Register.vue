@@ -69,6 +69,7 @@ export default {
       let user = await this.createUser(this.form);
       user.password = this.form.password;
       await this.login(user);
+      this.$go('/');
     },
   },
 
