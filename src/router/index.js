@@ -150,6 +150,7 @@ const routes = [
   { path: '/', component: Home, props: { logout: false } },
   { path: '/about', component: About },
   { path: '/funding', component: Funding },
+  { path: '/funding/referral/:token', component: Funding, props: true },
   { path: '/referral', component: Referral },
   { path: '/docs', component: Documents },
   { name: 'accept', path: '/accept', component: Accept, props: true },
