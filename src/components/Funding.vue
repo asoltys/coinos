@@ -311,7 +311,7 @@
 <!--           </v-alert> -->
         </v-card-text>
         <v-card-actions>
-          <v-btn @click='verifyReferral' color="green"> Submit Referral Code </v-btn>
+          <v-btn @click='verifyReferral()' color="green"> Submit Referral Code </v-btn>
           <v-btn @click='openReferral=false'> Cancel </v-btn>
         </v-card-actions>
       </v-card>
@@ -359,7 +359,9 @@ export default {
     validForm: false,
 
     openQueue: false,
+
     queueMessage: '',
+
     queue: {
       user_id: '',
       email: '',
@@ -393,6 +395,9 @@ export default {
     method: 'interac',
     step: 1
   }),
+  props: {
+    token: { type: String, default: ''}
+  },
   computed: {
     user: get('user'),
   },
@@ -418,10 +423,10 @@ export default {
       }, 500)
     },
 
-
-    async verifyReferral () {
+    async verifyReferral (token) {
       this.referralWarning = ''
-      var check = await this.checkReferral(this.referral)
+      if (!token) { token = this.referral }
+      var check = await this.checkReferral(token)
       console.log('Referral response: ' + JSON.stringify(check))
       if (check.verified) {
         this.isReferred = true
@@ -510,6 +515,8 @@ export default {
     
     if (this.isReferred) {
       this.funding = await this.createFunding();
+    } else if (this.token) {
+      this.verifyReferral(this.token)
     } else {
       console.log('funding bypassed for non-referred user')
     }
