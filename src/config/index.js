@@ -1,5 +1,10 @@
 
 module.exports = {
+  servers: {
+    production: 'https://coinos.io',
+    staging: 'https://staging.coinos.io',
+    local: 'https://127.0.0.1:8085'
+  },
   provinces: [
     {
       text: 'Alberta',
@@ -72,7 +77,7 @@ module.exports = {
     username: [
       v => !!v || 'Name is required',
       v => v && v.length >= 3 && v.length <= 32 || 'Name must be between 3 and 32 characters',
-      v => /^[a-zA-Z0-9]+$/.test(v) || 'Name may only contain alphanumeric characters'      
+      v => /^[a-zA-Z0-9\.\-\_\@]+$/.test(v) || 'The only non-alphanumeric characters allowed in names are: @ . - _'      
     ],
     password: [
       v => !!v || 'Password is required',
