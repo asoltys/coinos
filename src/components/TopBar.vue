@@ -59,10 +59,19 @@
         </v-list-item>
       </v-card>
     </v-menu>
-    <v-btn v-else @click="go('https://corporate.coinos.io/')" class="ml-auto">
-      <v-icon left>$help</v-icon>
-      About
-    </v-btn>
+    <span v-else>
+      <v-btn @click="go('https://corporate.coinos.io/')" class="ml-auto">
+        <v-icon left>$help</v-icon>
+        About
+      </v-btn>
+      <v-btn @click="go('/login')" class="ml-auto">
+        <v-icon left>$account</v-icon>
+        Login
+      </v-btn>
+      <v-btn @click="go('/register')" color="accent" class="ml-auto black--text">
+        Register
+      </v-btn>
+    </span>
   </v-app-bar>
 </template>
 
