@@ -68,7 +68,7 @@ export default {
       return !this.user.account.pubkey;
     },
     cryptos() {
-      let arr = ['BTC', 'SAT', 'KSAT', 'MSAT'];
+      let arr = ['SAT', 'KSAT', 'MSAT', 'BTC', 'GSAT', 'TSAT'];
       arr.splice(arr.indexOf(this.ticker), 1);
       if (!this.user.accounts) return arr;
       arr = [
@@ -102,6 +102,9 @@ export default {
       if (this.user.unit === 'SAT') return 0;
       else if (this.user.unit === 'KSAT') return 3;
       else if (this.user.unit === 'MSAT') return 6;
+      else if (this.user.unit === 'BTC') return 8;
+      else if (this.user.unit === 'GSAT') return 9;
+      else if (this.user.unit === 'TSAT') return 12;
       else return this.user.account.precision;
     },
     animatedRate() {
