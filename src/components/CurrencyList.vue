@@ -49,7 +49,7 @@ export default {
   methods: {
     color(c) {
       if (!this.user.currencies) return 'white';
-      return ['BTC', 'SAT', 'KSAT', 'MSAT'].includes(c)
+      return ['SAT', 'KSAT', 'MSAT', 'BTC', 'GSAT', 'TSAT'].includes(c)
         ? 'white'
         : this.type === "accounts"
         ? 'liquid'
@@ -85,7 +85,7 @@ export default {
 
       if (!currency && this.user.fiat) await this.toggleFiat();
 
-      if (['BTC', 'SAT', 'KSAT', 'MSAT'].includes(c))
+      if (['SAT', 'KSAT', 'MSAT', 'BTC', 'GSAT', 'TSAT'].includes(c))
         return this.setUnit(c);
     },
   },
