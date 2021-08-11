@@ -12,7 +12,7 @@
       v-if="!isNaN(animatedRate) && isBtc"
       class="d-flex flex-wrap justify-center"
     >
-      <div class="fiat primary--text display-1 my-auto">{{ fiat | format }}</div>
+      <div class="fiat primary--text display-1 my-auto">{{ fiat | format_fiat }}</div>
       <div class="mx-1">
         <currency-list :currency="user.currency" :currencies="fiats" />
       </div>
@@ -20,9 +20,9 @@
         <span>
           @
           <span class="font-weight-black primary--text">{{
-            animatedRate | format
+            adjustedAnimatedRate | format
           }}</span>
-          / BTC
+          / {{ this.user.unit }}
         </span>
       </div>
     </h3>
@@ -56,6 +56,12 @@ export default {
 
   filters: {
     format(n) {
+      return parseFloat(n).toLocaleString('en-US', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 12,
+      });
+    },
+    format_fiat(n) {
       return parseFloat(n).toLocaleString('en-US', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
@@ -108,7 +114,10 @@ export default {
       else return this.user.account.precision;
     },
     animatedRate() {
-      return parseFloat(this.tweenedRate).toFixed(2);
+      return parseFloat(this.tweenedRate);
+    },
+    adjustedAnimatedRate() {
+      return parseFloat(this.tweenedRate) * Math.pow(10, this.precision - 8);
     },
   },
 
