@@ -713,6 +713,11 @@ export default new Vuex.Store({
       dispatch('updateUser', state.user);
     },
 
+    async setUnit({ commit, dispatch, state }, newUnit) {
+      state.user.unit = newUnit;
+      dispatch('updateUser', state.user);
+    },
+
     async shiftCurrency({ commit, dispatch, state }) {
       const { invoice, user } = state;
       let { currencies } = user;
@@ -885,7 +890,7 @@ export default new Vuex.Store({
               resolve();
               return true;
             }
-          } 
+          }
 
           setTimeout(open, 50);
           return false;
@@ -1054,7 +1059,7 @@ export default new Vuex.Store({
         go('/wallets');
       } catch (e) {
         commit('loading', false);
-        
+
         if (e.response && e.response.data.includes('Insufficient')) {
           dispatch('snack', 'Deposit funds to cover the issuance fee');
           let amount = parseFloat(e.response.data.split(' ')[6] * 100000000);

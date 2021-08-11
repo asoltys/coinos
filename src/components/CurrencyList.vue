@@ -49,7 +49,7 @@ export default {
   methods: {
     color(c) {
       if (!this.user.currencies) return 'white';
-      return ['BTC', 'SAT'].includes(c)
+      return ['BTC', 'SAT', 'KSAT', 'MSAT'].includes(c)
         ? 'white'
         : this.type === "accounts"
         ? 'liquid'
@@ -58,7 +58,7 @@ export default {
     shiftAccount: call('shiftAccount'),
     setCurrency: call('setCurrency'),
     toggleFiat: call('toggleFiat'),
-    toggleUnit: call('toggleUnit'),
+    setUnit: call('setUnit'),
     async select(c) {
       this.$emit('currency', c);
       this.display = c;
@@ -75,7 +75,7 @@ export default {
       );
 
       if (this.type === "accounts") {
-        if (account && this.user.account.id !== account.id) 
+        if (account && this.user.account.id !== account.id)
           await this.shiftAccount(account.id);
       } else if (currency) {
         return await this.setCurrency(c);
@@ -85,8 +85,8 @@ export default {
 
       if (!currency && this.user.fiat) await this.toggleFiat();
 
-      if (c === 'SAT' && this.user.unit !== 'SAT') return this.toggleUnit();
-      if (c !== 'SAT' && this.user.unit !== 'BTC') return this.toggleUnit();
+      if (['BTC', 'SAT', 'KSAT', 'MSAT'].includes(c))
+        return this.setUnit(c);
     },
   },
 
