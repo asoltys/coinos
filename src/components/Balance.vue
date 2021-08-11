@@ -76,7 +76,8 @@ export default {
       return !this.user.account.pubkey;
     },
     cryptos() {
-      let arr = [this.ticker === 'SAT' ? 'BTC' : 'SAT'];
+      let arr = ['BTC', 'SAT', 'KSAT', 'MSAT'];
+      arr.splice(arr.indexOf(this.ticker), 1);
       if (!this.user.accounts) return arr;
       arr = [
         ...new Set([
@@ -113,6 +114,8 @@ export default {
     },
     precision() {
       if (this.user.unit === 'SAT') return 0;
+      else if (this.user.unit === 'KSAT') return 3;
+      else if (this.user.unit === 'MSAT') return 6;
       else return this.user.account.precision;
     },
     animatedRate() {

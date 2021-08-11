@@ -730,6 +730,11 @@ export default new Vuex.Store({
       dispatch('updateUser', state.user);
     },
 
+    async setUnit({ commit, dispatch, state }, newUnit) {
+      state.user.unit = newUnit;
+      dispatch('updateUser', state.user);
+    },
+
     async shiftCurrency({ commit, dispatch, state }) {
       const { invoice, user } = state;
       let { currencies } = user;
