@@ -20,7 +20,7 @@
         <span>
           @
           <span class="font-weight-black primary--text">{{
-            adjustedAnimatedRate | format
+            adjustedAnimatedRateText
           }}</span>
           / {{ this.user.unit }}
         </span>
@@ -58,7 +58,7 @@ export default {
     format(n) {
       return parseFloat(n).toLocaleString('en-US', {
         minimumFractionDigits: 0,
-        maximumFractionDigits: 12,
+        maximumFractionDigits: 8,
       });
     },
     format_fiat(n) {
@@ -119,6 +119,15 @@ export default {
     adjustedAnimatedRate() {
       return parseFloat(this.tweenedRate) * Math.pow(10, this.precision - 8);
     },
+    adjustedAnimatedRateText() {
+      let decimalDigits = 10 - this.precision;
+      if (decimalDigits < 2) decimalDigits = 2;
+
+      return parseFloat(this.adjustedAnimatedRate).toLocaleString('en-US', {
+        minimumFractionDigits: decimalDigits,
+        maximumFractionDigits: decimalDigits,
+      });
+    }
   },
 
   methods: {
