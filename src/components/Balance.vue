@@ -66,7 +66,7 @@ export default {
     format(n) {
       return parseFloat(n).toLocaleString('en-US', {
         minimumFractionDigits: 0,
-        maximumFractionDigits: 8,
+        maximumFractionDigits: 12,
       });
     },
     format_fiat(n) {
