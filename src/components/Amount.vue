@@ -131,11 +131,27 @@ export default {
       if (this.currency) {
         if (this.currency === this.user.account.ticker) {
           return this.user.account.precision;
-        } 
+        } else if (this.user.account.ticker === 'BTC') {
+          switch (this.user.unit) {
+            case 'SAT': return 0;
+            case 'KSAT': return 3;
+            case 'MSAT': return 6;
+            case 'GSAT': return 9;
+            case 'TSAT': return 12;
+            default: return 8;
+          }
+        }
         let account = this.user.accounts.filter(a => a.ticker === this.currency);
         if (account) return account.precision;
       }
-      return 8;
+      switch (this.user.unit) {
+        case 'SAT': return 0;
+        case 'KSAT': return 3;
+        case 'MSAT': return 6;
+        case 'GSAT': return 9;
+        case 'TSAT': return 12;
+        default: return 8;
+      }
     },
     isBtc() {
       return this.user.account.ticker === 'BTC';
@@ -155,7 +171,7 @@ export default {
       if (this.currency) return [this.currency, 'SAT'];
       let user = this.user;
       if (user.account.ticker === 'BTC') {
-        return [...user.currencies, 'SAT', 'BTC'];
+        return [...user.currencies, 'BTC', 'SAT', 'KSAT', 'MSAT', 'GSAT', 'TSAT'];
       }
       return [user.account.ticker, 'SAT'];
     },
@@ -173,7 +189,7 @@ export default {
     },
     color(c) {
       if (!this.user.currencies) return 'white';
-      return ['BTC', 'SAT'].includes(c)
+      return ['BTC', 'SAT', 'KSAT', 'MSAT', 'GSAT', 'TSAT'].includes(c)
         ? 'white'
         : this.type === "accounts"
         ? 'liquid'
