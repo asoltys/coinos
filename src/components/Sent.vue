@@ -68,10 +68,15 @@ export default {
     },
     payment: get('payment'),
     precision() {
-      let { precision } = this.payment.account;
-      if (this.payment.account.ticker === 'BTC' && this.user.unit === 'SAT')
-        precision = 0;
-      return precision;
+      if (this.payment.account.ticker === 'BTC') {
+        if (this.user.unit === 'SAT') return 0;
+        else if (this.user.unit === 'KSAT') return 3;
+        else if (this.user.unit === 'MSAT') return 6;
+        else if (this.user.unit === 'BTC') return 8;
+        else if (this.user.unit === 'GSAT') return 9;
+        else if (this.user.unit === 'TSAT') return 12;
+      }
+      return this.payment.account.precision;
     },
     ticker() {
       let { ticker } = this.payment.account;
