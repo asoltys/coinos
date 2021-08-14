@@ -1249,6 +1249,9 @@ export default new Vuex.Store({
       commit('error', null);
       let {
         payment: {
+          address,
+          payreq,
+          unconfidential,
           amount,
           network,
           memo,
@@ -1268,6 +1271,9 @@ export default new Vuex.Store({
         }
 
         let { data: payment } = await Vue.axios.post('/send', {
+          address,
+          payreq,
+          unconfidential,
           amount,
           asset,
           memo,
