@@ -54,9 +54,13 @@
                     label(for='matches')  &nbsp; matching
                 v-col(v-if='stringSearch' cols='2')
                   v-text-field(v-model='search' label='Search' @input='changed=true' placeholder='users')
+                v-col(cols='2' v-if='timeSearch && !anytime')
+                  v-text-field(v-model='days_ago' type='number' size='3' label='In the past:' @input='changed=true')
                 v-col(cols='2' v-if='timeSearch')
-                  v-text-field(v-model='days_ago' type='number' size='5' label='In the past:' @input='changed=true')
-                v-col(cols='2' v-if='timeSearch') Days
+                  b(v-if='!anytime') {{days_ago}} Days
+                  br
+                  input(id='anytime' v-model='anytime' type='checkbox' @input='changed=true' @change="days_ago = anytime ? null : 7")
+                  label(for='anytime') &nbsp; Anytime
         p
           v-alert.text-center.green--text(v-if='message') {{message}}
           v-alert.text-center.red--text(v-if='error') {{error}}
@@ -96,6 +100,7 @@ export default {
       error: '',
       users: null,
       days_ago: 7,
+      anytime: false,
 
       loadingData: false,
 
@@ -201,7 +206,7 @@ export default {
         }
       }
 
-      if (this.timeSearch) {
+      if (this.timeSearch && this.days_ago) {
         const since = new Date(new Date() - this.days_ago*24*60*60*1000).toISOString().substring(0,10) // does not account for GMT for now...
         console.log('since = ' + since)
         this.when = ' since ' + since
