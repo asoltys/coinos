@@ -17,7 +17,7 @@ export default {
       var waited = 0
 
       const wait = resolve => {  
-        if (this.user.index || this.user.index === 0) {
+        if (this.user && (this.user.index || this.user.index === 0)) {
           this.loadedUser = true
           resolve(true)
         } else {

@@ -93,22 +93,7 @@ export default {
   },
   async mounted () {
     await this.waitForUser(5)
-
-    if (this.user.admin) {
-      this.isReferred = true
-      console.log('admins are auto-referred')
-    } else {
-      Vue.axios.get('/referrals/isReferred/' + this.user.id)
-        .then( response => {
-          this.isReferred = response.data.referred
-          console.log('referred: ' + this.isReferred)
-        })
-        .catch( err => {
-          this.isReferred = null
-          console.debug('error checking referral')
-          this.loading = false
-        })
-    }
+    this.checkUser()
   },
   computed: {
     fullscreen: get('fullscreen'),
@@ -138,7 +123,32 @@ export default {
     go(url) {
       window.location.href = url;
     },
+    async checkUser () {
+      if (this.user.admin) {
+        this.isReferred = true
+        console.log('admins are auto-referred')
+      } else if (this.user.id) {
+        Vue.axios.get('/referrals/isReferred/' + this.user.id)
+          .then( response => {
+            this.isReferred = response.data.referred
+            console.log('Referred: ' + this.isReferred)
+          })
+          .catch( err => {
+            this.isReferred = null
+            console.debug('error checking referral')
+          })
+      } else {
+        console.log('no referred user')
+        this.isReferred = null
+      }
+    }
+
   },
+  watch: {
+    user () {
+      this.checkUser()
+    }
+  }
 };
 </script>
 
