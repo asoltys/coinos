@@ -12,7 +12,7 @@
       v-if="!isNaN(animatedRate) && isBtc"
       class="d-flex flex-wrap justify-center"
     >
-      <div class="fiat primary--text display-1 my-auto">{{ fiat | format }}</div>
+      <div class="fiat primary--text display-1 my-auto">{{ fiat | format_fiat }}</div>
       <div class="mx-1">
         <currency-list :currency="user.currency" :currencies="fiats" />
       </div>
@@ -20,9 +20,9 @@
         <span>
           @
           <span class="font-weight-black primary--text">{{
-            animatedRate | format
+            adjustedAnimatedRateText
           }}</span>
-          / BTC
+          / {{ this.user.unit }}
         </span>
       </div>
     </h3>
@@ -57,6 +57,12 @@ export default {
   filters: {
     format(n) {
       return parseFloat(n).toLocaleString('en-US', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 12,
+      });
+    },
+    format_fiat(n) {
+      return parseFloat(n).toLocaleString('en-US', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       });
@@ -68,7 +74,8 @@ export default {
       return !this.user.account.pubkey;
     },
     cryptos() {
-      let arr = [this.ticker === 'SAT' ? 'BTC' : 'SAT'];
+      let arr = ['SAT', 'KSAT', 'MSAT', 'BTC', 'GSAT', 'TSAT'];
+      arr.splice(arr.indexOf(this.ticker), 1);
       if (!this.user.accounts) return arr;
       arr = [
         ...new Set([
@@ -99,11 +106,28 @@ export default {
     },
     precision() {
       if (this.user.unit === 'SAT') return 0;
+      else if (this.user.unit === 'KSAT') return 3;
+      else if (this.user.unit === 'MSAT') return 6;
+      else if (this.user.unit === 'BTC') return 8;
+      else if (this.user.unit === 'GSAT') return 9;
+      else if (this.user.unit === 'TSAT') return 12;
       else return this.user.account.precision;
     },
     animatedRate() {
-      return parseFloat(this.tweenedRate).toFixed(2);
+      return parseFloat(this.tweenedRate);
     },
+    adjustedAnimatedRate() {
+      return parseFloat(this.tweenedRate) * Math.pow(10, this.precision - 8);
+    },
+    adjustedAnimatedRateText() {
+      let decimalDigits = 10 - this.precision;
+      if (decimalDigits < 2) decimalDigits = 2;
+
+      return parseFloat(this.adjustedAnimatedRate).toLocaleString('en-US', {
+        minimumFractionDigits: decimalDigits,
+        maximumFractionDigits: decimalDigits,
+      });
+    }
   },
 
   methods: {
