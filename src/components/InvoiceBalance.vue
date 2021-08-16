@@ -4,22 +4,32 @@
     class="mb-2"
   >
     <div v-if="invoice.amount > 0" class="d-flex flex-wrap justify-center">
-      <div class="display-1 mr-1">
-        <span>{{ total }}</span>
-        <v-btn
-          class="black--text toggle"
-          :color="color(ticker)"
-          @click="toggleUnit"
-          >{{ ticker }}</v-btn
-        >
+      <div class="d-flex mr-4">
+        <div class="display-2 font-weight-black flex-grow-1 text-right mr-2" style="word-break: break-all">
+          {{ total }}
+        </div>
+        <div class="text-left flex-grow-1 my-auto">
+          <currency-list :currency="ticker" :currencies="cryptos" type="accounts" />
+        </div>
         <span class="print body-1">{{ ticker }}</span>
       </div>
-      <div v-if="isBtc" class="primary--text display-1">
+      <!-- <div class="display-1 mr-1"> -->
+      <!--   <span>{{ total }}</span> -->
+      <!--   <currency-list :currency="ticker" :currencies="cryptos" type="accounts" /> -->
+      <!--   <\!-- <v-btn -\-> -->
+      <!--   <\!--   class="black--text toggle" -\-> -->
+      <!--   <\!--   :color="color(ticker)" -\-> -->
+      <!--   <\!--   @click="toggleUnit" -\-> -->
+      <!--   <\!--   >{{ ticker }}</v-btn -\-> -->
+      <!--   <\!-- > -\-> -->
+      <!--   <\!-- <span class="print body-1">{{ ticker }}</span> -\-> -->
+      <!-- </div> -->
+      <div v-if="isBtc" class="primary--text display-2">
         <span>{{ invoice.fiatAmount }}</span>
         <span v-if="invoice.tip"><span class="headline">+{{ invoice.fiatTip }}</span></span
         >
         <v-btn
-          class="black--text toggle"
+          class="black--text toggle pt-5 pb-4"
           color="primary"
           @click="shiftCurrency"
           >{{ invoice.currency }}</v-btn
@@ -32,9 +42,28 @@
 
 <script>
 import { call, get, sync } from 'vuex-pathify';
+import CurrencyList from './CurrencyList';
+const SATS = 100000000;
 
 export default {
+  components: { CurrencyList },
+
   computed: {
+    cryptos() {
+      let arr = ['SAT', 'KSAT', 'MSAT', 'BTC', 'GSAT', 'TSAT'];
+      arr.splice(arr.indexOf(this.ticker), 1);
+      if (!this.user.accounts) return arr;
+      arr = [
+        ...new Set([
+          ...arr,
+          ...this.user.accounts.filter(a => !a.hide && a.pubkey === this.user.account.pubkey)
+            .map(a => (a.ticker || a.asset.substr(0,3)))
+        ]),
+      ];
+
+      if (this.ticker === 'BTC') arr.splice(arr.indexOf('BTC'), 1);
+      return arr;
+    },
     isBtc() {
       return this.user.account.ticker === 'BTC';
     },
@@ -49,11 +78,20 @@ export default {
     text() {
       return this.invoice.address || this.invoice.text;
     },
+    precision() {
+      if (this.user.unit === 'SAT') return 0;
+      else if (this.user.unit === 'KSAT') return 3;
+      else if (this.user.unit === 'MSAT') return 6;
+      else if (this.user.unit === 'BTC') return 8;
+      else if (this.user.unit === 'GSAT') return 9;
+      else if (this.user.unit === 'TSAT') return 12;
+      else return this.user.account.precision;
+    },
     ticker() {
-      return this.user.unit === 'BTC' ? this.user.account.ticker : 'SAT';
+      return this.isBtc ? this.user.unit : (this.user.account.ticker || this.user.account.asset.substr(0,3));
     },
     total() {
-      return this.$format(this.invoice.amount + this.invoice.tip);
+      return this.$format(this.invoice.amount + this.invoice.tip, this.precision);
     },
     invoice: sync('invoice'),
     user: get('user'),
@@ -61,7 +99,7 @@ export default {
 
   methods: {
     color(c) {
-      return ['BTC', 'SAT'].includes(c)
+      return ['BTC', 'SAT', 'KSAT', 'MSAT', 'GSAT', 'TSAT'].includes(c)
         ? 'white'
         : this.user.currencies.includes(c)
         ? 'primary'
