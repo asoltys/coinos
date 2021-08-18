@@ -5,6 +5,7 @@ import colors from 'vuetify/lib/util/colors';
 import Account from 'vue-material-design-icons/Account';
 import AccountMultiplePlus from 'vue-material-design-icons/AccountMultiplePlus';
 import AccountCheck from 'vue-material-design-icons/AccountCheck';
+import AccountDetails from 'vue-material-design-icons/AccountDetails';
 import Add from 'vue-material-design-icons/Plus';
 import Alert from 'vue-material-design-icons/Alert';
 import ArrowLeft from 'vue-material-design-icons/ArrowLeft';
@@ -107,6 +108,7 @@ export default new Vuetify({
       'account': { component: Account },
       'addAccount': { component: AccountMultiplePlus },
       'accountcheck': { component: AccountCheck },
+      'account-details': { component: AccountDetails },
       'add': { component: Add },
       'alert': { component: Alert },
       'left': { component: ArrowLeft },
