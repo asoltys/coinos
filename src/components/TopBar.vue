@@ -23,7 +23,7 @@
             <img :src="user.pic" />
           </v-avatar>
           <v-icon v-else-if="bigScreen">$account</v-icon>
-          <span v-if="bigScreen" class="truncate">{{ window.innerWidth }} </span>
+          <span v-if="bigScreen" class="truncate">{{ username }} </span>
           <v-icon v-else>$account-details</v-icon>
         </v-btn>
       </template>
@@ -122,7 +122,7 @@ export default {
     asset: sync('asset'),
     user: get('user'),
     bigScreen() {
-      return window.innerWidth >= 640;
+      return window.innerWidth > 640;
     },
     showTorButton() {
       return window.screen.width === window.innerWidth &&
