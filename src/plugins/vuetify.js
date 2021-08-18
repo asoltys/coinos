@@ -6,6 +6,7 @@ import Account from 'vue-material-design-icons/Account';
 import AccountMultiplePlus from 'vue-material-design-icons/AccountMultiplePlus';
 import AccountCheck from 'vue-material-design-icons/AccountCheck';
 import AccountDetails from 'vue-material-design-icons/AccountDetails';
+import AccountPlus from 'vue-material-design-icons/AccountPlus';
 import Add from 'vue-material-design-icons/Plus';
 import Alert from 'vue-material-design-icons/Alert';
 import ArrowLeft from 'vue-material-design-icons/ArrowLeft';
@@ -109,6 +110,7 @@ export default new Vuetify({
       'addAccount': { component: AccountMultiplePlus },
       'accountcheck': { component: AccountCheck },
       'account-details': { component: AccountDetails },
+      'account-plus': { component: AccountPlus },
       'add': { component: Add },
       'alert': { component: Alert },
       'left': { component: ArrowLeft },

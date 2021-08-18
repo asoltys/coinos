@@ -81,7 +81,7 @@
         </v-list-item>
         <v-list-item @click="go('/register')" color="accent">
           <v-list-item-action>
-            <v-icon color="green" title="Register">$wallet</v-icon>
+            <v-icon color="green" title="Register">$account-plus</v-icon>
           </v-list-item-action>
           <v-list-item-content>Register</v-list-item-content>
         </v-list-item>
