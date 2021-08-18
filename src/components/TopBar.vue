@@ -122,6 +122,7 @@ export default {
     asset: sync('asset'),
     user: get('user'),
     bigScreen() {
+      alert(window.innerWidth);
       return window.innerWidth >= 640;
     },
     showTorButton() {
