@@ -59,19 +59,44 @@
         </v-list-item>
       </v-card>
     </v-menu>
-    <span v-else>
-      <v-btn @click="go('https://corporate.coinos.io/')" class="ml-auto">
-        <v-icon left>$help</v-icon>
-        About
-      </v-btn>
-      <v-btn @click="go('/login')" class="ml-auto">
-        <v-icon left>$account</v-icon>
-        Login
-      </v-btn>
-      <v-btn @click="go('/register')" color="accent" class="ml-auto black--text">
-        Register
-      </v-btn>
-    </span>
+    <v-menu v-else offset-y nudge-bottom="1" @click='test()'>
+      <template v-slot:activator="{ on }">
+        <v-btn v-on="on" text plain>
+          <v-icon>$menu</v-icon>
+        </v-btn>
+      </template>
+      <v-card tile class="mx-auto menu" max-width="400">
+        <v-list-item @click="go('https://corporate.coinos.io/')">
+          <v-list-item-action>
+            <v-icon color="blue lighten-2" title="About">$help</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>About</v-list-item-content>
+        </v-list-item>
+        <v-list-item @click="go('/login')">
+          <v-list-item-action>
+            <v-icon color="primary" title="Login">$login</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>Login</v-list-item-content>
+        </v-list-item>
+        <v-list-item @click="go('/register')" color="accent">
+          <v-list-item-action>
+            <v-icon color="green" title="Register">$wallet</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>Register</v-list-item-content>
+        </v-list-item>
+        <!-- <v-btn @click="go('https://corporate.coinos.io/')" class="ml-auto"> -->
+        <!--   <v-icon left>$help</v-icon> -->
+        <!--   About -->
+        <!-- </v-btn> -->
+        <!-- <v-btn @click="go('/login')" class="ml-auto"> -->
+        <!--   <v-icon left>$account</v-icon> -->
+        <!--   Login -->
+        <!-- </v-btn> -->
+        <!-- <v-btn @click="go('/register')" color="accent" class="ml-auto black--text"> -->
+        <!--   Register -->
+        <!-- </v-btn> -->
+      </v-card>
+    </v-menu>
   </v-app-bar>
 </template>
 
