@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+import VuexPersistence from 'vuex-persist';
 import bech32 from 'bech32';
 import bip21 from 'bip21';
 import { fromSeed, fromBase58 } from 'bip32';
@@ -24,6 +25,7 @@ import secp256k1 from 'secp256k1';
 import { validate as isUuid, v4 } from 'uuid';
 import { fromSeed as slip77FromSeed } from 'slip77';
 
+let loggedIn;
 const {
   AES: aes,
   enc: { Utf8 },
@@ -218,8 +220,12 @@ const state = {
   version: null,
 };
 
+const persist = new VuexPersistence({
+  storage: window.sessionStorage
+})
+
 export default new Vuex.Store({
-  plugins: [pathify.plugin],
+  plugins: [pathify.plugin, persist.plugin],
   state,
   actions: {
     async init({ commit, getters, dispatch, state }) {
@@ -307,7 +313,6 @@ export default new Vuex.Store({
     },
     async joinWaitingList({ commit, state, dispatch }, form) {
       try {
-        console.log('post: ' + JSON.stringify(form))
         // const { data: response } = await Vue.axios.post('/referrals/joinQueue', form);
         const { data: response } = await Vue.axios.get('/referrals/joinQueue?email=' + form.email + '&phone=' + form.phone + '&user_id=' + form.user_id);
         if (response) {
@@ -753,6 +758,7 @@ export default new Vuex.Store({
       document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
       window.sessionStorage.removeItem('password');
       window.sessionStorage.removeItem('token');
+      window.sessionStorage.removeItem('vuex');
       commit('token', null);
       commit('pin', null);
       commit('user', null);
@@ -879,7 +885,7 @@ export default new Vuex.Store({
           if (ws && ws.readyState === 1) {
             ws.send(JSON.stringify({ type: 'heartbeat' }));
 
-            if (token && (!user || (!user.payments && !recipient.username))) {
+            if (token && !loggedIn) {
               ws.send(JSON.stringify({ type: 'login', data: token }));
             } else {
               resolve();
@@ -892,12 +898,13 @@ export default new Vuex.Store({
         };
 
         if (open()) return;
-        getters.user.payments = null;
+        // getters.user.payments = null;
 
         let ws = new WebSocket(`${proto}${location.host}/ws`);
         commit('socket', ws);
 
         ws.onopen = () => {
+          loggedIn = false;
           open();
         };
 
@@ -938,6 +945,7 @@ export default new Vuex.Store({
             },
 
             login() {
+              loggedIn = true;
               let user = data;
               if (user) {
                 if (getters.password) {

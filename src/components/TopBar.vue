@@ -16,7 +16,8 @@
       <v-icon left>$tor</v-icon>
       Tor Hidden Service
     </v-btn>
-    <v-menu class="ml-2" v-if="user && user.id" offset-y nudge-bottom="1" @click='test()'>
+    <template v-if="!initializing">
+    <v-menu class="ml-2" v-if="token && user && user.id" offset-y nudge-bottom="1" @click='test()'>
       <template v-slot:activator="{ on }">
         <v-btn v-on="on">
           <v-avatar class="mr-2" v-if="user.pic" size="30">
@@ -64,14 +65,8 @@
         <v-icon left>$help</v-icon>
         About
       </v-btn>
-      <v-btn @click="go('/login')" class="ml-auto">
-        <v-icon left>$account</v-icon>
-        Login
-      </v-btn>
-      <v-btn @click="go('/register')" color="accent" class="ml-auto black--text">
-        Register
-      </v-btn>
     </span>
+    </template>
   </v-app-bar>
 </template>
 
@@ -96,12 +91,10 @@ export default {
 
     if (this.user.admin) {
       this.isReferred = true
-      console.log('admins are auto-referred')
     } else {
       Vue.axios.get('/referrals/isReferred/' + this.user.id)
         .then( response => {
           this.isReferred = response.data.referred
-          console.log('referred: ' + this.isReferred)
         })
         .catch( err => {
           this.isReferred = null
@@ -112,6 +105,7 @@ export default {
   },
   computed: {
     fullscreen: get('fullscreen'),
+    initializing: get('initializing'),
     username() {
       if (this.user.username.startsWith('satoshi')) return 'satoshi';
       return this.user.username;
@@ -121,6 +115,7 @@ export default {
     },
     asset: sync('asset'),
     user: get('user'),
+    token: get('token'),
     showTorButton() {
       return window.screen.width === window.innerWidth &&
       window.screen.height === window.innerHeight &&

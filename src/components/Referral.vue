@@ -5,7 +5,7 @@ div
       v-card-title Generate Referral Token(s) for Friends
       v-card-text
         p Each referral token can only be used by one person (send them the token string).
-        p They will not need the token to register, but will need it to access funding options. 
+        p They will not need the token to register, but will need it to access funding options.
         //- p Once this user has opened an account you may be eligible for referral rewards. 
       v-card-actions
         v-row.justify-space-around
@@ -14,7 +14,7 @@ div
           v-btn(@click='checkTokens("used")', color='green') Used
     hr
     v-card
-      v-card-title {{status}} Referral Token(s)
+      v-card-title {{ status }} Referral Token(s)
       v-card-text
         div(v-if='tokens && tokens.length')
           //- v-list
@@ -26,18 +26,16 @@ div
           //-     v-list-item-title Used By
           //-     v-list-item-content {{token.user}}
 
-          v-data-table(:items='tokens' :headers='tokenHeaders')
+          v-data-table(:items='tokens', :headers='tokenHeaders')
         div(v-else) No Tokens Found
         hr
         p(v-if='message') &nbsp;
-          b.message() {{ message }}
+          b.message {{ message }}
         p(v-if='warning')
           b.warning {{ warning }}
-  v-progress-linear(v-else-if='loading' indeterminate='')
+  v-progress-linear(v-else-if='loading', indeterminate='')
   div(v-else)
     v-alert(color='red') Only referred members can refer other friends
-
-
 </template>
 
 <script>
@@ -45,13 +43,11 @@ import { call, get } from 'vuex-pathify';
 import axios from 'axios';
 import Vue from 'vue';
 
-import DynamicLoad from '@/mixins/DynamicLoad'
+import DynamicLoad from '@/mixins/DynamicLoad';
 
 export default {
   props: {},
-  mixins: [
-    DynamicLoad
-  ],
+  mixins: [DynamicLoad],
   data() {
     return {
       tokens: [],
@@ -62,69 +58,68 @@ export default {
       status: 'Available',
 
       newTokenHeaders: [
-        {text: 'token', value: 'token'},
-        {text: 'status', value: 'status'},
+        { text: 'token', value: 'token' },
+        { text: 'status', value: 'status' },
       ],
       allTokenHeaders: [
-        {text: 'token', value: 'token'},
-        {text: 'status', value: 'status'},
-        {text: 'created', value: 'created'},
-        {text: 'used_by', value: 'used_by'},
+        { text: 'token', value: 'token' },
+        { text: 'status', value: 'status' },
+        { text: 'created', value: 'created' },
+        { text: 'used_by', value: 'used_by' },
       ],
       tokenHeaders: [],
       isReferred: false,
-      loading: true
+      loading: true,
     };
   },
   computed: {
     user: get('user'),
   },
-  async mounted () {
-    await this.waitForUser(5)
+  async mounted() {
+    await this.waitForUser(5);
 
-    console.log('check referral status for ' + this.user.id)
     if (this.user.admin) {
-      this.isReferred = true
-      this.loading = false
+      this.isReferred = true;
+      this.loading = false;
     } else {
-      Vue.axios.get('/referrals/isReferred/' + this.user.id)
-        .then( response => {
-          this.isReferred = response.data.referred
-          console.log('referred: ' + this.isReferred)
-          this.loading = false
+      Vue.axios
+        .get('/referrals/isReferred/' + this.user.id)
+        .then((response) => {
+          this.isReferred = response.data.referred;
+          this.loading = false;
         })
-        .catch( err => {
-          this.isReferred = null
-          console.debug('error checking referral')
-          this.loading = false
-        })
+        .catch((err) => {
+          this.isReferred = null;
+          console.debug('error checking referral');
+          this.loading = false;
+        });
     }
   },
   methods: {
-    resetMessages () {
-      this.warning = ''
-      this.message = ''
+    resetMessages() {
+      this.warning = '';
+      this.message = '';
     },
-    generateReferral () {
+    generateReferral() {
       const options = {
         sponsor_id: this.user.id,
         expiry: null,
       };
 
-      this.tokens = []
-      this.tokenHeaders = this.newTokenHeaders
+      this.tokens = [];
+      this.tokenHeaders = this.newTokenHeaders;
 
-      this.resetMessages()
+      this.resetMessages();
       Vue.axios
         // .post('/referrals/grant', options)
         .get('/referrals/grant?sponsor_id=' + this.user.id)
         .then((response) => {
-          console.log("Response: " + JSON.stringify(response))
+          console.log('Response: ' + JSON.stringify(response));
           if (response.data) {
             const token = response.data;
             this.tokens.push(token);
             this.message = 'Referral token generated...';
-            this.status = 'New'
+            this.status = 'New';
           } else {
             this.warning = 'Error accessing referral token';
           }
@@ -134,33 +129,36 @@ export default {
           this.warning = 'Error requesting referral token';
         });
     },
-    
+
     checkTokens(status) {
       this.showTokens;
       this.tokens = [];
-      this.tokenHeaders = this.allTokenHeaders
-      this.status = status
+      this.tokenHeaders = this.allTokenHeaders;
+      this.status = status;
 
-      this.resetMessages()
-      var url = '/referrals/checkTokens/' + this.user.id
-      if (status) { url = url + '?status=' + status }
-      else { status = 'all' }
+      this.resetMessages();
+      var url = '/referrals/checkTokens/' + this.user.id;
+      if (status) {
+        url = url + '?status=' + status;
+      } else {
+        status = 'all';
+      }
 
-      console.log('get tokens for ' + this.user.id)
-      console.log(url)
+      console.log('get tokens for ' + this.user.id);
+      console.log(url);
       Vue.axios
         .get(url)
         .then((response) => {
           if (response && response.data) {
-            console.log("Response: " + JSON.stringify(response.data))
+            console.log('Response: ' + JSON.stringify(response.data));
             var tokens = response.data.tokens || [];
             for (var i = 0; i < tokens.length; i++) {
-              console.log(i + ' / ' + tokens.length)
+              console.log(i + ' / ' + tokens.length);
               if (tokens[i].user) {
-                this.$set(tokens[i], 'used_by', tokens[i].user.username)
+                this.$set(tokens[i], 'used_by', tokens[i].user.username);
               }
             }
-            this.tokens = tokens
+            this.tokens = tokens;
           } else {
             this.warning = 'No active referral tokens';
           }
@@ -171,9 +169,9 @@ export default {
     },
   },
   watch: {
-    user () {
-      this.checkTokens('available')
-    }
-  }
+    user() {
+      this.checkTokens('available');
+    },
+  },
 };
 </script>

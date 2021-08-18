@@ -510,8 +510,6 @@ export default {
     
     if (this.isReferred) {
       this.funding = await this.createFunding();
-    } else {
-      console.log('funding bypassed for non-referred user')
     }
   },
 };
