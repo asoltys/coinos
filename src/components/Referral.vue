@@ -74,13 +74,11 @@ import Vue from 'vue';
 import QRCode from 'qrcode'
 import config from '@/config'
 
-import DynamicLoad from '@/mixins/DynamicLoad'
+import DynamicLoad from '@/mixins/DynamicLoad';
 
 export default {
   props: {},
-  mixins: [
-    DynamicLoad
-  ],
+  mixins: [DynamicLoad],
   data() {
     return {
       referral_url: '',
@@ -94,8 +92,8 @@ export default {
       status: 'Available',
 
       newTokenHeaders: [
-        {text: 'token', value: 'token'},
-        {text: 'status', value: 'status'},
+        { text: 'token', value: 'token' },
+        { text: 'status', value: 'status' },
       ],
       allTokenHeaders: [
         {text: 'token', value: 'token'},
@@ -114,40 +112,39 @@ export default {
   computed: {
     user: get('user'),
   },
-  async mounted () {
-    await this.waitForUser(5)
+  async mounted() {
+    await this.waitForUser(5);
 
-    console.log('check referral status for ' + this.user.id)
     if (this.user.admin) {
-      this.isReferred = true
-      this.loading = false
+      this.isReferred = true;
+      this.loading = false;
     } else {
-      Vue.axios.get('/referrals/isReferred/' + this.user.id)
-        .then( response => {
-          this.isReferred = response.data.referred
-          console.log('referred: ' + this.isReferred)
-          this.loading = false
+      Vue.axios
+        .get('/referrals/isReferred/' + this.user.id)
+        .then((response) => {
+          this.isReferred = response.data.referred;
+          this.loading = false;
         })
-        .catch( err => {
-          this.isReferred = null
-          console.debug('error checking referral')
-          this.loading = false
-        })
+        .catch((err) => {
+          this.isReferred = null;
+          console.debug('error checking referral');
+          this.loading = false;
+        });
     }
   },
   methods: {
-    resetMessages () {
-      this.warning = ''
-      this.message = ''
+    resetMessages() {
+      this.warning = '';
+      this.message = '';
     },
-    generateReferral () {
+    generateReferral() {
       const options = {
         sponsor_id: this.user.id,
         expiry: null,
       };
 
-      this.tokens = []
-      this.tokenHeaders = this.newTokenHeaders
+      this.tokens = [];
+      this.tokenHeaders = this.newTokenHeaders;
 
       this.resetMessages()
       return Vue.axios
@@ -159,7 +156,7 @@ export default {
             const token = response.data;
             this.tokens.push(token);
             this.message = 'Referral token generated...';
-            this.status = 'New'
+            this.status = 'New';
           } else {
             this.warning = 'Error accessing referral token';
           }
@@ -209,16 +206,19 @@ export default {
     checkTokens(status) {
       this.showTokens;
       this.tokens = [];
-      this.tokenHeaders = this.allTokenHeaders
-      this.status = status
+      this.tokenHeaders = this.allTokenHeaders;
+      this.status = status;
 
-      this.resetMessages()
-      var url = '/referrals/checkTokens/' + this.user.id
-      if (status) { url = url + '?status=' + status }
-      else { status = 'all' }
+      this.resetMessages();
+      var url = '/referrals/checkTokens/' + this.user.id;
+      if (status) {
+        url = url + '?status=' + status;
+      } else {
+        status = 'all';
+      }
 
-      console.log('get tokens for ' + this.user.id)
-      console.log(url)
+      console.log('get tokens for ' + this.user.id);
+      console.log(url);
       Vue.axios
         .get(url)
         .then((response) => {
@@ -234,9 +234,9 @@ export default {
     }
   },
   watch: {
-    user () {
-      this.checkTokens('available')
-    }
-  }
+    user() {
+      this.checkTokens('available');
+    },
+  },
 };
 </script>

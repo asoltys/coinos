@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-progress-linear
-      v-if="initializing || loading || !user.payments"
+      v-if="!user.payments || (!user.payments.length && (initializing || loading))"
       indeterminate
     />
     <template v-else>
@@ -174,7 +174,6 @@
 
 <script>
 import { format, parse, isBefore } from 'date-fns';
-import { mapGetters } from 'vuex';
 import { get, call, sync } from 'vuex-pathify';
 import bolt11 from 'bolt11';
 import colors from 'vuetify/lib/util/colors';
@@ -214,8 +213,9 @@ export default {
       if (this.user.unit === 'SAT') return 0;
       else return undefined;
     },
-    ...mapGetters(['initializing', 'user']),
+    initializing: get('initializing'),
     loading: sync('loading'),
+    user: get('user'),
   },
 
   methods: {
