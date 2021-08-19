@@ -5,6 +5,8 @@ import colors from 'vuetify/lib/util/colors';
 import Account from 'vue-material-design-icons/Account';
 import AccountMultiplePlus from 'vue-material-design-icons/AccountMultiplePlus';
 import AccountCheck from 'vue-material-design-icons/AccountCheck';
+import AccountDetails from 'vue-material-design-icons/AccountDetails';
+import AccountPlus from 'vue-material-design-icons/AccountPlus';
 import Add from 'vue-material-design-icons/Plus';
 import Alert from 'vue-material-design-icons/Alert';
 import ArrowLeft from 'vue-material-design-icons/ArrowLeft';
@@ -50,6 +52,7 @@ import Link from 'vue-material-design-icons/Link';
 import Lock from 'vue-material-design-icons/Lock';
 import Login from 'vue-material-design-icons/Login';
 import Mail from 'vue-material-design-icons/Mail';
+import Menu from 'vue-material-design-icons/Menu';
 import Nfc from 'vue-material-design-icons/Nfc';
 import Note from 'vue-material-design-icons/Note';
 import OpenInNew from 'vue-material-design-icons/OpenInNew';
@@ -106,6 +109,8 @@ export default new Vuetify({
       'account': { component: Account },
       'addAccount': { component: AccountMultiplePlus },
       'accountcheck': { component: AccountCheck },
+      'account-details': { component: AccountDetails },
+      'account-plus': { component: AccountPlus },
       'add': { component: Add },
       'alert': { component: Alert },
       'left': { component: ArrowLeft },
@@ -152,6 +157,7 @@ export default new Vuetify({
       'lock': { component: Lock },
       'login': { component: Login },
       'mail': { component: Mail },
+      'menu': { component: Menu },
       'nfc': { component: Nfc },
       'next': { component: ChevronRight },
       'note': { component: Note },

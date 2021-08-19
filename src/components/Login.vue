@@ -47,7 +47,7 @@
               Use Anonymously
             </v-btn>
             <v-btn @click="register" class="mr-2 mb-2 mb-sm-0 wide flex-grow-1">
-              <v-icon left color="green">$wallet</v-icon>
+              <v-icon left color="green">$account-plus</v-icon>
               Register An Account
             </v-btn>
             <v-btn @click="lnurlAuth" class="mr-2 mb-2 mb-sm-0 wide flex-grow-1">
