@@ -16,7 +16,8 @@
       <v-icon left>$tor</v-icon>
       Tor Hidden Service
     </v-btn>
-    <v-menu class="ml-2" v-if="user && user.id" offset-y nudge-bottom="1" @click='test()'>
+    <template v-if="!initializing">
+    <v-menu class="ml-2" v-if="token && user && user.id" offset-y nudge-bottom="1" @click='test()'>
       <template v-slot:activator="{ on }">
         <v-btn v-on="on">
           <v-avatar class="mr-2" v-if="user.pic" size="30">
@@ -87,6 +88,7 @@
         </v-list-item>
       </v-card>
     </v-menu>
+    </template>
   </v-app-bar>
 </template>
 
@@ -108,10 +110,24 @@ export default {
   },
   async mounted () {
     await this.waitForUser(5)
-    this.checkUser()
+
+    if (this.user.admin) {
+      this.isReferred = true
+    } else {
+      Vue.axios.get('/referrals/isReferred/' + this.user.id)
+        .then( response => {
+          this.isReferred = response.data.referred
+        })
+        .catch( err => {
+          this.isReferred = null
+          console.debug('error checking referral')
+          this.loading = false
+        })
+    }
   },
   computed: {
     fullscreen: get('fullscreen'),
+    initializing: get('initializing'),
     username() {
       if (this.user.username.startsWith('satoshi')) return 'satoshi';
       return this.user.username;
@@ -121,6 +137,7 @@ export default {
     },
     asset: sync('asset'),
     user: get('user'),
+    token: get('token'),
     bigScreen() {
       return window.innerWidth > 640;
     },

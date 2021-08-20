@@ -1,18 +1,27 @@
 <template>
   <div v-if="user.id && user.account" class="mb-2 text-center no-print">
     <div class="d-flex">
-      <div class="display-2 font-weight-black flex-grow-1 text-right mr-2" style="word-break: break-all">
-        {{ $format(user.account.balance, precision) }}
+      <div
+        class="display-2 font-weight-black flex-grow-1 text-right mr-2"
+        style="word-break: break-all"
+      >
+        {{ $format(balance, precision) }}
       </div>
       <div class="text-left flex-grow-1 my-auto">
-        <currency-list :currency="ticker" :currencies="cryptos" type="accounts" />
+        <currency-list
+          :currency="ticker"
+          :currencies="cryptos"
+          type="accounts"
+        />
       </div>
     </div>
     <h3
       v-if="!isNaN(animatedRate) && isBtc"
       class="d-flex flex-wrap justify-center"
     >
-      <div class="fiat primary--text display-1 my-auto">{{ fiat | format_fiat }}</div>
+      <div class="fiat primary--text display-1 my-auto">
+        {{ fiat | format_fiat }}
+      </div>
       <div class="mx-1">
         <currency-list :currency="user.currency" :currencies="fiats" />
       </div>
@@ -26,9 +35,9 @@
         </span>
       </div>
     </h3>
-    <div class="red--text" v-if="user.account.pending">
+    <div class="red--text" v-if="pending">
       <span class="display-1 font-weight-black"
-        >{{ $format(user.account.pending) }}
+        >{{ $format(pending, precision) }}
       </span>
       <span class="headline">UNCONFIRMED</span>
     </div>
@@ -36,11 +45,10 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
-import { call } from 'vuex-pathify';
+import { call, get } from 'vuex-pathify';
 import CurrencyList from './CurrencyList';
 
-const ease = t => (t < 0.5 ? 8 * t * t * t * t : 1 - 8 * --t * t * t * t);
+const ease = (t) => (t < 0.5 ? 8 * t * t * t * t : 1 - 8 * --t * t * t * t);
 const BTC = process.env.VUE_APP_LBTC;
 const SATS = 100000000;
 
@@ -80,8 +88,9 @@ export default {
       arr = [
         ...new Set([
           ...arr,
-          ...this.user.accounts.filter(a => !a.hide && a.pubkey === this.user.account.pubkey)
-            .map(a => (a.ticker || a.asset.substr(0,3)))
+          ...this.user.accounts
+            .filter((a) => !a.hide && a.pubkey === this.user.account.pubkey)
+            .map((a) => a.ticker || a.asset.substr(0, 3)),
         ]),
       ];
 
@@ -89,20 +98,25 @@ export default {
       return arr;
     },
     fiats() {
-      return this.user.currencies.filter(c => c !== this.user.currency);
+      return this.user.currencies.filter((c) => c !== this.user.currency);
     },
-    ...mapGetters(['rate', 'user']),
+    rate: get('rate'),
+    user: get('user'),
+    balance: get('user@account.balance'),
+    pending: get('user@account.pending'),
     ticker() {
-      return this.isBtc ? this.user.unit : (this.user.account.ticker || this.user.account.asset.substr(0,3));
+      return this.isBtc
+        ? this.user.unit
+        : this.user.account.ticker || this.user.account.asset.substr(0, 3);
     },
     isBtc() {
       return this.user.account.ticker === 'BTC';
     },
     fiat() {
-      return (this.user.account.balance / SATS) * this.animatedRate;
+      return (this.balance / SATS) * this.animatedRate;
     },
     pendingFiat() {
-      return (this.user.account.pending / SATS) * this.animatedRate;
+      return (this.pending / SATS) * this.animatedRate;
     },
     precision() {
       if (this.user.unit === 'SAT') return 0;
@@ -132,11 +146,11 @@ export default {
 
   methods: {
     toggleCustodial() {
-      let a = this.user.accounts.filter(a => a.asset === BTC);
+      let a = this.user.accounts.filter((a) => a.asset === BTC);
       if (this.custodial) {
-        this.shiftAccount(a.find(a => a.pubkey).id);
+        this.shiftAccount(a.find((a) => a.pubkey).id);
       } else {
-        this.shiftAccount(a.find(a => !a.pubkey).id);
+        this.shiftAccount(a.find((a) => !a.pubkey).id);
       }
     },
     shiftAccount: call('shiftAccount'),

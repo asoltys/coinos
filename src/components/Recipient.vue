@@ -10,6 +10,7 @@
         class="mb-2"
         @done="$emit('feeRate')"
         :currency="currency"
+        :triggerEditing="true"
       />
       <div class="d-flex">
         <v-btn

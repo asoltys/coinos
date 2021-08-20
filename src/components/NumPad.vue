@@ -5,10 +5,9 @@
         class="headline flex-grow-1 mb-1"
         hide-details="auto"
         v-model="inputAmount"
-        @focus="e => e.target.select()"
+        @focus="(e) => e.target.select()"
         @keyup.enter="done"
         ref="amount"
-        placeholder="_"
         solo
       >
         <template v-slot:append>
@@ -16,7 +15,7 @@
             :currency="currency"
             :currencies="currencies"
             @currency="setCurrency"
-        :type="type"
+            :type="type"
           />
         </template>
       </v-text-field>
@@ -76,7 +75,7 @@ export default {
   },
 
   async mounted() {
-    const waitForRates = resolve => {
+    const waitForRates = (resolve) => {
       if (!this.globalRates)
         return (this.timeout = setTimeout(() => waitForRates(resolve), 1000));
       resolve();
@@ -84,7 +83,9 @@ export default {
     await new Promise(waitForRates);
     this.rates = this.globalRates;
     this.currency =
-      this.user.fiat && this.currencies.includes(this.user.currency) && this.type === 'currencies'
+      this.user.fiat &&
+      this.currencies.includes(this.user.currency) &&
+      this.type === 'currencies'
         ? this.user.currency
         : this.user.account.ticker === 'BTC'
         ? this.user.unit
@@ -97,7 +98,8 @@ export default {
         ? this.initialAmount
         : this.user.fiat &&
           this.fiatAmount &&
-          this.currencies.includes(this.user.currency) && this.type === 'currencies'
+          this.currencies.includes(this.user.currency) &&
+          this.type === 'currencies'
         ? this.fiatAmount
         : parseFloat(this.$format(this.initialAmount, this.decimals)).toFixed(
             this.decimals
@@ -110,7 +112,13 @@ export default {
       setTimeout(() => {
         this.$refs.amount.$refs.input.select();
       }, 50);
-    }
+    } else {
+      setTimeout(() => {
+
+        this.$refs.amount.$refs.input.focus();
+      }, 25); 
+    } 
+
   },
 
   computed: {
@@ -121,8 +129,12 @@ export default {
       else if (this.currency === 'GSAT') return 9;
       else if (this.currency === 'TSAT') return 12;
       if (this.precision || this.precision === 0) return this.precision;
-      if (this.type === "currencies" && this.user.currencies.includes(this.currency)) return 2;
-      let account = this.user.accounts.find(a => a.ticker === this.currency);
+      if (
+        this.type === 'currencies' &&
+        this.user.currencies.includes(this.currency)
+      )
+        return 2;
+      let account = this.user.accounts.find((a) => a.ticker === this.currency);
       if (account) return account.precision;
       if (this.user.account.ticker !== 'BTC')
         return this.user.account.precision;
@@ -133,7 +145,10 @@ export default {
       return 10 ** this.decimals;
     },
     fiat() {
-      return this.user.currencies.includes(this.currency) && this.type === 'currencies';
+      return (
+        this.user.currencies.includes(this.currency) &&
+        this.type === 'currencies'
+      );
     },
     globalRate: get('rate'),
     rate() {
