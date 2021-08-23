@@ -126,28 +126,13 @@
 
           <v-autocomplete
             v-model="form.currencies"
-            :items="currencies"
-            chips
-            label="Currencies"
             multiple
-            @change="filterCurrencies"
-            @focus="scroll"
+            chips
+            deletable-chips
+            :items="currencies"
+            label="Currencies"
             :menu-props="{ closeOnContentClick: true, maxHeight: 200 }"
-            :search-input.sync="searchInput"
-            :full-width="false"
-          >
-            <template v-slot:selection="{ attrs, item, select, selected }">
-              <v-chip
-                v-bind="attrs"
-                :input-value="selected"
-                close
-                close-icon="$cancel"
-                @click="select"
-                @click:close="remove(item)"
-              >
-                <strong>{{ item }}</strong>
-              </v-chip>
-            </template>
+            >
           </v-autocomplete>
 
           <div class="text-right">
@@ -295,10 +280,6 @@ export default {
         this.currencies.includes(c)
       );
     },
-    remove(item) {
-      this.form.currencies.splice(this.form.currencies.indexOf(item), 1);
-      this.form.currencies = [...this.form.currencies];
-    },
     twofa() {
       this.set2fa = !this.set2fa;
     },
@@ -316,9 +297,16 @@ export default {
     async submit(e) {
       if (e) e.preventDefault();
       if (!this.form.password || this.form.password === this.form.confirm) {
+        // ensure currencies not broken
+        if (this.form.currencies.length === 0)
+          this.form.currencies.push("USD");
+
         this.saving = true;
         let res = await this.updateUser(this.form);
         this.$nextTick(() => (this.saving = false));
+
+        if (this.user.currencies.indexOf(this.user.currency) === -1)
+          this.setCurrency(this.user.currencies[0]);
 
         if (res) {
           this.changingPassword = false;
@@ -332,6 +320,7 @@ export default {
     },
 
     updateUser: call('updateUser'),
+    setCurrency: call('setCurrency'),
     enable2fa: call('enable2fa'),
     disable2fa: call('disable2fa'),
   },
