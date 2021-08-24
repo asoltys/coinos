@@ -86,7 +86,9 @@ export default {
       if (!currency && this.user.fiat) await this.toggleFiat();
 
       if (['SAT', 'KSAT', 'MSAT', 'BTC', 'GSAT', 'TSAT'].includes(c))
-        return this.setUnit(c);
+        return await this.setUnit(c);
+      else
+        return await this.setCurrency(c);
     },
   },
 

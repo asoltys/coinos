@@ -23,7 +23,7 @@
         {{ fiat | format_fiat }}
       </div>
       <div class="mx-1">
-        <currency-list :currency="user.currency" :currencies="fiats" />
+        <currency-list :currency="userCurrency" :currencies="fiats" />
       </div>
       <div class="mt-auto mb-1">
         <span>
@@ -102,6 +102,13 @@ export default {
     },
     rate: get('rate'),
     user: get('user'),
+    userCurrency() {
+      if (this.user.currencies.indexOf(this.user.currency) === -1) {
+        this.setCurrency(this.user.currencies[0]);
+        return this.user.currencies[0];
+      } else
+        return this.user.currency;
+    },
     balance: get('user@account.balance'),
     pending: get('user@account.pending'),
     ticker() {
@@ -155,6 +162,7 @@ export default {
     },
     shiftAccount: call('shiftAccount'),
     shiftCurrency: call('shiftCurrency'),
+    setCurrency: call('setCurrency')
   },
 
   watch: {

@@ -305,8 +305,9 @@ export default {
         let res = await this.updateUser(this.form);
         this.$nextTick(() => (this.saving = false));
 
-        if (this.user.currencies.indexOf(this.user.currency) === -1)
+        if (this.user.currencies.indexOf(this.user.currency) === -1) {
           this.setCurrency(this.user.currencies[0]);
+        }
 
         if (res) {
           this.changingPassword = false;
