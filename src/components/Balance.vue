@@ -13,6 +13,11 @@
           :currencies="cryptos"
           type="accounts"
         />
+        <v-btn small icon plain @click="denominationInfo()">
+          <v-icon>
+            $help
+          </v-icon>
+        </v-btn>
       </div>
     </div>
     <h3
@@ -152,6 +157,17 @@ export default {
   },
 
   methods: {
+    denominationInfo() {
+      alert(`This button allows you to change your bitcoin denomination:
+The satoshi (SAT) is the smallest denomination of bitcoin.
+It is like cents, only there are 100 million SATs to a bitcoin, not 100.
+We also support combining the SAT with standard metric prefixes:
+1 KSAT (kilo-satoshi) = 1000 SAT = 0.000 01 BTC
+1 MSAT (mega-satoshi) = 1 million SAT = 0.01 BTC
+1 GSAT (giga-satoshi) = 1 billion SAT = 10 BTC
+1 TSAT (tera-satoshi) = 1 trillion SAT = 10 000 BTC
+Below you will see how much each of these is worth in your local currency.`);
+    },
     toggleCustodial() {
       let a = this.user.accounts.filter((a) => a.asset === BTC);
       if (this.custodial) {
