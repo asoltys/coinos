@@ -136,8 +136,6 @@ export default {
             case 'SAT': return 0;
             case 'KSAT': return 3;
             case 'MSAT': return 6;
-            case 'GSAT': return 9;
-            case 'TSAT': return 12;
             default: return 8;
           }
         }
@@ -148,8 +146,6 @@ export default {
         case 'SAT': return 0;
         case 'KSAT': return 3;
         case 'MSAT': return 6;
-        case 'GSAT': return 9;
-        case 'TSAT': return 12;
         default: return 8;
       }
     },
@@ -171,7 +167,7 @@ export default {
       if (this.currency) return [this.currency, 'SAT'];
       let user = this.user;
       if (user.account.ticker === 'BTC') {
-        return [...user.currencies, 'BTC', 'SAT', 'KSAT', 'MSAT', 'GSAT', 'TSAT'];
+        return [...user.currencies, 'BTC', 'SAT', 'KSAT', 'MSAT'];
       }
       return [user.account.ticker, 'SAT'];
     },
@@ -189,7 +185,7 @@ export default {
     },
     color(c) {
       if (!this.user.currencies) return 'white';
-      return ['BTC', 'SAT', 'KSAT', 'MSAT', 'GSAT', 'TSAT'].includes(c)
+      return ['BTC', 'SAT', 'KSAT', 'MSAT'].includes(c)
         ? 'white'
         : this.type === "accounts"
         ? 'liquid'

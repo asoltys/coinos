@@ -50,7 +50,7 @@ export default {
 
   computed: {
     cryptos() {
-      let arr = ['SAT', 'KSAT', 'MSAT', 'BTC', 'GSAT', 'TSAT'];
+      let arr = ['SAT', 'KSAT', 'MSAT', 'BTC'];
       arr.splice(arr.indexOf(this.ticker), 1);
       if (!this.user.accounts) return arr;
       arr = [
@@ -83,8 +83,6 @@ export default {
       else if (this.user.unit === 'KSAT') return 3;
       else if (this.user.unit === 'MSAT') return 6;
       else if (this.user.unit === 'BTC') return 8;
-      else if (this.user.unit === 'GSAT') return 9;
-      else if (this.user.unit === 'TSAT') return 12;
       else return this.user.account.precision;
     },
     ticker() {
@@ -99,7 +97,7 @@ export default {
 
   methods: {
     color(c) {
-      return ['BTC', 'SAT', 'KSAT', 'MSAT', 'GSAT', 'TSAT'].includes(c)
+      return ['BTC', 'SAT', 'KSAT', 'MSAT'].includes(c)
         ? 'white'
         : this.user.currencies.includes(c)
         ? 'primary'

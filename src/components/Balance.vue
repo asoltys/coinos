@@ -65,8 +65,8 @@ export default {
   filters: {
     format(n) {
       return parseFloat(n).toLocaleString('en-US', {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 12,
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
       });
     },
     format_fiat(n) {
@@ -82,9 +82,12 @@ export default {
       return !this.user.account.pubkey;
     },
     cryptos() {
-      let arr = ['SAT', 'KSAT', 'MSAT', 'BTC', 'GSAT', 'TSAT'];
-      arr.splice(arr.indexOf(this.ticker), 1);
+      let arr = ['SAT', 'KSAT', 'MSAT', 'BTC'];
+      let i = arr.indexOf(this.ticker);
+      if (i >= 0) arr.splice(i, 1);
+      else arr = []
       if (!this.user.accounts) return arr;
+      console.log(arr);
       arr = [
         ...new Set([
           ...arr,
@@ -93,8 +96,9 @@ export default {
             .map((a) => a.ticker || a.asset.substr(0, 3)),
         ]),
       ];
+      i = arr.indexOf(this.ticker);
+      if (i >= 0 && arr.length > 2) arr.splice(i, 1);
 
-      if (this.ticker === 'BTC') arr.splice(arr.indexOf('BTC'), 1);
       return arr;
     },
     fiats() {
@@ -123,8 +127,6 @@ export default {
       else if (this.user.unit === 'KSAT') return 3;
       else if (this.user.unit === 'MSAT') return 6;
       else if (this.user.unit === 'BTC') return 8;
-      else if (this.user.unit === 'GSAT') return 9;
-      else if (this.user.unit === 'TSAT') return 12;
       else return this.user.account.precision;
     },
     animatedRate() {

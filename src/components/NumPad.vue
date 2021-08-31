@@ -107,7 +107,7 @@ export default {
 
     if (
       this.$refs.amount &&
-      (this.user.fiat || !['BTC', 'SAT', 'KSAT', 'MSAT', 'GSAT', 'TSAT'].includes(this.currency))
+      (this.user.fiat || !['BTC', 'SAT', 'KSAT', 'MSAT'].includes(this.currency))
     ) {
       setTimeout(() => {
         this.$refs.amount.$refs.input.select();
@@ -126,8 +126,6 @@ export default {
       if (this.currency === 'SAT') return 0;
       else if (this.currency === 'KSAT') return 3;
       else if (this.currency === 'MSAT') return 6;
-      else if (this.currency === 'GSAT') return 9;
-      else if (this.currency === 'TSAT') return 12;
       if (this.precision || this.precision === 0) return this.precision;
       if (
         this.type === 'currencies' &&
@@ -161,12 +159,6 @@ export default {
           break;
         case 'MSAT':
           return SATS / 1e6;
-          break;
-        case 'GSAT':
-          return SATS / 1e9;
-          break;
-        case 'TSAT':
-          return SATS / 1e12;
           break;
         case 'BTC':
           return 1;

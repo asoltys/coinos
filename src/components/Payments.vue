@@ -214,8 +214,6 @@ export default {
       else if (this.user.unit === 'KSAT') return 3;
       else if (this.user.unit === 'MSAT') return 6;
       else if (this.user.unit === 'BTC') return 8;
-      else if (this.user.unit === 'GSAT') return 9;
-      else if (this.user.unit === 'TSAT') return 12;
       else return undefined;
     },
     initializing: get('initializing'),
