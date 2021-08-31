@@ -29,9 +29,9 @@
         <span>
           @
           <span class="font-weight-black primary--text">{{
-            adjustedAnimatedRateText
+            animatedRate | format
           }}</span>
-          / {{ this.user.unit }}
+          / BTC
         </span>
       </div>
     </h3>
@@ -87,7 +87,6 @@ export default {
       if (i >= 0) arr.splice(i, 1);
       else arr = []
       if (!this.user.accounts) return arr;
-      console.log(arr);
       arr = [
         ...new Set([
           ...arr,
@@ -132,18 +131,6 @@ export default {
     animatedRate() {
       return parseFloat(this.tweenedRate);
     },
-    adjustedAnimatedRate() {
-      return parseFloat(this.tweenedRate) * Math.pow(10, this.precision - 8);
-    },
-    adjustedAnimatedRateText() {
-      let decimalDigits = 10 - this.precision;
-      if (decimalDigits < 2) decimalDigits = 2;
-
-      return parseFloat(this.adjustedAnimatedRate).toLocaleString('en-US', {
-        minimumFractionDigits: decimalDigits,
-        maximumFractionDigits: decimalDigits,
-      });
-    }
   },
 
   methods: {
