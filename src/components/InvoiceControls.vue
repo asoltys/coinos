@@ -55,22 +55,10 @@
           </v-btn>
         </template>
       </v-text-field>
-      <div class="d-flex mb-sm-1">
-        <v-btn
-          v-if="!lnurl && invoice.network === 'lightning'"
-          @click.native="getPaymentUrl"
-          class="flex-grow-1 wide mr-2 mb-1 mb-sm-0"
-        >
-          <v-icon left color="primary">$qrcode</v-icon>
-          LNURL Pay Request
-        </v-btn>
-      </div>
+      <div class="d-flex mb-sm-1"></div>
     </div>
     <v-btn-toggle tile color="primary accent-3" group class="flex-wrap mx-auto">
-      <v-btn
-        @click.native="toggleAmount"
-        class="flex-grow-1"
-      >
+      <v-btn @click.native="toggleAmount" class="flex-grow-1">
         <v-icon left color="primary">$edit</v-icon>
         Amount
       </v-btn>
@@ -83,12 +71,24 @@
         Copy
       </v-btn>
       <v-btn @click="$emit('display')" class="flex-grow-1">
-        <v-icon left color="green">$send</v-icon>
-        Checkout
+        <v-icon left color="green">$qrcode</v-icon>
+        Show QR
       </v-btn>
-      <v-btn @click="settings = !settings" class="flex-grow-1" v-if="network !== 'liquid'">
+      <v-btn
+        v-if="network === 'bitcoin'"
+        @click="settings = !settings"
+        class="flex-grow-1"
+      >
         <v-icon left color="pink">$settings</v-icon>
-        Advanced
+        Address
+      </v-btn>
+      <v-btn
+        v-if="!lnurl && network === 'lightning'"
+        @click.native="getPaymentUrl"
+        class="flex-grow-1"
+      >
+        <v-icon left color="primary">$flash</v-icon>
+        LNURL
       </v-btn>
     </v-btn-toggle>
   </v-form>
@@ -123,13 +123,13 @@ export default {
     networks() {
       return this.nodes
         .filter(
-          n =>
+          (n) =>
             (!this.user.account.pubkey &&
               (this.user.account.asset === process.env.VUE_APP_LBTC ||
                 n === 'liquid')) ||
             this.user.account.network === n
         )
-        .map(n => ({
+        .map((n) => ({
           text: n[0].toUpperCase() + n.slice(1),
           value: n,
         }));
