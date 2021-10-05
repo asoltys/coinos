@@ -1070,7 +1070,8 @@ export default new Vuex.Store({
               commit('version', data.trim());
             },
           };
-          handlers[type]();
+
+          handlers[type] && handlers[type]();
         };
       });
     },
