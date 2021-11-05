@@ -1703,6 +1703,12 @@ export default new Vuex.Store({
       await dispatch('clearPayment');
       let { nodes, networks, payment, user } = getters;
 
+      if (text.includes('@')) {
+        let [name, domain] = text.split('@');
+        let url = `https://${domain}/.well-known/lnurlp/${name}`;
+
+      } 
+
       if (nodes.includes('lightning')) {
         try {
           if (text.toLowerCase().slice(0, 10) === 'lightning:')
