@@ -27,7 +27,7 @@
 <script>
 import { get, sync, call } from 'vuex-pathify';
 import Copy from '../mixins/Copy';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 
 export default {
   props: {
@@ -53,7 +53,7 @@ export default {
       return 'red';
     },
     dateFormat(d) {
-      return format(d, 'M/D HH:mm:ss');
+      return format(parseISO(d), 'M/d HH:mm:ss');
     },
     price(p) {
       let price = p.v2 / p.v1;

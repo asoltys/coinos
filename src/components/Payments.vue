@@ -1,7 +1,9 @@
 <template>
   <div>
     <v-progress-linear
-      v-if="!user.payments || (!user.payments.length && (initializing || loading))"
+      v-if="
+        !user.payments || (!user.payments.length && (initializing || loading))
+      "
       indeterminate
     />
     <template v-else>
@@ -70,7 +72,7 @@
                     >UNCONFIRMED</span
                   >
                 </v-chip>
-                {{ updatedAt | format }}
+                    {{ updatedAt | format }}
               </div>
             </v-expansion-panel-header>
             <v-expansion-panel-content class="text-left" :eager="true">
@@ -161,19 +163,18 @@
             <v-icon left>$refresh</v-icon><span>Load All</span>
           </v-btn>
           <v-btn @click="exportCSV" class="flex-grow-1 wide">
-            <v-icon left color="grey">$assignment</v-icon><span>Export CSV</span>
+            <v-icon left color="grey">$assignment</v-icon
+            ><span>Export CSV</span>
           </v-btn>
         </div>
       </div>
-      <v-alert v-else class="title"
-        >No payments yet</v-alert
-      >
+      <v-alert v-else class="title">No payments yet</v-alert>
     </template>
   </div>
 </template>
 
 <script>
-import { format, parse, isBefore } from 'date-fns';
+import { format, parseISO, isBefore } from 'date-fns';
 import { get, call, sync } from 'vuex-pathify';
 import bolt11 from 'bolt11';
 import colors from 'vuetify/lib/util/colors';
@@ -188,11 +189,10 @@ export default {
   mixins: [Copy],
 
   filters: {
-    abs: v => Math.abs(v),
-    format: d => format(d, 'MMM D HH:mm:ss'),
-    short: d => format(d, 'MMM D, YYYY'),
-    trim: s => (s.length > 20 ? s.substr(0, 20) + '...' : s),
-    twodec: n => n.toFixed(2),
+    abs: (v) => Math.abs(v),
+    format: (d) => format(parseISO(d), 'MMM d, yyyy'),
+    trim: (s) => (s.length > 20 ? s.substr(0, 20) + '...' : s),
+    twodec: (n) => n.toFixed(2),
   },
 
   data() {
@@ -247,10 +247,10 @@ export default {
         'tip',
       ];
       const csv =
-        keys.map(k => `"${k}"`).join(',') +
+        keys.map((k) => `"${k}"`).join(',') +
         '\n' +
         this.user.payments
-          .map(r => keys.map(k => `"${r[k]}"`).join(','))
+          .map((r) => keys.map((k) => `"${r[k]}"`).join(','))
           .join('\n');
 
       const filename = 'payments.csv';
@@ -279,9 +279,10 @@ export default {
     },
 
     filteredPayments() {
+      console.log('MEOW', this.user.payments);
       if (!this.user.payments || !this.user.payments.length) return [];
       return this.user.payments
-        .map(p => {
+        .map((p) => {
           let o = JSON.parse(JSON.stringify(p));
           o.amount = p.amount + p.tip;
           o.displayAmount = this.$format(Math.abs(o.amount), this.precision);
@@ -297,19 +298,19 @@ export default {
             try {
               o.hash = bolt11
                 .decode(o.hash.toLowerCase())
-                .tags.find(t => t.tagName === 'payment_hash').data;
+                .tags.find((t) => t.tagName === 'payment_hash').data;
             } catch (e) {
               console.log(e);
             }
           }
           return o;
         })
-        .sort((a, b) =>
-          isBefore(parse(a.createdAt), parse(b.createdAt)) ? -1 : 1
-        )
-        .filter(p => p.amount < 0 || p.received)
+        .sort((a, b) => {
+          b.createdAt - a.createdAt;
+        })
+        .filter((p) => p.amount < 0 || p.received)
         .filter(
-          p => !this.user.account || p.account_id === this.user.account.id
+          (p) => !this.user.account || p.account_id === this.user.account.id
         )
         .reverse();
     },
@@ -323,7 +324,7 @@ export default {
     paymentCount(v) {
       setTimeout(() => (this.selected = this.length - 1), 500);
     },
-  }
+  },
 };
 </script>
 
