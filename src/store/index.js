@@ -1248,6 +1248,7 @@ export default new Vuex.Store({
 
             payment.fee = psbt.getFee();
             payment.tx = psbt.extractTransaction();
+            payment.hex = payment.tx.toHex();
             payment.tx.fee = payment.fee / SATS;
             payment.txid = payment.tx.txid;
             payment.feeRate = feeRate;
@@ -1410,7 +1411,7 @@ export default new Vuex.Store({
           asset,
           network,
           memo,
-          tx,
+          hex,
           payreq,
           replaceable,
           route,
@@ -1418,12 +1419,13 @@ export default new Vuex.Store({
         },
       } = getters;
 
+
       if (signed) {
         try {
           let { data: payment } = await Vue.axios.post(
             `/${network}/broadcast`,
             {
-              tx: tx.toHex(),
+              tx: hex,
               payment: getters.payment,
             }
           );
