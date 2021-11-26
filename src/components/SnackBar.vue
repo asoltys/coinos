@@ -58,5 +58,5 @@ export default {
 <style lang="stylus" scoped>
 .snack
   max-width 100% !important
-  top -50px
+  top 20px
 </style>

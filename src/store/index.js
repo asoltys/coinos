@@ -31,8 +31,6 @@ const {
   enc: { Utf8 },
 } = cryptojs;
 
-const expectedType = process.env.VUE_APP_COINTYPE;
-
 const axiosError = 'Error accessing Server'; // error message returned when axios call caught in exception
 
 const getRoot = (privkey, seed, dispatch, user, password, network) => {
@@ -1409,13 +1407,14 @@ export default new Vuex.Store({
           address,
           amount,
           asset,
-          network,
-          memo,
           hex,
+          memo,
+          network,
           payreq,
           replaceable,
           route,
           signed,
+          tx,
         },
       } = getters;
 
@@ -1718,16 +1717,16 @@ export default new Vuex.Store({
           let payreq = text.toLowerCase();
           payment.payreq = payreq;
           payment.payobj = bolt11.decode(payment.payreq);
-          let { coinType } = payment.payobj;
+          let { network: { bech32 }} = payment.payobj;
 
           if (!networks.includes('lightning'))
             return commit('error', 'Lightning not supported in this account');
 
-          if (coinType !== expectedType) {
+          if (bech32 !== process.env.VUE_APP_NETWORK_BECH32) {
             dispatch('clearPayment');
             commit(
               'error',
-              `Wrong network, '${coinType}' instead of '${expectedType}'`
+              `Wrong network prefix '${bech32}' instead of '${process.env.VUE_APP_NETWORK_BECH32}'`
             );
             throw new Error('Wrong network');
           }

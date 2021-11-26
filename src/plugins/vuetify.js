@@ -141,7 +141,7 @@ export default new Vuetify({
       'help': { component: Help },
       'home': { component: Home },
       'info': { component: Info },
-      'key': { component: Key, props: { size: 64 } },
+      'key': { component: Key },
       'link': { component: Link },
       'liquid': { component: Liquid },
       'bitcoin': { component: Bitcoin },

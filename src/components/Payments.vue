@@ -174,7 +174,7 @@
 </template>
 
 <script>
-import { format, parseISO, isBefore } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { get, call, sync } from 'vuex-pathify';
 import bolt11 from 'bolt11';
 import colors from 'vuetify/lib/util/colors';
@@ -279,7 +279,6 @@ export default {
     },
 
     filteredPayments() {
-      console.log('MEOW', this.user.payments);
       if (!this.user.payments || !this.user.payments.length) return [];
       return this.user.payments
         .map((p) => {
@@ -305,14 +304,11 @@ export default {
           }
           return o;
         })
-        .sort((a, b) => {
-          b.createdAt - a.createdAt;
-        })
         .filter((p) => p.amount < 0 || p.received)
         .filter(
           (p) => !this.user.account || p.account_id === this.user.account.id
         )
-        .reverse();
+      ;
     },
 
     explore(link) {
