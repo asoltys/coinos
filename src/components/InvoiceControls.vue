@@ -36,13 +36,23 @@
       </template>
     </v-textarea>
     <div v-if="settings">
-      <v-select
-        v-if="invoice.network !== 'lightning'"
-        label="Address Type"
-        :items="types"
-        v-model="type"
-        @input="submit"
-      />
+      <v-template v-if="invoice.network !== 'lightning'">
+        <v-select
+          label="Address Type"
+          :items="types"
+          v-model="type"
+          @input="submit"
+        />
+        <v-template v-if="type === 'legacy'">
+          <div v-if="signedMessage" class="py-4">{{ signedMessage }}</div>
+          <v-template v-else>
+            <v-text-field label="Message to Sign" v-model="message" />
+            <v-btn class="toggle" @click="signMessage">
+              <v-icon left color="success">$pencil</v-icon> Sign Message
+            </v-btn>
+          </v-template>
+        </v-template>
+      </v-template>
       <v-text-field
         v-if="user.account.pubkey"
         label="Derivation Path"
@@ -119,6 +129,8 @@ export default {
   }),
 
   computed: {
+    signedMessage: get('signedMessage'),
+    message: sync('message'),
     loading: get('loading'),
     networks() {
       return this.nodes
@@ -194,6 +206,7 @@ export default {
       });
     },
 
+    signMessage: call('signMessage'),
     addInvoice: call('addInvoice'),
     getPaymentUrl: call('getPaymentUrl'),
     getNewAddress() {

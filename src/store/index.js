@@ -180,6 +180,7 @@ const state = {
   loadingFee: false,
   lnurl: null,
   memo: null,
+  message: null,
   network: null,
   paymentCount: 0,
   pin: '',
@@ -204,6 +205,7 @@ const state = {
   reader: null,
   seed: null,
   selected: null,
+  signedMessage: null,
   snack: '',
   socket: null,
   stopScanning: false,
@@ -1538,8 +1540,22 @@ export default new Vuex.Store({
       }
     },
 
+    async signMessage({ commit, dispatch, state }) {
+      let { invoice: { address }, message } = state;
+
+      try {
+        let { data } = await Vue.axios.post(`/signMessage`, { address, message });
+        commit('signedMessage', data);
+        commit('error', null);
+      } catch (e) {
+        commit('error', e.response ? e.response.data : e.message);
+      }
+    },
+
     async addInvoice({ commit, dispatch, state }, params) {
       commit('loading', true);
+      commit('message', null);
+      commit('signedMessage', null);
       const { controller, invoice, rate, recipient, network, socket } = state;
       if (recipient.username) invoice.user = recipient;
       else if (!(invoice.user && invoice.user.id)) invoice.user = state.user;
