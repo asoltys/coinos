@@ -32,6 +32,7 @@ const {
 } = cryptojs;
 
 const axiosError = 'Error accessing Server'; // error message returned when axios call caught in exception
+let debounce;
 
 const getRoot = (privkey, seed, dispatch, user, password, network) => {
   let root;
@@ -1718,7 +1719,6 @@ export default new Vuex.Store({
     },
 
     async handleScan({ commit, dispatch, getters }, text) {
-      console.log(text);
       commit('stopScanning', false);
 
       if (!text) return;
@@ -1729,6 +1729,8 @@ export default new Vuex.Store({
       if (text.includes('@') && text.includes('.')) {
         let [name, domain] = text.split('@');
         try {
+          clearTimeout(debounce);
+          await new Promise((r) => debounce = setTimeout(r, 1500));
           ({ data: text } = await Vue.axios.get(`/encode?domain=${domain}&name=${name}`));
         } catch (e) {}
       }
