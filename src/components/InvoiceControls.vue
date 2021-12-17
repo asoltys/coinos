@@ -39,7 +39,7 @@
       <v-template v-if="invoice.network !== 'lightning'">
         <v-select
           label="Address Type"
-          :items="types"
+          :items="addressTypes"
           v-model="type"
           @input="submit"
         />
@@ -129,6 +129,9 @@ export default {
   }),
 
   computed: {
+    addressTypes() {
+      return this.user.account.pubkey ? this.types : [...this.types, 'bech32m'];
+    },
     signedMessage: get('signedMessage'),
     message: sync('message'),
     loading: get('loading'),
