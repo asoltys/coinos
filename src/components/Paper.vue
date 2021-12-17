@@ -91,13 +91,13 @@ import Qr from './Qr';
 import {
   address,
   crypto,
-  ECPair,
   payments,
   script,
 } from 'bitcoinjs-lib';
 import bip38 from 'bip38';
 import wif from 'wif';
 import Printer from 'vue-material-design-icons/Printer';
+import { ECPair } from 'liquidjs-lib';
 
 export default {
   components: { Qr, Printer },
@@ -118,7 +118,7 @@ export default {
       const hash = crypto.sha256(this.seed);
       return ECPair.fromPrivateKey(hash, {
         compressed: this.compressed,
-        network: this.$network,
+        network: { ...this.$network, assetHash: "", confidentialPrefix: 1 },
       });
     },
     address() {

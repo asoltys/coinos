@@ -1,8 +1,14 @@
-FROM node:alpine
+FROM node:17-alpine
 
-RUN apk add git
-RUN git clone https://github.com/coinos/coinos-ui
-WORKDIR /coinos-ui
+RUN apk add git python3
+RUN npm i -g pnpm
 
-RUN yarn
-CMD ["yarn", "start"]
+WORKDIR /app
+
+COPY package.json .
+RUN pnpm i
+
+COPY . .
+RUN pnpm i
+
+CMD ["pnpm", "start"]

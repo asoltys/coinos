@@ -27,3 +27,4 @@ bump.sh
 deploy.sh
 stage.sh
 .yarn*
+.pnpm*

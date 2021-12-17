@@ -3,6 +3,9 @@ const IS_PRODUCTION = !['development', 'test'].includes(process.env.NODE_ENV);
 
 module.exports = IS_PRODUCTION
   ? {
+    configureWebpack: {
+      resolve: { aliasFields: ['browser', 'browser.esm'] }
+    },
       pluginOptions: {
         webpackBundleAnalyzer: {
           openAnalyzer: false,
@@ -21,6 +24,9 @@ module.exports = IS_PRODUCTION
       },
     }
   : {
+    configureWebpack: {
+      resolve: { aliasFields: ['browser', 'browser.esm'] }
+    },
       pluginOptions: {
         webpackBundleAnalyzer: {
           analyzerMode: 'disabled',

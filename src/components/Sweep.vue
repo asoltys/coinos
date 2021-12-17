@@ -74,7 +74,7 @@
 import { get, call, sync } from 'vuex-pathify';
 import Copy from '../mixins/Copy';
 import Qr from './Qr';
-import { ECPair, payments } from 'bitcoinjs-lib';
+import { payments } from 'bitcoinjs-lib';
 import Amount from './Amount';
 import Transaction from './Transaction';
 import Qrcode from 'vue-material-design-icons/Qrcode';

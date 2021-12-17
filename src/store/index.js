@@ -7,10 +7,10 @@ import { fromSeed, fromBase58 } from 'bip32';
 import bolt11 from 'bolt11';
 import router from '../router';
 import validate from 'bitcoin-address-validation';
-import { crypto, ECPair, payments, Psbt } from 'bitcoinjs-lib';
+import { crypto, payments, Psbt } from 'bitcoinjs-lib';
 import {
   crypto as lqcrypto,
-  ECPair as lqECPair,
+  ECPair,
   payments as lqpayments,
   Psbt as lqPsbt,
 } from 'liquidjs-lib';
@@ -1234,7 +1234,7 @@ export default new Vuex.Store({
 
                 const pair = ECPair.fromPrivateKey(hd.privateKey, {
                   compressed: true,
-                  network,
+                  network: { ...network, assetHash: "", confidentialPrefix: 1 },
                 });
 
                 try {
@@ -1861,7 +1861,7 @@ export default new Vuex.Store({
       }
 
       try {
-        let ecpair = ECPair.fromWIF(text, this._vm.$network);
+        let ecpair = ECPair.fromWIF(text, { ...this._vm.$network, confidentialPrefix: 1, assetHash: "" });
         commit('ecpair', ecpair);
         go('/sweep');
       } catch (e) {
