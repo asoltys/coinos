@@ -1420,7 +1420,6 @@ export default new Vuex.Store({
         },
       } = getters;
 
-
       if (signed) {
         try {
           let { data: payment } = await Vue.axios.post(
@@ -1541,10 +1540,16 @@ export default new Vuex.Store({
     },
 
     async signMessage({ commit, dispatch, state }) {
-      let { invoice: { address }, message } = state;
+      let {
+        invoice: { address },
+        message,
+      } = state;
 
       try {
-        let { data } = await Vue.axios.post(`/signMessage`, { address, message });
+        let { data } = await Vue.axios.post(`/signMessage`, {
+          address,
+          message,
+        });
         commit('signedMessage', data);
         commit('error', null);
       } catch (e) {
@@ -1713,6 +1718,7 @@ export default new Vuex.Store({
     },
 
     async handleScan({ commit, dispatch, getters }, text) {
+      console.log(text);
       commit('stopScanning', false);
 
       if (!text) return;
@@ -1720,11 +1726,12 @@ export default new Vuex.Store({
       await dispatch('clearPayment');
       let { nodes, networks, payment, user } = getters;
 
-      if (text.includes('@')) {
+      if (text.includes('@') && text.includes('.')) {
         let [name, domain] = text.split('@');
-        let url = `https://${domain}/.well-known/lnurlp/${name}`;
-
-      } 
+        try {
+          ({ data: text } = await Vue.axios.get(`/encode?domain=${domain}&name=${name}`));
+        } catch (e) {}
+      }
 
       if (nodes.includes('lightning')) {
         try {
@@ -1733,7 +1740,9 @@ export default new Vuex.Store({
           let payreq = text.toLowerCase();
           payment.payreq = payreq;
           payment.payobj = bolt11.decode(payment.payreq);
-          let { network: { bech32 }} = payment.payobj;
+          let {
+            network: { bech32 },
+          } = payment.payobj;
 
           if (!networks.includes('lightning'))
             return commit('error', 'Lightning not supported in this account');
