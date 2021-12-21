@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import VueAxios from 'vue-axios';
+import VueMeta from 'vue-meta'
 import Axios from 'axios';
 import App from './App';
 import router from './router';
@@ -12,6 +13,7 @@ Axios.defaults.baseURL = '/api';
 
 Vue.use(VueAxios, Axios);
 Vue.use(coinos);
+Vue.use(VueMeta, { keyName: 'head' })
 
 const app = new Vue({
   render: h => h(App),

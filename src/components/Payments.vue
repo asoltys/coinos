@@ -181,6 +181,7 @@ import colors from 'vuetify/lib/util/colors';
 import Copy from '../mixins/Copy';
 import NetworkIcon from './NetworkIcon';
 
+
 let bs = 'https://blockstream.info';
 const SATS = 100000000;
 
@@ -205,6 +206,7 @@ export default {
   },
 
   computed: {
+    assets: get('assets'),
     paymentCount: get('paymentCount'),
     length() {
       return this.filteredPayments().length;
@@ -213,8 +215,7 @@ export default {
       if (this.user.unit === 'SAT') return 0;
       else if (this.user.unit === 'KSAT') return 3;
       else if (this.user.unit === 'MSAT') return 6;
-      else if (this.user.unit === 'BTC') return 8;
-      else return undefined;
+      else return this.user.account.precision;
     },
     initializing: get('initializing'),
     loading: sync('loading'),
