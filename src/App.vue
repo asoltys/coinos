@@ -58,6 +58,9 @@ import TwoFa from './components/TwoFa';
 export default {
   components: { BottomNav, Deposit, SnackBar, TopBar, Password, TwoFa, Pin },
 
+  head: {
+    title: 'coinos',
+  }, 
   data() {
     return {
       index: 0,

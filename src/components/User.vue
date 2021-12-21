@@ -22,9 +22,8 @@ export default {
   components: { Receive },
   head() {
     return {
-      title() {
-        return this.username;
-      },
+      title: this.username,
+      titleTemplate: 'coinos - %s',
       meta: [
         {
           name: 'lightning',
