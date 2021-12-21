@@ -20,6 +20,20 @@ import { get, call, sync } from 'vuex-pathify';
 
 export default {
   components: { Receive },
+  head() {
+    return {
+      title() {
+        return this.username;
+      },
+      meta: [
+        {
+          property: 'lightning',
+          content: this.username,
+          template: 'lnurlp:%s@coinos.io',
+        },
+      ],
+    };
+  },
   data: () => ({
     exists: false,
     loading: true,
@@ -58,7 +72,7 @@ export default {
     this.recipient.username = this.username;
     this.recipient.account.pubkey = null;
     this.exists = await this.checkUser(this.username);
-    const waitForRates = resolve => {
+    const waitForRates = (resolve) => {
       if (!this.rates)
         return (this.timeout = setTimeout(() => waitForRates(resolve), 1000));
       resolve();
