@@ -27,7 +27,7 @@ export default {
       },
       meta: [
         {
-          property: 'lightning',
+          name: 'lightning',
           content: this.username,
           template: 'lnurlp:%s@coinos.io',
         },
