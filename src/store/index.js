@@ -680,18 +680,10 @@ export default new Vuex.Store({
               pubkey: hd.publicKey,
               network: n,
             });
-            const nodeBlinding = slip77FromSeed(seed);
-            const blindingKeyPair = nodeBlinding.derive(p2wpkh.output);
-            ({ address, confidentialAddress } = p[type]({
+            ({ address } = p[type]({
               redeem: p2wpkh,
               network: n,
-              blindkey: blindingKeyPair.publicKey,
             }));
-
-            if (confidentialAddress) {
-              state.invoice.blindkey =
-                blindingKeyPair.privateKey.toString('hex');
-            }
           } else {
             ({ address } = p[type]({
               redeem: p.p2wpkh({

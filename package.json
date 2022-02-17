@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build --report",
+    "build": "NODE_OPTIONS=--openssl-legacy-provider vue-cli-service build --report",
     "buildtor": "vue-cli-service build --mode tor",
     "stage": "vue-cli-service build --mode staging",
     "dev": "vue-cli-service build --mode development",

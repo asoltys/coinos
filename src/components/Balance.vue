@@ -122,8 +122,6 @@ export default {
       return (this.pending / SATS) * this.animatedRate;
     },
     precision() {
-      console.log(this.user.unit);
-      console.log(this.user.account.precision);
       if (this.user.unit === 'SAT') return 0;
       else if (this.user.unit === 'KSAT') return 3;
       else if (this.user.unit === 'MSAT') return 6;

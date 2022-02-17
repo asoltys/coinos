@@ -67,6 +67,11 @@ const Scan = () =>
     /* webpackChunkName: "scan" */
     '../components/Scan'
   );
+const Paper = () =>
+  import(
+    /* webpackChunkName: "send" */
+    '../components/Paper'
+  );
 const Send = () =>
   import(
     /* webpackChunkName: "send" */
@@ -173,6 +178,7 @@ const routes = [
   { path: '/admin', component: Administration },
   { path: '/sweep', component: Sweep },
   { path: '/text', component: Text },
+  { path: '/paper', component: Paper },
   { path: '/pay', component: Pay },
   { path: '/propose', component: Swap },
   { path: '/wallet', component: Wallet },
