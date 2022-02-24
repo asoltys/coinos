@@ -68,5 +68,6 @@ module.exports = IS_PRODUCTION
             ws: true,
           },
         },
+        progress: false,
       },
     };
