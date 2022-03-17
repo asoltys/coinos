@@ -14,6 +14,7 @@ import ArrowExpandVertical from 'vue-material-design-icons/ArrowExpandVertical';
 import Atom from 'vue-material-design-icons/Atom';
 import Bank from 'vue-material-design-icons/Bank';
 import BellRing from 'vue-material-design-icons/BellRing';
+import Broom from 'vue-material-design-icons/Broom';
 import Camera from 'vue-material-design-icons/Camera';
 import Cancel from 'vue-material-design-icons/Close';
 import CellphoneAndroid from 'vue-material-design-icons/CellphoneAndroid';
@@ -115,6 +116,7 @@ export default new Vuetify({
       'atom': { component: Atom },
       'assignment': { component: ClipboardText },
       'bell': { component: BellRing },
+      'broom': { component: Broom },
       'camera': { component: Camera },
       'cancel': { component: Cancel },
       'cellphone': { component: CellphoneAndroid },

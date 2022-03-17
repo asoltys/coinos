@@ -121,6 +121,7 @@ export default {
         this.to = this.invoice.address;
         this.payment.amount = this.balance;
         this.payment.address = this.to;
+        this.payment.network = 'bitcoin';
         this.buildSweepTx(this.address);
       });
 
@@ -183,7 +184,7 @@ export default {
     to(v) {
       if (validate(v)) {
         this.payment.address = v;
-        this.payment.network = 'BTC';
+        this.payment.network = 'bitcoin';
       }
     },
   },
