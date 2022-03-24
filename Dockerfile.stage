@@ -11,3 +11,4 @@ WORKDIR /app
 
 COPY . .
 RUN pnpm i
+WORKDIR /
