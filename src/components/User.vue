@@ -2,9 +2,30 @@
   <div>
     <v-progress-linear v-if="loading" indeterminate />
     <div v-else-if="exists">
-      <h1 class="text-center">
+      <h1 v-if="username !== 'donate'" class="text-center">
         Send to <span class="primary--text">{{ username }}</span>
       </h1>
+      <div v-if="username === 'donate'" class="text-center">
+        <h1>
+          Thank you for supporting
+          <span class="primary--text">coinos</span> development!
+        </h1>
+        <h3>We accept bitcoin on-chain, lightning, and liquid donations.</h3>
+        <p>
+          <br />
+          If you would like to be recognized for your sponsorship and featured
+          on our
+          <a
+            href="https://corporate.coinos.io/community"
+            target="_blank"
+            rel="noreferrer"
+            >community</a
+          >
+          page, please include a memo with your payment. Let us know your
+          Twitter, GitHub, or other website you would like your donation
+          attributed to.
+        </p>
+      </div>
       <receive />
     </div>
     <h1 v-else class="text-center">

@@ -49,7 +49,7 @@ module.exports = IS_PRODUCTION
         disableHostCheck: true,
         proxy: {
           '/api/electrs': {
-            target: 'http://app:3003',
+            target: 'http://electrsb:3095',
             pathRewrite: { '^/api/electrs': '' },
             secure: false,
           },

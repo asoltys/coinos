@@ -1,6 +1,5 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import VuexPersistence from 'vuex-persist';
 import bech32 from 'bech32';
 import bip21 from 'bip21';
 import { fromSeed, fromBase58 } from 'bip32';
@@ -221,18 +220,8 @@ const state = {
   version: null,
 };
 
-const persist = new VuexPersistence({
-  reducer: (state) => ({
-    assets: state.assets,
-    payments: state.payments,
-    rates: state.rates,
-    user: state.user,
-  }),
-  storage: window.sessionStorage,
-});
-
 export default new Vuex.Store({
-  plugins: [pathify.plugin, persist.plugin],
+  plugins: [pathify.plugin],
   state,
   actions: {
     async init({ commit, getters, dispatch, state }) {

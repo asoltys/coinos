@@ -73,6 +73,10 @@
           <printer />
           <span>Print</span>
         </v-btn>
+        <v-btn @click="handleScan(encrypted || privkey)" class="wide mr-2">
+          <v-icon left color="yellow">$broom</v-icon>
+          <span>Sweep</span>
+        </v-btn>
         <v-btn @click="handleScan(address)" class="wide">
           <v-icon left color="green">$send</v-icon>
           <span>Fund</span>
