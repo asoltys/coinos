@@ -48,7 +48,7 @@
           <img class="ma-2" src="../assets/bitcoin.png" width="22px" />
           Bitcoin
         </v-btn>
-        <v-btn value="liquid" class="flex-grow-1">
+        <v-btn value="liquid" class="flex-grow-1" disabled>
           <v-icon class="ma-2 my-auto" color="liquid" title="Liquid"
             >$liquid</v-icon
           >
