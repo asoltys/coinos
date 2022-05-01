@@ -1604,6 +1604,8 @@ export default new Vuex.Store({
             invoice.text = text;
           } catch (e) {
             commit('error', e.response ? e.response.data : e.message);
+            dispatch('clearInvoice');
+            return;
           }
           break;
       }
@@ -1617,6 +1619,7 @@ export default new Vuex.Store({
         socket.send(JSON.stringify({ type: 'subscribe', data }));
         commit('invoice', invoice);
       } catch (e) {
+        dispatch('clearInvoice');
         commit('error', e.response ? e.response.data : e.message);
       }
 
