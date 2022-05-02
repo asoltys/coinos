@@ -7,10 +7,9 @@ ENV NODE_ENV $NODE_ENV
 ENV NODE_OPTIONS --openssl-legacy-provider
 
 RUN apk add git python3
-RUN npm i -g pnpm
 
 WORKDIR /app
 
 COPY . .
-RUN pnpm i
+RUN npm i
 WORKDIR /
