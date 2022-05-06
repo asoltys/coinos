@@ -26,7 +26,9 @@
         <div class="mb-4 text-center">
           <div class="d-flex justify-center">
             <div class="mr-2">
-              <span class="headline grey--text text--lighten-2">+ Fee: </span>
+              <span class="headline grey--text text--lighten-2"
+                >+ Network Fee:
+              </span>
               <span class="display-1">{{ fee }}</span>
               {{ user.unit }}
             </div>
@@ -42,11 +44,39 @@
           </div>
         </div>
 
-        <v-btn @click="clearPayment" class="mr-2">
-          <v-icon left>$left</v-icon><span>Send Another</span>
+        <div
+          class="mb-4 text-center"
+          v-if="['bitcoin', 'liquid'].includes(payment.network)"
+        >
+          <div class="d-flex justify-center">
+            <div class="mr-2">
+              <span class="headline grey--text text--lighten-2"
+                >+ Coinos Fee (1%):
+              </span>
+              <span class="display-1">{{
+                $format(total, precision) / 100
+              }}</span>
+              {{ user.unit }}
+            </div>
+            <div>
+              <span
+                v-if="payment.account.ticker === 'BTC'"
+                class="primary--text"
+              >
+                <span class="display-1">{{
+                  fiat($format(total, precision) / 100)
+                }}</span>
+                {{ payment.currency }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <v-btn @click="home" class="mr-2">
+          <v-icon left>$wallet</v-icon><span>Home</span>
         </v-btn>
         <v-btn
-          v-if="['BTC', 'LBTC'].includes(payment.network)"
+          v-if="['bitcoin', 'liquid'].includes(payment.network)"
           @click.native="explore"
         >
           <v-icon left>$open</v-icon><span>Explore</span>
@@ -87,7 +117,9 @@ export default {
   },
 
   methods: {
-    clearPayment: call('clearPayment'),
+    home() {
+      this.$go('/home');
+    },
 
     fiat(n) {
       if (!n || isNaN(n)) return '0.00';

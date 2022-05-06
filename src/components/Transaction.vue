@@ -55,7 +55,7 @@
     </v-textarea>
     <v-select
       label="Asset"
-      v-if="payment.network === 'LBTC'"
+      v-if="payment.network === 'liquid'"
       v-model="user.account_id"
       @input="shiftAccount"
       :items="accounts"
@@ -71,7 +71,7 @@
     <v-text-field
       v-if="payment.address"
       :loading="loadingFee"
-      label="Fee"
+      label="Network Fee"
       v-model="displayFee"
       readonly
       @click="setFee"
@@ -90,6 +90,25 @@
     </v-text-field>
     <set-fee :adjusting="adjusting" @closed="$emit('feeRate')" />
 
+    <v-text-field
+      v-if="['bitcoin', 'liquid'].includes(payment.network)"
+      label="Coinos Fee (1%)"
+      v-model="coinosFee"
+      readonly
+    >
+      <template v-slot:append>
+        <v-btn
+          class="toggle black--text mt-auto"
+          :color="color(feeUnit)"
+          @click.prevent="toggleUnit"
+          >{{ feeUnit }}</v-btn
+        >
+        <v-btn icon @click="copy(coinosFee)" class="ml-1" text>
+          <v-icon>$copy</v-icon>
+        </v-btn>
+      </template>
+    </v-text-field>
+
     <v-textarea label="Memo" v-model="payment.memo" rows="1" auto-grow />
 
     <v-switch
@@ -101,7 +120,7 @@
     <div class="d-flex" v-if="psbt">
       <v-btn @click="copy(psbt)" class="ml-auto">
         <v-icon left>$copy</v-icon>
-        Copy {{ payment.network === 'BTC' ? 'PSBT' : 'PSET' }}
+        Copy {{ payment.network === 'bitcoin' ? 'PSBT' : 'PSET' }}
       </v-btn>
     </div>
   </v-card>
@@ -142,11 +161,23 @@ export default {
       return address;
     },
     accounts() {
-      return this.user.accounts.map(a => ({ text: a.name, value: a.id }));
+      return this.user.accounts.map((a) => ({ text: a.name, value: a.id }));
     },
     currency() {
       if (this.user.account.ticker === 'BTC') return null;
       else return this.user.account.ticker;
+    },
+    coinosFee() {
+      let coinosFee = this.user.fiat
+        ? this.coinosFiatFee
+        : this.user.unit === 'SAT'
+        ? this.payment.amount / 100
+        : this.$format(this.payment.amount / 100, 8);
+
+      return coinosFee;
+    },
+    coinosFiatFee() {
+      return (((this.payment.amount / 100) * this.rate) / SATS).toFixed(2);
     },
     displayFee() {
       let fee = this.user.fiat
@@ -190,7 +221,7 @@ export default {
       this.toggleFiat();
     },
     explore() {
-      this.$nextTick(function() {
+      this.$nextTick(function () {
         if (this.payment.network === 'bitcoin')
           window.open(`${bs}/address/${this.payment.address}`);
         else window.open(`${bs}/liquid/address/${this.payment.address}`);
