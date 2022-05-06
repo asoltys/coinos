@@ -1010,7 +1010,6 @@ export default new Vuex.Store({
                   await dispatch('shiftAccount', data.account_id);
                   if (getters.user.unit === 'SAT') await dispatch('toggleUnit');
                 }
-                await go('/home');
               }
               commit('addPayment', data);
               commit('selected', 0);
@@ -1215,7 +1214,7 @@ export default new Vuex.Store({
 
                 const pair = ECPair.fromPrivateKey(hd.privateKey, {
                   compressed: true,
-                  network: { ...network, assetHash: "", confidentialPrefix: 1 },
+                  network: { ...network, assetHash: '', confidentialPrefix: 1 },
                 });
 
                 try {
@@ -1714,8 +1713,10 @@ export default new Vuex.Store({
         let [name, domain] = text.split('@');
         try {
           clearTimeout(debounce);
-          await new Promise((r) => debounce = setTimeout(r, 1500));
-          ({ data: text } = await Vue.axios.get(`/encode?domain=${domain}&name=${name}`));
+          await new Promise((r) => (debounce = setTimeout(r, 1500)));
+          ({ data: text } = await Vue.axios.get(
+            `/encode?domain=${domain}&name=${name}`
+          ));
         } catch (e) {}
       }
 
@@ -1845,7 +1846,11 @@ export default new Vuex.Store({
       }
 
       try {
-        let ecpair = ECPair.fromWIF(text, { ...this._vm.$network, confidentialPrefix: 1, assetHash: "" });
+        let ecpair = ECPair.fromWIF(text, {
+          ...this._vm.$network,
+          confidentialPrefix: 1,
+          assetHash: '',
+        });
         commit('ecpair', ecpair);
         go('/sweep');
       } catch (e) {
