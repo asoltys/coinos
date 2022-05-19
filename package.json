@@ -82,8 +82,5 @@
     "vue-template-compiler": "^2.6.10",
     "vuetify-loader": "^1.6.0",
     "webpack": "^4"
-  },
-  "peerDependencies": {
-    "css-loader": "3.6.0"
   }
 }
