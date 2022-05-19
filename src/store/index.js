@@ -439,7 +439,7 @@ export default new Vuex.Store({
       const { password } = user;
 
       try {
-        let res = await Vue.axios.post('/taboggan', user);
+        let res = await Vue.axios.post('/doggin', user);
         let seed, token;
 
         ({ token, user } = res.data);
