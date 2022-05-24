@@ -10,7 +10,7 @@
       <div v-if="length">
         <v-expansion-panels accordion v-model="selected">
           <v-expansion-panel
-            v-for="({
+            v-for="{
               account,
               color,
               confirmed,
@@ -29,7 +29,7 @@
               sign,
               tip,
               updatedAt,
-            }) in filteredPayments()"
+            } in filteredPayments()"
             :key="id"
           >
             <v-expansion-panel-header
@@ -38,7 +38,7 @@
               expand-icon=""
             >
               <network-icon class="flex-grow-0 mr-2 mt-1" :network="network" />
-              <div class="flex-grow-1" style="white-space: nowrap;">
+              <div class="flex-grow-1" style="white-space: nowrap">
                 <span
                   :class="{
                     'body-1': $vuetify.breakpoint.xsOnly,
@@ -72,7 +72,7 @@
                     >UNCONFIRMED</span
                   >
                 </v-chip>
-                    {{ updatedAt | format }}
+                {{ updatedAt | format }}
               </div>
             </v-expansion-panel-header>
             <v-expansion-panel-content class="text-left" :eager="true">
@@ -102,7 +102,7 @@
                 </v-text-field>
                 <v-textarea
                   v-if="fee"
-                  label="Fee"
+                  label="Network Fee"
                   :value="fee"
                   readonly
                   rows="1"
@@ -110,6 +110,21 @@
                 >
                   <template v-slot:append>
                     <v-btn @click="copy(fee)" class="ml-1" icon>
+                      <v-icon>$copy</v-icon>
+                    </v-btn>
+                  </template>
+                </v-textarea>
+
+                <v-textarea
+                  v-if="['bitcoin', 'liquid'].includes(network)"
+                  label="Coinos Fee (1%)"
+                  :value="amount / 100"
+                  readonly
+                  rows="1"
+                  auto-grow
+                >
+                  <template v-slot:append>
+                    <v-btn @click="copy(amount / 100)" class="ml-1" icon>
                       <v-icon>$copy</v-icon>
                     </v-btn>
                   </template>
@@ -180,7 +195,6 @@ import bolt11 from 'bolt11';
 import colors from 'vuetify/lib/util/colors';
 import Copy from '../mixins/Copy';
 import NetworkIcon from './NetworkIcon';
-
 
 let bs = 'https://blockstream.info';
 const SATS = 100000000;
@@ -308,8 +322,7 @@ export default {
         .filter((p) => p.amount < 0 || p.received)
         .filter(
           (p) => !this.user.account || p.account_id === this.user.account.id
-        )
-      ;
+        );
     },
 
     explore(link) {
