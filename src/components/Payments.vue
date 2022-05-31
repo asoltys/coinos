@@ -12,6 +12,7 @@
           <v-expansion-panel
             v-for="{
               account,
+              fee_payment,
               color,
               confirmed,
               // createdAt,
@@ -118,13 +119,13 @@
                 <v-textarea
                   v-if="['bitcoin', 'liquid'].includes(network)"
                   label="Coinos Fee (1%)"
-                  :value="amount / 100"
+                  :value="fee_payment ? fee_payment.amount : 0"
                   readonly
                   rows="1"
                   auto-grow
                 >
                   <template v-slot:append>
-                    <v-btn @click="copy(amount / 100)" class="ml-1" icon>
+                    <v-btn @click="copy(fee_payment ? fee_payment.amount : 0)" class="ml-1" icon>
                       <v-icon>$copy</v-icon>
                     </v-btn>
                   </template>
