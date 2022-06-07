@@ -54,7 +54,7 @@
                 >+ Coinos Fee (1%):
               </span>
               <span class="display-1">{{
-                $format(total, precision) / 100
+                $format(payment.fee_payment ? payment.fee_payment.amount : 0, precision) / 100
               }}</span>
               {{ user.unit }}
             </div>
@@ -64,7 +64,7 @@
                 class="primary--text"
               >
                 <span class="display-1">{{
-                  fiat($format(total, precision) / 100)
+                  fiat($format(payment.fee_payment ? payment.fee_payment.amount : 0, precision) / 100)
                 }}</span>
                 {{ payment.currency }}
               </span>

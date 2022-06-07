@@ -167,17 +167,23 @@ export default {
       if (this.user.account.ticker === 'BTC') return null;
       else return this.user.account.ticker;
     },
+    /** Returns the withdrawal fee, in SAT */
+    coinosFeeSAT() {
+      let coinosFeeSAT = Math.floor(this.payment.amount / 100);
+      let coinosFeeDeductionSAT = Math.min(this.user.account.fee_credits, coinosFeeSAT);
+      return coinosFeeSAT - coinosFeeDeductionSAT;
+    },
     coinosFee() {
       let coinosFee = this.user.fiat
         ? this.coinosFiatFee
         : this.user.unit === 'SAT'
-        ? this.payment.amount / 100
-        : this.$format(this.payment.amount / 100, 8);
+        ? this.coinosFeeSAT
+        : this.$format(this.coinosFeeSAT, 8);
 
       return coinosFee;
     },
     coinosFiatFee() {
-      return (((this.payment.amount / 100) * this.rate) / SATS).toFixed(2);
+      return ((this.coinosFeeSAT * this.rate) / SATS).toFixed(2);
     },
     displayFee() {
       let fee = this.user.fiat
