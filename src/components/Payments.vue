@@ -117,15 +117,15 @@
                 </v-textarea>
 
                 <v-textarea
-                  v-if="['bitcoin', 'liquid'].includes(network)"
+                  v-if="['bitcoin', 'liquid'].includes(network) && fee_payment"
                   label="Coinos Fee (1%)"
-                  :value="fee_payment ? fee_payment.amount : 0"
+                  :value="fee_payment.amount"
                   readonly
                   rows="1"
                   auto-grow
                 >
                   <template v-slot:append>
-                    <v-btn @click="copy(fee_payment ? fee_payment.amount : 0)" class="ml-1" icon>
+                    <v-btn @click="copy(fee_payment.amount)" class="ml-1" icon>
                       <v-icon>$copy</v-icon>
                     </v-btn>
                   </template>

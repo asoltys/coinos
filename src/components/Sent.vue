@@ -46,7 +46,7 @@
 
         <div
           class="mb-4 text-center"
-          v-if="['bitcoin', 'liquid'].includes(payment.network)"
+          v-if="['bitcoin', 'liquid'].includes(payment.network) && payment.fee_payment"
         >
           <div class="d-flex justify-center">
             <div class="mr-2">
@@ -54,7 +54,7 @@
                 >+ Coinos Fee (1%):
               </span>
               <span class="display-1">{{
-                $format(payment.fee_payment ? payment.fee_payment.amount : 0, precision) / 100
+                $format(payment.fee_payment.amount, precision) / 100
               }}</span>
               {{ user.unit }}
             </div>
@@ -64,7 +64,7 @@
                 class="primary--text"
               >
                 <span class="display-1">{{
-                  fiat($format(payment.fee_payment ? payment.fee_payment.amount : 0, precision) / 100)
+                  fiat($format(payment.fee_payment.amount, precision) / 100)
                 }}</span>
                 {{ payment.currency }}
               </span>
