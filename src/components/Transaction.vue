@@ -92,8 +92,8 @@
 
     <v-text-field
       v-if="['bitcoin', 'liquid'].includes(payment.network)"
-      label="Coinos Fee (1%)"
-      v-model="coinosFee"
+      label="Conversion Fee (1%)"
+      v-model="conversionFee"
       readonly
     >
       <template v-slot:append>
@@ -103,7 +103,7 @@
           @click.prevent="toggleUnit"
           >{{ feeUnit }}</v-btn
         >
-        <v-btn icon @click="copy(coinosFee)" class="ml-1" text>
+        <v-btn icon @click="copy(conversionFee)" class="ml-1" text>
           <v-icon>$copy</v-icon>
         </v-btn>
       </template>
@@ -168,22 +168,22 @@ export default {
       else return this.user.account.ticker;
     },
     /** Returns the withdrawal fee, in SAT */
-    coinosFeeSAT() {
-      let coinosFeeSAT = Math.floor(this.payment.amount / 100);
-      let coinosFeeDeductionSAT = Math.min(this.user.account.fee_credits, coinosFeeSAT);
-      return coinosFeeSAT - coinosFeeDeductionSAT;
+    conversionFeeSAT() {
+      let conversionFeeSAT = Math.floor(this.payment.amount / 100);
+      let conversionFeeDeductionSAT = Math.min(this.user.account.fee_credits, conversionFeeSAT);
+      return conversionFeeSAT - conversionFeeDeductionSAT;
     },
-    coinosFee() {
-      let coinosFee = this.user.fiat
-        ? this.coinosFiatFee
+    conversionFee() {
+      let conversionFee = this.user.fiat
+        ? this.conversionFiatFee
         : this.user.unit === 'SAT'
-        ? this.coinosFeeSAT
-        : this.$format(this.coinosFeeSAT, 8);
+        ? this.conversionFeeSAT
+        : this.$format(this.conversionFeeSAT, 8);
 
-      return coinosFee;
+      return conversionFee;
     },
-    coinosFiatFee() {
-      return ((this.coinosFeeSAT * this.rate) / SATS).toFixed(2);
+    conversionFiatFee() {
+      return ((this.conversionFeeSAT * this.rate) / SATS).toFixed(2);
     },
     displayFee() {
       let fee = this.user.fiat

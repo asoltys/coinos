@@ -51,7 +51,7 @@
           <div class="d-flex justify-center">
             <div class="mr-2">
               <span class="headline grey--text text--lighten-2"
-                >+ Coinos Fee (1%):
+                >+ Conversion Fee (1%):
               </span>
               <span class="display-1">{{
                 $format(payment.fee_payment.amount, precision) / 100

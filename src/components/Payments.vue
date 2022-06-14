@@ -118,7 +118,7 @@
 
                 <v-textarea
                   v-if="['bitcoin', 'liquid'].includes(network) && fee_payment"
-                  label="Coinos Fee (1%)"
+                  label="Conversion Fee (1%)"
                   :value="fee_payment.amount"
                   readonly
                   rows="1"
