@@ -22,6 +22,7 @@ import Check from 'vue-material-design-icons/Check';
 import Clear from 'vue-material-design-icons/Close';
 import Cloud from 'vue-material-design-icons/Cloud';
 import ClipboardText from 'vue-material-design-icons/ClipboardText';
+import CommentQuestion from 'vue-material-design-icons/CommentQuestion';
 import ChevronDown from 'vue-material-design-icons/ChevronDown';
 import ChevronUp from 'vue-material-design-icons/ChevronUp';
 import ChevronLeft from 'vue-material-design-icons/ChevronLeft';
@@ -167,6 +168,7 @@ export default new Vuetify({
       'power': { component: Power },
       'previous': { component: ChevronLeft },
       'qrcode': { component: Qrcode },
+      'question': { component: CommentQuestion },
       'radiobox_marked': { component: RadioboxMarked },
       'radiobox_blank': { component: RadioboxBlank },
       'refresh': { component: Refresh },

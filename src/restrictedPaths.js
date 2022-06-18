@@ -9,6 +9,7 @@ export default [
 '/scan',
 '/send',
 '/settings',
+'/support',
 '/sweep',
 '/text',
 '/pay',
