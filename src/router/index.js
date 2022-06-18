@@ -150,6 +150,12 @@ const Documents = () =>
     '../components/Documents'
 );
 
+const Support = () =>
+  import(
+    /* webpackChunkName: "support" */
+    '../components/Support'
+);
+
 
 const routes = [
   { path: '/', component: Home, props: { logout: false } },
@@ -175,6 +181,7 @@ const routes = [
   { path: '/scan', component: Scan },
   { name: 'send', path: '/send', component: Send, props: true },
   { path: '/settings', component: Settings },
+  { path: '/support', component: Support },
   { path: '/admin', component: Administration },
   { path: '/sweep', component: Sweep },
   { path: '/text', component: Text },
