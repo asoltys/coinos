@@ -337,6 +337,17 @@ export default new Vuex.Store({
       }
     },
 
+    async submitSupport({ commit, getters, dispatch }, form) {
+      try {
+        await Vue.axios.post('/email', form);
+        return true;
+      } catch (e) {
+        l(e);
+        commit('error', 'Problem submitting form.');
+        return false;
+      }
+    },
+
     async getBalances({ commit, getters, dispatch }) {
       if (getters.balances) return;
       commit('loading', true);
