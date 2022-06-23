@@ -994,12 +994,15 @@ export default new Vuex.Store({
               }
 
               if (
-                (data.amount > 0 && path.includes('receive')) ||
+                data.amount > 0 ||
                 path.includes('faucet') ||
                 path.includes('send')
               ) {
-                if (data.amount > 0) commit('snack', 'Payment received!');
-                else commit('snack', 'Payment sent!');
+                if (data.amount > 0) {
+                  if (!data.confirmed || data.network === 'lightning')
+                    commit('snack', 'Payment received!');
+                }
+                  else commit('snack', 'Payment sent!');
 
                 if (
                   !getters.user.accounts.find((a) => a.id === data.account_id)
