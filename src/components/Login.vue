@@ -36,24 +36,41 @@
               type="password"
             />
 
-
-    <v-btn-toggle tile color="primary accent-3" group class="d-flex flex-wrap mx-auto">
-            <v-btn class="mr-2 mb-2 mb-sm-0 wide flex-grow-1" type="submit">
-              <v-icon left color="primary">$login</v-icon>
-              Sign in
-            </v-btn>
-            <v-btn @click="anon" class="mr-2 mb-2 mb-sm-0 wide flex-grow-1">
-              <v-icon left color="blue">$account</v-icon>
-              Use Anonymously
-            </v-btn>
-            <v-btn @click="register" class="mr-2 mb-2 mb-sm-0 wide flex-grow-1">
-              <v-icon left color="green">$wallet</v-icon>
-              Register An Account
-            </v-btn>
-            <v-btn @click="lnurlAuth" class="mr-2 mb-2 mb-sm-0 wide flex-grow-1">
-              <v-icon left>$qrcode</v-icon>
-              Sign in with LNURL
-            </v-btn>
+            <v-btn-toggle
+              tile
+              color="primary accent-3"
+              group
+              class="d-flex flex-wrap mx-auto"
+            >
+              <v-btn class="mr-2 mb-2 mb-sm-0 wide flex-grow-1" type="submit">
+                <v-icon left color="primary">$login</v-icon>
+                Sign in
+              </v-btn>
+              <v-btn @click="anon" class="mr-2 mb-2 mb-sm-0 wide flex-grow-1">
+                <v-icon left color="blue">$account</v-icon>
+                Use Anonymously
+              </v-btn>
+              <v-btn
+                @click="register"
+                class="mr-2 mb-2 mb-sm-0 wide flex-grow-1"
+              >
+                <v-icon left color="green">$wallet</v-icon>
+                Register An Account
+              </v-btn>
+              <v-btn
+                @click="lnurlAuth"
+                class="mr-2 mb-2 mb-sm-0 wide flex-grow-1"
+              >
+                <v-icon left>$qrcode</v-icon>
+                Sign in with LNURL
+              </v-btn>
+              <v-btn
+                @click="support"
+                class="mr-2 mb-2 mb-sm-0 wide flex-grow-1"
+              >
+                <v-icon left color="orange">$question</v-icon>
+                Support
+              </v-btn>
             </v-btn-toggle>
           </v-form>
         </v-card-text>
@@ -130,6 +147,9 @@ export default {
     lnurlAuth: call('lnurlAuth'),
     submit(e) {
       this.login(this.form);
+    },
+    support() {
+      this.$go('/support');
     },
   },
 
