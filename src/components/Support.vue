@@ -53,7 +53,8 @@
 </template>
 
 <script>
-import { call } from 'vuex-pathify';
+import { call, get } from 'vuex-pathify';
+
 export default {
   data: () => ({
     email: null,
@@ -73,6 +74,12 @@ export default {
       this.loading = false;
     },
     submitSupport: call('submitSupport'),
+  },
+  mounted() {
+    this.account = this.user ? this.user.username : null;
+  },
+  computed: {
+    user: get('user'),
   },
 };
 </script>
