@@ -170,7 +170,7 @@ export default {
     /** Returns the withdrawal fee, in SAT */
     conversionFeeSAT() {
       let conversionFeeSAT = Math.floor(this.payment.amount / 100);
-      let conversionFeeDeductionSAT = Math.min(this.user.account.fee_credits, conversionFeeSAT);
+      let conversionFeeDeductionSAT = Math.min(this.feeCreditsSAT, conversionFeeSAT);
       return conversionFeeSAT - conversionFeeDeductionSAT;
     },
     conversionFee() {
@@ -198,6 +198,18 @@ export default {
     fiatFee() {
       if (!this.fee) return null;
       return ((this.fee * this.rate) / SATS).toFixed(2);
+    },
+    feeCreditsSAT() {
+      switch (this.payment.network) {
+      case 'bitcoin':
+        return this.user.account.btc_credits;
+      case 'liquid':
+        return this.user.account.liquid_credits;
+      case 'lightning':
+        return this.user.account.lightning_credits;
+      default:
+        throw new Error("Invalid network " + this.payment.network);
+      }
     },
     feeUnit() {
       return this.user.fiat
