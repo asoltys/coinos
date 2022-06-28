@@ -80,7 +80,7 @@
         <v-btn
           class="toggle black--text mt-auto"
           :color="color(feeUnit)"
-          @click.prevent="toggleUnit"
+          @click.prevent="toggleFiat"
           >{{ feeUnit }}</v-btn
         >
         <v-btn icon @click="copy(displayFee)" class="ml-1" text>
@@ -92,7 +92,7 @@
 
     <v-text-field
       v-if="['bitcoin', 'liquid'].includes(payment.network)"
-      label="Conversion Fee (1%)"
+      label="Conversion Fee"
       v-model="conversionFee"
       readonly
     >
@@ -170,7 +170,10 @@ export default {
     /** Returns the withdrawal fee, in SAT */
     conversionFeeSAT() {
       let conversionFeeSAT = Math.floor(this.payment.amount / 100);
-      let conversionFeeDeductionSAT = Math.min(this.feeCreditsSAT, conversionFeeSAT);
+      let conversionFeeDeductionSAT = Math.min(
+        this.feeCreditsSAT,
+        conversionFeeSAT
+      );
       return conversionFeeSAT - conversionFeeDeductionSAT;
     },
     conversionFee() {
@@ -201,14 +204,14 @@ export default {
     },
     feeCreditsSAT() {
       switch (this.payment.network) {
-      case 'bitcoin':
-        return this.user.account.btc_credits;
-      case 'liquid':
-        return this.user.account.liquid_credits;
-      case 'lightning':
-        return this.user.account.lightning_credits;
-      default:
-        throw new Error("Invalid network " + this.payment.network);
+        case 'bitcoin':
+          return this.user.account.btc_credits;
+        case 'liquid':
+          return this.user.account.liquid_credits;
+        case 'lightning':
+          return this.user.account.lightning_credits;
+        default:
+          throw new Error('Invalid network ' + this.payment.network);
       }
     },
     feeUnit() {

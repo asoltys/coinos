@@ -40,6 +40,19 @@
       </template>
     </v-textarea>
     <v-textarea label="Memo" v-model="payment.memo" rows="1" auto-grow />
+    <v-text-field label="Conversion Fee" v-model="conversionFee" readonly>
+      <template v-slot:append>
+        <v-btn
+          class="toggle black--text mt-auto"
+          :color="color(feeUnit)"
+          @click.prevent="toggleFiat"
+          >{{ feeUnit }}</v-btn
+        >
+        <v-btn icon @click="copy(conversionFee)" class="ml-1" text>
+          <v-icon>$copy</v-icon>
+        </v-btn>
+      </template>
+    </v-text-field>
     <div class="d-flex flex-wrap">
       <v-btn
         class="order-first order-sm-last mb-2 flex-grow-1"
@@ -57,6 +70,7 @@
 import { call, get, sync } from 'vuex-pathify';
 import Copy from '../mixins/Copy';
 import Amount from './Amount';
+const SATS = 100000000;
 
 export default {
   mixins: [Copy],
@@ -67,6 +81,13 @@ export default {
     };
   },
   computed: {
+    feeUnit() {
+      return this.user.fiat
+        ? this.user.currency
+        : this.user.unit === 'SAT'
+        ? 'SAT'
+        : 'BTC';
+    },
     fee() {
       if (!this.payment.route) return null;
       return this.$format(parseInt(this.route.total_amt) - this.payment.amount);
@@ -74,8 +95,36 @@ export default {
     payment: get('payment'),
     rate: get('rate'),
     user: get('user'),
+    conversionFeeSAT() {
+      let credits = this.user.account['lightning_credits'];
+      let conversionFeeSAT = Math.floor(this.payment.amount / 100);
+      let conversionFeeDeductionSAT = Math.min(credits, conversionFeeSAT);
+
+      return conversionFeeSAT - conversionFeeDeductionSAT;
+    },
+    conversionFee() {
+      let conversionFee = this.user.fiat
+        ? this.conversionFiatFee
+        : this.user.unit === 'SAT'
+        ? this.conversionFeeSAT
+        : this.$format(this.conversionFeeSAT, 8);
+
+      return conversionFee;
+    },
+    conversionFiatFee() {
+      return ((this.conversionFeeSAT * this.rate) / SATS).toFixed(2);
+    },
   },
   methods: {
+    toggleFiat: call('toggleFiat'),
+    toggleUnit: call('toggleUnit'),
+    color(c) {
+      return ['BTC', 'SAT'].includes(c)
+        ? 'white'
+        : this.user.currencies.includes(c)
+        ? 'primary'
+        : 'liquid';
+    },
     sendPayment: call('sendPayment'),
     updateAmount(amount, fiatAmount, currency) {
       this.$nextTick(() => {

@@ -46,15 +46,15 @@
 
         <div
           class="mb-4 text-center"
-          v-if="['bitcoin', 'liquid'].includes(payment.network) && payment.fee_payment"
+          v-if="payment.fee_payment"
         >
           <div class="d-flex justify-center">
             <div class="mr-2">
               <span class="headline grey--text text--lighten-2"
-                >+ Conversion Fee (1%):
+                >+ Conversion Fee:
               </span>
               <span class="display-1">{{
-                $format(payment.fee_payment.amount, precision) / 100
+                $format(payment.fee_payment.amount, precision)
               }}</span>
               {{ user.unit }}
             </div>
@@ -64,7 +64,7 @@
                 class="primary--text"
               >
                 <span class="display-1">{{
-                  fiat($format(payment.fee_payment.amount, precision) / 100)
+                  fiat($format(payment.fee_payment.amount, precision))
                 }}</span>
                 {{ payment.currency }}
               </span>

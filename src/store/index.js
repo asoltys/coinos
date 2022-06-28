@@ -1444,6 +1444,7 @@ export default new Vuex.Store({
             route,
           });
           payment.sent = true;
+          console.log(payment);
           commit('payment', payment);
         } catch (e) {
           commit('error', e.response ? e.response.data : e.message);
