@@ -339,6 +339,7 @@ export default new Vuex.Store({
 
     async submitSupport({ commit, getters, dispatch }, form) {
       try {
+        form.subject = "Coinos Support";
         await Vue.axios.post('/email', form);
         return true;
       } catch (e) {
