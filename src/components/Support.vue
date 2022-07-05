@@ -35,12 +35,7 @@
         </div>
         <div class="d-flex">
           <v-btn
-            @click="
-              email = null;
-              account = null;
-              message = null;
-              submitted = false;
-            "
+            @click="$go('/home')"
             class="my-2 flex-grow-1 wide"
           >
             <v-icon>$left</v-icon>
