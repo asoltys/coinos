@@ -19,7 +19,7 @@
       </div>
       <div class="text-center d-flex flex-wrap justify-center"></div>
       <v-divider class="my-2" />
-      <v-card>
+      <v-card class="mb-4">
         <v-card-text>
           <lnurl v-if="lnurl" :lnurl="lnurl" />
           <v-form v-else @submit.prevent="submit" class="mt-4">
@@ -36,33 +36,35 @@
               type="password"
             />
 
+              <v-btn class="mr-2 mb-2 mb-sm-0 wide flex-grow-1" type="submit">
+                <v-icon left color="primary">$login</v-icon>
+                Sign in
+              </v-btn>
+
+          </v-form>
+        </v-card-text>
+      </v-card>
+      <v-card>
+        <v-card-text>
             <v-btn-toggle
               tile
               color="primary accent-3"
               group
               class="d-flex flex-wrap mx-auto"
             >
-              <v-btn class="mr-2 mb-2 mb-sm-0 wide flex-grow-1" type="submit">
-                <v-icon left color="primary">$login</v-icon>
-                Sign in
-              </v-btn>
-              <v-btn @click="anon" class="mr-2 mb-2 mb-sm-0 wide flex-grow-1">
-                <v-icon left color="blue">$account</v-icon>
-                Use Anonymously
-              </v-btn>
               <v-btn
                 @click="register"
                 class="mr-2 mb-2 mb-sm-0 wide flex-grow-1"
               >
-                <v-icon left color="green">$wallet</v-icon>
-                Register An Account
+                <v-icon left color="green">$account</v-icon>
+                Register New Account
               </v-btn>
               <v-btn
                 @click="lnurlAuth"
                 class="mr-2 mb-2 mb-sm-0 wide flex-grow-1"
               >
                 <v-icon left>$qrcode</v-icon>
-                Sign in with LNURL
+                LNURL Auth
               </v-btn>
               <v-btn
                 @click="support"
@@ -72,7 +74,6 @@
                 Support
               </v-btn>
             </v-btn-toggle>
-          </v-form>
         </v-card-text>
       </v-card>
       <v-btn v-if="lnurl" @click="lnurl = null" class="mt-2">

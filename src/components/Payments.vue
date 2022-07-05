@@ -19,6 +19,7 @@
               currency,
               displayAmount: amount,
               displayFee: fee,
+              displayConversionFee: conversion_fee,
               fiat,
               hash,
               id,
@@ -117,15 +118,15 @@
                 </v-textarea>
 
                 <v-textarea
-                  v-if="['bitcoin', 'liquid'].includes(network) && fee_payment"
+                  v-if="conversion_fee"
                   label="Conversion Fee"
-                  :value="fee_payment.amount"
+                  :value="conversion_fee"
                   readonly
                   rows="1"
                   auto-grow
                 >
                   <template v-slot:append>
-                    <v-btn @click="copy(fee_payment.amount)" class="ml-1" icon>
+                    <v-btn @click="copy(conversion_fee)" class="ml-1" icon>
                       <v-icon>$copy</v-icon>
                     </v-btn>
                   </template>
@@ -302,6 +303,7 @@ export default {
           o.amount = p.amount + p.tip;
           o.displayAmount = this.$format(Math.abs(o.amount), this.precision);
           o.displayFee = this.$format(Math.abs(o.fee), this.precision);
+          o.displayConversionFee = o.fee_payment && this.$format(Math.abs(o.fee_payment.amount), this.precision);
           o.fiat = (Math.round(p.amount * p.rate) / SATS).toFixed(2);
           o.tip = parseFloat((p.tip * p.rate) / SATS).toFixed(2);
           if (isNaN(o.tip) || o.tip <= 0) o.tip = null;
