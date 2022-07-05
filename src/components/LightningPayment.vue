@@ -3,7 +3,7 @@
     <div class="text-center font-weight-bold">Pay</div>
     <div v-if="payment.amount" class="d-flex justify-center">
       <div class="mr-2">
-        <span class="display-1">{{ payment.amount }}</span> SAT
+        <span class="display-1">{{ displayAmount }}</span> {{ user.unit }}
       </div>
       <div>
         <span class="primary--text">
@@ -81,6 +81,12 @@ export default {
     };
   },
   computed: {
+    precision() {
+      if (this.user.unit === 'SAT') return 0;
+      else if (this.user.unit === 'KSAT') return 3;
+      else if (this.user.unit === 'MSAT') return 6;
+      else return this.user.account.precision;
+    },
     feeUnit() {
       return this.user.fiat
         ? this.user.currency
@@ -92,6 +98,7 @@ export default {
       if (!this.payment.route) return null;
       return this.$format(parseInt(this.route.total_amt) - this.payment.amount);
     },
+    displayAmount() { return this.$format(this.payment.amount, this.precision) },
     payment: get('payment'),
     rate: get('rate'),
     user: get('user'),
@@ -107,7 +114,7 @@ export default {
         ? this.conversionFiatFee
         : this.user.unit === 'SAT'
         ? this.conversionFeeSAT
-        : this.$format(this.conversionFeeSAT, 8);
+        : this.$format(this.conversionFeeSAT, this.precision);
 
       return conversionFee;
     },

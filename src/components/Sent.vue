@@ -64,7 +64,7 @@
                 class="primary--text"
               >
                 <span class="display-1">{{
-                  fiat($format(payment.fee_payment.amount, precision))
+                  fiat(payment.fee_payment.amount)
                 }}</span>
                 {{ payment.currency }}
               </span>
