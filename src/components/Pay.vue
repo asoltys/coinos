@@ -83,7 +83,7 @@ export default {
   },
   mounted() {
     if (!this.lnurl) return this.$go('/home');
-    this.amount = this.max;
+    this.amount = this.min;
   },
 };
 </script>
