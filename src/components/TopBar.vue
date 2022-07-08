@@ -38,7 +38,7 @@
           </v-btn>
         </template>
         <v-card tile class="mx-auto menu" max-width="400">
-          <v-list-item @click="go('https://corporate.coinos.io/')">
+          <v-list-item @click="go('/about')">
             <v-list-item-action>
               <v-icon color="blue lighten-2" title="About">$help</v-icon>
             </v-list-item-action>
@@ -81,7 +81,7 @@
         </v-card>
       </v-menu>
       <span v-else>
-        <v-btn @click="go('https://corporate.coinos.io/')" class="ml-auto">
+        <v-btn @click="go('/about')" class="ml-auto">
           <v-icon left>$help</v-icon>
           About
         </v-btn>
