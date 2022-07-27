@@ -1611,7 +1611,7 @@ export default new Vuex.Store({
           break;
         case 'lightning':
           try {
-            let { data: text } = await Vue.axios.post(`/lightning/invoice`, {
+            let { data: { text }} = await Vue.axios.post(`/lightning/invoice`, {
               amount,
               memo,
               tip,
