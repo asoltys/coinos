@@ -134,6 +134,7 @@ import NetworkIcon from './NetworkIcon';
 import Qr from './Qr';
 import Amount from './Amount';
 
+const btc = process.env.VUE_APP_LBTC;
 const SATS = 100000000;
 const bs = 'https://blockstream.info';
 
@@ -169,6 +170,7 @@ export default {
     },
     /** Returns the withdrawal fee, in SAT */
     conversionFeeSAT() {
+      if (this.user.account.asset !== btc) return 0;
       let conversionFeeSAT = Math.floor(this.payment.amount / 100);
       let conversionFeeDeductionSAT = Math.min(
         this.feeCreditsSAT,
