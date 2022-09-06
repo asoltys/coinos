@@ -1924,7 +1924,7 @@ export default new Vuex.Store({
                 );
                 const sig = bytesToHexString(signedMessageDER);
 
-                const response = await Vue.axios.post('/taboggan', {
+                const response = await Vue.axios.post('/login', {
                   params,
                   sig,
                   key: bytesToHexString(linkingKeyPub),

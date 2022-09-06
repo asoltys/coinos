@@ -64,7 +64,6 @@ module.exports = IS_PRODUCTION
           },
           '/ws': {
             target: 'http://app:3119',
-            pathRewrite: { '^/ws': '' },
             ws: true,
           },
         },

@@ -109,18 +109,19 @@ export default {
 
     if (this.user.admin) {
       this.isReferred = true;
-    } else {
-      Vue.axios
-        .get('/referrals/isReferred/' + this.user.id)
-        .then((response) => {
-          this.isReferred = response.data.referred;
-        })
-        .catch((err) => {
-          this.isReferred = null;
-          console.debug('error checking referral');
-          this.loading = false;
-        });
     }
+    // } else {
+    //   Vue.axios
+    //     .get('/referrals/isReferred/' + this.user.id)
+    //     .then((response) => {
+    //       this.isReferred = response.data.referred;
+    //     })
+    //     .catch((err) => {
+    //       this.isReferred = null;
+    //       console.debug('error checking referral');
+    //       this.loading = false;
+    //     });
+    // }
   },
   computed: {
     fullscreen: get('fullscreen'),
