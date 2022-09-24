@@ -1,0 +1,7 @@
+FROM node:18-alpine
+
+RUN npm i -g pnpm
+
+WORKDIR /deps
+COPY package.json .
+RUN NODE_ENV=development pnpm i
