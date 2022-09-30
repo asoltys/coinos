@@ -23,8 +23,8 @@
               <v-icon left title="Bitcoin">$bitcoin</v-icon>
               Bitcoin
             </v-btn>
-            <v-btn value="liquid" class="flex-grow-1">
-              <v-icon left color="liquid" title="Liquid" v-if="!user.account.pubkey || user.account.network === 'liquid'">$liquid</v-icon>
+            <v-btn value="liquid" class="flex-grow-1" v-if="!user.account.pubkey || user.account.network === 'liquid'">
+              <v-icon left color="liquid" title="Liquid">$liquid</v-icon>
               Liquid
             </v-btn>
 

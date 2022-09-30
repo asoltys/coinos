@@ -104,7 +104,7 @@ export default {
     user: get('user'),
     conversionFeeSAT() {
       let credits = this.user.account['lightning_credits'];
-      let conversionFeeSAT = Math.floor(this.payment.amount / 100);
+      let conversionFeeSAT = Math.floor(this.payment.amount / this.$conversion);
       let conversionFeeDeductionSAT = Math.min(credits, conversionFeeSAT);
 
       return conversionFeeSAT - conversionFeeDeductionSAT;

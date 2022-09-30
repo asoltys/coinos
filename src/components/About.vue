@@ -62,7 +62,7 @@
         </p>
 
         <p class="mb-8">
-          A 1% conversion fee will be charged when withdrawing over a network
+          A 0.1% conversion fee will be charged when withdrawing over a network
           other than the one you deposited on. Payments between coinos accounts
           are done entirely off-chain in our database so they're fast,
           free and unlimited.

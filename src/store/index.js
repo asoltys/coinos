@@ -1585,29 +1585,8 @@ export default new Vuex.Store({
       invoice.received = 0;
       invoice.uuid = v4();
 
-      const url = (address) => {
-        let url = amount || memo ? `${invoice.network}:${address}?` : address;
-        if (amount)
-          url += `amount=${((amount + tip) / SATS).toFixed(8)}${
-            memo ? '&' : ''
-          }`;
-        if (memo) url += `message=${memo}`;
-        return url;
-      };
-
       let address;
       switch (invoice.network) {
-        case 'bitcoin':
-          invoice.address = await dispatch('getNewAddress', invoice.type);
-          invoice.text = url(invoice.address);
-          break;
-        case 'liquid':
-          invoice.address = await dispatch('getNewAddress');
-          let text = url(invoice.address);
-          text = text.replace('liquid', 'liquidnetwork');
-          if (amount) text += `&asset=${user.account.asset}`;
-          invoice.text = text;
-          break;
         case 'lightning':
           try {
             let { data: { text }} = await Vue.axios.post(`/lightning/invoice`, {
@@ -1631,6 +1610,9 @@ export default new Vuex.Store({
           user: { id, account_id, username },
         });
         socket.send(JSON.stringify({ type: 'subscribe', data }));
+        invoice.address = data.address;
+        invoice.unconfidential = data.unconfidential;
+        invoice.text = data.text;
         commit('invoice', invoice);
       } catch (e) {
         dispatch('clearInvoice');

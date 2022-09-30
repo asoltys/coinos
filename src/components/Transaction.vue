@@ -171,7 +171,7 @@ export default {
     /** Returns the withdrawal fee, in SAT */
     conversionFeeSAT() {
       if (this.user.account.asset !== btc) return 0;
-      let conversionFeeSAT = Math.floor(this.payment.amount / 100);
+      let conversionFeeSAT = Math.floor(this.payment.amount / this.$conversion);
       let conversionFeeDeductionSAT = Math.min(
         this.feeCreditsSAT,
         conversionFeeSAT
