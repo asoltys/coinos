@@ -1583,25 +1583,6 @@ export default new Vuex.Store({
 
       invoice.address = null;
       invoice.received = 0;
-      invoice.uuid = v4();
-
-      let address;
-      switch (invoice.network) {
-        case 'lightning':
-          try {
-            let { data: { text }} = await Vue.axios.post(`/lightning/invoice`, {
-              amount,
-              memo,
-              tip,
-            });
-            invoice.text = text;
-          } catch (e) {
-            commit('error', e.response ? e.response.data : e.message);
-            dispatch('clearInvoice');
-            return;
-          }
-          break;
-      }
 
       try {
         let { id, account_id, username } = user;
@@ -1610,6 +1591,7 @@ export default new Vuex.Store({
           user: { id, account_id, username },
         });
         socket.send(JSON.stringify({ type: 'subscribe', data }));
+        invoice.uuid = data.uuid;
         invoice.address = data.address;
         invoice.unconfidential = data.unconfidential;
         invoice.text = data.text;
