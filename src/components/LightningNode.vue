@@ -81,7 +81,7 @@ export default {
       darknet:
         '02868e12f320073cad0c2959c42559fbcfd1aa326fcb943492ed7f02c9820aa399@jbx2afvrkuxopekkvipjcult26ffvu3t4lq5x7k4zcs3z7hovu4kdtyd.onion:9735',
       clearnet:
-        '02868e12f320073cad0c2959c42559fbcfd1aa326fcb943492ed7f02c9820aa399@lnd.coinos.io:9735',
+        '021294fff596e497ad2902cd5f19673e9020953d90625d68c22e91b51a45c032d3@ln.coinos.io:9735',
     };
   },
   computed: {
