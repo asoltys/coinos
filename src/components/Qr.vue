@@ -4,6 +4,7 @@
     ref="canvas"
     class="d-block mx-auto mb-4"
     @click="fullscreen"
+    :data-text="text"
     />
 </template>
 
