@@ -339,7 +339,7 @@ export default new Vuex.Store({
 
     async submitSupport({ commit, getters, dispatch }, form) {
       try {
-        form.subject = "Coinos Support";
+        form.subject = 'Coinos Support';
         await Vue.axios.post('/email', form);
         return true;
       } catch (e) {
@@ -463,25 +463,30 @@ export default new Vuex.Store({
         } else {
           seed = generateMnemonic();
           user.seed = aes.encrypt(seed, password).toString();
+
+          if (!user.keys.length) {
+            const key = bytesToHexString(
+              secp256k1.publicKeyCreate(
+                linkingKey(window.location.hostname, seed).privateKey,
+                true
+              )
+            );
+            dispatch('addLinkingKey', key);
+          }
+
+          dispatch('updateUser', user);
         }
 
         commit('password', password);
         commit('seed', seed);
 
-        if (!user.keys.length) {
-          const key = bytesToHexString(
-            secp256k1.publicKeyCreate(
-              linkingKey(window.location.hostname, seed).privateKey,
-              true
-            )
-          );
-          dispatch('addLinkingKey', key);
-        }
-
-        dispatch('updateUser', user);
         if (router.currentRoute.path === '/login') go('/home');
       } catch (e) {
-        if (e.response && e.response.data.startsWith('2fa'))
+        if (
+          e.response &&
+          typeof e.response.data === 'string' &&
+          e.response.data.startsWith('2fa')
+        )
           commit('prompt2fa', true);
         else commit('error', 'Login failed');
         commit('loading', false);
@@ -540,21 +545,19 @@ export default new Vuex.Store({
     },
 
     async pinPrompt({ commit, dispatch, getters }, resolve) {
-      if (!getters.user.pin) return true;
-
+      if (getters.pin || !getters.user.haspin) return;
       commit('promptPin', true);
 
       let interval;
 
       let ok = await new Promise((resolve, reject) => {
         interval = setInterval(() => {
-          if (getters.pin === getters.user.pin) resolve(true) && l('resolved');
-        }, 1000);
+          if (getters.pin.length > 5) resolve(true) && l('resolved');
+        }, 100);
       });
 
       clearInterval(interval);
       commit('promptPin', false);
-      commit('pin', null);
 
       return ok;
     },
@@ -771,7 +774,7 @@ export default new Vuex.Store({
       window.sessionStorage.removeItem('token');
       window.sessionStorage.removeItem('vuex');
       commit('token', null);
-      commit('pin', null);
+      commit('pin', '');
       commit('user', null);
       if (state.socket) state.socket.close();
       commit('seed', null);
@@ -961,6 +964,7 @@ export default new Vuex.Store({
             login() {
               loggedIn = true;
               let user = data;
+              console.log('USER DATA', user.haspin);
               if (user) {
                 if (getters.password) {
                   let seed;
@@ -975,6 +979,7 @@ export default new Vuex.Store({
                   } else {
                     seed = generateMnemonic();
                     user.seed = aes.encrypt(seed, getters.password).toString();
+                    console.log('HERE');
                     dispatch('updateUser', user);
                   }
                   commit('seed', seed);
@@ -1013,8 +1018,7 @@ export default new Vuex.Store({
                 if (data.amount > 0) {
                   if (!data.confirmed || data.network === 'lightning')
                     commit('snack', 'Payment received!');
-                }
-                  else commit('snack', 'Payment sent!');
+                } else commit('snack', 'Payment sent!');
 
                 if (
                   !getters.user.accounts.find((a) => a.id === data.account_id)
@@ -1137,19 +1141,24 @@ export default new Vuex.Store({
     },
 
     async updateUser({ commit, dispatch, state }, user) {
+      await dispatch('pinPrompt');
+
       let params = {};
       Object.keys(user).map((k) => {
         if (['payments', 'account'].includes(k)) return;
         params[k] = user[k];
       });
 
-      let { seed } = state;
+      let { pin, seed } = state;
 
       if (user.password && user.password === user.confirm) {
         if (!seed) ({ seed } = await dispatch('passwordPrompt'));
         params.seed = aes.encrypt(seed, user.password).toString();
         dispatch('reencryptAccountSeeds', user.password);
       }
+
+      if (user.pin) params.newpin = user.pin;
+      params.pin = pin;
 
       if (user.id) {
         try {
@@ -1287,9 +1296,8 @@ export default new Vuex.Store({
       } = getters;
       let asset = user.account.asset;
 
-      if (!(await dispatch('pinPrompt'))) {
-        commit('error', 'Invalid pin');
-      }
+      await dispatch('pinPrompt');
+      let { pin } = getters;
 
       try {
         if (amount <= 0) {
@@ -1299,6 +1307,7 @@ export default new Vuex.Store({
         let { data: payment } = await Vue.axios.post('/send', {
           address,
           payreq,
+          pin,
           unconfidential,
           amount,
           asset,
@@ -1393,9 +1402,13 @@ export default new Vuex.Store({
     },
 
     async sendPayment({ commit, dispatch, getters }) {
-      if (!(await dispatch('pinPrompt'))) {
-        return commit('error', 'Invalid pin');
-      }
+      let fail = (e) => {
+        let msg = e.response ? e.response.data : e.message;
+        if (msg.includes('pin')) commit('pin', '');
+        commit('error', msg);
+      };
+
+      await dispatch('pinPrompt');
 
       commit('loading', true);
       commit('error', null);
@@ -1414,6 +1427,7 @@ export default new Vuex.Store({
           signed,
           tx,
         },
+        pin,
       } = getters;
 
       if (signed) {
@@ -1421,6 +1435,7 @@ export default new Vuex.Store({
           let { data: payment } = await Vue.axios.post(
             `/${network}/broadcast`,
             {
+              pin,
               tx: hex,
               payment: getters.payment,
             }
@@ -1428,7 +1443,7 @@ export default new Vuex.Store({
           payment.sent = true;
           commit('payment', payment);
         } catch (e) {
-          commit('error', e.response ? e.response.data : e.message);
+          fail(e);
         }
 
         commit('loading', false);
@@ -1441,12 +1456,13 @@ export default new Vuex.Store({
             amount,
             memo,
             payreq,
+            pin,
             route,
           });
           payment.sent = true;
           commit('payment', payment);
         } catch (e) {
-          commit('error', e.response ? e.response.data : e.message);
+          fail(e);
         }
       } else if (address) {
         if (!tx) await dispatch('estimateFee');
@@ -1459,24 +1475,26 @@ export default new Vuex.Store({
               address,
               asset,
               memo,
+              pin,
               tx,
             });
             res.data.sent = true;
             commit('payment', res.data);
           } catch (e) {
-            commit('error', e.response ? e.response.data : e.message);
+            fail(e);
           }
         } else {
           try {
             let res = await Vue.axios.post('/bitcoin/send', {
               address,
               memo,
+              pin,
               tx,
             });
             res.data.sent = true;
             commit('payment', res.data);
           } catch (e) {
-            commit('error', e.response ? e.response.data : e.message);
+            fail(e);
           }
         }
       }

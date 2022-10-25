@@ -56,7 +56,6 @@ export default {
   },
 
   methods: {
-    checkPin: call('checkPin'),
     close() {
       this.$nextTick(() => (this.promptPin = false));
     },
@@ -67,7 +66,6 @@ export default {
   },
   watch: {
     promptPin() {
-      this.pin = '';
       this.error = null;
     } 
   } 

@@ -7,6 +7,8 @@
       indeterminate
     />
     <template v-else>
+      HIII
+      {{user.haspin}}
       <div v-if="length">
         <v-expansion-panels accordion v-model="selected">
           <v-expansion-panel
