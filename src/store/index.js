@@ -792,7 +792,7 @@ export default new Vuex.Store({
 
     async loadPayments({ state }) {
       try {
-        let res = await Vue.axios.get('/payments');
+        let res = await Vue.axios.get('/payments?start=1446400000');
         state.user.payments = res.data;
       } catch (e) {
         commit('error', e.response ? e.response.data : e.message);
