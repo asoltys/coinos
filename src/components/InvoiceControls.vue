@@ -76,7 +76,7 @@
         <v-icon left color="blue">$note</v-icon>
         Memo
       </v-btn>
-      <v-btn @click="copy(invoice.text)" class="flex-grow-1">
+      <v-btn @click="copy(text)" class="flex-grow-1">
         <v-icon left>$copy</v-icon>
         Copy
       </v-btn>
@@ -85,7 +85,7 @@
         Show QR
       </v-btn>
       <v-btn
-        v-if="network === 'bitcoin'"
+        v-if="network !== 'lightning'"
         @click="settings = !settings"
         class="flex-grow-1"
       >
@@ -130,7 +130,7 @@ export default {
 
   computed: {
     addressTypes() {
-      return this.user.account.pubkey ? this.types : [...this.types, 'bech32m'];
+      return this.network === 'liquid' ? ['bech32', 'unconfidential'] : this.user.account.pubkey ? this.types : [...this.types, 'bech32m'];
     },
     signedMessage: get('signedMessage'),
     message: sync('message'),
@@ -151,7 +151,7 @@ export default {
     },
     nodes: get('nodes'),
     text() {
-      return this.loading ? '' : this.invoice.address || this.invoice.text;
+      return this.loading ? "" : (this.type === "unconfidential" ? this.invoice.unconfidential : this.invoice.address) || this.invoice.text;
     },
     lnurl: sync('lnurl'),
     invoice: sync('invoice'),

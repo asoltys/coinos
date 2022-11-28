@@ -34,7 +34,7 @@
             </v-btn>
           </v-btn-toggle>
         </div>
-        <qr :text="invoice.text" v-if="fullscreen" />
+        <qr :text="text" v-if="fullscreen" />
           <invoice-balance />
         <div class="ma-4 px-1">
           <v-progress-linear v-if="loading" indeterminate color="primary" />
@@ -88,7 +88,7 @@ export default {
     loading: get('loading'),
     nodes: get('nodes'),
     text() {
-      return this.invoice.address || this.invoice.text;
+      return (this.type === "unconfidential" ? this.invoice.unconfidential : this.invoice.address) || this.invoice.text;
     },
     ticker() {
       return this.user.unit === 'BTC' ? this.user.account.ticker : 'SAT';
