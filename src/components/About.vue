@@ -115,7 +115,7 @@
         class="flex-grow-1 mr-2 mb-8 wide"
         @click="
           go(
-            'http://uzmim34vid5dkyzjxpel6zbkfz4qeqaaqe3gqrtbmekhxqglvzau73ad.onion/'
+            'http://w2azun2d7qf44ox3qep6edbkzetaocqk5jyfsswr3nrn3twnn2p4raad.onion/'
           )
         "
       >
