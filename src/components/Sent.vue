@@ -129,8 +129,8 @@ export default {
     explore() {
       let url = 'https://blockstream.info';
       let { hash, network } = this.payment;
-      if (network === 'BTC') url += `/tx/${hash}`;
-      if (network === 'LBTC') url += `${bs}/liquid/tx/${hash}`;
+      if (network === 'bitcoin') url += `/tx/${hash}`;
+      if (network === 'liquid') url += `${url}/liquid/tx/${hash}`;
       window.open(url, '_blank');
     },
 
