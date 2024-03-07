@@ -29,7 +29,8 @@
 
               <p>
                 This site is no longer maintained and you will no longer be able
-                  to deposit funds into your account. Please withdraw any remaining funds you may have at your earliest convenience.
+                to deposit funds into your account. Please withdraw any
+                remaining funds you may have at your earliest convenience.
               </p>
 
               <p>
