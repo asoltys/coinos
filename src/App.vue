@@ -1,35 +1,41 @@
 <template>
   <v-app id="app">
     <top-bar />
-    <snack-bar type="success" :text="success" :timeout="2500" @done="success = null" />
+    <snack-bar
+      type="success"
+      :text="success"
+      :timeout="2500"
+      @done="success = null"
+    />
     <snack-bar type="info" :text="snack" :timeout="2500" @done="snack = null" />
     <snack-bar type="error" :text="error" @done="error = null" />
     <v-main style="background: #222">
       <v-container style="margin-bottom: 50px !important">
         <v-alert
           class="mb-2 black--text"
-          v-if="versionMismatch"
           color="primary"
           dismissible
           transition="scale-transition"
         >
           <div class="d-flex">
-            <div
-              class="my-auto flex-grow-1"
-              @click="showVersion = !showVersion"
-              style="cursor: pointer"
-            >
+            <h3 class="my-auto flex-grow-1">
               <v-icon color="black">$info</v-icon>
-              coinos update detected
-            </div>
-            <v-btn @click="refresh">
-              <v-icon left>$refresh</v-icon>
-              Reload</v-btn
-            >
+              <b>Notice of deprecation</b>
+            </h3>
           </div>
-          <v-card class="mt-2" v-if="showVersion">
+          <v-card class="mt-2">
             <v-card-text class="white--text">
-              {{ versionMismatch }}
+              <p>Dear Classic Coinos users,</p>
+
+              <p>
+                This site is no longer maintained and you will no longer be able
+                  to deposit funds into your account. Please withdraw any remaining funds you may have at your earliest convenience.
+              </p>
+
+              <p>
+                You may wish to visit our new site at
+                <a href="https://coinos.io">coinos.io</a>
+              </p>
             </v-card-text>
           </v-card>
         </v-alert>
@@ -60,7 +66,7 @@ export default {
 
   head: {
     title: 'coinos',
-  }, 
+  },
   data() {
     return {
       index: 0,
